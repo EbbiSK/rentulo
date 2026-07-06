@@ -196,6 +196,13 @@ function isClosedReservationStatus(status) {
 function isBlockingReservationStatus(status) {
   const normalizedStatus = normalizeReservationStatus(status);
 
+  if (
+    CLOSED_RESERVATION_STATUSES.includes(status) ||
+    CLOSED_RESERVATION_STATUSES.includes(normalizedStatus)
+  ) {
+    return false;
+  }
+
   return BLOCKING_RESERVATION_STATUSES.includes(status) ||
     BLOCKING_RESERVATION_STATUSES.includes(normalizedStatus);
 }
