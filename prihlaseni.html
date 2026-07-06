@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Přihlášení - Rentulo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f3ee;
+      color: #073f2e;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    .header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .logo-icon::before {
+      content: "✓";
+    }
+
+    .logo-dot {
+      display: none;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 21px;
+      line-height: 1;
+      color: #073f2e;
+    }
+
+    .logo-text small {
+      display: block;
+      margin-top: 3px;
+      font-size: 13px;
+      color: #4d5b55;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 15px;
+    }
+
+    .nav a {
+      font-weight: 500;
+    }
+
+    .nav .active-link {
+      font-weight: 900;
+    }
+
+    .btn-register,
+    .logout-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #006b45;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .auth-page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 18px 20px 34px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 760px;
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 0;
+      background: white;
+      border: 1px solid #eadfd1;
+      border-radius: 18px;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+    }
+
+    .auth-intro {
+      padding: 24px;
+      background: #fffdf8;
+      border-right: 1px solid #eadfd1;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: #006b45;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .auth-intro h1 {
+      margin: 0 0 10px;
+      color: #073f2e;
+      font-size: 36px;
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+
+    .auth-intro p {
+      margin: 0;
+      color: #334c43;
+      font-size: 15px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    .auth-form {
+      padding: 24px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .auth-error-message {
+      display: none;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #fff7f0;
+      border: 1px solid #ffe0c8;
+      color: #5b3a22;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .auth-error-message.active {
+      display: block;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 5px;
+    }
+
+    .form-group label {
+      color: #173e33;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .form-group input {
+      width: 100%;
+      height: 42px;
+      border: 1px solid #d8d0c5;
+      border-radius: 10px;
+      background: white;
+      padding: 0 12px;
+      font-size: 14px;
+      color: #073f2e;
+      font-weight: 700;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #006b45;
+      box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
+    }
+
+    .form-group input.input-error {
+      border-color: #df5b00;
+      box-shadow: 0 0 0 3px rgba(223, 91, 0, 0.12);
+    }
+
+    .terms-check {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 8px;
+      align-items: start;
+      padding: 10px 11px;
+      border-radius: 12px;
+      background: #f8f5f0;
+      border: 1px solid #eee8de;
+      color: #334c43;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .terms-check input {
+      width: 16px;
+      height: 16px;
+      margin: 1px 0 0;
+      accent-color: #006b45;
+    }
+
+    .auth-button {
+      min-height: 42px;
+      border: none;
+      border-radius: 10px;
+      background: #006b45;
+      color: white;
+      padding: 0 18px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .auth-button:hover {
+      background: #00563a;
+    }
+
+    .auth-button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .auth-note {
+      margin: 0;
+      padding-top: 2px;
+      color: #334c43;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .auth-note a {
+      color: #006b45;
+      font-weight: 900;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .auth-helper-box {
+      margin-top: 2px;
+      padding: 10px 11px;
+      border-radius: 12px;
+      background: #e2f3eb;
+      border: 1px solid #c7e8d7;
+      color: #073f2e;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .auth-helper-box strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #006b45;
+    }
+
+    @media (max-width: 820px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .auth-card {
+        grid-template-columns: 1fr;
+      }
+
+      .auth-intro {
+        border-right: none;
+        border-bottom: 1px solid #eadfd1;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .header,
+      .auth-page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .auth-page {
+        padding-top: 10px;
+      }
+
+      .auth-intro,
+      .auth-form {
+        padding: 16px;
+      }
+
+      .auth-intro h1 {
+        font-size: 30px;
+      }
+
+      .auth-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="auth-page">
+
+    <section class="auth-card">
+
+      <div class="auth-intro">
+        <p class="eyebrow">Vítejte zpět</p>
+
+        <h1>Přihlášení</h1>
+
+        <p>
+          Přihlaste se ke svému účtu. Po přihlášení se otevře stránka Můj účet.
+        </p>
+
+        <div class="auth-helper-box">
+          <strong>Účet Rentulo</strong>
+          Přihlášení nyní probíhá přes Supabase. Použijte e-mail a heslo z registrace.
+        </div>
+      </div>
+
+      <form class="auth-form" id="loginForm">
+
+        <div class="auth-error-message" id="loginError"></div>
+
+        <div class="form-group full">
+          <label for="loginEmail">E-mail</label>
+          <input id="loginEmail" type="email" placeholder="např. jan@email.cz" required />
+        </div>
+
+        <div class="form-group full">
+          <label for="loginPassword">Heslo</label>
+          <input id="loginPassword" type="password" placeholder="Zadejte heslo" required />
+        </div>
+
+        <label class="terms-check">
+          <input id="rememberLogin" type="checkbox" />
+          <span>Zapamatovat přihlášení na tomto zařízení.</span>
+        </label>
+
+        <button type="submit" class="auth-button" id="loginSubmitButton">
+          Přihlásit se
+        </button>
+
+        <p class="auth-note">
+          Ještě nemáte účet?
+          <a href="registrace.html">Vytvořit účet</a>
+        </p>
+
+      </form>
+
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/supabase-config.js"></script>
+
+  <script>
+    function loginNormalizeEmail(email) {
+      return String(email || "").trim().toLowerCase();
+    }
+
+    function showLoginError(message) {
+      const errorBox = document.getElementById("loginError");
+
+      if (!errorBox) {
+        return;
+      }
+
+      errorBox.textContent = message;
+      errorBox.classList.add("active");
+    }
+
+    function hideLoginError() {
+      const errorBox = document.getElementById("loginError");
+
+      if (!errorBox) {
+        return;
+      }
+
+      errorBox.textContent = "";
+      errorBox.classList.remove("active");
+    }
+
+    function clearLoginErrors() {
+      const fields = document.querySelectorAll("#loginForm input");
+
+      fields.forEach(function (field) {
+        field.classList.remove("input-error");
+      });
+    }
+
+    function markLoginError(input) {
+      if (input) {
+        input.classList.add("input-error");
+      }
+    }
+
+    function loginGetSupabaseClient() {
+      if (window.rentuloSupabase) {
+        return window.rentuloSupabase;
+      }
+
+      if (typeof rentuloSupabase !== "undefined") {
+        return rentuloSupabase;
+      }
+
+      return null;
+    }
+
+    function loginGetInitials(fullName) {
+      if (!fullName) {
+        return "U";
+      }
+
+      const parts = fullName.trim().split(" ").filter(Boolean);
+
+      if (parts.length === 1) {
+        return parts[0].charAt(0).toUpperCase();
+      }
+
+      return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    }
+
+    function loginSaveCurrentUser(user) {
+      if (typeof saveCurrentUser === "function") {
+        saveCurrentUser(user);
+        return;
+      }
+
+      try {
+        localStorage.setItem("naradiUser", JSON.stringify(user));
+        localStorage.setItem("naradiLoggedIn", "true");
+      } catch (error) {
+        console.warn("Nepodařilo se uložit aktuálního uživatele do localStorage.", error);
+      }
+    }
+
+    function saveRememberLogin(rememberLogin) {
+      if (rememberLogin) {
+        localStorage.setItem("rentuloRememberLogin", "true");
+      } else {
+        localStorage.removeItem("rentuloRememberLogin");
+      }
+    }
+
+    async function loginLoadProfile(supabaseClient, user) {
+      if (!user || !user.id) {
+        return null;
+      }
+
+      const { data, error } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.warn("Profil se nepodařilo načíst.", error);
+        return null;
+      }
+
+      return data || null;
+    }
+
+    function loginCreateLocalUserFromSupabase(user, profile) {
+      const metadata = user && user.user_metadata ? user.user_metadata : {};
+
+      const fullName =
+        (profile && profile.full_name) ||
+        metadata.full_name ||
+        metadata.fullName ||
+        user.email ||
+        "Uživatel";
+
+      const phone =
+        (profile && profile.phone) ||
+        metadata.phone ||
+        "";
+
+      const street =
+        (profile && profile.street) ||
+        metadata.street ||
+        "";
+
+      const city =
+        (profile && profile.city) ||
+        metadata.city ||
+        "";
+
+      const postalCode =
+        (profile && profile.postal_code) ||
+        metadata.postal_code ||
+        metadata.postalCode ||
+        "";
+
+      return {
+        id: user.id,
+        fullName: fullName,
+        name: fullName,
+        email: user.email || "",
+        phone: phone,
+        street: street,
+        city: city,
+        postalCode: postalCode,
+        initials: loginGetInitials(fullName),
+        role: "user",
+        source: "supabase",
+        createdAt: user.created_at || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+
+      hideLoginError();
+      clearLoginErrors();
+
+      const supabaseClient = loginGetSupabaseClient();
+
+      if (!supabaseClient) {
+        showLoginError("Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js.");
+        return;
+      }
+
+      const emailInput = document.getElementById("loginEmail");
+      const passwordInput = document.getElementById("loginPassword");
+      const rememberInput = document.getElementById("rememberLogin");
+      const submitButton = document.getElementById("loginSubmitButton");
+
+      const email = loginNormalizeEmail(emailInput.value);
+      const password = String(passwordInput.value || "");
+
+      let hasError = false;
+
+      if (!email) {
+        markLoginError(emailInput);
+        hasError = true;
+      }
+
+      if (!password) {
+        markLoginError(passwordInput);
+        hasError = true;
+      }
+
+      if (hasError) {
+        showLoginError("Vyplňte prosím e-mail i heslo.");
+        return;
+      }
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Přihlašuji...";
+      }
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+        if (error) {
+          const message = String(error.message || "").toLowerCase();
+
+          if (message.includes("invalid login credentials")) {
+            markLoginError(emailInput);
+            markLoginError(passwordInput);
+            showLoginError("E-mail nebo heslo není správné.");
+            return;
+          }
+
+          if (message.includes("email not confirmed")) {
+            showLoginError("E-mail ještě není potvrzený. Zkontrolujte prosím e-mailovou schránku.");
+            return;
+          }
+
+          showLoginError("Přihlášení se nepodařilo: " + error.message);
+          return;
+        }
+
+        if (!data || !data.user) {
+          showLoginError("Přihlášení se nepodařilo. Uživatel nebyl načten.");
+          return;
+        }
+
+        const profile = await loginLoadProfile(supabaseClient, data.user);
+        const currentUser = loginCreateLocalUserFromSupabase(data.user, profile);
+
+        loginSaveCurrentUser(currentUser);
+        saveRememberLogin(rememberInput.checked);
+
+        window.location.href = "muj-ucet.html";
+      } catch (error) {
+        console.error(error);
+        showLoginError("Přihlášení se nepodařilo. Zkontrolujte připojení a zkuste to znovu.");
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Přihlásit se";
+        }
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      renderSharedNavigation("");
+
+      const loginForm = document.getElementById("loginForm");
+
+      if (loginForm) {
+        loginForm.addEventListener("submit", handleLoginSubmit);
+      }
+    });
+  </script>
+
+</body>
+</html>

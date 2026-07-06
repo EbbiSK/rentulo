@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Nabídnout nářadí - Rentulo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f3ee;
+      color: #073f2e;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 8px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .logo-icon::before {
+      content: "✓";
+    }
+
+    .logo-dot {
+      display: none;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 19px;
+      line-height: 1;
+      color: #073f2e;
+    }
+
+    .logo-text small {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #4d5b55;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+    }
+
+    .nav .active-link {
+      font-weight: 800;
+    }
+
+    .btn-register,
+    .logout-link {
+      background: #006b45;
+      color: white !important;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+
+    .offer-page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 8px 20px 24px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: #006b45;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .offer-page-header {
+      position: relative;
+      margin-bottom: 14px;
+      padding-right: 170px;
+    }
+
+    .eyebrow {
+      margin: 0 0 3px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #4d5b55;
+    }
+
+    h1 {
+      margin: 0 0 5px;
+      font-size: 28px;
+      line-height: 1.05;
+      color: #073f2e;
+    }
+
+    .offer-page-header p {
+      margin: 0;
+      font-size: 14px;
+      color: #334c43;
+      line-height: 1.35;
+      max-width: 760px;
+    }
+
+    .top-action-button {
+      position: absolute;
+      right: 0;
+      top: 14px;
+      background: #eee8de;
+      color: #073f2e;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .offer-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .offer-card,
+    .offer-help-card {
+      background: white;
+      border: 1px solid #eadfd1;
+      border-radius: 16px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      overflow: hidden;
+    }
+
+    .offer-card-header,
+    .offer-help-header {
+      padding: 11px 13px;
+      background: #fffdf8;
+      border-bottom: 1px solid #eadfd1;
+    }
+
+    .offer-card-header h2,
+    .offer-help-header h2 {
+      margin: 0;
+      color: #073f2e;
+      font-size: 17px;
+    }
+
+    .offer-card-body {
+      padding: 13px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .offer-help-content {
+      padding: 12px 14px;
+    }
+
+    .offer-help-content p {
+      margin: 0 0 10px;
+      color: #334c43;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .offer-help-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .offer-help-list li {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      color: #334c43;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .offer-help-list li::before {
+      content: "✓";
+      width: 20px;
+      height: 20px;
+      border-radius: 7px;
+      background: #e2f3eb;
+      color: #006b45;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .form-message {
+      display: none;
+      margin: 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .form-message.active {
+      display: block;
+    }
+
+    .form-message.error {
+      background: #fff7f0;
+      border: 1px solid #ffe0c8;
+      color: #5b3a22;
+    }
+
+    .form-message.success {
+      background: #e2f3eb;
+      border: 1px solid #c7e8d7;
+      color: #073f2e;
+    }
+
+    .photo-upload-box,
+    .pickup-location-box,
+    .pickup-options {
+      border: 1px solid #eee8de;
+      border-radius: 14px;
+      background: #fffdf8;
+      overflow: hidden;
+    }
+
+    .photo-upload-header,
+    .pickup-options-header,
+    .pickup-location-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eee8de;
+      background: #f8f5f0;
+    }
+
+    .photo-upload-header strong,
+    .pickup-options-header strong,
+    .pickup-location-header strong {
+      display: block;
+      color: #073f2e;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .photo-upload-header p,
+    .pickup-options-header p,
+    .pickup-location-header p {
+      margin: 3px 0 0;
+      color: #40514a;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .photo-upload-layout {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+    }
+
+    .photo-preview {
+      width: 130px;
+      height: 100px;
+      border-radius: 12px;
+      background: #ece6dc;
+      border: 1px solid #e3dace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: #4d5b55;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-upload-actions {
+      display: grid;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .photo-upload-actions input[type="file"] {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid #d8d0c5;
+      border-radius: 10px;
+      background: white;
+      color: #073f2e;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .photo-remove-button {
+      justify-self: start;
+      border: none;
+      border-radius: 9px;
+      padding: 7px 11px;
+      background: #eee8de;
+      color: #073f2e;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .photo-upload-status,
+    .pickup-location-status {
+      color: #40514a;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .photo-upload-status.success,
+    .pickup-location-status.success {
+      color: #006b45;
+    }
+
+    .photo-upload-status.error,
+    .pickup-location-status.error {
+      color: #c2410c;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 5px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      color: #173e33;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      border: 1px solid #d8d0c5;
+      border-radius: 10px;
+      background: white;
+      padding: 9px 10px;
+      font-size: 13px;
+      color: #073f2e;
+      font-family: Arial, sans-serif;
+      font-weight: 700;
+    }
+
+    .form-group textarea {
+      min-height: 95px;
+      resize: vertical;
+      line-height: 1.4;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus,
+    .photo-upload-actions input[type="file"]:focus {
+      outline: none;
+      border-color: #006b45;
+      box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
+    }
+
+    .input-error {
+      border-color: #c2410c !important;
+      box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.12) !important;
+    }
+
+    .pickup-options-body {
+      padding: 12px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .pickup-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      color: #073f2e;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.35;
+      cursor: pointer;
+    }
+
+    .pickup-checkbox input {
+      width: 17px;
+      height: 17px;
+      margin-top: 1px;
+      accent-color: #006b45;
+      flex-shrink: 0;
+    }
+
+    .pickup-custom-fields {
+      display: none;
+    }
+
+    .pickup-custom-fields.is-visible {
+      display: block;
+    }
+
+    .pickup-location-box {
+      background: white;
+    }
+
+    .pickup-location-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 12px;
+    }
+
+    .pickup-location-button {
+      min-height: 36px;
+      padding: 0 12px;
+      border: none;
+      border-radius: 9px;
+      background: #006b45;
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding-top: 2px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      border-radius: 10px;
+      padding: 10px 16px;
+      min-height: 40px;
+      font-size: 14px;
+      font-weight: 900;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: #006b45;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #eee8de;
+      color: #073f2e;
+    }
+
+    .btn-primary:disabled,
+    .btn-secondary:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .login-required-box {
+      max-width: 760px;
+      margin: 44px auto;
+      padding: 24px;
+      border-radius: 18px;
+      background: #ffffff;
+      border: 1px solid #eadfd1;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+    }
+
+    .login-required-box h1 {
+      margin: 0 0 8px;
+      color: #073f2e;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .login-required-box p {
+      margin: 0 0 16px;
+      color: #334c43;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .login-required-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .login-required-actions a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 10px;
+      background: #ff6500;
+      color: white;
+      font-size: 14px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .login-required-actions .secondary-action {
+      background: #eee8de;
+      color: #073f2e;
+    }
+
+    @media (max-width: 980px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .offer-page-header {
+        padding-right: 0;
+      }
+
+      .top-action-button {
+        position: static;
+        display: inline-flex;
+        margin-top: 10px;
+      }
+
+      .offer-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .offer-help-card {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .offer-page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .photo-upload-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .photo-preview {
+        width: 100%;
+        height: 180px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-actions {
+        flex-direction: column-reverse;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="offer-page">
+
+    <a href="muj-ucet.html" class="back-link">← Zpět do účtu</a>
+
+    <section class="offer-page-header">
+      <p class="eyebrow">Nabídka nářadí</p>
+      <h1>Nabídnout nářadí</h1>
+      <p>Vyplňte jednoduchý formulář. Vaše nabídka se zobrazí lidem, kteří hledají nářadí ve vašem okolí.</p>
+      <a href="moje-nabidky.html" class="top-action-button">Moje nabídky</a>
+    </section>
+
+    <section class="offer-layout">
+
+      <section class="offer-card">
+        <div class="offer-card-header">
+          <h2>Informace o nářadí</h2>
+        </div>
+
+        <form class="offer-card-body tool-form" id="offerForm">
+
+          <div class="form-message" id="offerFormMessage"></div>
+
+          <div class="photo-upload-box">
+            <div class="photo-upload-header">
+              <strong>Fotka nářadí</strong>
+              <p>Přidejte fotku nabízené věci. Zobrazí se u nabídky a později i ve výsledcích. Fotka je nepovinná.</p>
+            </div>
+
+            <div class="photo-upload-layout">
+              <div class="photo-preview" id="toolPhotoPreview">Bez fotky</div>
+
+              <div class="photo-upload-actions">
+                <input id="toolPhoto" type="file" accept="image/*" />
+                <button type="button" class="photo-remove-button" id="removeToolPhotoButton">Odebrat fotku</button>
+                <span class="photo-upload-status" id="toolPhotoStatus">Doporučeno: čitelná fotka nářadí. Obrázek se nahraje do Supabase Storage.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="toolName">Název nářadí</label>
+              <input id="toolName" type="text" placeholder="např. Aku vrtačka Bosch" />
+            </div>
+
+            <div class="form-group">
+              <label for="toolCategory">Kategorie</label>
+              <select id="toolCategory">
+                <option value="">Vyberte kategorii</option>
+                <option>Vrtačky</option>
+                <option>Brusky</option>
+                <option>Pily</option>
+                <option>Žebříky</option>
+                <option>Zahradní technika</option>
+                <option>Stavební technika</option>
+                <option>Ostatní</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="toolCity">Město nebo obec</label>
+              <input id="toolCity" type="text" placeholder="např. Praha" list="citySuggestions" />
+            </div>
+
+            <div class="form-group">
+              <label for="toolPostalCode">PSČ</label>
+              <input id="toolPostalCode" type="text" placeholder="např. 602 00" />
+            </div>
+
+            <datalist id="citySuggestions"></datalist>
+
+            <div class="form-group">
+              <label for="toolPrice">Cena za den</label>
+              <input id="toolPrice" type="text" placeholder="např. 250 Kč" />
+            </div>
+
+            <div class="form-group">
+              <label for="toolDeposit">Vratná kauce</label>
+              <input id="toolDeposit" type="text" placeholder="např. 1000 Kč" />
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label for="toolDescription">Popis nářadí</label>
+            <textarea id="toolDescription" placeholder="Napište stav nářadí, co je součástí půjčení a případné podmínky."></textarea>
+          </div>
+
+          <section class="pickup-options">
+            <div class="pickup-options-header">
+              <strong>Místo vyzvednutí</strong>
+              <p>Standardně se použijí údaje z vašeho profilu. Pokud chcete jiné místo vyzvednutí, zadejte ho níže.</p>
+            </div>
+
+            <div class="pickup-options-body">
+              <label class="pickup-checkbox">
+                <input type="checkbox" id="pickupUseCustom" />
+                <span>Použít jiné místo vyzvednutí než údaje z profilu</span>
+              </label>
+
+              <div class="pickup-custom-fields" id="pickupCustomFields">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="pickupStreet">Ulice a číslo</label>
+                    <input id="pickupStreet" type="text" placeholder="např. Zahradnická 5" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="pickupCity">Město nebo obec</label>
+                    <input id="pickupCity" type="text" placeholder="např. Praha" list="citySuggestions" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="pickupPostalCode">PSČ</label>
+                    <input id="pickupPostalCode" type="text" placeholder="např. 602 00" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="pickupNote">Poznámka k vyzvednutí</label>
+                    <input id="pickupNote" type="text" placeholder="např. zvonek Majitel" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="pickup-location-box">
+                <div class="pickup-location-header">
+                  <strong>Poloha pro hledání v okolí</strong>
+                  <p>Uložte přibližnou polohu místa vyzvednutí. Díky tomu půjde nabídky řadit podle vzdálenosti od zájemce.</p>
+                </div>
+
+                <div class="pickup-location-actions">
+                  <button type="button" class="pickup-location-button" id="pickupLocationButton">Použít moji aktuální polohu</button>
+                  <span class="pickup-location-status" id="pickupLocationStatus">Poloha zatím není uložená.</span>
+                </div>
+
+                <input type="hidden" id="pickupLatitude" />
+                <input type="hidden" id="pickupLongitude" />
+              </div>
+            </div>
+          </section>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" id="saveDraftButton">Uložit jako koncept</button>
+            <button type="submit" class="btn-primary" id="publishOfferButton">Zveřejnit nabídku</button>
+          </div>
+
+        </form>
+      </section>
+
+      <aside class="offer-help-card">
+        <div class="offer-help-header">
+          <h2>Jak to bude fungovat?</h2>
+        </div>
+
+        <div class="offer-help-content">
+          <p>Po zveřejnění se nabídka zobrazí ve výsledcích vyhledávání. Žádosti potom vyřídíte v části Moje nabídky.</p>
+
+          <ul class="offer-help-list">
+            <li>Nářadí přidáte do nabídky</li>
+            <li>Zájemce pošle žádost o půjčení</li>
+            <li>Žádost potvrdíte nebo odmítnete</li>
+            <li>Po zaplacení si platforma ponechá provizi 10 %</li>
+          </ul>
+        </div>
+      </aside>
+
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/supabase-config.js"></script>
+
+  <script>
+    let offerSaveInProgress = false;
+    let offerPhotoDataUrl = "";
+    let offerPhotoFile = null;
+
+    const cityPostalCodes = {
+      "praha": "110 00",
+      "brno": "602 00",
+      "ostrava": "702 00",
+      "plzeň": "301 00",
+      "plzen": "301 00",
+      "liberec": "460 01",
+      "olomouc": "779 00",
+      "české budějovice": "370 01",
+      "ceske budejovice": "370 01",
+      "hradec králové": "500 03",
+      "hradec kralove": "500 03",
+      "pardubice": "530 02",
+      "zlín": "760 01",
+      "zlin": "760 01",
+      "havířov": "736 01",
+      "havirov": "736 01",
+      "kladno": "272 01",
+      "most": "434 01",
+      "opava": "746 01",
+      "frýdek-místek": "738 01",
+      "frydek-mistek": "738 01",
+      "karviná": "733 01",
+      "karvina": "733 01",
+      "jihlava": "586 01",
+      "teplice": "415 01",
+      "děčín": "405 02",
+      "decin": "405 02",
+      "chomutov": "430 01",
+      "karlovy vary": "360 01",
+      "jablonec nad nisou": "466 01",
+      "mladá boleslav": "293 01",
+      "mlada boleslav": "293 01",
+      "prostějov": "796 01",
+      "prostejov": "796 01",
+      "přerov": "750 02",
+      "prerov": "750 02",
+      "třinec": "739 61",
+      "trinec": "739 61",
+      "tábor": "390 01",
+      "tabor": "390 01",
+      "znojmo": "669 02",
+      "kolín": "280 02",
+      "kolin": "280 02",
+      "písek": "397 01",
+      "pisek": "397 01",
+      "cheb": "350 02",
+      "příbram": "261 01",
+      "pribram": "261 01",
+      "orlová": "735 14",
+      "orlova": "735 14",
+      "kroměříž": "767 01",
+      "kromeriz": "767 01",
+      "vsetín": "755 01",
+      "vsetin": "755 01",
+      "šumperk": "787 01",
+      "sumperk": "787 01",
+      "uherské hradiště": "686 01",
+      "uherske hradiste": "686 01",
+      "břeclav": "690 02",
+      "breclav": "690 02",
+      "hodonín": "695 01",
+      "hodonin": "695 01",
+      "česká lípa": "470 01",
+      "ceska lipa": "470 01",
+      "litoměřice": "412 01",
+      "litomerice": "412 01",
+      "krnov": "794 01",
+      "sokolov": "356 01"
+    };
+
+    function getSupabaseClient() {
+      if (window.rentuloSupabase) {
+        return window.rentuloSupabase;
+      }
+
+      if (typeof rentuloSupabase !== "undefined") {
+        return rentuloSupabase;
+      }
+
+      return null;
+    }
+
+    async function getSupabaseUser() {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        return null;
+      }
+
+      const { data, error } = await supabaseClient.auth.getUser();
+
+      if (error || !data || !data.user) {
+        return null;
+      }
+
+      return data.user;
+    }
+
+    function showOfferLoginRequired() {
+      const offerPage = document.querySelector(".offer-page");
+
+      if (!offerPage) {
+        return;
+      }
+
+      offerPage.innerHTML = `
+        <section class="login-required-box">
+          <p class="eyebrow">Přihlášení je potřeba</p>
+
+          <h1>Pro přidání nabídky se nejdříve přihlaste.</h1>
+
+          <p>
+            Nářadí mohou nabízet pouze přihlášení uživatelé. Po přihlášení
+            se můžete vrátit a přidat vlastní nabídku.
+          </p>
+
+          <div class="login-required-actions">
+            <a href="prihlaseni.html">Přihlásit se</a>
+            <a href="registrace.html" class="secondary-action">Vytvořit účet</a>
+          </div>
+        </section>
+      `;
+    }
+
+    function getInputValue(id) {
+      const input = document.getElementById(id);
+      return input ? input.value.trim() : "";
+    }
+
+    function setInputValue(id, value) {
+      const input = document.getElementById(id);
+
+      if (input) {
+        input.value = value === undefined || value === null ? "" : value;
+      }
+    }
+
+    function normalizeCityName(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase();
+    }
+
+    function setupCitySuggestions() {
+      const datalist = document.getElementById("citySuggestions");
+
+      if (!datalist) {
+        return;
+      }
+
+      const uniqueCities = [];
+      const seen = {};
+
+      Object.keys(cityPostalCodes).forEach(function (city) {
+        const displayCity = city
+          .split(" ")
+          .map(function (part) {
+            return part.charAt(0).toUpperCase() + part.slice(1);
+          })
+          .join(" ");
+
+        const normalized = normalizeCityName(displayCity);
+
+        if (!seen[normalized]) {
+          seen[normalized] = true;
+          uniqueCities.push(displayCity);
+        }
+      });
+
+      datalist.innerHTML = uniqueCities
+        .sort()
+        .map(function (city) {
+          return `<option value="${city}"></option>`;
+        })
+        .join("");
+    }
+
+    function fillPostalCodeFromCity(cityInputId, postalInputId) {
+      const cityInput = document.getElementById(cityInputId);
+      const postalInput = document.getElementById(postalInputId);
+
+      if (!cityInput || !postalInput) {
+        return;
+      }
+
+      const city = normalizeCityName(cityInput.value);
+      const postalCode = cityPostalCodes[city];
+
+      if (!postalCode) {
+        return;
+      }
+
+      if (!postalInput.value.trim() || postalInput.dataset.autoFilled === "true") {
+        postalInput.value = postalCode;
+        postalInput.dataset.autoFilled = "true";
+      }
+    }
+
+    function setupPostalCodeAutocomplete() {
+      const toolCityInput = document.getElementById("toolCity");
+      const toolPostalInput = document.getElementById("toolPostalCode");
+      const pickupCityInput = document.getElementById("pickupCity");
+      const pickupPostalInput = document.getElementById("pickupPostalCode");
+
+      if (toolCityInput && toolPostalInput) {
+        toolCityInput.addEventListener("input", function () {
+          fillPostalCodeFromCity("toolCity", "toolPostalCode");
+        });
+
+        toolCityInput.addEventListener("change", function () {
+          fillPostalCodeFromCity("toolCity", "toolPostalCode");
+        });
+
+        toolPostalInput.addEventListener("input", function () {
+          toolPostalInput.dataset.autoFilled = "false";
+        });
+      }
+
+      if (pickupCityInput && pickupPostalInput) {
+        pickupCityInput.addEventListener("input", function () {
+          fillPostalCodeFromCity("pickupCity", "pickupPostalCode");
+        });
+
+        pickupCityInput.addEventListener("change", function () {
+          fillPostalCodeFromCity("pickupCity", "pickupPostalCode");
+        });
+
+        pickupPostalInput.addEventListener("input", function () {
+          pickupPostalInput.dataset.autoFilled = "false";
+        });
+      }
+    }
+
+    function fillProfileAddressAsDefault() {
+      const currentUser = getCurrentUser();
+      const toolCityInput = document.getElementById("toolCity");
+      const toolPostalInput = document.getElementById("toolPostalCode");
+
+      if (!currentUser) {
+        return;
+      }
+
+      const userCity = currentUser.city || currentUser.mesto || "";
+      const userPostalCode = currentUser.postalCode || currentUser.psc || "";
+
+      if (toolCityInput && !toolCityInput.value.trim() && userCity) {
+        toolCityInput.value = userCity;
+      }
+
+      if (toolPostalInput && !toolPostalInput.value.trim() && userPostalCode) {
+        toolPostalInput.value = userPostalCode;
+        toolPostalInput.dataset.autoFilled = "true";
+      }
+    }
+
+    function parseMoneyValue(value) {
+      const rawValue = String(value === undefined || value === null ? "" : value).trim();
+
+      if (!rawValue) {
+        return 0;
+      }
+
+      const cleanedValue = rawValue
+        .toLowerCase()
+        .replace("kč", "")
+        .replace("kc", "")
+        .replace(/\s/g, "")
+        .replace(",", ".")
+        .replace(/[^\d.]/g, "")
+        .trim();
+
+      if (!cleanedValue) {
+        return NaN;
+      }
+
+      const number = Number(cleanedValue);
+
+      if (Number.isNaN(number)) {
+        return NaN;
+      }
+
+      return Math.max(0, Math.round(number));
+    }
+
+    function clearOfferFormErrors() {
+      const fields = document.querySelectorAll("#offerForm input, #offerForm select, #offerForm textarea");
+
+      fields.forEach(function (field) {
+        field.classList.remove("input-error");
+      });
+    }
+
+    function markOfferFormError(id) {
+      const field = document.getElementById(id);
+
+      if (field) {
+        field.classList.add("input-error");
+      }
+    }
+
+    function showOfferFormMessage(message, type) {
+      const messageBox = document.getElementById("offerFormMessage");
+
+      if (!messageBox) {
+        return;
+      }
+
+      messageBox.textContent = message;
+      messageBox.className = "form-message active " + type;
+
+      messageBox.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+
+    function hideOfferFormMessage() {
+      const messageBox = document.getElementById("offerFormMessage");
+
+      if (!messageBox) {
+        return;
+      }
+
+      messageBox.textContent = "";
+      messageBox.className = "form-message";
+    }
+
+    function updatePhotoStatus(message, type) {
+      const status = document.getElementById("toolPhotoStatus");
+
+      if (!status) {
+        return;
+      }
+
+      status.textContent = message;
+      status.className = "photo-upload-status " + (type || "");
+    }
+
+    function renderPhotoPreview(dataUrl) {
+      const preview = document.getElementById("toolPhotoPreview");
+
+      if (!preview) {
+        return;
+      }
+
+      if (!dataUrl) {
+        preview.innerHTML = "Bez fotky";
+        return;
+      }
+
+      preview.innerHTML = `<img src="${dataUrl}" alt="Fotka nářadí">`;
+    }
+
+    function resizeImageToDataUrl(file, callback) {
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+        const image = new Image();
+
+        image.onload = function () {
+          const maxSize = 900;
+          let width = image.width;
+          let height = image.height;
+
+          if (width > height && width > maxSize) {
+            height = Math.round(height * maxSize / width);
+            width = maxSize;
+          } else if (height > maxSize) {
+            width = Math.round(width * maxSize / height);
+            height = maxSize;
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+
+          const context = canvas.getContext("2d");
+          context.drawImage(image, 0, 0, width, height);
+
+          callback(canvas.toDataURL("image/jpeg", 0.78));
+        };
+
+        image.onerror = function () {
+          callback("");
+        };
+
+        image.src = event.target.result;
+      };
+
+      reader.onerror = function () {
+        callback("");
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    function setupOfferPhotoUpload() {
+      const photoInput = document.getElementById("toolPhoto");
+      const removePhotoButton = document.getElementById("removeToolPhotoButton");
+
+      if (!photoInput) {
+        return;
+      }
+
+      photoInput.addEventListener("change", function () {
+        const file = photoInput.files && photoInput.files[0];
+
+        if (!file) {
+          offerPhotoDataUrl = "";
+          offerPhotoFile = null;
+          renderPhotoPreview("");
+          updatePhotoStatus("Fotka nebyla vybraná.", "");
+          return;
+        }
+
+        if (!file.type || !file.type.startsWith("image/")) {
+          offerPhotoDataUrl = "";
+          offerPhotoFile = null;
+          photoInput.value = "";
+          renderPhotoPreview("");
+          updatePhotoStatus("Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP.", "error");
+          return;
+        }
+
+        offerPhotoFile = file;
+        updatePhotoStatus("Zpracovávám fotku...", "");
+
+        resizeImageToDataUrl(file, function (dataUrl) {
+          if (!dataUrl) {
+            offerPhotoDataUrl = "";
+            offerPhotoFile = null;
+            photoInput.value = "";
+            renderPhotoPreview("");
+            updatePhotoStatus("Fotku se nepodařilo načíst. Zkuste jiný obrázek.", "error");
+            return;
+          }
+
+          offerPhotoDataUrl = dataUrl;
+          renderPhotoPreview(offerPhotoDataUrl);
+          updatePhotoStatus("Fotka byla připravená k uložení.", "success");
+        });
+      });
+
+      if (removePhotoButton) {
+        removePhotoButton.addEventListener("click", function () {
+          offerPhotoDataUrl = "";
+          offerPhotoFile = null;
+          photoInput.value = "";
+          renderPhotoPreview("");
+          updatePhotoStatus("Fotka byla odebraná.", "");
+        });
+      }
+    }
+
+    function getPickupAddress(currentUser) {
+      const pickupUseCustom = document.getElementById("pickupUseCustom");
+      const useCustomPickup = pickupUseCustom ? pickupUseCustom.checked : false;
+
+      if (useCustomPickup) {
+        return {
+          mode: "custom",
+          street: getInputValue("pickupStreet"),
+          city: getInputValue("pickupCity"),
+          postalCode: getInputValue("pickupPostalCode"),
+          note: getInputValue("pickupNote")
+        };
+      }
+
+      return {
+        mode: "profile",
+        street: currentUser.street || currentUser.ulice || "",
+        city: currentUser.city || currentUser.mesto || getInputValue("toolCity"),
+        postalCode: currentUser.postalCode || currentUser.psc || getInputValue("toolPostalCode"),
+        note: ""
+      };
+    }
+
+    function getFullPickupAddress(pickupAddress) {
+      return [
+        pickupAddress.street,
+        pickupAddress.city,
+        pickupAddress.postalCode
+      ].filter(Boolean).join(", ");
+    }
+
+    function validateOfferForm(status) {
+      clearOfferFormErrors();
+      hideOfferFormMessage();
+
+      const requiredFields = [
+        "toolName",
+        "toolCategory",
+        "toolCity",
+        "toolPostalCode",
+        "toolPrice",
+        "toolDeposit",
+        "toolDescription"
+      ];
+
+      let hasError = false;
+
+      requiredFields.forEach(function (fieldId) {
+        if (!getInputValue(fieldId)) {
+          markOfferFormError(fieldId);
+          hasError = true;
+        }
+      });
+
+      const parsedPrice = parseMoneyValue(getInputValue("toolPrice"));
+      const parsedDeposit = parseMoneyValue(getInputValue("toolDeposit"));
+
+      if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
+        markOfferFormError("toolPrice");
+        hasError = true;
+      }
+
+      if (Number.isNaN(parsedDeposit) || parsedDeposit < 0) {
+        markOfferFormError("toolDeposit");
+        hasError = true;
+      }
+
+      const pickupUseCustom = document.getElementById("pickupUseCustom");
+      const useCustomPickup = pickupUseCustom ? pickupUseCustom.checked : false;
+
+      if (useCustomPickup) {
+        ["pickupStreet", "pickupCity", "pickupPostalCode"].forEach(function (fieldId) {
+          if (!getInputValue(fieldId)) {
+            markOfferFormError(fieldId);
+            hasError = true;
+          }
+        });
+      }
+
+      if (hasError) {
+        showOfferFormMessage("Vyplňte prosím všechna povinná pole. GPS poloha je volitelná.", "error");
+        return false;
+      }
+
+      return true;
+    }
+
+    function dataUrlToBlob(dataUrl) {
+      const parts = dataUrl.split(",");
+      const metadata = parts[0];
+      const base64 = parts[1];
+
+      const mimeMatch = metadata.match(/data:(.*?);base64/);
+      const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
+
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+
+      for (let index = 0; index < binary.length; index += 1) {
+        bytes[index] = binary.charCodeAt(index);
+      }
+
+      return new Blob([bytes], {
+        type: mimeType
+      });
+    }
+
+    async function uploadOfferPhoto(supabaseClient, userId) {
+      if (!offerPhotoDataUrl) {
+        return "";
+      }
+
+      const photoBlob = dataUrlToBlob(offerPhotoDataUrl);
+      const fileName = userId + "/" + Date.now() + "-offer.jpg";
+
+      updatePhotoStatus("Nahrávám fotku do Supabase...", "");
+
+      const { error } = await supabaseClient.storage
+        .from("offer-photos")
+        .upload(fileName, photoBlob, {
+          contentType: "image/jpeg",
+          upsert: false
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      const { data } = supabaseClient.storage
+        .from("offer-photos")
+        .getPublicUrl(fileName);
+
+      updatePhotoStatus("Fotka byla nahraná.", "success");
+
+      return data && data.publicUrl ? data.publicUrl : "";
+    }
+
+    function createLocalOfferObject(status, supabaseUser, photoUrl) {
+      const currentUser = getCurrentUser();
+      const pickupAddress = getPickupAddress(currentUser);
+
+      const pickupLatitudeValue = getInputValue("pickupLatitude");
+      const pickupLongitudeValue = getInputValue("pickupLongitude");
+
+      const pickupLatitude = pickupLatitudeValue ? Number(pickupLatitudeValue) : null;
+      const pickupLongitude = pickupLongitudeValue ? Number(pickupLongitudeValue) : null;
+
+      const hasPickupGps =
+        pickupLatitude !== null &&
+        pickupLongitude !== null &&
+        !Number.isNaN(pickupLatitude) &&
+        !Number.isNaN(pickupLongitude);
+
+      const offerName = getInputValue("toolName");
+      const offerPrice = parseMoneyValue(getInputValue("toolPrice"));
+      const offerDeposit = parseMoneyValue(getInputValue("toolDeposit"));
+
+      return {
+        id: "offer-" + Date.now(),
+
+        name: offerName,
+        title: offerName,
+        nazev: offerName,
+
+        category: getInputValue("toolCategory"),
+        kategorie: getInputValue("toolCategory"),
+
+        description: getInputValue("toolDescription"),
+        popis: getInputValue("toolDescription"),
+
+        city: getInputValue("toolCity"),
+        mesto: getInputValue("toolCity"),
+
+        postalCode: getInputValue("toolPostalCode"),
+        psc: getInputValue("toolPostalCode"),
+
+        price: offerPrice,
+        pricePerDay: offerPrice,
+        cena: offerPrice,
+
+        deposit: offerDeposit,
+        kauce: offerDeposit,
+
+        status: status === "draft" ? "Koncept" : "Aktivní",
+        supabaseStatus: status,
+
+        photoUrl: photoUrl,
+        photo_url: photoUrl,
+        photoDataUrl: offerPhotoDataUrl,
+        imageDataUrl: offerPhotoDataUrl,
+        image: photoUrl || offerPhotoDataUrl,
+
+        ownerId: supabaseUser.id,
+        ownerName: getUserName(currentUser),
+        ownerEmail: getUserEmail(currentUser),
+        ownerPhone: getUserPhone(currentUser),
+        ownerStreet: currentUser.street || currentUser.ulice || "",
+        ownerCity: currentUser.city || currentUser.mesto || "",
+        ownerPostalCode: currentUser.postalCode || currentUser.psc || "",
+
+        pickupAddressMode: pickupAddress.mode,
+        pickupStreet: pickupAddress.street,
+        pickupCity: pickupAddress.city,
+        pickupPostalCode: pickupAddress.postalCode,
+        pickupFullAddress: getFullPickupAddress(pickupAddress),
+        pickupNote: pickupAddress.note,
+        pickupPhone: getUserPhone(currentUser),
+
+        pickupLatitude: hasPickupGps ? pickupLatitude : null,
+        pickupLongitude: hasPickupGps ? pickupLongitude : null,
+        pickupLocationSource: hasPickupGps ? "browser_geolocation" : "",
+
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    function createSupabaseOfferObject(status, supabaseUser, photoUrl) {
+      const currentUser = getCurrentUser();
+      const pickupAddress = getPickupAddress(currentUser);
+
+      const pickupLatitudeValue = getInputValue("pickupLatitude");
+      const pickupLongitudeValue = getInputValue("pickupLongitude");
+
+      const pickupLatitude = pickupLatitudeValue ? Number(pickupLatitudeValue) : null;
+      const pickupLongitude = pickupLongitudeValue ? Number(pickupLongitudeValue) : null;
+
+      const hasPickupGps =
+        pickupLatitude !== null &&
+        pickupLongitude !== null &&
+        !Number.isNaN(pickupLatitude) &&
+        !Number.isNaN(pickupLongitude);
+
+      return {
+        owner_id: supabaseUser.id,
+        name: getInputValue("toolName"),
+        category: getInputValue("toolCategory"),
+        description: getInputValue("toolDescription"),
+        city: getInputValue("toolCity"),
+        postal_code: getInputValue("toolPostalCode"),
+        price_per_day: parseMoneyValue(getInputValue("toolPrice")),
+        deposit: parseMoneyValue(getInputValue("toolDeposit")),
+        status: status,
+        photo_url: photoUrl || null,
+
+        pickup_street: pickupAddress.street,
+        pickup_city: pickupAddress.city,
+        pickup_postal_code: pickupAddress.postalCode,
+        pickup_note: pickupAddress.note,
+        pickup_phone: getUserPhone(currentUser),
+        pickup_latitude: hasPickupGps ? pickupLatitude : null,
+        pickup_longitude: hasPickupGps ? pickupLongitude : null
+      };
+    }
+
+    function offerLooksSame(existingOffer, newOffer) {
+      return (
+        String(existingOffer.name || existingOffer.title || "").trim().toLowerCase() === String(newOffer.name || newOffer.title || "").trim().toLowerCase() &&
+        String(existingOffer.category || "").trim().toLowerCase() === String(newOffer.category || "").trim().toLowerCase() &&
+        String(existingOffer.city || "").trim().toLowerCase() === String(newOffer.city || "").trim().toLowerCase() &&
+        String(existingOffer.ownerEmail || "").trim().toLowerCase() === String(newOffer.ownerEmail || "").trim().toLowerCase() &&
+        Number(existingOffer.price || existingOffer.pricePerDay || 0) === Number(newOffer.price || newOffer.pricePerDay || 0)
+      );
+    }
+
+    function saveLocalOfferMirror(newOffer) {
+      try {
+        const offers = getOffers();
+
+        const alreadyExists = offers.some(function (offer) {
+          return offerLooksSame(offer, newOffer);
+        });
+
+        if (!alreadyExists) {
+          offers.push(newOffer);
+          saveOffers(offers);
+        }
+      } catch (error) {
+        console.warn("Lokální kopii nabídky se nepodařilo uložit.", error);
+      }
+    }
+
+    function setOfferSavingState(isSaving, status) {
+      const publishOfferButton = document.getElementById("publishOfferButton");
+      const saveDraftButton = document.getElementById("saveDraftButton");
+
+      if (publishOfferButton) {
+        publishOfferButton.disabled = isSaving;
+        publishOfferButton.textContent = isSaving && status !== "draft"
+          ? "Ukládám nabídku..."
+          : "Zveřejnit nabídku";
+      }
+
+      if (saveDraftButton) {
+        saveDraftButton.disabled = isSaving;
+        saveDraftButton.textContent = isSaving && status === "draft"
+          ? "Ukládám koncept..."
+          : "Uložit jako koncept";
+      }
+    }
+
+    async function saveOffer(status) {
+      if (offerSaveInProgress) {
+        return;
+      }
+
+      if (!isLoggedIn() || !getCurrentUser()) {
+        showOfferLoginRequired();
+        return;
+      }
+
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        showOfferFormMessage("Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js.", "error");
+        return;
+      }
+
+      if (!validateOfferForm(status)) {
+        return;
+      }
+
+      offerSaveInProgress = true;
+      setOfferSavingState(true, status);
+
+      try {
+        const supabaseUser = await getSupabaseUser();
+
+        if (!supabaseUser) {
+          showOfferFormMessage("Nejste přihlášený v Supabase. Přihlaste se prosím znovu.", "error");
+          offerSaveInProgress = false;
+          setOfferSavingState(false, status);
+          return;
+        }
+
+        const photoUrl = await uploadOfferPhoto(supabaseClient, supabaseUser.id);
+        const supabaseOffer = createSupabaseOfferObject(status, supabaseUser, photoUrl);
+
+        const { data, error } = await supabaseClient
+          .from("offers")
+          .insert(supabaseOffer)
+          .select()
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        const localOffer = createLocalOfferObject(status, supabaseUser, photoUrl);
+
+        if (data && data.id) {
+          localOffer.id = data.id;
+          localOffer.supabaseId = data.id;
+        }
+
+        saveLocalOfferMirror(localOffer);
+
+        sessionStorage.setItem("rentuloOfferSaved", status);
+        window.location.href = "moje-nabidky.html";
+      } catch (error) {
+        console.error(error);
+        offerSaveInProgress = false;
+        setOfferSavingState(false, status);
+
+        const message = error && error.message ? error.message : "";
+
+        if (message.includes("row-level security")) {
+          showOfferFormMessage("Nabídku se nepodařilo uložit: Supabase odmítl zápis kvůli bezpečnostním pravidlům. Zkuste se odhlásit a znovu přihlásit.", "error");
+          return;
+        }
+
+        if (message.includes("column") || message.includes("schema cache")) {
+          showOfferFormMessage("Nabídku se nepodařilo uložit: některý sloupec v tabulce offers chybí. Pošli mi screenshot chyby z konzole.", "error");
+          return;
+        }
+
+        showOfferFormMessage("Nabídku se nepodařilo uložit. Zkuste odebrat fotku a uložit znovu.", "error");
+      }
+    }
+
+    function setupPickupCustomFields() {
+      const pickupUseCustom = document.getElementById("pickupUseCustom");
+      const pickupCustomFields = document.getElementById("pickupCustomFields");
+
+      if (!pickupUseCustom || !pickupCustomFields) {
+        return;
+      }
+
+      pickupUseCustom.addEventListener("change", function () {
+        if (pickupUseCustom.checked) {
+          pickupCustomFields.classList.add("is-visible");
+        } else {
+          pickupCustomFields.classList.remove("is-visible");
+        }
+      });
+    }
+
+    function setupPickupLocation() {
+      const pickupLocationButton = document.getElementById("pickupLocationButton");
+      const pickupLocationStatus = document.getElementById("pickupLocationStatus");
+      const pickupLatitudeInput = document.getElementById("pickupLatitude");
+      const pickupLongitudeInput = document.getElementById("pickupLongitude");
+
+      if (!pickupLocationButton || !pickupLatitudeInput || !pickupLongitudeInput) {
+        return;
+      }
+
+      pickupLocationButton.addEventListener("click", function () {
+        if (!navigator.geolocation) {
+          if (pickupLocationStatus) {
+            pickupLocationStatus.textContent = "Poloha není v tomto prohlížeči dostupná.";
+            pickupLocationStatus.className = "pickup-location-status error";
+          }
+
+          alert("Poloha není v tomto prohlížeči dostupná.");
+          return;
+        }
+
+        pickupLocationButton.disabled = true;
+        pickupLocationButton.textContent = "Zjišťuji polohu...";
+
+        if (pickupLocationStatus) {
+          pickupLocationStatus.textContent = "Zjišťuji polohu...";
+          pickupLocationStatus.className = "pickup-location-status";
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            pickupLatitudeInput.value = position.coords.latitude;
+            pickupLongitudeInput.value = position.coords.longitude;
+
+            pickupLocationButton.disabled = false;
+            pickupLocationButton.textContent = "Poloha byla uložena";
+
+            if (pickupLocationStatus) {
+              pickupLocationStatus.textContent = "Poloha byla uložena k nabídce.";
+              pickupLocationStatus.className = "pickup-location-status success";
+            }
+          },
+          function () {
+            pickupLatitudeInput.value = "";
+            pickupLongitudeInput.value = "";
+
+            pickupLocationButton.disabled = false;
+            pickupLocationButton.textContent = "Použít moji aktuální polohu";
+
+            if (pickupLocationStatus) {
+              pickupLocationStatus.textContent = "Polohu se nepodařilo získat. Nabídku můžete uložit i bez GPS.";
+              pickupLocationStatus.className = "pickup-location-status error";
+            }
+
+            alert("Polohu se nepodařilo získat. Nabídku můžete uložit i bez GPS polohy.");
+          },
+          {
+            enableHighAccuracy: false,
+            timeout: 8000,
+            maximumAge: 300000
+          }
+        );
+      });
+    }
+
+    function setupOfferForm() {
+      const offerForm = document.getElementById("offerForm");
+      const saveDraftButton = document.getElementById("saveDraftButton");
+
+      if (offerForm) {
+        offerForm.addEventListener("submit", function (event) {
+          event.preventDefault();
+          saveOffer("active");
+        });
+      }
+
+      if (saveDraftButton) {
+        saveDraftButton.addEventListener("click", function () {
+          saveOffer("draft");
+        });
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      renderSharedNavigation("nabidnout");
+
+      if (!isLoggedIn()) {
+        showOfferLoginRequired();
+        return;
+      }
+
+      setupCitySuggestions();
+      setupPostalCodeAutocomplete();
+      fillProfileAddressAsDefault();
+      setupOfferPhotoUpload();
+      setupPickupCustomFields();
+      setupPickupLocation();
+      setupOfferForm();
+    });
+  </script>
+</body>
+</html>

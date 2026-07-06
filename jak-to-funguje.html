@@ -1,0 +1,521 @@
+﻿<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Jak to funguje - Rentulo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f3ee;
+      color: #073f2e;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 8px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 23px;
+      font-weight: 800;
+    }
+
+    .logo-icon::before {
+      content: "✓";
+    }
+
+    .logo-dot {
+      display: none;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      color: #073f2e;
+    }
+
+    .logo-text small {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #4d5b55;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 17px;
+      font-size: 15px;
+    }
+
+    .nav a {
+      font-weight: 500;
+    }
+
+    .nav .active-link {
+      font-weight: 900;
+    }
+
+    .btn-register,
+    .logout-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #006b45;
+      color: white !important;
+      padding: 9px 19px;
+      border-radius: 999px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .manual-page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 8px 20px 24px;
+    }
+
+    .manual-back {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 8px;
+      color: #006b45;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .manual-back:hover {
+      text-decoration: underline;
+    }
+
+    .manual-card {
+      background: white;
+      border: 1px solid #eadfd1;
+      border-radius: 18px;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+      padding: 18px 22px;
+    }
+
+    .manual-top {
+      display: grid;
+      grid-template-columns: 1fr 0.9fr;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 13px;
+    }
+
+    .eyebrow {
+      margin: 0 0 4px;
+      color: #006b45;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      color: #073f2e;
+      font-size: 36px;
+      line-height: 1.04;
+      letter-spacing: -0.035em;
+    }
+
+    .manual-intro {
+      max-width: 760px;
+      margin: 0;
+      color: #334c43;
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .manual-mini-summary {
+      min-width: 260px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: #e2f3eb;
+      border: 1px solid #c7e8d7;
+      color: #073f2e;
+      font-size: 13px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+    .manual-mini-summary strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #006b45;
+      font-size: 14px;
+    }
+
+    .manual-choice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .manual-choice-card {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background: #fffdf8;
+      border: 1px solid #eee8de;
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+
+    .manual-choice-card h2 {
+      margin: 0 0 8px;
+      color: #073f2e;
+      font-size: 21px;
+      line-height: 1.12;
+    }
+
+    .manual-step-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .manual-step {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 9px;
+      align-items: start;
+      padding: 7px 9px;
+      border-radius: 12px;
+      background: white;
+      border: 1px solid #eee8de;
+    }
+
+    .manual-step span {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .manual-step strong {
+      display: block;
+      margin-bottom: 1px;
+      color: #073f2e;
+      font-size: 14px;
+      line-height: 1.15;
+    }
+
+    .manual-step p {
+      margin: 0;
+      color: #5b6862;
+      font-size: 12px;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+
+    .manual-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      min-height: 37px;
+      margin-top: 10px;
+      border-radius: 10px;
+      padding: 0 15px;
+      color: white;
+      font-size: 14px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .manual-button.green,
+    .manual-button.orange {
+      background: #006b45;
+    }
+
+    .manual-button.green:hover,
+    .manual-button.orange:hover {
+      background: #00563a;
+    }
+
+    .manual-note-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .manual-note {
+      padding: 9px 11px;
+      border-radius: 13px;
+      background: #f8f5f0;
+      border: 1px solid #eee8de;
+    }
+
+    .manual-note strong {
+      display: block;
+      margin-bottom: 2px;
+      color: #073f2e;
+      font-size: 13px;
+    }
+
+    .manual-note span {
+      display: block;
+      color: #5b6862;
+      font-size: 12px;
+      line-height: 1.28;
+      font-weight: 700;
+    }
+
+    @media (max-width: 920px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .manual-top {
+        grid-template-columns: 1fr;
+      }
+
+      .manual-mini-summary {
+        min-width: 0;
+      }
+
+      .manual-choice-grid,
+      .manual-note-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .header,
+      .manual-page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .manual-card {
+        padding: 15px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .manual-choice-card h2 {
+        font-size: 20px;
+      }
+
+      .manual-step {
+        grid-template-columns: 30px 1fr;
+      }
+
+      .manual-step span {
+        width: 30px;
+        height: 30px;
+      }
+
+      .manual-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="manual-page">
+
+    <a href="index.html" class="manual-back">← Zpět na úvod</a>
+
+    <section class="manual-card">
+      <div class="manual-top">
+        <div>
+          <p class="eyebrow">Stručný návod</p>
+
+          <h1>Jak stránka funguje?</h1>
+
+          <p class="manual-intro">
+            Na jednom místě si můžete nářadí půjčit od lidí ve svém okolí,
+            nebo nabídnout vlastní nářadí ostatním.
+          </p>
+        </div>
+
+        <div class="manual-mini-summary">
+          <strong>Jednoduchý postup</strong>
+          Vyberete nářadí, pošlete žádost, majitel ji potvrdí a po zaplacení se zobrazí kontakt i adresa.
+        </div>
+      </div>
+
+      <div class="manual-choice-grid">
+
+        <article class="manual-choice-card">
+          <h2>Chci si půjčit nářadí</h2>
+
+          <div class="manual-step-list">
+
+            <div class="manual-step">
+              <span>1</span>
+              <div>
+                <strong>Najdete nářadí</strong>
+                <p>Zadáte, co hledáte a kde se nacházíte.</p>
+              </div>
+            </div>
+
+            <div class="manual-step">
+              <span>2</span>
+              <div>
+                <strong>Vyberete nabídku</strong>
+                <p>Podíváte se na cenu, kauci, lokalitu a popis.</p>
+              </div>
+            </div>
+
+            <div class="manual-step">
+              <span>3</span>
+              <div>
+                <strong>Pošlete žádost</strong>
+                <p>Vyberete datum půjčení a datum vrácení.</p>
+              </div>
+            </div>
+
+            <div class="manual-step">
+              <span>4</span>
+              <div>
+                <strong>Počkáte na potvrzení</strong>
+                <p>Majitel žádost potvrdí nebo odmítne.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <a href="index.html" class="manual-button orange">Najít nářadí</a>
+        </article>
+
+        <article class="manual-choice-card">
+          <h2>Chci nabídnout své nářadí</h2>
+
+          <div class="manual-step-list">
+
+            <div class="manual-step">
+              <span>1</span>
+              <div>
+                <strong>Přihlásíte se</strong>
+                <p>Nabídky mohou přidávat pouze přihlášení uživatelé.</p>
+              </div>
+            </div>
+
+            <div class="manual-step">
+              <span>2</span>
+              <div>
+                <strong>Vyplníte nabídku</strong>
+                <p>Zadáte název, město, cenu, kauci a popis.</p>
+              </div>
+            </div>
+
+            <div class="manual-step">
+              <span>3</span>
+              <div>
+                <strong>Nabídka se zobrazí</strong>
+                <p>Ostatní lidé ji uvidí ve výsledcích hledání.</p>
+              </div>
+            </div>
+
+            <div class="manual-step">
+              <span>4</span>
+              <div>
+                <strong>Potvrdíte žádost</strong>
+                <p>Když má někdo zájem, žádost uvidíte ve svém účtu.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <a href="nabidnout.html" class="manual-button green">Nabídnout nářadí</a>
+        </article>
+
+      </div>
+
+      <div class="manual-note-grid">
+        <div class="manual-note">
+          <strong>Platba až po potvrzení</strong>
+          <span>Žádost nejprve schvaluje majitel. Platba se řeší až potom.</span>
+        </div>
+
+        <div class="manual-note">
+          <strong>Kontakty jsou chráněné</strong>
+          <span>Telefon a přesná adresa se zobrazí až po zaplacení rezervace.</span>
+        </div>
+
+        <div class="manual-note">
+          <strong>Provize Rentulo</strong>
+          <span>Z každé zaplacené rezervace počítáme provizi 10 %.</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/navigation.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderSharedNavigation("jak-to-funguje");
+    });
+  </script>
+
+</body>
+</html>

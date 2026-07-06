@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Detail nářadí - Rentulo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f3ee;
+      color: #073f2e;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    header {
+      padding: 6px 0;
+      background: #f6f3ee;
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .logo-icon::before {
+      content: "✓";
+    }
+
+    .logo-dot {
+      display: none;
+    }
+
+    .logo-title {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1;
+      color: #073f2e;
+      font-weight: 900;
+    }
+
+    .logo-subtitle {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: #4d5b55;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+    }
+
+    nav a {
+      font-weight: 500;
+    }
+
+    nav .active-link {
+      font-weight: 800;
+    }
+
+    nav .btn-register,
+    nav .logout-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #006b45;
+      color: white !important;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    main {
+      padding: 8px 0 24px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #006b45;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .detail-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .detail-main-card,
+    .sidebar,
+    .message-card {
+      background: white;
+      border: 1px solid #eadfd1;
+      border-radius: 16px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      overflow: hidden;
+    }
+
+    .detail-main-card {
+      padding: 0;
+    }
+
+    .image-box {
+      height: 190px;
+      background: #ece6dc;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      border-bottom: 1px solid #eadfd1;
+    }
+
+    .image-box.has-photo {
+      background: #073f2e;
+    }
+
+    .image-box img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .image-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 15px;
+      background: #073f2e;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .image-label {
+      position: absolute;
+      left: 12px;
+      bottom: 10px;
+      max-width: calc(100% - 24px);
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+      font-weight: 900;
+      color: #073f2e;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .image-box:not(.has-photo) .image-label {
+      background: transparent;
+      padding: 0;
+      color: #4e5d56;
+      border-radius: 0;
+    }
+
+    .detail-content {
+      padding: 12px;
+    }
+
+    .category-line {
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #334c43;
+      font-weight: 700;
+    }
+
+    .category-line strong {
+      color: #ff6500;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 27px;
+      line-height: 1.05;
+      color: #073f2e;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 7px 0 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      background: #eee8de;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 12px;
+      color: #27483d;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .badge.available {
+      background: #e2f3eb;
+      color: #006b45;
+    }
+
+    .badge.unavailable {
+      background: #fff0e6;
+      color: #df5b00;
+    }
+
+    .badge.draft {
+      background: #fff7f0;
+      color: #5b3a22;
+    }
+
+    .description {
+      font-size: 14px;
+      line-height: 1.35;
+      color: #183f34;
+      margin: 0 0 10px;
+      font-weight: 700;
+    }
+
+    .availability-panel {
+      margin-bottom: 10px;
+      padding: 9px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .availability-panel.available {
+      background: #e2f3eb;
+      border: 1px solid #c7e8d7;
+      color: #073f2e;
+    }
+
+    .availability-panel.unavailable {
+      background: #fff7f0;
+      border: 1px solid #ffe0c8;
+      color: #5b3a22;
+    }
+
+    .availability-panel strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 14px;
+    }
+
+    .availability-panel.available strong {
+      color: #006b45;
+    }
+
+    .availability-panel.unavailable strong {
+      color: #df5b00;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .section {
+      background: #fffdf8;
+      border: 1px solid #eee8de;
+      border-radius: 13px;
+      padding: 10px;
+    }
+
+    .section h2 {
+      margin: 0 0 7px;
+      font-size: 16px;
+      color: #073f2e;
+    }
+
+    .section ul {
+      margin: 0;
+      padding-left: 0;
+      list-style: none;
+      font-size: 13px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    .section p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #183f34;
+      font-weight: 700;
+    }
+
+    .pickup-preview {
+      display: grid;
+      gap: 7px;
+      margin-top: 9px;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+
+    .pickup-preview-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid #eee8de;
+      padding-bottom: 7px;
+    }
+
+    .pickup-preview-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .pickup-preview-row span:first-child {
+      color: #5b6862;
+    }
+
+    .pickup-preview-row span:last-child {
+      color: #073f2e;
+      font-weight: 900;
+      text-align: right;
+    }
+
+    .gps-note {
+      margin-top: 9px;
+      padding: 8px 9px;
+      border-radius: 11px;
+      background: #e2f3eb;
+      border: 1px solid #c7e8d7;
+      color: #073f2e;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 900;
+    }
+
+    .gps-note.missing {
+      background: #fff7f0;
+      border-color: #ffe0c8;
+      color: #5b3a22;
+    }
+
+    .sidebar {
+      padding: 12px;
+      position: sticky;
+      top: 10px;
+    }
+
+    .price {
+      font-size: 31px;
+      font-weight: 900;
+      color: #006b45;
+      line-height: 1;
+      margin-bottom: 1px;
+    }
+
+    .price-small {
+      font-size: 13px;
+      color: #5e6c66;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .info-list {
+      display: grid;
+      gap: 0;
+      margin-bottom: 10px;
+      border: 1px solid #eee8de;
+      border-radius: 11px;
+      overflow: hidden;
+      background: #fffdf8;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid #eee8de;
+      padding: 8px 9px;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-row span:first-child {
+      color: #5b6862;
+      font-weight: 700;
+    }
+
+    .info-row span:last-child {
+      font-weight: 900;
+      text-align: right;
+      color: #073f2e;
+    }
+
+    .privacy-box {
+      background: #fff7f0;
+      border: 1px solid #ffe0c8;
+      border-radius: 12px;
+      padding: 9px;
+      margin-bottom: 9px;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #5b3a22;
+      font-weight: 700;
+    }
+
+    .privacy-box strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #df5b00;
+      font-size: 13px;
+    }
+
+    .availability-box {
+      border-radius: 12px;
+      padding: 9px;
+      margin-bottom: 9px;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .availability-box.available {
+      background: #e2f3eb;
+      border: 1px solid #c7e8d7;
+      color: #073f2e;
+    }
+
+    .availability-box.unavailable {
+      background: #fff7f0;
+      border: 1px solid #ffe0c8;
+      color: #5b3a22;
+    }
+
+    .availability-box strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 13px;
+    }
+
+    .availability-box.available strong {
+      color: #006b45;
+    }
+
+    .availability-box.unavailable strong {
+      color: #df5b00;
+    }
+
+    .booking-box {
+      margin-top: 9px;
+      background: #f8f5f0;
+      border: 1px solid #e9e1d6;
+      border-radius: 13px;
+      padding: 10px;
+    }
+
+    .booking-box h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: #073f2e;
+    }
+
+    .form-group {
+      margin-bottom: 8px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      font-weight: 900;
+      color: #173e33;
+    }
+
+    .form-group input {
+      width: 100%;
+      height: 36px;
+      border: 1px solid #d8d0c5;
+      border-radius: 10px;
+      background: white;
+      padding: 0 10px;
+      font-size: 13px;
+      color: #073f2e;
+      font-weight: 700;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #006b45;
+      box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
+    }
+
+    .date-help {
+      font-size: 12px;
+      color: #68746f;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .calculation {
+      background: white;
+      border: 1px solid #e6ded3;
+      border-radius: 11px;
+      margin-bottom: 9px;
+      overflow: hidden;
+      display: grid;
+      gap: 0;
+    }
+
+    .calc-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+      border-bottom: 1px solid #eee8de;
+      padding: 7px 9px;
+    }
+
+    .calc-row:last-child {
+      border-bottom: none;
+    }
+
+    .calc-row span {
+      color: #5b6862;
+      font-weight: 700;
+    }
+
+    .calc-row strong {
+      color: #073f2e;
+      text-align: right;
+    }
+
+    .calc-total {
+      background: #fffdf8;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .primary-button {
+      width: 100%;
+      border: none;
+      border-radius: 9px;
+      background: #006b45;
+      color: white;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 9px 12px;
+      cursor: pointer;
+      text-align: center;
+      min-height: 34px;
+    }
+
+    .primary-button:hover {
+      background: #00563a;
+    }
+
+    .primary-button.disabled,
+    .primary-button:disabled {
+      background: #d8d0c5;
+      color: #5b6862;
+      cursor: not-allowed;
+    }
+
+    .note {
+      margin-top: 9px;
+      font-size: 12px;
+      color: #68746f;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .message-card {
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .message-card strong {
+      color: #006b45;
+    }
+
+    .message-card.warning strong {
+      color: #df5b00;
+    }
+
+    .message-card .primary-button {
+      display: inline-flex;
+      justify-content: center;
+      width: auto;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .detail-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .container {
+        padding: 0 14px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .image-box {
+        height: 185px;
+      }
+
+      .detail-content {
+        padding: 12px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      header {
+        padding: 8px 0;
+      }
+
+      .header-inner {
+        gap: 10px;
+      }
+
+      .logo {
+        gap: 8px;
+        align-items: center;
+      }
+
+      .logo-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 11px;
+        font-size: 22px;
+      }
+
+      .logo-title {
+        font-size: 18px;
+      }
+
+      .logo-subtitle {
+        font-size: 11px;
+      }
+
+      nav {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+        gap: 6px 8px;
+        font-size: 14px;
+        margin-top: 0;
+      }
+
+      nav a,
+      nav .btn-register,
+      nav .logout-link {
+        width: 100%;
+        min-height: 38px;
+        justify-content: center;
+        text-align: center;
+        padding: 7px 10px;
+        border-radius: 999px;
+      }
+
+      main {
+        padding-top: 8px;
+      }
+
+      .back-link {
+        font-size: 14px;
+      }
+
+      .image-box {
+        height: 180px;
+      }
+
+      .description {
+        font-size: 14px;
+      }
+
+      .badges {
+        gap: 6px;
+      }
+
+      .badge {
+        font-size: 12px;
+      }
+
+      .info-row,
+      .pickup-preview-row {
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .info-row span:last-child,
+      .pickup-preview-row span:last-child {
+        text-align: left;
+      }
+
+      .message-card .primary-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">
+          <span class="logo-dot"></span>
+        </div>
+
+        <div>
+          <p class="logo-title">Rentulo</p>
+          <p class="logo-subtitle">Sousedská půjčovna nářadí</p>
+        </div>
+      </a>
+
+      <nav id="mainNav"></nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <a href="vysledky.html" class="back-link" id="detailBackLink">← Zpět na výsledky</a>
+      <div id="detailContent"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/reservations.js"></script>
+  <script src="js/supabase-config.js"></script>
+
+  <script>
+    const PLATFORM_FEE_PERCENT = 10;
+    let currentOffer = null;
+
+    function getSupabaseClient() {
+      if (window.rentuloSupabase) {
+        return window.rentuloSupabase;
+      }
+
+      if (typeof rentuloSupabase !== "undefined") {
+        return rentuloSupabase;
+      }
+
+      return null;
+    }
+
+    function escapeHtml(value) {
+      return String(value === undefined || value === null ? "" : value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function getOfferIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("id");
+    }
+
+    function getDaysBetween(startDate, endDate) {
+      if (!startDate || !endDate) {
+        return 0;
+      }
+
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return 0;
+      }
+
+      const difference = end - start;
+      const days = Math.ceil(difference / (1000 * 60 * 60 * 24));
+
+      return days > 0 ? days : 0;
+    }
+
+    function getNextDate(dateString) {
+      const date = new Date(dateString);
+
+      if (!dateString || isNaN(date.getTime())) {
+        return "";
+      }
+
+      date.setDate(date.getDate() + 1);
+
+      return date.toISOString().split("T")[0];
+    }
+
+    function normalizeSupabaseOffer(row) {
+      return {
+        id: row.id,
+ownerId: row.owner_id,
+owner_id: row.owner_id,
+        name: row.name,
+        title: row.name,
+        nazev: row.name,
+
+        category: row.category,
+        kategorie: row.category,
+
+        description: row.description,
+        popis: row.description,
+
+        city: row.city,
+        mesto: row.city,
+
+        postalCode: row.postal_code,
+        psc: row.postal_code,
+
+        price: row.price_per_day,
+        pricePerDay: row.price_per_day,
+        cena: row.price_per_day,
+
+        deposit: row.deposit,
+        kauce: row.deposit,
+
+        status: row.status === "active" ? "Aktivní" : row.status,
+        supabaseStatus: row.status,
+
+        photoUrl: row.photo_url,
+        photo_url: row.photo_url,
+        image: row.photo_url,
+
+        pickupMode: row.pickup_mode || "",
+        pickup_mode: row.pickup_mode || "",
+        pickupPhone: row.pickup_phone || "",
+        pickup_phone: row.pickup_phone || "",
+        pickupStreet: row.pickup_street || "",
+        pickup_street: row.pickup_street || "",
+        pickupCity: row.pickup_city || "",
+        pickup_city: row.pickup_city || "",
+        pickupPostalCode: row.pickup_postal_code || "",
+        pickup_postal_code: row.pickup_postal_code || "",
+        pickupNote: row.pickup_note || "",
+        pickup_note: row.pickup_note || "",
+
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+
+        source: "supabase"
+      };
+    }
+
+    async function loadOfferFromSupabase(offerId) {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient || !offerId) {
+        return null;
+      }
+
+      const { data, error } = await supabaseClient
+        .from("public_offers")
+        .select("*")
+        .eq("id", offerId)
+        .maybeSingle();
+
+      if (error) {
+        console.error(error);
+        return null;
+      }
+
+      return data ? normalizeSupabaseOffer(data) : null;
+    }
+
+    async function loadOfferPrivatePickupData(offerId) {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient || !offerId) {
+        return null;
+      }
+
+      const { data, error } = await supabaseClient
+        .from("offers")
+        .select("pickup_phone, pickup_street, pickup_city, pickup_postal_code, pickup_note")
+        .eq("id", offerId)
+        .maybeSingle();
+
+      if (error) {
+        console.warn("Kontaktní údaje nabídky se nepodařilo načíst z tabulky offers.", error);
+        return null;
+      }
+
+      return data || null;
+    }
+
+    function getOfferPickupPhone(offer, pickupData) {
+      return (
+        (pickupData && pickupData.pickup_phone) ||
+        offer.pickupPhone ||
+        offer.pickup_phone ||
+        ""
+      );
+    }
+
+    function getOfferPickupStreet(offer, pickupData) {
+      return (
+        (pickupData && pickupData.pickup_street) ||
+        offer.pickupStreet ||
+        offer.pickup_street ||
+        ""
+      );
+    }
+
+    function getOfferPickupCity(offer, pickupData) {
+      return (
+        (pickupData && pickupData.pickup_city) ||
+        offer.pickupCity ||
+        offer.pickup_city ||
+        getOfferCity(offer) ||
+        ""
+      );
+    }
+
+    function getOfferPickupPostalCode(offer, pickupData) {
+      return (
+        (pickupData && pickupData.pickup_postal_code) ||
+        offer.pickupPostalCode ||
+        offer.pickup_postal_code ||
+        offer.postalCode ||
+        offer.psc ||
+        ""
+      );
+    }
+
+    function getOfferPickupNote(offer, pickupData) {
+      return (
+        (pickupData && pickupData.pickup_note) ||
+        offer.pickupNote ||
+        offer.pickup_note ||
+        ""
+      );
+    }
+
+    function getOfferPickupFullAddress(offer, pickupData) {
+      return [
+        getOfferPickupStreet(offer, pickupData),
+        getOfferPickupCity(offer, pickupData),
+        getOfferPickupPostalCode(offer, pickupData)
+      ].filter(Boolean).join(", ");
+    }
+
+    function getOfferName(offer) {
+      return offer.name || offer.title || offer.nazev || "Nářadí";
+    }
+
+    function getOfferCategory(offer) {
+      return offer.category || offer.kategorie || "Nářadí";
+    }
+
+    function getOfferCity(offer) {
+      return offer.city || offer.mesto || offer.location || "-";
+    }
+
+    function getOfferStatus(offer) {
+      return offer.status || "Aktivní";
+    }
+
+    function getOfferPhoto(offer) {
+      return (
+        offer.photoUrl ||
+        offer.photo_url ||
+        offer.photoDataUrl ||
+        offer.imageDataUrl ||
+        offer.image ||
+        offer.photo ||
+        ""
+      );
+    }
+
+    function getOfferPrice(offer) {
+      return Number(offer.price || offer.pricePerDay || offer.cena || 0) || 0;
+    }
+
+    function getOfferDeposit(offer) {
+      return Number(offer.deposit || offer.kauce || 0) || 0;
+    }
+
+    function renderDetailImage(offer) {
+      const offerName = getOfferName(offer);
+      const photo = getOfferPhoto(offer);
+
+      if (photo) {
+        return `
+          <div class="image-box has-photo">
+            <img src="${escapeHtml(photo)}" alt="${escapeHtml(offerName)}">
+            <div class="image-label">${escapeHtml(offerName)}</div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="image-box">
+          <div class="image-icon">⌁</div>
+          <div class="image-label">${escapeHtml(offerName)}</div>
+        </div>
+      `;
+    }
+
+    function isOfferDraft(offer) {
+      const status = String(getOfferStatus(offer)).trim().toLowerCase();
+      return status === "koncept" || status === "draft";
+    }
+
+    function isOfferActive(offer) {
+      return !isOfferDraft(offer);
+    }
+
+    function offerHasGpsLocation() {
+      return false;
+    }
+
+    function getPickupGpsText() {
+      return "GPS poloha se z bezpečnostních důvodů veřejně nezobrazuje. Slouží jen pro řazení ve výsledcích.";
+    }
+
+    function setupBackLink() {
+      const backLink = document.getElementById("detailBackLink");
+
+      if (!backLink) {
+        return;
+      }
+
+      try {
+        const referrer = document.referrer;
+
+        if (referrer && referrer.includes("vysledky.html")) {
+          backLink.href = referrer;
+          return;
+        }
+
+        const storedResultsUrl = sessionStorage.getItem("rentuloLastResultsUrl");
+
+        if (storedResultsUrl) {
+          backLink.href = storedResultsUrl;
+        }
+      } catch (error) {
+        backLink.href = "vysledky.html";
+      }
+    }
+
+    function renderLoading() {
+      document.getElementById("detailContent").innerHTML = `
+        <div class="message-card">
+          <strong>Načítám detail nabídky...</strong><br>
+          Chvíli strpení, načítáme nabídku ze Supabase.
+        </div>
+      `;
+    }
+
+    function renderNotFound() {
+      document.getElementById("detailContent").innerHTML = `
+        <div class="message-card warning">
+          <strong>Nářadí nebylo nalezeno.</strong><br>
+          Tato nabídka neexistuje, není aktivní nebo už byla odstraněna.
+          <br>
+          <a href="vysledky.html" class="primary-button">Zpět na nabídky</a>
+        </div>
+      `;
+    }
+
+    function renderSidebarMessage(type, title, text, buttonHref, buttonText) {
+      return `
+        <div class="message-card ${type === "warning" ? "warning" : ""}">
+          <strong>${escapeHtml(title)}</strong><br>
+          ${escapeHtml(text)}
+          <br>
+          <a href="${escapeHtml(buttonHref)}" class="primary-button">${escapeHtml(buttonText)}</a>
+        </div>
+      `;
+    }
+
+    function renderUnavailableSidebar(price, deposit, ownerPublicName, ownerPublicCity, messageTitle, messageText) {
+      return `
+        <aside class="sidebar">
+          <div class="price">${escapeHtml(price)}</div>
+          <div class="price-small">Kč / den</div>
+
+          <div class="info-list">
+            <div class="info-row">
+              <span>Majitel</span>
+              <span>${escapeHtml(ownerPublicName)}</span>
+            </div>
+
+            <div class="info-row">
+              <span>Lokalita</span>
+              <span>${escapeHtml(ownerPublicCity || "-")}</span>
+            </div>
+
+            <div class="info-row">
+              <span>Kauce</span>
+              <span>${escapeHtml(deposit)} Kč</span>
+            </div>
+
+            <div class="info-row">
+              <span>Dostupnost</span>
+              <span>Není dostupné</span>
+            </div>
+          </div>
+
+          <div class="availability-box unavailable">
+            <strong>${escapeHtml(messageTitle)}</strong>
+            ${escapeHtml(messageText)}
+          </div>
+
+          <button class="primary-button disabled" type="button" disabled>
+            Momentálně nelze rezervovat
+          </button>
+
+          <div class="note">
+            Rezervaci půjde odeslat až ve chvíli, kdy bude nabídka aktivní a nebude mít otevřenou rezervaci.
+          </div>
+        </aside>
+      `;
+    }
+
+    function renderBookingSidebar(offer, price, deposit, ownerPublicName, ownerPublicCity, ownerGetsPerDay, platformFeePerDay) {
+      return `
+        <aside class="sidebar">
+          <div class="price">${escapeHtml(price)}</div>
+          <div class="price-small">Kč / den</div>
+
+          <div class="info-list">
+            <div class="info-row">
+              <span>Majitel</span>
+              <span>${escapeHtml(ownerPublicName)}</span>
+            </div>
+
+            <div class="info-row">
+              <span>Lokalita</span>
+              <span>${escapeHtml(ownerPublicCity || getOfferCity(offer) || "-")}</span>
+            </div>
+
+            <div class="info-row">
+              <span>Kauce</span>
+              <span>${escapeHtml(deposit)} Kč</span>
+            </div>
+
+            <div class="info-row">
+              <span>Majitel dostane</span>
+              <span>${escapeHtml(ownerGetsPerDay)} Kč / den</span>
+            </div>
+
+            <div class="info-row">
+              <span>Provize platformy</span>
+              <span>${escapeHtml(platformFeePerDay)} Kč / den</span>
+            </div>
+          </div>
+
+          <div class="availability-box available">
+            <strong>Nářadí je dostupné</strong>
+            Můžete vybrat termín a odeslat žádost o půjčení. Žádost se uloží do Supabase a bude čekat na potvrzení majitelem.
+          </div>
+
+          <div class="privacy-box">
+            <strong>Kontaktní údaje jsou zatím skryté</strong>
+            Telefon a přesná adresa vyzvednutí se zobrazí až po zaplacení rezervace.
+          </div>
+
+          <div class="booking-box">
+            <h2>Vyberte termín půjčení</h2>
+
+            <div class="form-group">
+              <label for="startDate">Datum půjčení</label>
+              <input type="date" id="startDate">
+            </div>
+
+            <div class="form-group">
+              <label for="endDate">Datum vrácení</label>
+              <input type="date" id="endDate">
+            </div>
+
+            <div class="date-help" id="bookingDateHelp">
+              Vyberte datum půjčení a potom datum vrácení. Datum vrácení musí být později než datum půjčení.
+            </div>
+
+            <div class="calculation">
+              <div class="calc-row">
+                <span>Počet dní</span>
+                <strong id="calcDays">-</strong>
+              </div>
+
+              <div class="calc-row">
+                <span>Cena za den</span>
+                <strong>${escapeHtml(price)} Kč</strong>
+              </div>
+
+              <div class="calc-row">
+                <span>Provize platformy</span>
+                <strong>${PLATFORM_FEE_PERCENT} %</strong>
+              </div>
+
+              <div class="calc-row calc-total">
+                <span>Celkem</span>
+                <strong id="calcTotal">-</strong>
+              </div>
+            </div>
+
+            <button class="primary-button disabled" id="rentButton" type="button" disabled>
+              Vyberte termín
+            </button>
+          </div>
+
+          <div class="note">
+            Po odeslání bude žádost čekat na potvrzení majitelem.
+Přesná adresa a telefon zůstanou skryté až do zaplacení.
+          </div>
+        </aside>
+      `;
+    }
+
+    function renderDetail(offer) {
+      if (!offer) {
+        renderNotFound();
+        return;
+      }
+
+      currentOffer = offer;
+
+      const currentUser = getCurrentUser();
+
+      const ownerPublicName = "Majitel";
+      const ownerPublicCity = getOfferCity(offer);
+
+      const offerName = getOfferName(offer);
+      const offerCategory = getOfferCategory(offer);
+      const offerCity = getOfferCity(offer);
+      const offerStatus = getOfferStatus(offer);
+
+      const price = getOfferPrice(offer);
+      const deposit = getOfferDeposit(offer);
+      const platformFeePerDay = Math.round(price * PLATFORM_FEE_PERCENT / 100);
+      const ownerGetsPerDay = price - platformFeePerDay;
+
+      const currentUserId = currentUser ? String(currentUser.id || "") : "";
+const ownerId = String(offer.ownerId || offer.owner_id || "");
+const isOwner = currentUserId && ownerId && currentUserId === ownerId;
+
+const isReserved = false;
+const isActive = isOfferActive(offer);
+const hasGps = offerHasGpsLocation(offer);
+
+      const availabilityBadgeClass = isActive && !isReserved ? "available" : "unavailable";
+      const statusBadgeClass = isActive ? "" : "draft";
+
+      let availabilityText = "Dostupné";
+      let availabilityPanelText = "Toto nářadí je momentálně dostupné. Rezervaci napojíme na Supabase v dalším kroku.";
+
+      if (!isActive) {
+        availabilityText = "Není aktivní";
+        availabilityPanelText = "Tato nabídka zatím není aktivní. Rezervaci nelze odeslat.";
+      } else if (isReserved) {
+        availabilityText = "Momentálně rezervováno";
+        availabilityPanelText = "Toto nářadí má právě otevřenou rezervaci.";
+      }
+
+      let sidebarContent = "";
+
+      if (!currentUser) {
+  sidebarContent = renderSidebarMessage(
+    "",
+    "Pro odeslání žádosti se musíte přihlásit.",
+    "Po přihlášení si budete moci vybrat datum půjčení a odeslat žádost majiteli.",
+    "prihlaseni.html",
+    "Přihlásit se"
+  );
+} else if (isOwner) {
+  sidebarContent = renderSidebarMessage(
+    "",
+    "Toto nářadí patří vám.",
+    "Vlastní nářadí si nemůžete rezervovat. Svoji nabídku můžete spravovat v části Moje nabídky.",
+    "moje-nabidky.html",
+    "Moje nabídky"
+  );
+} else if (!isActive) {
+        sidebarContent = renderUnavailableSidebar(
+          price,
+          deposit,
+          ownerPublicName,
+          ownerPublicCity,
+          "Nabídka není aktivní",
+          "Tato nabídka je uložená jako koncept nebo není zveřejněná."
+        );
+      } else if (isReserved) {
+        sidebarContent = renderUnavailableSidebar(
+          price,
+          deposit,
+          ownerPublicName,
+          ownerPublicCity,
+          "Nářadí teď není dostupné",
+          "Tato nabídka má otevřenou rezervaci."
+        );
+      } else {
+        sidebarContent = renderBookingSidebar(
+          offer,
+          price,
+          deposit,
+          ownerPublicName,
+          ownerPublicCity,
+          ownerGetsPerDay,
+          platformFeePerDay
+        );
+      }
+
+      document.getElementById("detailContent").innerHTML = `
+        <div class="detail-layout">
+          <section class="detail-main-card">
+            ${renderDetailImage(offer)}
+
+            <div class="detail-content">
+              <div class="category-line">
+                ${escapeHtml(offerCategory)} · <strong>${escapeHtml(ownerPublicCity || offerCity || "Bez města")}</strong>
+              </div>
+
+              <h1>${escapeHtml(offerName)}</h1>
+
+              <div class="badges">
+                <span class="badge">Ověřený majitel</span>
+                <span class="badge ${statusBadgeClass}">${escapeHtml(offerStatus)}</span>
+                <span class="badge ${availabilityBadgeClass}">${escapeHtml(availabilityText)}</span>
+                <span class="badge">Provize platformy ${PLATFORM_FEE_PERCENT} %</span>
+              </div>
+
+              <div class="availability-panel ${availabilityBadgeClass}">
+                <strong>${escapeHtml(availabilityText)}</strong>
+                ${escapeHtml(availabilityPanelText)}
+              </div>
+
+              <div class="description">
+                ${escapeHtml(offer.description || "Bez popisu.")}
+              </div>
+
+              <div class="info-grid">
+                <div class="section">
+                  <h2>Co je součástí půjčení</h2>
+
+                  <ul>
+                    <li>✓ ${escapeHtml(offerName)}</li>
+                    <li>✓ Domluva s majitelem</li>
+                    <li>✓ Předání dle dohody</li>
+                    <li>✓ Vrácení ve stejném stavu</li>
+                  </ul>
+                </div>
+
+                <div class="section">
+                  <h2>Podmínky půjčení</h2>
+
+                  <p>
+                    Nářadí vraťte čisté a ve stejném stavu.
+                    Vratná kauce je ${escapeHtml(deposit)} Kč.
+                    Přesné místo vyzvednutí se zobrazí až po zaplacení.
+                  </p>
+                </div>
+
+                <div class="section">
+                  <h2>Místo vyzvednutí</h2>
+
+                  <p>
+                    Z bezpečnostních důvodů se přesná adresa a telefon zobrazí až po zaplacení rezervace.
+                  </p>
+
+                  <div class="pickup-preview">
+                    <div class="pickup-preview-row">
+                      <span>Město</span>
+                      <span>${escapeHtml(ownerPublicCity || offerCity || "-")}</span>
+                    </div>
+
+                    <div class="pickup-preview-row">
+                      <span>Adresa</span>
+                      <span>Skrytá do zaplacení</span>
+                    </div>
+
+                    <div class="pickup-preview-row">
+                      <span>Telefon</span>
+                      <span>Skrytý do zaplacení</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section">
+                  <h2>Poloha v okolí</h2>
+
+                  <p>
+                    GPS poloha slouží pouze k řazení nabídek podle vzdálenosti ve výsledcích hledání.
+                  </p>
+
+                  <div class="gps-note ${hasGps ? "" : "missing"}">
+                    ${escapeHtml(getPickupGpsText(offer))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div>
+            ${sidebarContent}
+          </div>
+        </div>
+      `;
+
+      if (currentUser && !isOwner && isActive && !isReserved) {
+  setupBookingForm(offer);
+}
+    }
+    async function getCurrentSupabaseUser() {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        return null;
+      }
+
+      const { data, error } = await supabaseClient.auth.getUser();
+
+      if (error || !data || !data.user) {
+        return null;
+      }
+
+      return data.user;
+    }
+
+    async function createSupabaseReservation(offer, startDate, endDate, days, totalPrice) {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        alert("Supabase klient není načtený. Zkontrolujte js/supabase-config.js.");
+        return;
+      }
+
+      const supabaseUser = await getCurrentSupabaseUser();
+
+      if (!supabaseUser) {
+        alert("Pro odeslání žádosti se musíte znovu přihlásit.");
+        window.location.href = "prihlaseni.html";
+        return;
+      }
+
+      const currentUser = getCurrentUser();
+
+      if (!currentUser) {
+        alert("Pro odeslání žádosti se musíte přihlásit.");
+        window.location.href = "prihlaseni.html";
+        return;
+      }
+
+      const ownerId = String(offer.ownerId || offer.owner_id || "");
+
+      if (!ownerId) {
+        alert("Rezervaci se nepodařilo odeslat. U nabídky chybí majitel.");
+        return;
+      }
+
+      if (String(supabaseUser.id) === ownerId) {
+        alert("Vlastní nářadí si nemůžete rezervovat.");
+        renderDetail(offer);
+        return;
+      }
+
+      const pricePerDay = getOfferPrice(offer);
+      const deposit = getOfferDeposit(offer);
+      const platformFeeAmount = Math.round(totalPrice * PLATFORM_FEE_PERCENT / 100);
+      const ownerPayout = totalPrice - platformFeeAmount;
+
+      const pickupData = await loadOfferPrivatePickupData(offer.id);
+      const pickupPhone = getOfferPickupPhone(offer, pickupData);
+      const pickupStreet = getOfferPickupStreet(offer, pickupData);
+      const pickupCity = getOfferPickupCity(offer, pickupData);
+      const pickupPostalCode = getOfferPickupPostalCode(offer, pickupData);
+      const pickupNote = getOfferPickupNote(offer, pickupData);
+      const pickupFullAddress = getOfferPickupFullAddress(offer, pickupData);
+
+      const reservationToInsert = {
+        offer_id: offer.id,
+        owner_id: ownerId,
+        renter_id: supabaseUser.id,
+
+        status: "pending",
+
+        offer_name: getOfferName(offer),
+        category: getOfferCategory(offer),
+        city: getOfferCity(offer),
+
+        price_per_day: pricePerDay,
+        deposit: deposit,
+
+        start_date: startDate,
+end_date: endDate,
+date_from: startDate,
+date_to: endDate,
+days: days,
+total_days: days,
+total_price: totalPrice,
+
+        platform_fee_percent: PLATFORM_FEE_PERCENT,
+        platform_fee_amount: platformFeeAmount,
+        owner_payout: ownerPayout,
+
+        renter_name: getUserName(currentUser),
+        renter_email: getUserEmail(currentUser),
+        renter_phone: getUserPhone(currentUser),
+
+        owner_name: "Majitel",
+        owner_phone: pickupPhone,
+        pickup_phone: pickupPhone,
+        pickup_street: pickupStreet,
+        pickup_city: pickupCity,
+        pickup_postal_code: pickupPostalCode,
+        pickup_full_address: pickupFullAddress,
+        pickup_note: pickupNote,
+
+        contact_visible_after_payment: false
+      };
+
+      const { data, error } = await supabaseClient
+        .from("reservations")
+        .insert(reservationToInsert)
+        .select()
+        .single();
+
+      if (error) {
+        console.error(error);
+
+        if (String(error.message || "").includes("row-level security")) {
+          alert("Rezervaci se nepodařilo uložit kvůli bezpečnostním pravidlům. Zkuste se odhlásit a znovu přihlásit.");
+          return;
+        }
+
+        alert("Rezervaci se nepodařilo uložit do Supabase. Podívejte se prosím do konzole.");
+        return;
+      }
+
+      try {
+        const localReservations = typeof getReservations === "function" ? getReservations() : [];
+
+        localReservations.push({
+          id: data && data.id ? data.id : "reservation-" + Date.now(),
+
+          offerId: offer.id,
+          naradiId: offer.id,
+          toolId: offer.id,
+
+          ownerId: ownerId,
+          renterId: supabaseUser.id,
+
+          offerName: getOfferName(offer),
+          naradiName: getOfferName(offer),
+          toolName: getOfferName(offer),
+
+          category: getOfferCategory(offer),
+          city: getOfferCity(offer),
+
+          pricePerDay: pricePerDay,
+          price: pricePerDay,
+          deposit: deposit,
+
+          startDate: startDate,
+          endDate: endDate,
+          dateFrom: startDate,
+          dateTo: endDate,
+
+          totalDays: days,
+          days: days,
+          totalPrice: totalPrice,
+
+          platformFeePercent: PLATFORM_FEE_PERCENT,
+          platformFeeAmount: platformFeeAmount,
+          ownerPayout: ownerPayout,
+
+          renterName: getUserName(currentUser),
+          renterEmail: getUserEmail(currentUser),
+          renterPhone: getUserPhone(currentUser),
+
+          ownerName: "Majitel",
+          ownerPhone: pickupPhone,
+          pickupPhone: pickupPhone,
+          pickupStreet: pickupStreet,
+          pickupCity: pickupCity,
+          pickupPostalCode: pickupPostalCode,
+          pickupFullAddress: pickupFullAddress,
+          pickupNote: pickupNote,
+
+          status: "pending",
+          statusText: "Čeká na potvrzení",
+
+          contactVisibleAfterPayment: false,
+          source: "supabase",
+
+          createdAt: new Date().toISOString()
+        });
+
+        if (typeof saveReservations === "function") {
+          saveReservations(localReservations);
+        }
+      } catch (localError) {
+        console.warn("Lokální kopii rezervace se nepodařilo uložit.", localError);
+      }
+
+      if (data && data.id) {
+        window.location.href = "rezervace.html?id=" + encodeURIComponent(data.id);
+        return;
+      }
+
+      window.location.href = "moje-rezervace.html";
+    }
+    function setupBookingForm(offer) {
+      const startDateInput = document.getElementById("startDate");
+      const endDateInput = document.getElementById("endDate");
+      const calcDays = document.getElementById("calcDays");
+      const calcTotal = document.getElementById("calcTotal");
+      const rentButton = document.getElementById("rentButton");
+      const bookingDateHelp = document.getElementById("bookingDateHelp");
+
+      if (!startDateInput || !endDateInput || !calcDays || !calcTotal || !rentButton) {
+        return;
+      }
+
+      const today = new Date().toISOString().split("T")[0];
+
+      startDateInput.min = today;
+      endDateInput.min = getNextDate(today);
+
+      function setRentButtonState(isValid) {
+        if (isValid) {
+          rentButton.disabled = false;
+          rentButton.classList.remove("disabled");
+          rentButton.textContent = "Požádat o půjčení";
+          return;
+        }
+
+        rentButton.disabled = true;
+        rentButton.classList.add("disabled");
+        rentButton.textContent = "Vyberte termín";
+      }
+
+      function updateCalculation() {
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+
+        if (startDate) {
+          const nextDate = getNextDate(startDate);
+          endDateInput.min = nextDate;
+
+          if (endDate && endDate <= startDate) {
+            endDateInput.value = "";
+          }
+        } else {
+          endDateInput.min = getNextDate(today);
+        }
+
+        const activeStartDate = startDateInput.value;
+        const activeEndDate = endDateInput.value;
+        const days = getDaysBetween(activeStartDate, activeEndDate);
+        const total = days * getOfferPrice(offer);
+
+        calcDays.textContent = days > 0 ? days + " dní" : "-";
+        calcTotal.textContent = days > 0 ? total + " Kč" : "-";
+
+        if (bookingDateHelp) {
+          if (!activeStartDate || !activeEndDate) {
+            bookingDateHelp.textContent =
+              "Vyberte datum půjčení a potom datum vrácení. Datum vrácení musí být později než datum půjčení.";
+          } else if (days <= 0) {
+            bookingDateHelp.textContent =
+              "Datum vrácení musí být později než datum půjčení.";
+          } else {
+            bookingDateHelp.textContent =
+              "Termín je vybraný. Po kliknutí odešlete žádost majiteli.";
+          }
+        }
+
+        setRentButtonState(days > 0);
+      }
+
+      startDateInput.addEventListener("change", updateCalculation);
+      endDateInput.addEventListener("change", updateCalculation);
+
+      updateCalculation();
+
+      rentButton.addEventListener("click", function () {
+        if (rentButton.disabled) {
+          return;
+        }
+
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+        const days = getDaysBetween(startDate, endDate);
+        const total = days * getOfferPrice(offer);
+
+        if (!startDate || !endDate || days <= 0) {
+          alert("Prosím vyberte platný termín půjčení.");
+          updateCalculation();
+          return;
+        }
+
+        rentButton.disabled = true;
+        rentButton.classList.add("disabled");
+        rentButton.textContent = "Odesílám žádost...";
+
+        createSupabaseReservation(offer, startDate, endDate, days, total);
+      });
+    }
+
+    async function initializeDetailPage() {
+      renderSharedNavigation("");
+      setupBackLink();
+      renderLoading();
+
+      const offerId = getOfferIdFromUrl();
+
+      if (!offerId) {
+        renderNotFound();
+        return;
+      }
+
+      const offer = await loadOfferFromSupabase(offerId);
+
+      if (!offer) {
+        renderNotFound();
+        return;
+      }
+
+      renderDetail(offer);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      initializeDetailPage();
+    });
+  </script>
+</body>
+</html>

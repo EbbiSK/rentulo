@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Upravit nabídku - Rentulo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f3ee;
+      color: #073f2e;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 6px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .logo-icon::before {
+      content: "✓";
+    }
+
+    .logo-dot {
+      display: none;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 19px;
+      line-height: 1;
+      color: #073f2e;
+    }
+
+    .logo-text small {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #4d5b55;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+    }
+
+    .nav .active-link {
+      font-weight: 800;
+    }
+
+    .btn-register,
+    .logout-link {
+      background: #006b45;
+      color: white !important;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .edit-page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 8px 20px 24px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: #006b45;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .edit-page-header {
+      position: relative;
+      margin-bottom: 12px;
+      padding-right: 160px;
+    }
+
+    .eyebrow {
+      margin: 0 0 3px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #4d5b55;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 28px;
+      line-height: 1.05;
+      color: #073f2e;
+    }
+
+    .edit-page-header p {
+      margin: 0;
+      font-size: 14px;
+      color: #334c43;
+      line-height: 1.35;
+      max-width: 760px;
+    }
+
+    .top-action-button {
+      position: absolute;
+      right: 0;
+      top: 13px;
+      background: #eee8de;
+      color: #073f2e;
+      padding: 9px 16px;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .top-action-button:hover {
+      background: #e3dace;
+    }
+
+    .edit-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .edit-card,
+    .edit-help-card {
+      background: white;
+      border: 1px solid #eadfd1;
+      border-radius: 16px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      overflow: hidden;
+    }
+
+    .edit-card-header,
+    .edit-help-header {
+      padding: 10px 12px;
+      background: #fffdf8;
+      border-bottom: 1px solid #eadfd1;
+    }
+
+    .edit-card-header h2,
+    .edit-help-header h2 {
+      margin: 0;
+      color: #073f2e;
+      font-size: 16px;
+    }
+
+    .edit-card-body {
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .edit-help-card {
+      padding-bottom: 4px;
+    }
+
+    .edit-help-content {
+      padding: 11px 12px;
+    }
+
+    .edit-help-content p {
+      margin: 0 0 9px;
+      color: #334c43;
+      font-size: 13px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    .edit-help-list {
+      display: grid;
+      gap: 7px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .edit-help-list li {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      color: #334c43;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .edit-help-list li::before {
+      content: "✓";
+      width: 20px;
+      height: 20px;
+      border-radius: 7px;
+      background: #e2f3eb;
+      color: #006b45;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .photo-upload-box {
+      border: 1px solid #eee8de;
+      border-radius: 13px;
+      background: #fffdf8;
+      overflow: hidden;
+    }
+
+    .photo-upload-header {
+      padding: 9px 11px;
+      border-bottom: 1px solid #eee8de;
+      background: #f8f5f0;
+    }
+
+    .photo-upload-header strong {
+      display: block;
+      color: #073f2e;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .photo-upload-header p {
+      margin: 3px 0 0;
+      color: #40514a;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .photo-upload-layout {
+      display: grid;
+      grid-template-columns: 115px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+    }
+
+    .photo-preview {
+      width: 115px;
+      height: 86px;
+      border-radius: 11px;
+      background: #ece6dc;
+      border: 1px solid #e3dace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: #4d5b55;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-upload-actions {
+      display: grid;
+      gap: 7px;
+      align-items: start;
+    }
+
+    .photo-upload-actions input[type="file"] {
+      width: 100%;
+      padding: 8px 9px;
+      border: 1px solid #d8d0c5;
+      border-radius: 10px;
+      background: white;
+      color: #073f2e;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .photo-remove-button {
+      justify-self: start;
+      border: none;
+      border-radius: 9px;
+      padding: 7px 10px;
+      background: #eee8de;
+      color: #073f2e;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      min-height: 34px;
+    }
+
+    .photo-remove-button:hover {
+      background: #e3dace;
+    }
+
+    .photo-upload-status {
+      color: #40514a;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .photo-upload-status.success {
+      color: #006b45;
+    }
+
+    .photo-upload-status.error {
+      color: #c2410c;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 4px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      color: #173e33;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      border: 1px solid #d8d0c5;
+      border-radius: 10px;
+      background: white;
+      padding: 8px 10px;
+      font-size: 13px;
+      color: #073f2e;
+      font-family: Arial, sans-serif;
+      font-weight: 700;
+    }
+
+    .form-group input,
+    .form-group select {
+      height: 36px;
+    }
+
+    .form-group textarea {
+      min-height: 84px;
+      resize: vertical;
+      line-height: 1.35;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus,
+    .photo-upload-actions input[type="file"]:focus {
+      outline: none;
+      border-color: #006b45;
+      box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
+    }
+
+    .input-error {
+      border-color: #c2410c !important;
+      background: #fffaf7 !important;
+      box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.12) !important;
+    }
+
+    .locked-input {
+      background: #f3eee6 !important;
+      color: #6b5c4b !important;
+      cursor: not-allowed;
+    }
+
+    .edit-price-lock-notice {
+      margin: 5px 0 0;
+      padding: 7px 9px;
+      border-radius: 9px;
+      background: #fff7f0;
+      border: 1px solid #ffe0c8;
+      color: #5b3a22;
+      font-size: 12px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 7px;
+      padding-top: 1px;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .edit-cancel-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      border-radius: 9px;
+      padding: 8px 12px;
+      min-height: 34px;
+      font-size: 13px;
+      font-weight: 900;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: #006b45;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #00563a;
+    }
+
+    .btn-secondary,
+    .edit-cancel-button {
+      background: #eee8de;
+      color: #073f2e;
+    }
+
+    .btn-secondary:hover,
+    .edit-cancel-button:hover {
+      background: #e3dace;
+      text-decoration: none;
+    }
+
+    .btn-primary:focus,
+    .btn-secondary:focus,
+    .edit-cancel-button:focus,
+    .photo-remove-button:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.16);
+    }
+
+    .site-message {
+      position: fixed;
+      left: 50%;
+      top: 14px;
+      transform: translateX(-50%);
+      z-index: 9999;
+      max-width: calc(100% - 28px);
+      min-width: 260px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #073f2e;
+      color: white;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 900;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+    }
+
+    .site-message.error,
+    .site-message.success {
+      opacity: 1;
+    }
+
+    .site-message.error {
+      background: #c2410c;
+    }
+
+    .site-message.success {
+      background: #006b45;
+    }
+
+    .login-required-box {
+      max-width: 760px;
+      margin: 44px auto;
+      padding: 22px;
+      border-radius: 18px;
+      background: #ffffff;
+      border: 1px solid #eadfd1;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+    }
+
+    .login-required-box h1 {
+      margin: 0 0 8px;
+      color: #073f2e;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .login-required-box p {
+      margin: 0 0 14px;
+      color: #334c43;
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .login-required-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .login-required-actions a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 0 14px;
+      border-radius: 9px;
+      background: #006b45;
+      color: white;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .login-required-actions a:hover {
+      background: #00563a;
+    }
+
+    .login-required-actions .secondary-action {
+      background: #eee8de;
+      color: #073f2e;
+    }
+
+    .login-required-actions .secondary-action:hover {
+      background: #e3dace;
+    }
+
+    @media (max-width: 980px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .edit-page-header {
+        padding-right: 0;
+      }
+
+      .top-action-button {
+        position: static;
+        display: inline-flex;
+        margin-top: 10px;
+      }
+
+      .edit-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .edit-help-card {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .edit-page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .photo-upload-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .photo-preview {
+        width: 100%;
+        height: 170px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-actions {
+        flex-direction: column-reverse;
+      }
+
+      .btn-primary,
+      .btn-secondary,
+      .edit-cancel-button {
+        width: 100%;
+      }
+
+      .login-required-box {
+        margin: 22px auto;
+        padding: 16px;
+      }
+
+      .login-required-actions a {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="edit-page">
+
+    <a href="moje-nabidky.html" class="back-link">← Zpět na moje nabídky</a>
+
+    <section class="edit-page-header">
+      <p class="eyebrow">Úprava nabídky</p>
+
+      <h1>Upravit nabídku</h1>
+
+      <p>
+        Změňte fotku, název, cenu, kauci, lokalitu nebo popis. Po uložení se změny projeví
+        ve výsledcích vyhledávání i v detailu nabídky.
+      </p>
+
+      <a href="moje-nabidky.html" class="top-action-button">Moje nabídky</a>
+    </section>
+
+    <section class="edit-layout">
+
+      <section class="edit-card">
+        <div class="edit-card-header">
+          <h2>Informace o nářadí</h2>
+        </div>
+
+        <form class="edit-card-body tool-form edit-tool-form">
+
+          <div class="photo-upload-box">
+            <div class="photo-upload-header">
+              <strong>Fotka nářadí</strong>
+
+              <p>
+                Můžete změnit nebo odebrat fotku nabídky. Pokud fotku nezměníte,
+                zůstane uložená původní fotka.
+              </p>
+            </div>
+
+            <div class="photo-upload-layout">
+              <div class="photo-preview" id="editPhotoPreview">
+                Bez fotky
+              </div>
+
+              <div class="photo-upload-actions">
+                <input id="edit-photo" type="file" accept="image/*" />
+
+                <button type="button" class="photo-remove-button" id="removeEditPhotoButton">
+                  Odebrat fotku
+                </button>
+
+                <span class="photo-upload-status" id="editPhotoStatus">
+                  Vyberte novou fotku, nebo ponechte původní.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="edit-name">Název nářadí</label>
+              <input id="edit-name" type="text" placeholder="např. Aku vrtačka Bosch" />
+            </div>
+
+            <div class="form-group">
+              <label for="edit-category">Kategorie</label>
+              <select id="edit-category">
+                <option>Vyberte kategorii</option>
+                <option>Vrtačky</option>
+                <option>Brusky</option>
+                <option>Pily</option>
+                <option>Žebříky</option>
+                <option>Zahradní technika</option>
+                <option>Stavební technika</option>
+                <option>Ostatní</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="edit-city">Město nebo obec</label>
+              <input id="edit-city" type="text" placeholder="např. Brno" />
+            </div>
+
+            <div class="form-group">
+              <label for="edit-postal">PSČ</label>
+              <input id="edit-postal" type="text" placeholder="např. 602 00" />
+            </div>
+
+            <div class="form-group">
+              <label for="edit-price">Cena za den</label>
+              <input id="edit-price" type="text" placeholder="např. 250 Kč" />
+            </div>
+
+            <div class="form-group">
+              <label for="edit-deposit">Vratná kauce</label>
+              <input id="edit-deposit" type="text" placeholder="např. 1000 Kč" />
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label for="edit-description">Popis nářadí</label>
+            <textarea id="edit-description" placeholder="Napište stav nářadí, co je součástí půjčení a případné podmínky."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <a href="moje-nabidky.html" class="edit-cancel-button">Zrušit</a>
+            <button type="button" class="btn-primary" id="save-edit-button">Uložit změny</button>
+          </div>
+
+        </form>
+      </section>
+
+      <aside class="edit-help-card">
+        <div class="edit-help-header">
+          <h2>Co můžete upravit?</h2>
+        </div>
+
+        <div class="edit-help-content">
+          <p>
+            Úpravy se projeví na veřejném detailu nabídky a ve výsledcích vyhledávání.
+          </p>
+
+          <ul class="edit-help-list">
+            <li>Fotku, název a kategorii nářadí</li>
+            <li>Město, PSČ a cenu za den</li>
+            <li>Vratnou kauci</li>
+            <li>Popis a podmínky půjčení</li>
+          </ul>
+        </div>
+      </aside>
+
+    </section>
+
+  </main>
+
+  <script src="js/navigation.js"></script>
+  <script src="js/storage.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderSharedNavigation("muj-ucet");
+    });
+  </script>
+
+  <script src="js/edit-offer.js"></script>
+</body>
+</html>

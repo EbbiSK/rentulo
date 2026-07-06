@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Můj účet - Rentulo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f3ee;
+      color: #073f2e;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 6px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .logo-icon::before {
+      content: "✓";
+    }
+
+    .logo-dot {
+      display: none;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 19px;
+      line-height: 1;
+      color: #073f2e;
+    }
+
+    .logo-text small {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #4d5b55;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+    }
+
+    .nav .active-link {
+      font-weight: 800;
+    }
+
+    .btn-register,
+    .logout-link {
+      background: #006b45;
+      color: white !important;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .account-page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 8px 20px 24px;
+    }
+
+    .account-top {
+      display: grid;
+      grid-template-columns: 1fr 290px;
+      gap: 14px;
+      align-items: stretch;
+      margin-bottom: 14px;
+    }
+
+    .account-welcome,
+    .account-profile-card {
+      background: white;
+      border: 1px solid #eadfd1;
+      border-radius: 16px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      padding: 14px;
+    }
+
+    .eyebrow {
+      margin: 0 0 4px;
+      color: #4d5b55;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    h1 {
+      margin: 0 0 5px;
+      color: #073f2e;
+      font-size: 28px;
+      line-height: 1.05;
+    }
+
+    .account-welcome p {
+      margin: 0;
+      color: #334c43;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .account-profile-card {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 11px;
+      align-items: center;
+    }
+
+    .profile-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .profile-info strong {
+      display: block;
+      color: #073f2e;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .profile-info span {
+      display: block;
+      margin-top: 2px;
+      color: #006b45;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .profile-info small {
+      display: block;
+      margin-top: 2px;
+      color: #4d5b55;
+      font-size: 12px;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .account-alert-summary {
+      display: none;
+      margin: 0 0 14px;
+      padding: 12px 14px;
+      border: 1px solid #ffd5b8;
+      border-radius: 16px;
+      background: #fff0e6;
+      color: #073f2e;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.4;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+    }
+
+    .account-alert-summary strong {
+      color: #df5b00;
+    }
+
+    .account-table-card {
+      overflow: hidden;
+      background: white;
+      border: 1px solid #eadfd1;
+      border-radius: 16px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+    }
+
+    .account-table-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 11px 13px;
+      background: #fffdf8;
+      border-bottom: 1px solid #eadfd1;
+    }
+
+    .account-table-title h2 {
+      margin: 0;
+      color: #073f2e;
+      font-size: 17px;
+    }
+
+    .account-table-title span {
+      color: #5b6862;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .account-table-head,
+    .account-action-row {
+      display: grid;
+      grid-template-columns: 1.15fr 1.8fr 0.65fr 0.65fr;
+      gap: 10px;
+      align-items: center;
+      padding: 9px 12px;
+    }
+
+    .account-table-head {
+      background: #f8f5f0;
+      border-bottom: 1px solid #eadfd1;
+      color: #526158;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .account-action-row {
+      min-height: 58px;
+      background: white;
+      border-bottom: 1px solid #eee8de;
+      transition: background 0.18s ease;
+    }
+
+    .account-action-row:last-child {
+      border-bottom: none;
+    }
+
+    .account-action-row:hover {
+      background: #fffdf8;
+    }
+
+    .account-action-main {
+      min-width: 0;
+    }
+
+    .account-action-title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #073f2e;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .account-action-description {
+      color: #334c43;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .account-type-pill {
+      display: inline-flex;
+      width: fit-content;
+      border-radius: 999px;
+      background: #f4efe7;
+      color: #334c43;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .account-action-button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: fit-content;
+      justify-self: end;
+      border-radius: 9px;
+      background: #006b45;
+      color: white;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+      transition: background 0.18s ease;
+    }
+
+    .account-action-button:hover {
+      background: #00563a;
+    }
+
+    .account-action-button.light {
+      background: #eee8de;
+      color: #073f2e;
+    }
+
+    .account-action-button.light:hover {
+      background: #e3dace;
+    }
+
+    .account-action-button.orange {
+      background: #ff6500;
+      color: white;
+    }
+
+    .account-action-button.orange:hover {
+      background: #e85d00;
+    }
+
+    .account-card-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: #e2f3eb;
+      color: #006b45;
+      font-size: 12px;
+      line-height: 22px;
+      font-weight: 900;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .account-card-badge.hidden {
+      display: none;
+    }
+
+    .account-card-badge.alert {
+      background: #ff6500;
+      color: white;
+    }
+
+    .account-action-alert {
+      background: #fff7f0 !important;
+      outline: 2px solid rgba(255, 101, 0, 0.2);
+      outline-offset: -2px;
+    }
+
+    .account-action-alert .account-action-description {
+      color: #df5b00;
+      font-weight: 900;
+    }
+
+    .account-action-alert .account-type-pill {
+      background: #fff0e6;
+      color: #df5b00;
+    }
+
+    .account-action-alert .account-action-button {
+      background: #ff6500;
+      color: white;
+    }
+
+    .account-action-alert .account-action-button:hover {
+      background: #e85d00;
+    }
+
+    @media (max-width: 900px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .account-top {
+        grid-template-columns: 1fr;
+      }
+
+      .account-table-head {
+        display: none;
+      }
+
+      .account-action-row {
+        grid-template-columns: 1fr;
+        gap: 7px;
+        padding: 12px;
+      }
+
+      .account-action-button {
+        justify-self: start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .account-page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .account-profile-card {
+        grid-template-columns: 44px 1fr;
+      }
+
+      .profile-avatar {
+        width: 44px;
+        height: 44px;
+        font-size: 21px;
+      }
+
+      .account-table-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .account-action-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="account-page">
+
+    <section class="account-top">
+      <div class="account-welcome">
+        <p class="eyebrow">Můj účet</p>
+        <h1 id="accountGreeting">Dobrý den</h1>
+        <p>Vyberte akci. Důležité rezervace a žádosti se zvýrazní automaticky.</p>
+      </div>
+
+      <div class="account-profile-card">
+        <div class="profile-avatar" id="profileAvatar">U</div>
+
+        <div class="profile-info">
+          <strong id="profileName">Uživatel</strong>
+          <span>Ověřený účet</span>
+          <small id="profileEmail">email@example.cz</small>
+        </div>
+      </div>
+    </section>
+
+    <div class="account-alert-summary" id="accountAlertSummary"></div>
+
+    <section class="account-table-card">
+      <div class="account-table-title">
+        <h2>Rychlé akce</h2>
+        <span>Přehled účtu</span>
+      </div>
+
+      <div class="account-table-head">
+        <div>Oblast</div>
+        <div>Stav</div>
+        <div>Typ</div>
+        <div>Akce</div>
+      </div>
+
+      <a href="vysledky.html" class="account-action-row">
+        <div class="account-action-main">
+          <strong class="account-action-title">Najít nářadí</strong>
+        </div>
+
+        <span class="account-action-description">Vyhledat nářadí k půjčení ve vašem okolí</span>
+
+        <span class="account-type-pill">Půjčení</span>
+
+        <span class="account-action-button">Otevřít</span>
+      </a>
+
+      <a href="nabidnout.html" class="account-action-row">
+        <div class="account-action-main">
+          <strong class="account-action-title">Nabídnout nářadí</strong>
+        </div>
+
+        <span class="account-action-description">Přidat vlastní nářadí a začít ho půjčovat</span>
+
+        <span class="account-type-pill">Nabídka</span>
+
+        <span class="account-action-button">Přidat</span>
+      </a>
+
+      <a href="moje-rezervace.html" class="account-action-row" id="reservationsCard">
+        <div class="account-action-main">
+          <strong class="account-action-title">
+            Moje rezervace
+            <span class="account-card-badge hidden" id="reservationsBadge">0</span>
+          </strong>
+        </div>
+
+        <span class="account-action-description" id="reservationsText">Co si chci půjčit</span>
+
+        <span class="account-type-pill">Moje půjčení</span>
+
+        <span class="account-action-button light">Spravovat</span>
+      </a>
+
+      <a href="moje-nabidky.html?open=actions" class="account-action-row" id="offersCard">
+        <div class="account-action-main">
+          <strong class="account-action-title">
+            Moje nabídky
+            <span class="account-card-badge hidden" id="offersBadge">0</span>
+          </strong>
+        </div>
+
+        <span class="account-action-description" id="offersText">Co nabízím a žádosti od lidí</span>
+
+        <span class="account-type-pill">Moje nářadí</span>
+
+        <span class="account-action-button light">Spravovat</span>
+      </a>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/reservations.js"></script>
+  <script src="js/supabase-config.js"></script>
+
+  <script>
+    const STATUS_PENDING = "pending";
+    const STATUS_APPROVED = "approved";
+    const STATUS_PAID = "paid";
+    const STATUS_PICKED_UP = "picked_up";
+    const STATUS_RETURNED = "returned";
+    const STATUS_REJECTED = "rejected";
+    const STATUS_CANCELLED = "cancelled";
+
+    let supabaseOffers = [];
+    let supabaseOwnerReservations = [];
+    let supabaseRenterReservations = [];
+
+    function getSupabaseClient() {
+      if (window.rentuloSupabase) {
+        return window.rentuloSupabase;
+      }
+
+      if (typeof rentuloSupabase !== "undefined") {
+        return rentuloSupabase;
+      }
+
+      return null;
+    }
+
+    async function getCurrentSupabaseUser() {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        return null;
+      }
+
+      const { data, error } = await supabaseClient.auth.getUser();
+
+      if (error || !data || !data.user) {
+        return null;
+      }
+
+      return data.user;
+    }
+
+    function normalizeAccountEmail(email) {
+      return String(email || "").trim().toLowerCase();
+    }
+
+    function normalizeStatus(status) {
+      const value = String(status || STATUS_PENDING).trim().toLowerCase();
+
+      if (value === "čeká na potvrzení") {
+        return STATUS_PENDING;
+      }
+
+      if (value === "čeká na platbu") {
+        return STATUS_APPROVED;
+      }
+
+      if (value === "zaplaceno") {
+        return STATUS_PAID;
+      }
+
+      if (value === "vyzvednuto") {
+        return STATUS_PICKED_UP;
+      }
+
+      if (value === "vráceno") {
+        return STATUS_RETURNED;
+      }
+
+      if (value === "odmítnuto") {
+        return STATUS_REJECTED;
+      }
+
+      if (value === "zrušeno") {
+        return STATUS_CANCELLED;
+      }
+
+      return value || STATUS_PENDING;
+    }
+
+    function isOpenStatus(status) {
+      const normalizedStatus = normalizeStatus(status);
+
+      return [
+        STATUS_PENDING,
+        STATUS_APPROVED,
+        STATUS_PAID,
+        STATUS_PICKED_UP
+      ].includes(normalizedStatus);
+    }
+
+    function isOwnerActionStatus(status) {
+      const normalizedStatus = normalizeStatus(status);
+
+      return [
+        STATUS_PENDING,
+        STATUS_PAID,
+        STATUS_PICKED_UP
+      ].includes(normalizedStatus);
+    }
+
+    function isWaitingForPaymentStatus(status) {
+      return normalizeStatus(status) === STATUS_APPROVED;
+    }
+
+    function getCurrentUserSafe() {
+      if (typeof getCurrentUser === "function") {
+        return getCurrentUser();
+      }
+
+      try {
+        const value = localStorage.getItem("rentuloUser") || localStorage.getItem("naradiUser");
+        return value ? JSON.parse(value) : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function getUserNameSafe(user) {
+      if (typeof getUserName === "function") {
+        return getUserName(user);
+      }
+
+      return user && (user.fullName || user.name || user.email) ? (user.fullName || user.name || user.email) : "Uživatel";
+    }
+
+    function getUserEmailSafe(user) {
+      if (typeof getUserEmail === "function") {
+        return getUserEmail(user);
+      }
+
+      return user && user.email ? user.email : "";
+    }
+
+    function updateProfileBox(user) {
+      const name = getUserNameSafe(user);
+      const email = getUserEmailSafe(user);
+
+      const greeting = document.getElementById("accountGreeting");
+      const profileName = document.getElementById("profileName");
+      const profileEmail = document.getElementById("profileEmail");
+      const profileAvatar = document.getElementById("profileAvatar");
+
+      if (greeting) {
+        greeting.textContent = "Dobrý den";
+      }
+
+      if (profileName) {
+        profileName.textContent = name;
+      }
+
+      if (profileEmail) {
+        profileEmail.textContent = email || "E-mail není uložen";
+      }
+
+      if (profileAvatar) {
+        profileAvatar.textContent = name.charAt(0).toUpperCase();
+      }
+    }
+
+    function setBadge(badge, count, isAlert) {
+      if (!badge) {
+        return;
+      }
+
+      if (count > 0) {
+        badge.classList.remove("hidden");
+        badge.textContent = count;
+
+        if (isAlert) {
+          badge.classList.add("alert");
+        } else {
+          badge.classList.remove("alert");
+        }
+
+        return;
+      }
+
+      badge.classList.add("hidden");
+      badge.textContent = "0";
+      badge.classList.remove("alert");
+    }
+
+    function normalizeSupabaseOffer(row) {
+      return {
+        id: row.id,
+        ownerId: row.owner_id,
+        ownerEmail: "",
+        name: row.name || "Nářadí",
+        category: row.category || "Nářadí",
+        city: row.city || "",
+        price: Number(row.price_per_day || 0),
+        status: row.status || "active",
+        createdAt: row.created_at || "",
+        source: "supabase"
+      };
+    }
+
+    function normalizeSupabaseReservation(row) {
+      return {
+        id: row.id,
+        reservationId: row.id,
+
+        offerId: row.offer_id,
+        toolId: row.offer_id,
+        naradiId: row.offer_id,
+
+        ownerId: row.owner_id,
+        renterId: row.renter_id,
+
+        offerName: row.offer_name || "Nářadí",
+        toolName: row.offer_name || "Nářadí",
+        naradiName: row.offer_name || "Nářadí",
+
+        category: row.category || "Nářadí",
+        city: row.city || "",
+
+        pricePerDay: Number(row.price_per_day || 0),
+        price: Number(row.price_per_day || 0),
+        deposit: Number(row.deposit || 0),
+
+        startDate: row.start_date || row.date_from || "",
+        endDate: row.end_date || row.date_to || "",
+        dateFrom: row.start_date || row.date_from || "",
+        dateTo: row.end_date || row.date_to || "",
+
+        totalDays: Number(row.total_days || row.days || 0),
+        days: Number(row.total_days || row.days || 0),
+        totalPrice: Number(row.total_price || 0),
+
+        platformFeePercent: Number(row.platform_fee_percent || 10),
+        platformFeeAmount: Number(row.platform_fee_amount || 0),
+        ownerPayout: Number(row.owner_payout || 0),
+
+        renterName: row.renter_name || "",
+        renterEmail: row.renter_email || "",
+        renterPhone: row.renter_phone || "",
+
+        ownerName: row.owner_name || "Majitel",
+
+        status: normalizeStatus(row.status || STATUS_PENDING),
+        statusText: getStatusText(row.status || STATUS_PENDING),
+
+        contactVisibleAfterPayment: Boolean(row.contact_visible_after_payment),
+
+        createdAt: row.created_at || "",
+        updatedAt: row.updated_at || "",
+
+        source: "supabase"
+      };
+    }
+
+    function getStatusText(status) {
+      const normalizedStatus = normalizeStatus(status);
+
+      if (normalizedStatus === STATUS_PENDING) {
+        return "Čeká na potvrzení";
+      }
+
+      if (normalizedStatus === STATUS_APPROVED) {
+        return "Čeká na platbu";
+      }
+
+      if (normalizedStatus === STATUS_PAID) {
+        return "Zaplaceno";
+      }
+
+      if (normalizedStatus === STATUS_PICKED_UP) {
+        return "Vyzvednuto";
+      }
+
+      if (normalizedStatus === STATUS_RETURNED) {
+        return "Vráceno";
+      }
+
+      if (normalizedStatus === STATUS_REJECTED) {
+        return "Odmítnuto";
+      }
+
+      if (normalizedStatus === STATUS_CANCELLED) {
+        return "Zrušeno";
+      }
+
+      return status || "Čeká na potvrzení";
+    }
+
+    function mergeById(localItems, supabaseItems) {
+      const merged = [];
+      const usedIds = new Set();
+
+      if (Array.isArray(supabaseItems)) {
+        supabaseItems.forEach(function (item) {
+          const id = String(item.id || item.reservationId || item.offerId || "");
+
+          if (id) {
+            usedIds.add(id);
+          }
+
+          merged.push(item);
+        });
+      }
+
+      if (Array.isArray(localItems)) {
+        localItems.forEach(function (item) {
+          const id = String(item.id || item.reservationId || item.offerId || "");
+
+          if (id && usedIds.has(id)) {
+            return;
+          }
+
+          merged.push(item);
+        });
+      }
+
+      return merged;
+    }
+
+    function syncLocalDataFromSupabase() {
+      try {
+        const allSupabaseReservations = mergeById(
+          supabaseOwnerReservations,
+          supabaseRenterReservations
+        );
+
+        if (typeof getReservations === "function" && typeof saveReservations === "function") {
+          const localReservations = getReservations();
+          const mergedReservations = mergeById(localReservations, allSupabaseReservations);
+          saveReservations(mergedReservations);
+        }
+      } catch (error) {
+        console.warn("Lokální rezervace se nepodařilo synchronizovat se Supabase.", error);
+      }
+
+      try {
+        if (typeof getOffers === "function" && typeof saveOffers === "function") {
+          const localOffers = getOffers();
+          const mergedOffers = mergeById(localOffers, supabaseOffers);
+          saveOffers(mergedOffers);
+        }
+      } catch (error) {
+        console.warn("Lokální nabídky se nepodařilo synchronizovat se Supabase.", error);
+      }
+    }
+
+    async function loadSupabaseAccountData() {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        return false;
+      }
+
+      const supabaseUser = await getCurrentSupabaseUser();
+
+      if (!supabaseUser) {
+        return false;
+      }
+
+      const offersResult = await supabaseClient
+        .from("offers")
+        .select("*")
+        .eq("owner_id", supabaseUser.id);
+
+      if (offersResult.error) {
+        console.error(offersResult.error);
+        return false;
+      }
+
+      const ownerReservationsResult = await supabaseClient
+        .from("reservations")
+        .select("*")
+        .eq("owner_id", supabaseUser.id);
+
+      if (ownerReservationsResult.error) {
+        console.error(ownerReservationsResult.error);
+        return false;
+      }
+
+      const renterReservationsResult = await supabaseClient
+        .from("reservations")
+        .select("*")
+        .eq("renter_id", supabaseUser.id);
+
+      if (renterReservationsResult.error) {
+        console.error(renterReservationsResult.error);
+        return false;
+      }
+
+      supabaseOffers = Array.isArray(offersResult.data)
+        ? offersResult.data.map(normalizeSupabaseOffer)
+        : [];
+
+      supabaseOwnerReservations = Array.isArray(ownerReservationsResult.data)
+        ? ownerReservationsResult.data.map(normalizeSupabaseReservation)
+        : [];
+
+      supabaseRenterReservations = Array.isArray(renterReservationsResult.data)
+        ? renterReservationsResult.data.map(normalizeSupabaseReservation)
+        : [];
+
+      syncLocalDataFromSupabase();
+
+      return true;
+    }
+
+    function updateAccountActionBadgesFromSupabase() {
+      const user = getCurrentUserSafe();
+
+      if (!user) {
+        window.location.href = "prihlaseni.html";
+        return;
+      }
+
+      updateProfileBox(user);
+
+      const myOffers = supabaseOffers;
+      const myReservations = supabaseRenterReservations;
+      const incomingOpenRequests = supabaseOwnerReservations.filter(function (reservation) {
+        return isOpenStatus(reservation.status);
+      });
+
+      const activeReservations = myReservations.filter(function (reservation) {
+        return isOpenStatus(reservation.status);
+      });
+
+      const waitingPaymentCount = myReservations.filter(function (reservation) {
+        return isWaitingForPaymentStatus(reservation.status);
+      }).length;
+
+      const pendingRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
+        return normalizeStatus(reservation.status) === STATUS_PENDING;
+      }).length;
+
+      const paidRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
+        return normalizeStatus(reservation.status) === STATUS_PAID;
+      }).length;
+
+      const pickedUpRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
+        return normalizeStatus(reservation.status) === STATUS_PICKED_UP;
+      }).length;
+
+      const ownerActionRequiredCount =
+        pendingRequestsCount +
+        paidRequestsCount +
+        pickedUpRequestsCount;
+
+      const reservationsCard = document.getElementById("reservationsCard");
+      const offersCard = document.getElementById("offersCard");
+
+      const reservationsBadge = document.getElementById("reservationsBadge");
+      const offersBadge = document.getElementById("offersBadge");
+
+      const reservationsText = document.getElementById("reservationsText");
+      const offersText = document.getElementById("offersText");
+
+      const alertSummary = document.getElementById("accountAlertSummary");
+
+      setBadge(reservationsBadge, waitingPaymentCount, waitingPaymentCount > 0);
+      setBadge(offersBadge, ownerActionRequiredCount, ownerActionRequiredCount > 0);
+
+      if (waitingPaymentCount > 0) {
+        reservationsCard.classList.add("account-action-alert");
+        reservationsText.textContent = waitingPaymentCount === 1
+          ? "1 rezervace čeká na platbu"
+          : waitingPaymentCount + " rezervace čekají na platbu";
+      } else {
+        reservationsCard.classList.remove("account-action-alert");
+
+        if (activeReservations.length > 0) {
+          reservationsText.textContent = activeReservations.length === 1
+            ? "Máte 1 aktivní rezervaci"
+            : "Máte " + activeReservations.length + " aktivních rezervací";
+        } else {
+          reservationsText.textContent = "Co si chci půjčit";
+        }
+      }
+
+      if (ownerActionRequiredCount > 0) {
+        offersCard.classList.add("account-action-alert");
+
+        if (pendingRequestsCount > 0) {
+          offersText.textContent = pendingRequestsCount === 1
+            ? "Máte 1 novou žádost k potvrzení"
+            : "Máte " + pendingRequestsCount + " nové žádosti k potvrzení";
+        } else if (paidRequestsCount > 0) {
+          offersText.textContent = paidRequestsCount === 1
+            ? "1 rezervace je zaplacená, označte vyzvednutí"
+            : paidRequestsCount + " rezervace jsou zaplacené, označte vyzvednutí";
+        } else if (pickedUpRequestsCount > 0) {
+          offersText.textContent = pickedUpRequestsCount === 1
+            ? "1 půjčení probíhá, po vrácení ho uzavřete"
+            : pickedUpRequestsCount + " půjčení probíhají, po vrácení je uzavřete";
+        } else {
+          offersText.textContent = "Máte otevřené žádosti k vyřízení";
+        }
+      } else {
+        offersCard.classList.remove("account-action-alert");
+
+        if (incomingOpenRequests.length > 0) {
+          offersText.textContent = incomingOpenRequests.length === 1
+            ? "Máte 1 otevřenou žádost u svých nabídek"
+            : "Máte " + incomingOpenRequests.length + " otevřených žádostí u svých nabídek";
+        } else if (myOffers.length > 0) {
+          offersText.textContent = myOffers.length === 1
+            ? "Máte 1 vlastní nabídku"
+            : "Máte " + myOffers.length + " vlastní nabídky";
+        } else {
+          offersText.textContent = "Co nabízím a žádosti od lidí";
+        }
+      }
+
+      const totalAlerts = waitingPaymentCount + ownerActionRequiredCount;
+
+      if (totalAlerts > 0) {
+        const messageParts = [];
+
+        if (waitingPaymentCount > 0) {
+          messageParts.push(
+            "<strong>" +
+            waitingPaymentCount +
+            "</strong> " +
+            (waitingPaymentCount === 1 ? "rezervace čeká" : "rezervace čekají") +
+            " na platbu"
+          );
+        }
+
+        if (pendingRequestsCount > 0) {
+          messageParts.push(
+            "<strong>" +
+            pendingRequestsCount +
+            "</strong> " +
+            (pendingRequestsCount === 1 ? "nová žádost čeká" : "nové žádosti čekají") +
+            " na potvrzení"
+          );
+        }
+
+        if (paidRequestsCount > 0) {
+          messageParts.push(
+            "<strong>" +
+            paidRequestsCount +
+            "</strong> " +
+            (paidRequestsCount === 1 ? "zaplacená rezervace čeká" : "zaplacené rezervace čekají") +
+            " na označení vyzvednutí"
+          );
+        }
+
+        if (pickedUpRequestsCount > 0) {
+          messageParts.push(
+            "<strong>" +
+            pickedUpRequestsCount +
+            "</strong> " +
+            (pickedUpRequestsCount === 1 ? "půjčení čeká" : "půjčení čekají") +
+            " na označení vrácení"
+          );
+        }
+
+        alertSummary.style.display = "block";
+        alertSummary.innerHTML = "Máte nové věci k vyřízení: " + messageParts.join(" a ") + ".";
+      } else {
+        alertSummary.style.display = "none";
+        alertSummary.innerHTML = "";
+      }
+
+      renderSharedNavigation("muj-ucet");
+    }
+
+    async function initializeAccountPage() {
+      const user = getCurrentUserSafe();
+
+      if (!user) {
+        window.location.href = "prihlaseni.html";
+        return;
+      }
+
+      updateProfileBox(user);
+      renderSharedNavigation("muj-ucet");
+
+      const loaded = await loadSupabaseAccountData();
+
+      if (!loaded) {
+        updateAccountActionBadgesFromSupabase();
+        return;
+      }
+
+      updateAccountActionBadgesFromSupabase();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      initializeAccountPage();
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+.account-compact-page {
+  padding: 22px 92px 28px;
+}
+
+.account-compact-top {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 28px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.account-compact-top h1 {
+  color: #073d2b;
+  font-size: 38px;
+  line-height: 1.05;
+  margin-bottom: 8px;
+  letter-spacing: -1px;
+}
+
+.account-compact-top p {
+  color: #40514a;
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.account-compact-profile {
+  background: white;
+  border-radius: 22px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.07);
+}
+
+.profile-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #00633f;
+  color: white;
+  font-size: 22px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.account-compact-profile strong {
+  display: block;
+  color: #073d2b;
+  font-size: 18px;
+  margin-bottom: 3px;
+}
+
+.account-compact-profile span {
+  display: block;
+  color: #00633f;
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 3px;
+}
+
+.account-compact-profile small {
+  color: #60726b;
+  font-size: 13px;
+}
+
+.account-compact-card {
+  background: white;
+  border-radius: 26px;
+  padding: 24px;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.07);
+}
+
+.account-compact-card h2 {
+  color: #073d2b;
+  font-size: 26px;
+  margin-bottom: 18px;
+}
+
+.account-compact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.account-compact-grid a {
+  min-height: 82px;
+  background: #faf7f1;
+  border-radius: 18px;
+  padding: 18px 20px;
+  color: #073d2b;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.account-compact-grid a:hover {
+  background: #f0ebe3;
+}
+
+.account-compact-grid strong {
+  display: block;
+  font-size: 21px;
+  margin-bottom: 6px;
+}
+
+.account-compact-grid span {
+  color: #40514a;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+/* Staršie triedy nechávame kompatibilné, keby ich ešte niektorá stránka použila */
+
+.dashboard-page,
+.simple-account-page {
+  padding: 22px 92px 28px;
+}
+
+.dashboard-header,
+.simple-account-hero {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 28px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.dashboard-profile,
+.simple-profile-box {
+  background: white;
+  border-radius: 22px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.07);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.dashboard-card,
+.simple-action-section,
+.simple-account-section {
+  background: white;
+  border-radius: 26px;
+  padding: 22px;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.07);
+}
+
+.dashboard-link,
+.quick-actions a {
+  background: #00633f;
+  color: white;
+  text-decoration: none;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-weight: 800;
+  display: inline-flex;
+}
+
+@media (max-width: 1000px) {
+  .account-compact-page {
+    padding: 24px 22px 40px;
+  }
+
+  .account-compact-top {
+    grid-template-columns: 1fr;
+  }
+
+  .account-compact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-compact-grid a {
+    min-height: auto;
+  }
+}

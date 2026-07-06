@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Rentulo - půjčovna nářadí</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f3ee;
+      color: #073f2e;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    .header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .logo-icon::before {
+      content: "✓";
+    }
+
+    .logo-dot {
+      display: none;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 21px;
+      line-height: 1;
+      color: #073f2e;
+    }
+
+    .logo-text small {
+      display: block;
+      margin-top: 3px;
+      font-size: 13px;
+      color: #4d5b55;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 15px;
+    }
+
+    .nav a {
+      font-weight: 500;
+    }
+
+    .nav .active-link {
+      font-weight: 900;
+    }
+
+    .btn-register,
+    .logout-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #006b45;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 16px 20px 34px;
+    }
+
+    .home-landing {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .home-content,
+    .home-side-card {
+      background: white;
+      border: 1px solid #eadfd1;
+      border-radius: 18px;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+    }
+
+    .home-content {
+      padding: 24px;
+    }
+
+    .home-content h1 {
+      max-width: 780px;
+      margin: 0 0 10px;
+      color: #073f2e;
+      font-size: 42px;
+      line-height: 1.04;
+      letter-spacing: -0.04em;
+    }
+
+    .home-text {
+      max-width: 820px;
+      margin: 0 0 18px;
+      color: #334c43;
+      font-size: 17px;
+      line-height: 1.42;
+      font-weight: 700;
+    }
+
+    .search-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+      padding: 13px;
+      border-radius: 16px;
+      background: #fffdf8;
+      border: 1px solid #eadfd1;
+      margin-bottom: 14px;
+    }
+
+    .search-field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .search-field label {
+      color: #173e33;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .search-field input {
+      width: 100%;
+      height: 44px;
+      border: 1px solid #d8d0c5;
+      border-radius: 11px;
+      background: white;
+      padding: 0 13px;
+      font-size: 15px;
+      color: #073f2e;
+      font-weight: 700;
+    }
+
+    .search-field input:focus {
+      outline: none;
+      border-color: #006b45;
+      box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
+    }
+
+    .search-button {
+      min-height: 44px;
+      border: none;
+      border-radius: 11px;
+      background: #006b45;
+      color: white;
+      padding: 0 20px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .search-button:hover {
+      background: #00563a;
+    }
+
+    .home-points {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .home-point-button {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 10px;
+      align-items: center;
+      min-height: 58px;
+      border: 1px solid #eee8de;
+      border-radius: 15px;
+      background: #f8f5f0;
+      color: #073f2e;
+      padding: 10px 12px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .home-point-button:hover {
+      background: #eee8de;
+    }
+
+    .home-point-button strong {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: white;
+      border: 1px solid #eadfd1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .home-point-button span {
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .home-side-card {
+      width: 100%;
+      border: 1px solid #c7e8d7;
+      background: #e2f3eb;
+      color: #073f2e;
+      padding: 24px 22px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .home-side-card:hover {
+      border-color: #006b45;
+      box-shadow: 0 10px 28px rgba(0, 107, 69, 0.12);
+    }
+
+    .home-side-card:disabled {
+      cursor: wait;
+      opacity: 0.78;
+    }
+
+    .home-side-card span {
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: white;
+      border: 1px solid #c7e8d7;
+      color: #006b45;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .home-side-card strong {
+      display: block;
+      margin-bottom: 12px;
+      color: #073f2e;
+      font-size: 27px;
+      line-height: 1.1;
+      font-weight: 900;
+    }
+
+    .home-side-card p {
+      margin: 0 0 18px;
+      color: #334c43;
+      font-size: 16px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    .home-side-card small {
+      display: block;
+      padding-top: 16px;
+      border-top: 1px solid #c7e8d7;
+      color: #006b45;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .home-mini-info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .mini-info-box {
+      padding: 12px;
+      border-radius: 15px;
+      background: #fffdf8;
+      border: 1px solid #eee8de;
+    }
+
+    .mini-info-box strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #073f2e;
+      font-size: 14px;
+    }
+
+    .mini-info-box span {
+      display: block;
+      color: #5b6862;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    @media (max-width: 920px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .home-landing {
+        grid-template-columns: 1fr;
+      }
+
+      .search-box {
+        grid-template-columns: 1fr 1fr auto;
+      }
+
+      .home-side-card strong {
+        font-size: 24px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      main,
+      .header {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      main {
+        padding-top: 10px;
+      }
+
+      .home-content {
+        padding: 16px;
+      }
+
+      .home-content h1 {
+        font-size: 31px;
+      }
+
+      .home-text {
+        font-size: 15px;
+      }
+
+      .search-box {
+        grid-template-columns: 1fr;
+      }
+
+      .home-points,
+      .home-mini-info {
+        grid-template-columns: 1fr;
+      }
+
+      .search-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main>
+
+    <section class="home-landing">
+
+      <div class="home-content">
+
+        <h1>Půjčte si nářadí ve svém okolí.</h1>
+
+        <p class="home-text">
+          Vrtačku, brusku, žebřík nebo zahradní techniku nemusíte hned kupovat.
+          Najděte nářadí poblíž, pošlete žádost a domluvte si vyzvednutí.
+        </p>
+
+        <form class="search-box" id="homeSearchForm">
+          <div class="search-field">
+            <label for="home-search-what">Co hledáte?</label>
+            <input id="home-search-what" type="text" placeholder="např. vrtačka" />
+          </div>
+
+          <div class="search-field">
+            <label for="home-search-where">Kde?</label>
+            <input id="home-search-where" type="text" placeholder="město nebo PSČ" />
+          </div>
+
+          <button type="submit" class="search-button">Najít nářadí</button>
+        </form>
+
+        <div class="home-points">
+          <button type="button" class="home-point-button" data-search="vrtačka">
+            <strong>🏠</strong>
+            <span>Domácnost</span>
+          </button>
+
+          <button type="button" class="home-point-button" data-search="zahradní technika">
+            <strong>🌿</strong>
+            <span>Zahrada</span>
+          </button>
+
+          <button type="button" class="home-point-button" data-search="žebřík">
+            <strong>🏗️</strong>
+            <span>Stavba</span>
+          </button>
+        </div>
+
+        <div class="home-mini-info">
+          <div class="mini-info-box">
+            <strong>1. Vyberete nářadí</strong>
+            <span>Najdete nabídku podle názvu, města nebo okolí.</span>
+          </div>
+
+          <div class="mini-info-box">
+            <strong>2. Pošlete žádost</strong>
+            <span>Majitel žádost potvrdí a potom zaplatíte rezervaci.</span>
+          </div>
+
+          <div class="mini-info-box">
+            <strong>3. Vyzvednete</strong>
+            <span>Kontakt a adresa se zobrazí až po zaplacení.</span>
+          </div>
+        </div>
+
+      </div>
+
+      <button class="home-side-card nearby-card" id="nearbyCard" type="button">
+        <span>Dostupné v okolí</span>
+        <strong>Najít nářadí podle mojí polohy</strong>
+        <p>
+          Povolte polohu a Rentulo vám ukáže nabídky ve vašem okolí.
+        </p>
+        <small id="nearbyCardStatus">Klikněte pro hledání v okolí</small>
+      </button>
+
+    </section>
+
+  </main>
+
+  <script src="js/navigation.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderSharedNavigation("");
+      setupHomeSearch();
+      setupCategorySearch();
+      setupNearbySearch();
+    });
+
+    function goToResults(what, where) {
+      const searchParams = new URLSearchParams();
+
+      if (what) {
+        searchParams.set("co", what);
+      }
+
+      if (where) {
+        searchParams.set("kde", where);
+      }
+
+      const queryString = searchParams.toString();
+
+      window.location.href = queryString
+        ? "vysledky.html?" + queryString
+        : "vysledky.html";
+    }
+
+    function setupHomeSearch() {
+      const form = document.getElementById("homeSearchForm");
+      const whatInput = document.getElementById("home-search-what");
+      const whereInput = document.getElementById("home-search-where");
+
+      if (!form) {
+        return;
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const what = whatInput ? whatInput.value.trim() : "";
+        const where = whereInput ? whereInput.value.trim() : "";
+
+        goToResults(what, where);
+      });
+    }
+
+    function setupCategorySearch() {
+      const categoryButtons = document.querySelectorAll(".home-point-button");
+
+      categoryButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          const searchValue = button.dataset.search || "";
+          goToResults(searchValue, "");
+        });
+      });
+    }
+
+    function setupNearbySearch() {
+      const nearbyCard = document.getElementById("nearbyCard");
+      const nearbyStatus = document.getElementById("nearbyCardStatus");
+
+      if (!nearbyCard) {
+        return;
+      }
+
+      nearbyCard.addEventListener("click", function () {
+        if (!navigator.geolocation) {
+          if (nearbyStatus) {
+            nearbyStatus.textContent = "Poloha není v tomto prohlížeči dostupná.";
+          }
+
+          alert("Poloha není v tomto prohlížeči dostupná. Zadejte prosím město nebo PSČ.");
+          return;
+        }
+
+        nearbyCard.disabled = true;
+
+        if (nearbyStatus) {
+          nearbyStatus.textContent = "Zjišťuji vaši polohu...";
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            localStorage.setItem(
+              "rentuloUserLocation",
+              JSON.stringify({
+                latitude: latitude,
+                longitude: longitude,
+                savedAt: new Date().toISOString()
+              })
+            );
+
+            window.location.href =
+              "vysledky.html?okoli=1&lat=" +
+              encodeURIComponent(latitude) +
+              "&lng=" +
+              encodeURIComponent(longitude);
+          },
+          function () {
+            nearbyCard.disabled = false;
+
+            if (nearbyStatus) {
+              nearbyStatus.textContent = "Poloha nebyla povolena.";
+            }
+
+            alert("Poloha nebyla povolena. Zadejte prosím město nebo PSČ.");
+          },
+          {
+            enableHighAccuracy: false,
+            timeout: 8000,
+            maximumAge: 300000
+          }
+        );
+      });
+    }
+  </script>
+
+</body>
+</html>

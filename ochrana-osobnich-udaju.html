@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Ochrana osobních údajů - Rentulo</title>
+
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/header.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/offer.css" />
+  <link rel="stylesheet" href="css/results.css" />
+  <link rel="stylesheet" href="css/detail.css" />
+  <link rel="stylesheet" href="css/confirmation.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/account-pages.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+
+  <style>
+    .privacy-page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 22px 54px;
+    }
+
+    .privacy-card {
+      background: white;
+      border-radius: 22px;
+      padding: 30px 38px;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.06);
+    }
+
+    .privacy-card h1 {
+      margin: 0 0 10px;
+      font-size: 38px;
+      line-height: 1.08;
+      color: #073f2e;
+    }
+
+    .privacy-intro {
+      margin: 0 0 22px;
+      font-size: 16px;
+      line-height: 1.55;
+      color: #334c43;
+    }
+
+    .privacy-warning {
+      background: #fff0e6;
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 24px;
+      color: #073f2e;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .privacy-section {
+      margin-bottom: 22px;
+    }
+
+    .privacy-section h2 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      color: #073f2e;
+    }
+
+    .privacy-section p {
+      margin: 0 0 9px;
+      font-size: 15.5px;
+      line-height: 1.58;
+      color: #203f35;
+    }
+
+    .privacy-section ul {
+      margin: 8px 0 0;
+      padding-left: 22px;
+      color: #203f35;
+      font-size: 15.5px;
+      line-height: 1.58;
+    }
+
+    .privacy-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .privacy-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .privacy-button.primary {
+      background: #006b45;
+      color: white;
+    }
+
+    .privacy-button.light {
+      background: #eee8de;
+      color: #073f2e;
+    }
+
+    .privacy-button.primary:hover {
+      background: #00563a;
+    }
+
+    .privacy-button.light:hover {
+      background: #e3d9cc;
+    }
+
+    @media (max-width: 700px) {
+      .privacy-page {
+        padding: 20px 14px 42px;
+      }
+
+      .privacy-card {
+        padding: 24px 20px;
+        border-radius: 18px;
+      }
+
+      .privacy-card h1 {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="privacy-page">
+    <section class="privacy-card">
+      <p class="eyebrow">Pracovní verze</p>
+
+      <h1>Ochrana osobních údajů</h1>
+
+      <p class="privacy-intro">
+        Tato stránka vysvětluje, jaké osobní údaje platforma Rentulo v rámci
+        prototypu ukládá, k čemu se používají a kdy se zobrazují druhé straně.
+      </p>
+
+      <div class="privacy-warning">
+        Toto je pracovní text pro prototyp. Před reálným spuštěním služby musí
+        zásady ochrany osobních údajů zkontrolovat právník nebo GDPR specialista.
+      </div>
+
+      <div class="privacy-section">
+        <h2>1. Kdo údaje zpracovává</h2>
+        <p>
+          Provozovatel projektu Rentulo bude doplněn před reálným spuštěním služby.
+        </p>
+        <p>
+          V aktuální fázi jde o lokální HTML/CSS/JavaScript prototyp, který ukládá
+          data pouze do prohlížeče pomocí localStorage a sessionStorage.
+        </p>
+      </div>
+
+      <div class="privacy-section">
+        <h2>2. Jaké údaje zpracováváme</h2>
+        <p>
+          Při registraci a používání platformy mohou být zpracovávány zejména tyto údaje:
+        </p>
+
+        <ul>
+          <li>jméno a příjmení,</li>
+          <li>e-mailová adresa,</li>
+          <li>telefonní číslo,</li>
+          <li>ulice a číslo popisné,</li>
+          <li>město,</li>
+          <li>PSČ,</li>
+          <li>údaje o nabízeném nářadí,</li>
+          <li>fotografie nářadí, pokud ji uživatel nahraje,</li>
+          <li>údaje o rezervacích a žádostech o půjčení,</li>
+          <li>stav rezervace, například čeká na potvrzení, čeká na platbu nebo zaplaceno,</li>
+          <li>údaje o místě vyzvednutí a vrácení,</li>
+          <li>technické údaje uložené v prohlížeči v rámci prototypu.</li>
+        </ul>
+      </div>
+
+      <div class="privacy-section">
+        <h2>3. K čemu údaje používáme</h2>
+        <p>
+          Údaje používáme k tomu, aby bylo možné vytvořit účet, přidat nabídku
+          nářadí, poslat žádost o půjčení, potvrdit rezervaci a umožnit bezpečné
+          předání nářadí.
+        </p>
+
+        <ul>
+          <li>e-mail slouží k přihlášení a identifikaci účtu,</li>
+          <li>telefon slouží ke kontaktu po zaplacení rezervace,</li>
+          <li>adresa slouží k určení místa předání po zaplacení rezervace,</li>
+          <li>město se může zobrazovat už před zaplacením jako přibližná lokalita,</li>
+          <li>údaje o rezervaci slouží k průběhu půjčení a historii rezervací.</li>
+        </ul>
+      </div>
+
+      <div class="privacy-section">
+        <h2>4. Právní základ v budoucí ostré verzi</h2>
+        <p>
+          V ostré verzi služby bude nutné přesně určit právní základy zpracování
+          osobních údajů. Typicky může jít zejména o plnění smlouvy, oprávněný
+          zájem, splnění právní povinnosti nebo souhlas tam, kde bude potřeba.
+        </p>
+        <p>
+          Přesné znění právních základů musí být doplněno podle finálního způsobu
+          provozu služby, plateb, účetnictví a komunikace s uživateli.
+        </p>
+      </div>
+
+      <div class="privacy-section">
+        <h2>5. Co se zobrazí před zaplacením</h2>
+        <p>
+          Před zaplacením rezervace se druhé straně nezobrazuje přesná adresa ani telefon.
+        </p>
+        <p>
+          Před platbou se může zobrazit pouze omezený rozsah údajů, například jméno,
+          město a informace o nabídce nebo rezervaci.
+        </p>
+      </div>
+
+      <div class="privacy-section">
+        <h2>6. Co se zobrazí po zaplacení</h2>
+        <p>
+          Po zaplacení rezervace se zájemci mohou zobrazit údaje potřebné pro
+          předání nářadí, zejména telefon majitele, přesná adresa vyzvednutí
+          a případné instrukce k předání.
+        </p>
+        <p>
+          Tyto údaje slouží pouze k uskutečnění konkrétní půjčky a nesmí být
+          zneužity k jiným účelům.
+        </p>
+      </div>
+
+      <div class="privacy-section">
+        <h2>7. Údaje o místě vyzvednutí a vrácení</h2>
+        <p>
+          Majitel může používat adresu z registrace nebo zadat jiné místo vyzvednutí
+          a vrácení nářadí.
+        </p>
+        <p>
+          Pokud je uvedena jiná adresa vyzvednutí, po zaplacení rezervace se
+          zájemci zobrazí tato adresa místo registrační adresy majitele.
+        </p>
+      </div>
+
+      <div class="privacy-section">
+        <h2>8. Poloha a GPS údaje</h2>
+        <p>
+          Uživatel může dobrovolně uložit přibližnou GPS polohu nabídky nebo použít
+          polohu svého zařízení pro hledání nabídek v okolí.
+        </p>
+        <p>
+          V prototypu se tyto údaje ukládají lokálně v prohlížeči. V ostré verzi
+          bude nutné jasně popsat, kdy se poloha ukládá, jak dlouho se uchovává
+          a zda je možné ji upravit nebo odstranit.
+        </p>
+      </div>
+
+      <div class="privacy-section">
+        <h2>9. Ověření totožnosti při předání</h2>
+        <p>
+          Při osobním předání nářadí může druhá strana přiměřeně ověřit totožnost
+          nahlédnutím do občanského průkazu nebo jiného dokladu totožnosti.
+        </p>
+        <p>
+          Bez samostatného právního důvodu není dovoleno pořizovat kopie,
+          fotografie ani opisy dokladu totožnosti.
+        </p>
+      </div>
+
+      <div class="privacy-section">
+        <h2>10. Kde jsou údaje v prototypu uloženy</h2>
+        <p>
+          V této prototypové verzi jsou údaje uloženy pouze v prohlížeči uživatele
+          pomocí localStorage a sessionStorage.
+        </p>
+        <p>
+          To znamená, že jde o lokální testovací data, nikoliv o reálnou databázi
+          na serveru. Pokud uživatel vymaže data prohlížeče, mohou být tato data
+          odstraněna.
+        </p>
+      </div>
+
+      <div class="privacy-section">
+        <h2>11. Budoucí databáze a poskytovatelé služeb</h2>
+        <p>
+          V reálné verzi služby mohou být údaje ukládány v databázi provozovatele
+          nebo u smluvních poskytovatelů technických služeb, například hosting,
+          úložiště fotografií, e-mailové služby nebo platební brána.
+        </p>
+        <p>
+          Konkrétní poskytovatelé a pravidla předávání údajů budou doplněni před
+          spuštěním ostré verze služby.
+        </p>
+      </div>
+
+      <div class="privacy-section">
+        <h2>12. Jak dlouho údaje uchováváme</h2>
+        <p>
+          V prototypu zůstávají údaje uložené v prohlížeči, dokud je uživatel
+          nebo vývojář nevymaže.
+        </p>
+        <p>
+          V reálné verzi služby bude nutné nastavit přesná pravidla uchovávání
+          osobních údajů, rezervací, platebních údajů, účetních dokladů a případné
+          komunikace mezi uživateli.
+        </p>
+      </div>
+
+      <div class="privacy-section">
+        <h2>13. Práva uživatele</h2>
+        <p>
+          V reálné verzi služby bude mít uživatel právo požádat zejména o přístup
+          ke svým údajům, opravu údajů, výmaz údajů, omezení zpracování, přenositelnost
+          údajů nebo vznést námitku, pokud to bude podle konkrétní situace možné.
+        </p>
+        <p>
+          Konkrétní postup pro uplatnění práv bude doplněn před spuštěním ostré
+          verze služby.
+        </p>
+      </div>
+
+      <div class="privacy-section">
+        <h2>14. Bezpečnost údajů</h2>
+        <p>
+          V prototypu jsou data uložená pouze v prohlížeči. Pro reálný provoz bude
+          nutné doplnit zabezpečené přihlášení, bezpečné ukládání hesel, omezení
+          přístupu k údajům, zálohování a ochranu dat na serveru.
+        </p>
+        <p>
+          Hesla se v ostré verzi nesmí ukládat jako čistý text. Musí být ukládána
+          bezpečným technickým způsobem.
+        </p>
+      </div>
+
+      <div class="privacy-section">
+        <h2>15. Kontakt</h2>
+        <p>
+          Provozovatel projektu bude doplněn před reálným spuštěním služby.
+        </p>
+        <p>
+          E-mail: info@rentulo.cz
+        </p>
+      </div>
+
+      <div class="privacy-actions">
+        <a href="registrace.html" class="privacy-button primary">Zpět na registraci</a>
+        <a href="obchodni-podminky.html" class="privacy-button light">Obchodní podmínky</a>
+        <a href="index.html" class="privacy-button light">Zpět na úvod</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/navigation.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderSharedNavigation("");
+    });
+  </script>
+</body>
+</html>

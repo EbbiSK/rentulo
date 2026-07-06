@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Obchodní podmínky - Rentulo</title>
+
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/header.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/offer.css" />
+  <link rel="stylesheet" href="css/results.css" />
+  <link rel="stylesheet" href="css/detail.css" />
+  <link rel="stylesheet" href="css/confirmation.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/account-pages.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+
+  <style>
+    .terms-page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 22px 54px;
+    }
+
+    .terms-card {
+      background: white;
+      border-radius: 22px;
+      padding: 30px 38px;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.06);
+    }
+
+    .terms-card h1 {
+      margin: 0 0 10px;
+      font-size: 38px;
+      line-height: 1.08;
+      color: #073f2e;
+    }
+
+    .terms-intro {
+      margin: 0 0 22px;
+      font-size: 16px;
+      line-height: 1.55;
+      color: #334c43;
+    }
+
+    .terms-warning {
+      background: #fff0e6;
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 24px;
+      color: #073f2e;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .terms-section {
+      margin-bottom: 22px;
+    }
+
+    .terms-section h2 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      color: #073f2e;
+    }
+
+    .terms-section p {
+      margin: 0 0 9px;
+      font-size: 15.5px;
+      line-height: 1.58;
+      color: #203f35;
+    }
+
+    .terms-section ul {
+      margin: 8px 0 0;
+      padding-left: 22px;
+      color: #203f35;
+      font-size: 15.5px;
+      line-height: 1.58;
+    }
+
+    .terms-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .terms-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .terms-button.primary {
+      background: #006b45;
+      color: white;
+    }
+
+    .terms-button.light {
+      background: #eee8de;
+      color: #073f2e;
+    }
+
+    .terms-button.primary:hover {
+      background: #00563a;
+    }
+
+    .terms-button.light:hover {
+      background: #e3d9cc;
+    }
+
+    @media (max-width: 700px) {
+      .terms-page {
+        padding: 20px 14px 42px;
+      }
+
+      .terms-card {
+        padding: 24px 20px;
+        border-radius: 18px;
+      }
+
+      .terms-card h1 {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="terms-page">
+    <section class="terms-card">
+      <p class="eyebrow">Pracovní verze</p>
+
+      <h1>Obchodní podmínky</h1>
+
+      <p class="terms-intro">
+        Tyto obchodní podmínky upravují základní pravidla používání platformy
+        Rentulo, která umožňuje uživatelům nabízet vlastní nářadí k půjčení
+        a posílat žádosti o půjčení nářadí od jiných uživatelů.
+      </p>
+
+      <div class="terms-warning">
+        Toto je pracovní text pro prototyp. Před reálným spuštěním služby musí
+        obchodní podmínky zkontrolovat právník.
+      </div>
+
+      <div class="terms-section">
+        <h2>1. Základní popis služby</h2>
+        <p>
+          Platforma Rentulo slouží jako online prostředí, kde mohou registrovaní
+          uživatelé nabízet nářadí k půjčení a jiní uživatelé mohou o půjčení
+          tohoto nářadí požádat.
+        </p>
+        <p>
+          Platforma sama není vlastníkem nabízeného nářadí. Vztah ohledně
+          půjčení nářadí vzniká mezi majitelem nářadí a zájemcem o půjčení.
+          Rentulo v této pracovní verzi vystupuje jako zprostředkovatel kontaktu,
+          rezervace a základního průběhu půjčení.
+        </p>
+      </div>
+
+      <div class="terms-section">
+        <h2>2. Registrace uživatele</h2>
+        <p>
+          Uživatel je při registraci povinen uvést pravdivé a aktuální údaje,
+          zejména jméno, e-mail, telefon, adresu, město a PSČ.
+        </p>
+        <p>
+          Uživatel odpovídá za správnost údajů uvedených ve svém účtu a za to,
+          že svůj účet nebude zpřístupňovat jiné osobě.
+        </p>
+      </div>
+
+      <div class="terms-section">
+        <h2>3. Nabízení nářadí</h2>
+        <p>
+          Majitel nářadí odpovídá za to, že má právo nářadí nabídnout k půjčení,
+          že popis nabídky odpovídá skutečnosti a že nářadí je při předání ve
+          stavu vhodném k běžnému použití.
+        </p>
+        <ul>
+          <li>Majitel uvede název nářadí, cenu za den, město, kauci a popis.</li>
+          <li>Majitel může určit místo vyzvednutí a vrácení nářadí.</li>
+          <li>Majitel odpovídá za předání nářadí v domluveném termínu.</li>
+          <li>Majitel nesmí nabízet věci, jejichž půjčování je zakázané nebo nebezpečné.</li>
+        </ul>
+      </div>
+
+      <div class="terms-section">
+        <h2>4. Žádost o půjčení</h2>
+        <p>
+          Zájemce může odeslat žádost o půjčení konkrétního nářadí. Majitel může
+          žádost potvrdit nebo odmítnout.
+        </p>
+        <p>
+          Do potvrzení žádosti nevzniká zájemci nárok na půjčení nářadí. Po
+          potvrzení žádosti může být zájemce vyzván k úhradě rezervace.
+        </p>
+      </div>
+
+      <div class="terms-section">
+        <h2>5. Platba a provize platformy</h2>
+        <p>
+          Po potvrzení žádosti majitelem může být zájemce vyzván k platbě
+          rezervace. V pracovní verzi projektu je používána modelová provize
+          platformy ve výši 10 % z ceny půjčení.
+        </p>
+        <p>
+          Z ceny půjčení připadá 90 % majiteli nářadí a 10 % platformě Rentulo
+          jako servisní poplatek za zprostředkování. Kauce se eviduje samostatně
+          a není součástí provize platformy.
+        </p>
+        <p>
+          V prototypu je používána ukázková platba. V reálném provozu bude platba
+          zajištěna prostřednictvím externího poskytovatele platebních služeb.
+        </p>
+      </div>
+
+      <div class="terms-section">
+        <h2>6. Zobrazení osobních údajů</h2>
+        <p>
+          Před zaplacením rezervace se druhé straně zobrazují pouze omezené údaje,
+          například jméno, město a základní informace o rezervaci.
+        </p>
+        <p>
+          Přesná adresa, telefon a případné instrukce k předání se zájemci
+          zobrazí až po zaplacení rezervace.
+        </p>
+      </div>
+
+      <div class="terms-section">
+        <h2>7. Ověření totožnosti při předání</h2>
+        <p>
+          Uživatel bere na vědomí, že při osobním předání nářadí může druhá
+          smluvní strana přiměřeně ověřit jeho totožnost nahlédnutím do
+          občanského průkazu nebo jiného dokladu totožnosti.
+        </p>
+        <p>
+          Bez samostatného právního důvodu není dovoleno pořizovat kopie,
+          fotografie nebo opisy dokladu totožnosti.
+        </p>
+      </div>
+
+      <div class="terms-section">
+        <h2>8. Odpovědnost za škodu</h2>
+        <p>
+          Zájemce je povinen používat nářadí obvyklým a bezpečným způsobem a
+          vrátit jej ve stavu, v jakém jej převzal, s přihlédnutím k běžnému
+          opotřebení.
+        </p>
+        <p>
+          Pokud dojde ke ztrátě, poškození nebo nevrácení nářadí, řeší náhradu
+          škody majitel a zájemce mezi sebou. Platforma může poskytnout dostupné
+          údaje o rezervaci v rozsahu potřebném pro řešení konkrétního případu.
+        </p>
+      </div>
+
+      <div class="terms-section">
+        <h2>9. Kauce</h2>
+        <p>
+          Majitel může u nabídky uvést vratnou kauci. Výše kauce je zobrazena u
+          konkrétní nabídky. Kauce slouží jako zajištění pro případ poškození,
+          ztráty nebo nevrácení nářadí.
+        </p>
+        <p>
+          V pracovní verzi projektu je kauce evidována informativně. Podrobné
+          podmínky složení, držení a vrácení kauce budou doplněny před reálným
+          spuštěním služby.
+        </p>
+      </div>
+
+      <div class="terms-section">
+        <h2>10. Zrušení rezervace</h2>
+        <p>
+          Zrušení rezervace, změna termínu nebo odmítnutí žádosti se v pracovní
+          verzi řídí domluvou mezi majitelem a zájemcem.
+        </p>
+        <p>
+          V reálné verzi služby budou storno pravidla doplněna podrobněji,
+          zejména pro případy zrušení po zaplacení rezervace.
+        </p>
+      </div>
+
+      <div class="terms-section">
+        <h2>11. Zakázané používání služby</h2>
+        <p>
+          Službu není dovoleno používat k nabízení nelegálních, nebezpečných
+          nebo zakázaných věcí. Uživatel nesmí uvádět nepravdivé údaje,
+          obcházet platby, poškozovat druhé uživatele nebo zneužívat osobní
+          údaje druhé strany.
+        </p>
+      </div>
+
+      <div class="terms-section">
+        <h2>12. Omezení dostupnosti služby</h2>
+        <p>
+          Platforma je v této fázi pracovní prototyp. Funkce, vzhled, dostupnost,
+          platební pravidla a právní texty se mohou před reálným spuštěním měnit.
+        </p>
+      </div>
+
+      <div class="terms-section">
+        <h2>13. Změny podmínek</h2>
+        <p>
+          Provozovatel může obchodní podmínky upravit. Aktuální znění bude
+          dostupné na této stránce.
+        </p>
+      </div>
+
+      <div class="terms-section">
+        <h2>14. Kontakt</h2>
+        <p>
+          Provozovatel projektu bude doplněn před reálným spuštěním služby.
+        </p>
+        <p>
+          E-mail: info@rentulo.cz
+        </p>
+      </div>
+
+      <div class="terms-actions">
+        <a href="registrace.html" class="terms-button primary">Zpět na registraci</a>
+        <a href="index.html" class="terms-button light">Zpět na úvod</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/navigation.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderSharedNavigation("");
+    });
+  </script>
+</body>
+</html>

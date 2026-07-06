@@ -1,0 +1,7 @@
+const SUPABASE_URL = "https://vspposovhdgvbeukoivh.supabase.co/";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1WQZ-gW9198Qu2amXZ-nPg_1dkadBSz";
+
+const rentuloSupabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);

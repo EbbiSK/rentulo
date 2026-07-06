@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Vývojářské nástroje - Rentulo</title>
+
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/header.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/offer.css" />
+  <link rel="stylesheet" href="css/results.css" />
+  <link rel="stylesheet" href="css/detail.css" />
+  <link rel="stylesheet" href="css/confirmation.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/account-pages.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+
+  <style>
+    .dev-page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 34px 20px 70px;
+    }
+
+    .dev-header {
+      margin-bottom: 22px;
+    }
+
+    .dev-header .eyebrow {
+      margin-bottom: 8px;
+    }
+
+    .dev-header h1 {
+      margin-bottom: 10px;
+    }
+
+    .dev-card {
+      margin-bottom: 20px;
+      padding: 22px;
+      border-radius: 22px;
+      background: #ffffff;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.08);
+    }
+
+    .dev-card h2 {
+      margin-bottom: 10px;
+    }
+
+    .dev-card p {
+      margin-bottom: 16px;
+    }
+
+    .dev-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .dev-btn {
+      border: none;
+      cursor: pointer;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .dev-btn-light {
+      background: #f1ece5;
+      color: #073f2e;
+    }
+
+    .dev-btn-light:hover {
+      background: #e5ded4;
+    }
+
+    .dev-btn-danger {
+      background: #ff6500;
+      color: #ffffff;
+    }
+
+    .dev-btn-danger:hover {
+      background: #df5b00;
+    }
+
+    .dev-status {
+      margin-top: 16px;
+      margin-bottom: 0;
+      color: #073f2e;
+      font-weight: 800;
+    }
+
+    .dev-storage-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .dev-storage-item {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #f7f2ea;
+      overflow-wrap: anywhere;
+    }
+
+    .dev-storage-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #073f2e;
+    }
+
+    .dev-storage-item pre {
+      margin: 0;
+      white-space: pre-wrap;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+    }
+
+    .dev-notification-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .dev-notification-item {
+      padding: 16px;
+      border-radius: 18px;
+      background: #f7f2ea;
+      border: 1px solid #eee4d7;
+    }
+
+    .dev-notification-item strong {
+      display: block;
+      color: #073f2e;
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .dev-notification-type {
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 10px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: #e2f3eb;
+      color: #006b45;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .dev-notification-meta {
+      display: grid;
+      gap: 5px;
+      margin-bottom: 10px;
+      color: #40514a;
+      font-size: 14px;
+    }
+
+    .dev-notification-message {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #ffffff;
+      color: #073f2e;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .dev-notification-empty {
+      padding: 16px;
+      border-radius: 16px;
+      background: #f7f2ea;
+      color: #40514a;
+      font-weight: 700;
+    }
+
+    .dev-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      color: #073f2e;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .dev-back-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 700px) {
+      .dev-page {
+        padding: 22px 14px 48px;
+      }
+
+      .dev-card {
+        padding: 18px;
+        border-radius: 18px;
+      }
+
+      .dev-actions {
+        display: grid;
+      }
+
+      .dev-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+  </header>
+
+  <main class="dev-page">
+    <section class="dev-header">
+      <p class="eyebrow">Pouze pro vývoj</p>
+      <h1>Vývojářské nástroje</h1>
+      <p>
+        Tato stránka slouží pouze pro testování. Není napojená v menu
+        a neměla by být dostupná běžným uživatelům.
+      </p>
+
+      <a href="index.html" class="dev-back-link">← Zpět na úvod</a>
+    </section>
+
+    <section class="dev-card">
+      <h2>Čištění testovacích dat</h2>
+      <p>
+        Tlačítka mažou pouze hlavní testovací data projektu.
+        Uživatelské účty a aktuální přihlášení zůstanou zachované při volbě
+        „Vymazat vše kromě uživatelů“.
+      </p>
+
+      <div class="dev-actions">
+        <button type="button" class="dev-btn dev-btn-light" id="clearReservationsBtn">
+          Vymazat testovací rezervace
+        </button>
+
+        <button type="button" class="dev-btn dev-btn-light" id="clearOffersBtn">
+          Vymazat testovací nářadí
+        </button>
+
+        <button type="button" class="dev-btn dev-btn-light" id="clearNotificationsBtn">
+          Vymazat simulované notifikace
+        </button>
+
+        <button type="button" class="dev-btn dev-btn-danger" id="clearAllExceptUsersBtn">
+          Vymazat vše kromě uživatelů
+        </button>
+      </div>
+
+      <p class="dev-status" id="devStatus"></p>
+    </section>
+
+    <section class="dev-card">
+      <h2>Simulované telefonické notifikace</h2>
+      <p>
+        Zde se budou zobrazovat upozornění, která by v reálné verzi odešla uživateli
+        na telefon jako SMS nebo push notifikace.
+      </p>
+
+      <div class="dev-actions">
+        <button type="button" class="dev-btn dev-btn-light" id="refreshNotificationsBtn">
+          Obnovit notifikace
+        </button>
+      </div>
+
+      <div class="dev-notification-list" id="notificationList"></div>
+    </section>
+
+    <section class="dev-card">
+      <h2>Obsah localStorage</h2>
+      <p>
+        Přehled aktuálních dat uložených v prohlížeči.
+      </p>
+
+      <div class="dev-actions">
+        <button type="button" class="dev-btn dev-btn-light" id="refreshStorageBtn">
+          Obnovit přehled
+        </button>
+      </div>
+
+      <div class="dev-storage-list" id="storageList"></div>
+    </section>
+  </main>
+
+  <script src="js/storage.js"></script>
+
+  <script>
+    const devStatus = document.getElementById("devStatus");
+    const storageList = document.getElementById("storageList");
+    const notificationList = document.getElementById("notificationList");
+
+    const reservationKeys = [
+      "rentuloReservations",
+      "naradiRezervace"
+    ];
+
+    const offerKeys = [
+      "rentuloOffers",
+      "naradiNabidky"
+    ];
+
+    const notificationKeys = [
+      "rentuloNotifications",
+      "naradiNotifications"
+    ];
+
+    const userKeysToKeep = [
+      "rentuloLoggedIn",
+      "rentuloUser",
+      "rentuloRememberLogin",
+      "rentuloUsers",
+
+      "naradiLoggedIn",
+      "naradiUser",
+      "naradiUsers"
+    ];
+
+    function showDevStatus(message) {
+      devStatus.textContent = message;
+    }
+
+    function removeLocalStorageKeys(keys) {
+      keys.forEach(function (key) {
+        localStorage.removeItem(key);
+      });
+    }
+
+    function formatStorageValue(value) {
+      try {
+        return JSON.stringify(JSON.parse(value), null, 2);
+      } catch (error) {
+        return value;
+      }
+    }
+
+    function devEscape(text) {
+      return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatDevDate(dateValue) {
+      if (!dateValue) {
+        return "neuvedeno";
+      }
+
+      const date = new Date(dateValue);
+
+      if (Number.isNaN(date.getTime())) {
+        return dateValue;
+      }
+
+      return date.toLocaleString("cs-CZ");
+    }
+
+    function getNotificationTypeLabel(type) {
+      if (type === "new_reservation") {
+        return "Nová žádost o půjčení";
+      }
+
+      if (type === "confirmed_reservation" || type === "reservation_approved") {
+        return "Žádost potvrzena majitelem";
+      }
+
+      if (type === "rejected_reservation" || type === "reservation_rejected") {
+        return "Žádost odmítnuta majitelem";
+      }
+
+      if (type === "paid_reservation" || type === "payment_received") {
+        return "Rezervace zaplacena";
+      }
+
+      if (type === "picked_up_reservation" || type === "pickup_confirmed") {
+        return "Nářadí vyzvednuto";
+      }
+
+      if (type === "returned_reservation" || type === "return_confirmed") {
+        return "Nářadí vráceno";
+      }
+
+      if (type === "payment_required") {
+        return "Čeká na platbu";
+      }
+
+      return "Obecná notifikace";
+    }
+
+    function renderNotificationsList() {
+      const notifications = typeof getNotifications === "function"
+        ? getNotifications()
+        : [];
+
+      notificationList.innerHTML = "";
+
+      if (!notifications.length) {
+        notificationList.innerHTML = `
+          <div class="dev-notification-empty">
+            Zatím zde nejsou žádné simulované notifikace.
+          </div>
+        `;
+        return;
+      }
+
+      const reversedNotifications = [...notifications].reverse();
+
+      reversedNotifications.forEach(function (notification) {
+        const item = document.createElement("div");
+        item.className = "dev-notification-item";
+
+        const type = notification.type || "notification";
+        const typeLabel = getNotificationTypeLabel(type);
+        const recipientName = notification.recipientName || "Uživatel";
+        const recipientEmail = notification.recipientEmail || "E-mail není uložen";
+        const recipientPhone = notification.recipientPhone || "Telefon není uložen";
+        const status = notification.status || "simulated";
+        const createdAt = formatDevDate(notification.createdAt);
+        const message = notification.message || "";
+
+        item.innerHTML = `
+          <strong>${devEscape(typeLabel)}</strong>
+
+          <span class="dev-notification-type">
+            ${devEscape(type)}
+          </span>
+
+          <div class="dev-notification-meta">
+            <span><b>Příjemce:</b> ${devEscape(recipientName)}</span>
+            <span><b>E-mail:</b> ${devEscape(recipientEmail)}</span>
+            <span><b>Telefon:</b> ${devEscape(recipientPhone)}</span>
+            <span><b>Stav:</b> ${devEscape(status)}</span>
+            <span><b>Vytvořeno:</b> ${devEscape(createdAt)}</span>
+          </div>
+
+          <div class="dev-notification-message">
+            ${devEscape(message)}
+          </div>
+        `;
+
+        notificationList.appendChild(item);
+      });
+    }
+
+    function renderStorageList() {
+      storageList.innerHTML = "";
+
+      if (localStorage.length === 0) {
+        storageList.innerHTML = "<p>localStorage je prázdný.</p>";
+        return;
+      }
+
+      Object.keys(localStorage).sort().forEach(function (key) {
+        const item = document.createElement("div");
+        item.className = "dev-storage-item";
+
+        const title = document.createElement("strong");
+        title.textContent = key;
+
+        const value = document.createElement("pre");
+        value.textContent = formatStorageValue(localStorage.getItem(key));
+
+        item.appendChild(title);
+        item.appendChild(value);
+
+        storageList.appendChild(item);
+      });
+    }
+
+    document.getElementById("clearReservationsBtn").addEventListener("click", function () {
+      const confirmed = confirm("Opravdu chcete vymazat testovací rezervace?");
+
+      if (!confirmed) {
+        return;
+      }
+
+      removeLocalStorageKeys(reservationKeys);
+      showDevStatus("Testovací rezervace byly vymazány.");
+      renderNotificationsList();
+      renderStorageList();
+    });
+
+    document.getElementById("clearOffersBtn").addEventListener("click", function () {
+      const confirmed = confirm("Opravdu chcete vymazat testovací nářadí?");
+
+      if (!confirmed) {
+        return;
+      }
+
+      removeLocalStorageKeys(offerKeys);
+      showDevStatus("Testovací nářadí bylo vymazáno.");
+      renderNotificationsList();
+      renderStorageList();
+    });
+
+    document.getElementById("clearNotificationsBtn").addEventListener("click", function () {
+      const confirmed = confirm("Opravdu chcete vymazat simulované notifikace?");
+
+      if (!confirmed) {
+        return;
+      }
+
+      removeLocalStorageKeys(notificationKeys);
+      showDevStatus("Simulované notifikace byly vymazány.");
+      renderNotificationsList();
+      renderStorageList();
+    });
+
+    document.getElementById("clearAllExceptUsersBtn").addEventListener("click", function () {
+      const confirmed = confirm(
+        "Opravdu chcete vymazat všechna testovací data kromě uživatelů?"
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      const savedUserData = {};
+
+      userKeysToKeep.forEach(function (key) {
+        const value = localStorage.getItem(key);
+
+        if (value !== null) {
+          savedUserData[key] = value;
+        }
+      });
+
+      localStorage.clear();
+
+      Object.keys(savedUserData).forEach(function (key) {
+        localStorage.setItem(key, savedUserData[key]);
+      });
+
+      showDevStatus("Všechna testovací data kromě uživatelů byla vymazána.");
+      renderNotificationsList();
+      renderStorageList();
+    });
+
+    document.getElementById("refreshNotificationsBtn").addEventListener("click", function () {
+      renderNotificationsList();
+      showDevStatus("Přehled simulovaných notifikací byl obnoven.");
+    });
+
+    document.getElementById("refreshStorageBtn").addEventListener("click", function () {
+      renderStorageList();
+      showDevStatus("Přehled localStorage byl obnoven.");
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      renderNotificationsList();
+      renderStorageList();
+    });
+  </script>
+</body>
+</html>

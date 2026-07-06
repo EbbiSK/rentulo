@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Účet byl vytvořen - Rentulo</title>
+
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/header.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/offer.css" />
+  <link rel="stylesheet" href="css/results.css" />
+  <link rel="stylesheet" href="css/detail.css" />
+  <link rel="stylesheet" href="css/confirmation.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/account-pages.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="confirmation-page">
+
+    <section class="confirmation-card">
+
+      <div class="success-icon">✓</div>
+
+      <p class="eyebrow">Registrace dokončena</p>
+
+      <h1>Účet byl vytvořen.</h1>
+
+      <p class="confirmation-text">
+        Nyní můžete hledat nářadí k půjčení nebo nabídnout vlastní nářadí ostatním.
+      </p>
+
+      <div class="reservation-summary">
+        <h2>Co můžete udělat dál?</h2>
+
+        <div class="summary-row">
+          <span>Najít nářadí</span>
+          <strong>Vyhledat dostupné nabídky</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Nabídnout nářadí</span>
+          <strong>Přidat vlastní nářadí</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Můj účet</span>
+          <strong>Spravovat rezervace a nabídky</strong>
+        </div>
+      </div>
+
+      <div class="confirmation-actions">
+        <a href="index.html" class="btn-home">Pokračovat na úvod</a>
+        <a href="muj-ucet.html" class="btn-light">Zobrazit můj účet</a>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="js/navigation.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderSharedNavigation("muj-ucet");
+    });
+  </script>
+</body>
+</html>

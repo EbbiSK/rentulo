@@ -1,0 +1,160 @@
+@media (max-width: 1200px) {
+  .page {
+    height: auto;
+    overflow: auto;
+  }
+
+  .hero {
+    height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .hero-right {
+    height: 360px;
+    border-radius: 40px;
+  }
+
+  .offer-intro,
+  .results-header,
+  .results-layout,
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .filters,
+  .booking-card {
+    position: static;
+  }
+
+  .detail-content {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .header {
+    height: auto;
+    padding: 22px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .nav {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .hero {
+    padding: 26px 22px 50px;
+  }
+
+  .hero-left h1,
+  .offer-intro h1,
+  .results-header h1,
+  .detail-content h1,
+  .confirmation-card h1,
+  .auth-intro h1 {
+    font-size: 38px;
+  }
+
+  .intro,
+  .offer-intro p,
+  .results-header p,
+  .detail-description,
+  .confirmation-text,
+  .auth-intro p {
+    font-size: 17px;
+  }
+
+  .search-box,
+  .results-search {
+    grid-template-columns: 1fr;
+  }
+
+  .benefits {
+    grid-template-columns: 1fr;
+  }
+
+  .benefits div {
+    border-right: none;
+    border-bottom: 1px solid #ddd7cd;
+    padding-bottom: 14px;
+  }
+
+  .steps {
+    grid-template-columns: 1fr;
+  }
+
+  .offer-page,
+  .results-page,
+  .detail-page,
+  .confirmation-page,
+  .auth-page {
+    padding: 26px 22px 50px;
+  }
+
+  .confirmation-card,
+  .auth-card {
+    padding: 28px;
+  }
+
+  .form-grid,
+  .check-list,
+  .detail-small-images {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions,
+  .confirmation-actions {
+    flex-direction: column;
+  }
+
+  .btn-secondary,
+  .btn-primary,
+  .btn-home,
+  .btn-light {
+    width: 100%;
+  }
+
+  .tool-card {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-top {
+    flex-direction: column;
+  }
+
+  .price {
+    text-align: left;
+  }
+
+  .summary-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .summary-row strong {
+    text-align: left;
+  }
+}
+@media (max-width: 430px) {
+  .nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .nav a,
+  .nav .btn-register,
+  .logout-link {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .nav .btn-register,
+  .logout-link {
+    border-radius: 999px;
+  }
+}

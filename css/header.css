@@ -1,0 +1,109 @@
+.header {
+  height: 66px;
+  padding: 0 92px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #faf7f1;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #073d2b;
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 34px;
+  height: 34px;
+  background: #073d2b;
+  border-radius: 11px;
+  position: relative;
+  transform: rotate(-8deg);
+}
+
+.logo-icon::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 7px;
+  background: white;
+  border-radius: 10px;
+  top: 10px;
+  left: 9px;
+  transform: rotate(-35deg);
+}
+
+.logo-icon::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 15px;
+  background: white;
+  border-radius: 10px;
+  top: 16px;
+  left: 17px;
+  transform: rotate(-35deg);
+}
+
+.logo-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: #ff6a00;
+  border-radius: 50%;
+  right: -3px;
+  bottom: -3px;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.logo-text strong {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+
+.logo-text small {
+  margin-top: 3px;
+  font-size: 10px;
+  color: #60726b;
+  font-weight: 600;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #1f2b27;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.nav a:hover,
+.nav .active-link {
+  color: #00633f;
+  font-weight: 700;
+}
+
+.btn-register {
+  background: #00633f;
+  color: white !important;
+  padding: 11px 22px;
+  border-radius: 32px;
+  font-weight: 700 !important;
+}
+
+.active-register {
+  background: #004f32;
+}

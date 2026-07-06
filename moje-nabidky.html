@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Moje nabídky - Rentulo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f3ee;
+      color: #073f2e;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 8px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .logo-icon::before {
+      content: "✓";
+    }
+
+    .logo-dot {
+      display: none;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 19px;
+      line-height: 1;
+      color: #073f2e;
+    }
+
+    .logo-text small {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #4d5b55;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+    }
+
+    .nav .active-link {
+      font-weight: 800;
+    }
+
+    .btn-register,
+    .logout-link {
+      background: #006b45;
+      color: white !important;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .account-page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 8px 20px 24px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: #006b45;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .account-page-header {
+      position: relative;
+      margin-bottom: 14px;
+      padding-right: 170px;
+    }
+
+    .eyebrow {
+      margin: 0 0 3px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #4d5b55;
+    }
+
+    h1 {
+      margin: 0 0 5px;
+      font-size: 28px;
+      line-height: 1.05;
+      color: #073f2e;
+    }
+
+    .account-page-header p {
+      margin: 0;
+      font-size: 14px;
+      color: #334c43;
+      line-height: 1.35;
+    }
+
+    .top-action-button {
+      position: absolute;
+      right: 0;
+      top: 14px;
+      background: #ff6500;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .top-action-button:hover {
+      background: #e85d00;
+    }
+
+    .account-message {
+      display: none;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #e2f3eb;
+      border: 1px solid #c7e8d7;
+      color: #073f2e;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .account-message.active {
+      display: block;
+    }
+
+    .account-message strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #006b45;
+      font-size: 14px;
+    }
+
+    .account-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .offers-table-card {
+      overflow: hidden;
+      background: white;
+      border: 1px solid #eadfd1;
+      border-radius: 16px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+    }
+
+    .offer-table-head,
+    .offer-row {
+      display: grid;
+      grid-template-columns: 1.65fr 0.85fr 0.7fr 0.6fr 0.75fr 1.35fr;
+      gap: 10px;
+      align-items: center;
+      padding: 9px 12px;
+    }
+
+    .offer-table-head {
+      background: #f8f5f0;
+      border-bottom: 1px solid #eadfd1;
+      color: #526158;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .offer-row-wrapper + .offer-row-wrapper {
+      border-top: 1px solid #eee8de;
+    }
+
+    .offer-row {
+      min-height: 54px;
+      background: white;
+    }
+
+    .offer-row:hover {
+      background: #fffdf8;
+    }
+
+    .offer-tool {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .tool-image {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: #ece6dc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px solid #e3dace;
+      flex-shrink: 0;
+    }
+
+    .tool-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .tool-image-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: #073f2e;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .tool-image-icon::before {
+      content: "⌁";
+    }
+
+    .offer-title {
+      display: block;
+      color: #073f2e;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .offer-subtitle {
+      display: block;
+      margin-top: 2px;
+      color: #4d5b55;
+      font-size: 12px;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .table-value {
+      color: #173e33;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .table-value.muted {
+      color: #4d5b55;
+      font-weight: 700;
+    }
+
+    .status-pill,
+    .request-status,
+    .history-status {
+      display: inline-flex;
+      justify-content: center;
+      width: fit-content;
+      border-radius: 999px;
+      background: #e2f3eb;
+      color: #006b45;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .status-pill.draft {
+      background: #fff7f0;
+      color: #5b3a22;
+    }
+
+    .request-status {
+      background: #fff0e6;
+      color: #df5b00;
+    }
+
+    .request-status.paid,
+    .request-status.active {
+      background: #e2f3eb;
+      color: #006b45;
+    }
+
+    .request-status.finished,
+    .history-status {
+      background: #eef1ed;
+      color: #334c43;
+    }
+
+    .request-counts {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .count-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 999px;
+      background: #f4efe7;
+      color: #334c43;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .count-pill.important {
+      background: #fff0e6;
+      color: #df5b00;
+    }
+
+    .count-pill.success {
+      background: #e2f3eb;
+      color: #006b45;
+    }
+
+    .offer-actions,
+    .row-actions,
+    .request-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .small-button,
+    .request-toggle-button,
+    .history-toggle-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      border-radius: 9px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .small-button:focus,
+    .request-toggle-button:focus,
+    .history-toggle-button:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.16);
+    }
+
+    .small-button {
+      background: #006b45;
+      color: white;
+    }
+
+    .small-button:hover {
+      background: #00563a;
+    }
+
+    .small-button.light,
+    .request-toggle-button,
+    .history-toggle-button {
+      background: #eee8de;
+      color: #073f2e;
+    }
+
+    .small-button.light:hover,
+    .request-toggle-button:hover,
+    .history-toggle-button:hover {
+      background: #e3dace;
+    }
+
+    .small-button.orange,
+    .request-toggle-button.important {
+      background: #ff6500;
+      color: white;
+    }
+
+    .small-button.orange:hover,
+    .request-toggle-button.important:hover {
+      background: #e85d00;
+    }
+
+    .small-button:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
+    .offer-detail {
+      display: none;
+      padding: 0 12px 12px;
+      background: #fffdf8;
+      border-top: 1px solid #eee8de;
+    }
+
+    .offer-detail.open {
+      display: block;
+    }
+
+    .offer-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+      padding-top: 10px;
+    }
+
+    .mini-stat {
+      border: 1px solid #eee8de;
+      border-radius: 12px;
+      background: white;
+      padding: 9px 10px;
+    }
+
+    .mini-stat span {
+      display: block;
+      color: #5b6862;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .mini-stat strong {
+      display: block;
+      margin-top: 2px;
+      color: #073f2e;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .request-panel {
+      display: none;
+      margin-top: 8px;
+      border: 1px solid #eee8de;
+      border-radius: 13px;
+      background: white;
+      overflow: hidden;
+    }
+
+    .request-panel.open {
+      display: block;
+    }
+
+    .request-panel-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 9px 11px;
+      background: #f8f5f0;
+      border-bottom: 1px solid #eee8de;
+    }
+
+    .request-panel-header h3 {
+      margin: 0;
+      color: #073f2e;
+      font-size: 14px;
+    }
+
+    .request-panel-header span {
+      border-radius: 999px;
+      background: white;
+      color: #334c43;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .request-list {
+      display: grid;
+    }
+
+    .request-empty-note {
+      margin: 0;
+      padding: 12px;
+      color: #5b6862;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .request-card,
+    .history-row-wrapper {
+      display: grid;
+    }
+
+    .request-card + .request-card,
+    .history-row-wrapper + .history-row-wrapper {
+      border-top: 1px solid #eee8de;
+    }
+
+    .request-row,
+    .history-row {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr 0.75fr 0.7fr 1.35fr;
+      gap: 10px;
+      align-items: center;
+      min-height: 48px;
+      padding: 9px 11px;
+      background: white;
+    }
+
+    .request-main,
+    .history-main {
+      min-width: 0;
+    }
+
+    .request-name,
+    .history-title {
+      display: block;
+      margin: 0;
+      color: #073f2e;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .request-email,
+    .history-subtitle {
+      display: block;
+      margin: 2px 0 0;
+      color: #4d5b55;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .request-date,
+    .history-info,
+    .history-price {
+      color: #334c43;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .history-price {
+      color: #073f2e;
+      font-weight: 900;
+    }
+
+    .request-detail,
+    .history-detail {
+      display: none;
+      padding: 0 11px 11px;
+      background: #fffdf8;
+    }
+
+    .request-detail.open,
+    .history-detail.open {
+      display: block;
+    }
+
+    .request-detail-inner {
+      display: grid;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #eee8de;
+    }
+
+    .request-money {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .money-cell {
+      border: 1px solid #eee8de;
+      border-radius: 11px;
+      background: white;
+      padding: 8px 9px;
+      color: #40514a;
+      font-size: 12px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+    .money-cell strong {
+      display: block;
+      margin-top: 2px;
+      color: #073f2e;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .request-note {
+      margin: 0;
+      border-radius: 11px;
+      background: #fff0e6;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #df5b00;
+    }
+
+    .request-note.success {
+      background: #e2f3eb;
+      color: #006b45;
+    }
+
+    .request-contact-box {
+      border: 1px solid #eee8de;
+      border-radius: 11px;
+      background: white;
+      padding: 8px 10px;
+      color: #334c43;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 800;
+    }
+
+    .request-contact-box strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #073f2e;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .request-contact-box.locked {
+      background: #f8f5f0;
+      color: #5b6862;
+    }
+
+    .account-empty-state {
+      background: white;
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.04);
+    }
+
+    .account-empty-state h2 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      color: #073f2e;
+    }
+
+    .account-empty-state p {
+      margin: 0 0 14px;
+      color: #334c43;
+      font-size: 15px;
+    }
+
+    .account-empty-state a {
+      display: inline-flex;
+      background: #ff6500;
+      color: white;
+      border-radius: 12px;
+      padding: 11px 18px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 980px) {
+      .offer-row,
+      .offer-table-head {
+        grid-template-columns: 1.5fr 0.8fr 0.75fr 1fr;
+      }
+
+      .offer-table-head .hide-tablet,
+      .offer-row .hide-tablet {
+        display: none;
+      }
+
+      .request-row,
+      .history-row {
+        grid-template-columns: 1.25fr 1fr 0.8fr 1.2fr;
+      }
+
+      .request-row .hide-tablet,
+      .history-row .hide-tablet {
+        display: none;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .account-page-header {
+        padding-right: 0;
+      }
+
+      .top-action-button {
+        position: static;
+        display: inline-flex;
+        margin-top: 10px;
+      }
+
+      .offers-table-card {
+        border-radius: 14px;
+      }
+
+      .offer-table-head {
+        display: none;
+      }
+
+      .offer-row,
+      .request-row,
+      .history-row {
+        grid-template-columns: 1fr;
+        gap: 7px;
+        align-items: start;
+        padding: 12px;
+      }
+
+      .offer-row .hide-tablet,
+      .request-row .hide-tablet,
+      .history-row .hide-tablet {
+        display: block;
+      }
+
+      .offer-actions,
+      .row-actions,
+      .request-actions {
+        justify-content: flex-start;
+      }
+
+      .offer-detail-grid,
+      .request-money {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .account-page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .offer-actions,
+      .row-actions,
+      .request-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .small-button,
+      .request-toggle-button,
+      .history-toggle-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="account-page">
+
+    <a href="muj-ucet.html" class="back-link">← Zpět do účtu</a>
+
+    <section class="account-page-header">
+      <p class="eyebrow">Správa nabídek</p>
+
+      <h1>Moje nabídky</h1>
+
+      <p>Spravujte svoje nářadí a žádosti od zájemců.</p>
+
+      <a href="nabidnout.html" class="top-action-button">Přidat nářadí</a>
+    </section>
+
+    <div class="account-message" id="accountMessage"></div>
+
+    <section class="account-list" id="offersList"></section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/reservations.js"></script>
+  <script src="js/supabase-config.js"></script>
+
+  <script>
+    const PLATFORM_FEE_PERCENT = 10;
+
+    const STATUS_PENDING = "pending";
+    const STATUS_APPROVED = "approved";
+    const STATUS_PAID = "paid";
+    const STATUS_PICKED_UP = "picked_up";
+    const STATUS_RETURNED = "returned";
+    const STATUS_REJECTED = "rejected";
+    const STATUS_CANCELLED = "cancelled";
+
+    let ownerOffers = [];
+    let ownerReservations = [];
+
+    function getSupabaseClient() {
+      if (window.rentuloSupabase) {
+        return window.rentuloSupabase;
+      }
+
+      if (typeof rentuloSupabase !== "undefined") {
+        return rentuloSupabase;
+      }
+
+      return null;
+    }
+
+    async function getCurrentSupabaseUser() {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        return null;
+      }
+
+      const { data, error } = await supabaseClient.auth.getUser();
+
+      if (error || !data || !data.user) {
+        return null;
+      }
+
+      return data.user;
+    }
+
+    function escapeHtml(value) {
+      return String(value === undefined || value === null ? "" : value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) {
+        return "-";
+      }
+
+      const date = new Date(dateString);
+
+      if (isNaN(date.getTime())) {
+        return dateString;
+      }
+
+      return date.toLocaleDateString("cs-CZ");
+    }
+
+    function getStatusText(status) {
+      if (status === STATUS_PENDING) {
+        return "Čeká na potvrzení";
+      }
+
+      if (status === STATUS_APPROVED) {
+        return "Čeká na platbu";
+      }
+
+      if (status === STATUS_PAID) {
+        return "Zaplaceno";
+      }
+
+      if (status === STATUS_PICKED_UP) {
+        return "Vyzvednuto";
+      }
+
+      if (status === STATUS_RETURNED) {
+        return "Vráceno";
+      }
+
+      if (status === STATUS_REJECTED) {
+        return "Odmítnuto";
+      }
+
+      if (status === STATUS_CANCELLED) {
+        return "Zrušeno";
+      }
+
+      return status || "Čeká na potvrzení";
+    }
+
+    function isOpenStatus(status) {
+      return [
+        STATUS_PENDING,
+        STATUS_APPROVED,
+        STATUS_PAID,
+        STATUS_PICKED_UP
+      ].includes(status);
+    }
+
+    function isClosedStatus(status) {
+      return [
+        STATUS_RETURNED,
+        STATUS_REJECTED,
+        STATUS_CANCELLED
+      ].includes(status);
+    }
+
+    function canShowContact(status) {
+      return [
+        STATUS_PAID,
+        STATUS_PICKED_UP,
+        STATUS_RETURNED
+      ].includes(status);
+    }
+
+    function showAccountMessage(title, text) {
+      const messageBox = document.getElementById("accountMessage");
+
+      if (!messageBox) {
+        return;
+      }
+
+      messageBox.innerHTML = `
+        <strong>${escapeHtml(title)}</strong>
+        ${escapeHtml(text)}
+      `;
+
+      messageBox.classList.add("active");
+    }
+
+    function showAccountMessageFromStorage() {
+      const savedState = sessionStorage.getItem("rentuloOfferSaved");
+
+      if (savedState === "draft") {
+        showAccountMessage(
+          "Koncept byl uložen.",
+          "Až budete připraveni, klikněte u nabídky na Zveřejnit."
+        );
+
+        sessionStorage.removeItem("rentuloOfferSaved");
+        return;
+      }
+
+      if (savedState === "active") {
+        showAccountMessage(
+          "Nabídka byla zveřejněna.",
+          "Vaše nářadí je teď viditelné ve výsledcích vyhledávání."
+        );
+
+        sessionStorage.removeItem("rentuloOfferSaved");
+      }
+    }
+
+    function renderLoadingState() {
+      document.getElementById("offersList").innerHTML = `
+        <section class="account-empty-state">
+          <h2>Načítám nabídky...</h2>
+          <p>Chvíli strpení, načítáme vaše nabídky a žádosti ze Supabase.</p>
+        </section>
+      `;
+    }
+
+    function renderEmptyState() {
+      document.getElementById("offersList").innerHTML = `
+        <section class="account-empty-state">
+          <h2>Zatím nemáte žádné vlastní nabídky.</h2>
+          <p>Přidejte první nářadí, které chcete půjčovat lidem ve svém okolí.</p>
+          <a href="nabidnout.html">Přidat nářadí</a>
+        </section>
+      `;
+    }
+
+    function normalizeOffer(row) {
+      return {
+        id: row.id,
+        ownerId: row.owner_id,
+        name: row.name || "Nářadí",
+        category: row.category || "Nářadí",
+        description: row.description || "",
+        city: row.city || row.pickup_city || "-",
+        postalCode: row.postal_code || "",
+        price: Number(row.price_per_day || 0),
+        deposit: Number(row.deposit || 0),
+        status: row.status || "active",
+        photoUrl: row.photo_url || "",
+        createdAt: row.created_at || "",
+        updatedAt: row.updated_at || ""
+      };
+    }
+
+    function normalizeReservation(row) {
+      return {
+        id: row.id,
+        offerId: row.offer_id,
+        ownerId: row.owner_id,
+        renterId: row.renter_id,
+
+        offerName: row.offer_name || "Nářadí",
+        category: row.category || "Nářadí",
+        city: row.city || "",
+
+        pricePerDay: Number(row.price_per_day || 0),
+        deposit: Number(row.deposit || 0),
+
+        startDate: row.start_date || row.date_from || "",
+        endDate: row.end_date || row.date_to || "",
+        days: Number(row.total_days || row.days || 0),
+        totalPrice: Number(row.total_price || 0),
+
+        platformFeePercent: Number(row.platform_fee_percent || PLATFORM_FEE_PERCENT),
+        platformFeeAmount: Number(row.platform_fee_amount || 0),
+        ownerPayout: Number(row.owner_payout || 0),
+
+        renterName: row.renter_name || "Zájemce",
+        renterEmail: row.renter_email || "",
+        renterPhone: row.renter_phone || "",
+
+        ownerName: row.owner_name || "Majitel",
+
+        status: row.status || STATUS_PENDING,
+        contactVisibleAfterPayment: Boolean(row.contact_visible_after_payment),
+
+        createdAt: row.created_at || "",
+        updatedAt: row.updated_at || ""
+      };
+    }
+
+    async function loadOwnerData() {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        alert("Supabase klient není načtený. Zkontrolujte js/supabase-config.js.");
+        return;
+      }
+
+      const supabaseUser = await getCurrentSupabaseUser();
+
+      if (!supabaseUser) {
+        window.location.href = "prihlaseni.html";
+        return;
+      }
+
+      const offersResult = await supabaseClient
+        .from("offers")
+        .select("*")
+        .eq("owner_id", supabaseUser.id)
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (offersResult.error) {
+        console.error(offersResult.error);
+        alert("Nabídky se nepodařilo načíst ze Supabase. Podívejte se prosím do konzole.");
+        return;
+      }
+
+      const reservationsResult = await supabaseClient
+        .from("reservations")
+        .select("*")
+        .eq("owner_id", supabaseUser.id)
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (reservationsResult.error) {
+        console.error(reservationsResult.error);
+        alert("Žádosti se nepodařilo načíst ze Supabase. Podívejte se prosím do konzole.");
+        return;
+      }
+
+      ownerOffers = Array.isArray(offersResult.data)
+        ? offersResult.data.map(normalizeOffer)
+        : [];
+
+      ownerReservations = Array.isArray(reservationsResult.data)
+        ? reservationsResult.data.map(normalizeReservation)
+        : [];
+    }
+
+    function getOfferName(offer) {
+      return offer.name || "Nářadí";
+    }
+
+    function getOfferCategory(offer) {
+      return offer.category || "Nářadí";
+    }
+
+    function getOfferCity(offer) {
+      return offer.city || "-";
+    }
+
+    function getOfferPrice(offer) {
+      return Number(offer.price || 0);
+    }
+
+    function getOfferStatus(offer) {
+      if (offer.status === "draft") {
+        return "Koncept";
+      }
+
+      if (offer.status === "active") {
+        return "Aktivní";
+      }
+
+      if (offer.status === "hidden") {
+        return "Skryté";
+      }
+
+      if (offer.status === "deleted") {
+        return "Smazané";
+      }
+
+      return offer.status || "Aktivní";
+    }
+
+    function isOfferDraft(offer) {
+      return offer.status === "draft";
+    }
+
+    function getOfferStatusClass(offer) {
+      return isOfferDraft(offer) ? "draft" : "";
+    }
+
+    function getOfferPhoto(offer) {
+      return offer.photoUrl || "";
+    }
+
+    function renderToolImage(offer) {
+      const photo = getOfferPhoto(offer);
+      const offerName = getOfferName(offer);
+
+      if (photo) {
+        return `
+          <div class="tool-image">
+            <img src="${escapeHtml(photo)}" alt="${escapeHtml(offerName)}">
+          </div>
+        `;
+      }
+
+      return `
+        <div class="tool-image">
+          <div class="tool-image-icon"></div>
+        </div>
+      `;
+    }
+
+    function updateLocalReservationCopy(reservationId, newStatus) {
+      try {
+        const localReservations = typeof getReservations === "function" ? getReservations() : [];
+
+        const updatedLocalReservations = localReservations.map(function (reservation) {
+          const localId = String(
+            reservation.id ||
+            reservation.reservationId ||
+            ""
+          );
+
+          if (localId !== String(reservationId)) {
+            return reservation;
+          }
+
+          return {
+            ...reservation,
+            status: newStatus,
+            statusText: getStatusText(newStatus),
+            updatedAt: new Date().toISOString()
+          };
+        });
+
+        if (typeof saveReservations === "function") {
+          saveReservations(updatedLocalReservations);
+        }
+      } catch (localError) {
+        console.warn("Lokální kopii rezervace se nepodařilo aktualizovat.", localError);
+      }
+    }
+
+    async function updateReservationStatus(reservationId, newStatus) {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        alert("Supabase klient není načtený.");
+        return null;
+      }
+
+      const { data, error } = await supabaseClient
+        .from("reservations")
+        .update({
+          status: newStatus
+        })
+        .eq("id", reservationId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error(error);
+        alert("Stav rezervace se nepodařilo uložit do Supabase. Podívejte se prosím do konzole.");
+        return null;
+      }
+
+      updateLocalReservationCopy(reservationId, newStatus);
+
+      return data ? normalizeReservation(data) : null;
+    }
+
+    async function approveReservation(reservationId) {
+      await updateReservationStatus(reservationId, STATUS_APPROVED);
+      await reloadAndReopen(reservationId, "open");
+    }
+
+    async function rejectReservation(reservationId) {
+      await updateReservationStatus(reservationId, STATUS_REJECTED);
+      await reloadAndReopen(reservationId, "history");
+    }
+
+    async function markReservationPickedUp(reservationId) {
+      await updateReservationStatus(reservationId, STATUS_PICKED_UP);
+      await reloadAndReopen(reservationId, "open");
+    }
+
+    async function markReservationReturned(reservationId) {
+      await updateReservationStatus(reservationId, STATUS_RETURNED);
+      await reloadAndReopen(reservationId, "history");
+    }
+
+    async function publishOffer(offerId) {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        alert("Supabase klient není načtený.");
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from("offers")
+        .update({
+          status: "active"
+        })
+        .eq("id", offerId);
+
+      if (error) {
+        console.error(error);
+        alert("Nabídku se nepodařilo zveřejnit.");
+        return;
+      }
+
+      showAccountMessage("Koncept byl zveřejněn.", "Nabídka je teď aktivní a viditelná ve výsledcích.");
+      await initializeOwnerOffersPage();
+    }
+
+    async function deleteOffer(offerId) {
+      const blockingReservations = ownerReservations.filter(function (reservation) {
+        return String(reservation.offerId) === String(offerId) && isOpenStatus(reservation.status);
+      });
+
+      if (blockingReservations.length > 0) {
+        alert("Tuto nabídku nelze smazat, protože k ní existuje otevřená rezervace.");
+        return;
+      }
+
+      const reallyDelete = confirm("Opravdu chcete tuto nabídku smazat?");
+
+      if (!reallyDelete) {
+        return;
+      }
+
+      const supabaseClient = getSupabaseClient();
+
+      const { error } = await supabaseClient
+        .from("offers")
+        .delete()
+        .eq("id", offerId);
+
+      if (error) {
+        console.error(error);
+        alert("Nabídku se nepodařilo smazat.");
+        return;
+      }
+
+      await initializeOwnerOffersPage();
+    }
+
+    async function reloadAndReopen(reservationId, panelType) {
+      await loadOwnerData();
+      renderOffers();
+
+      setTimeout(function () {
+        reopenReservationAfterRender(reservationId, panelType);
+      }, 0);
+    }
+
+    function getOfferIdByReservationId(reservationId) {
+      const reservation = ownerReservations.find(function (item) {
+        return String(item.id) === String(reservationId);
+      });
+
+      return reservation ? reservation.offerId : "";
+    }
+
+    function reopenReservationAfterRender(reservationId, panelType) {
+      const offerId = getOfferIdByReservationId(reservationId);
+
+      if (!offerId) {
+        return;
+      }
+
+      const offerDetail = document.getElementById("offer-detail-" + offerId);
+      const offerManageButton = document.getElementById("offer-manage-toggle-" + offerId);
+
+      if (offerDetail) {
+        offerDetail.classList.add("open");
+      }
+
+      if (offerManageButton) {
+        offerManageButton.textContent = "Skrýt";
+      }
+
+      if (panelType === "history") {
+        const historyPanel = document.getElementById("history-panel-" + offerId);
+        const historyButton = document.getElementById("history-toggle-" + offerId);
+
+        if (historyPanel) {
+          historyPanel.classList.add("open");
+        }
+
+        if (historyButton) {
+          historyButton.textContent = "Skrýt historii";
+        }
+
+        return;
+      }
+
+      const openPanel = document.getElementById("open-panel-" + offerId);
+      const openButton = document.getElementById("open-toggle-" + offerId);
+
+      if (openPanel) {
+        openPanel.classList.add("open");
+      }
+
+      if (openButton) {
+        openButton.textContent = "Skrýt žádosti";
+        openButton.classList.remove("important");
+      }
+    }
+
+    function renderRequestNote(status) {
+      if (status === STATUS_PENDING) {
+        return `<p class="request-note">Nová žádost čeká na vaše potvrzení nebo odmítnutí.</p>`;
+      }
+
+      if (status === STATUS_APPROVED) {
+        return `<p class="request-note">Žádost byla potvrzena. Čeká se na platbu zákazníka.</p>`;
+      }
+
+      if (status === STATUS_PAID) {
+        return `<p class="request-note success">Rezervace je zaplacena. Po předání nářadí ji označte jako vyzvednutou.</p>`;
+      }
+
+      if (status === STATUS_PICKED_UP) {
+        return `<p class="request-note success">Nářadí bylo označeno jako vyzvednuté. Po vrácení dokončete půjčení.</p>`;
+      }
+
+      if (status === STATUS_RETURNED) {
+        return `<p class="request-note success">Vráceno – půjčení je dokončeno. Už není potřeba žádná další akce.</p>`;
+      }
+
+      if (status === STATUS_REJECTED) {
+        return `<p class="request-note">Žádost byla odmítnuta. Nabídka už touto žádostí není blokovaná.</p>`;
+      }
+
+      if (status === STATUS_CANCELLED) {
+        return `<p class="request-note">Rezervace byla zrušena. Nabídka už touto žádostí není blokovaná.</p>`;
+      }
+
+      return "";
+    }
+
+    function getRequestStatusClass(status) {
+      if (status === STATUS_PAID || status === STATUS_PICKED_UP) {
+        return "paid";
+      }
+
+      if (status === STATUS_RETURNED) {
+        return "finished";
+      }
+
+      if (status === STATUS_APPROVED) {
+        return "active";
+      }
+
+      return "";
+    }
+
+    function renderRequestActions(reservation, status) {
+      const reservationId = reservation.id;
+      const actions = [];
+
+      if (status === STATUS_PENDING) {
+        actions.push(`
+          <button class="small-button" type="button" onclick="approveReservation('${escapeHtml(reservationId)}')">Potvrdit</button>
+        `);
+
+        actions.push(`
+          <button class="small-button light" type="button" onclick="rejectReservation('${escapeHtml(reservationId)}')">Odmítnout</button>
+        `);
+      }
+
+      if (status === STATUS_PAID) {
+        actions.push(`
+          <button class="small-button orange" type="button" onclick="markReservationPickedUp('${escapeHtml(reservationId)}')">
+            Označit jako vyzvednuto
+          </button>
+        `);
+      }
+
+      if (status === STATUS_PICKED_UP) {
+        actions.push(`
+          <button class="small-button" type="button" onclick="markReservationReturned('${escapeHtml(reservationId)}')">
+            Označit jako vráceno
+          </button>
+        `);
+      }
+
+      return actions.join("");
+    }
+
+    function renderReservationContactBlock(reservation) {
+      if (!canShowContact(reservation.status)) {
+        return `
+          <div class="request-contact-box locked">
+            <strong>Kontakt zatím skrytý</strong>
+            Kontakt na zájemce se zobrazí až po zaplacení rezervace.
+          </div>
+        `;
+      }
+
+      const renterName = reservation.renterName || "Zájemce";
+      const renterEmail = reservation.renterEmail || "E-mail není uložen";
+      const renterPhone = reservation.renterPhone || "Telefon není uložen";
+
+      const contactTitle = reservation.status === STATUS_RETURNED
+        ? "Kontakt na zákazníka k dokončené rezervaci"
+        : "Kontakt na zájemce";
+
+      const returnedNote = reservation.status === STATUS_RETURNED
+        ? "Rezervace je dokončená, kontakt zůstává dostupný pro případné zpětné dohledání. "
+        : "";
+
+      return `
+        <div class="request-contact-box">
+          <strong>${contactTitle}</strong>
+          ${escapeHtml(returnedNote)}
+          Jméno: ${escapeHtml(renterName)}<br>
+          E-mail: ${escapeHtml(renterEmail)}<br>
+          Telefon: ${escapeHtml(renterPhone)}
+        </div>
+      `;
+    }
+
+    function renderRequestDetailContent(reservation, status) {
+      const price = reservation.totalPrice;
+      const platformFee = reservation.platformFeeAmount || Math.round(price * PLATFORM_FEE_PERCENT / 100);
+      const ownerPayout = reservation.ownerPayout || price - platformFee;
+      const reservationId = reservation.id;
+
+      return `
+        <div class="request-detail-inner">
+          <div class="request-money">
+            <div class="money-cell">
+              Cena pro zákazníka
+              <strong>${escapeHtml(price)} Kč</strong>
+            </div>
+
+            <div class="money-cell">
+              Provize Rentulo
+              <strong>${escapeHtml(platformFee)} Kč</strong>
+            </div>
+
+            <div class="money-cell">
+              Vy dostanete
+              <strong>${escapeHtml(ownerPayout)} Kč</strong>
+            </div>
+          </div>
+
+          <div class="request-actions">
+            <a class="small-button light" href="rezervace.html?id=${encodeURIComponent(reservationId)}">Otevřít rezervaci</a>
+          </div>
+
+          ${renderReservationContactBlock(reservation)}
+
+          ${renderRequestNote(status)}
+        </div>
+      `;
+    }
+
+    function renderRequest(reservation) {
+      const status = reservation.status;
+      const statusText = getStatusText(status);
+
+      const renterName = reservation.renterName || "Zájemce";
+      const renterEmail = canShowContact(status)
+        ? reservation.renterEmail || "E-mail není uložen"
+        : "Kontakt se zobrazí po zaplacení";
+
+      const startDate = reservation.startDate;
+      const endDate = reservation.endDate;
+      const price = reservation.totalPrice;
+      const reservationId = reservation.id;
+
+      const actionButtons = renderRequestActions(reservation, status);
+
+      return `
+        <article class="request-card" id="request-card-${escapeHtml(reservationId)}">
+          <div class="request-row">
+            <div class="request-main">
+              <span class="request-name">${escapeHtml(renterName)}</span>
+              <span class="request-email">${escapeHtml(renterEmail)}</span>
+            </div>
+
+            <div class="request-date">
+              ${escapeHtml(formatDate(startDate))} – ${escapeHtml(formatDate(endDate))}
+            </div>
+
+            <div class="table-value hide-tablet">
+              ${escapeHtml(price)} Kč
+            </div>
+
+            <span class="request-status ${getRequestStatusClass(status)}">${escapeHtml(statusText)}</span>
+
+            <div class="row-actions">
+              ${actionButtons}
+              <button class="history-toggle-button" type="button" onclick="toggleRequestDetail('${escapeHtml(reservationId)}', this)">
+                Detail
+              </button>
+            </div>
+          </div>
+
+          <div class="request-detail" id="request-detail-${escapeHtml(reservationId)}">
+            ${renderRequestDetailContent(reservation, status)}
+          </div>
+        </article>
+      `;
+    }
+
+    function renderHistoryRequestRow(reservation) {
+      const status = reservation.status;
+      const statusText = getStatusText(status);
+
+      const renterName = reservation.renterName || "Zájemce";
+      const renterEmail = canShowContact(status)
+        ? reservation.renterEmail || "E-mail není uložen"
+        : "Kontakt se zobrazí po zaplacení";
+
+      const startDate = reservation.startDate;
+      const endDate = reservation.endDate;
+      const price = reservation.totalPrice;
+      const reservationId = reservation.id;
+
+      return `
+        <div class="history-row-wrapper">
+          <div class="history-row">
+            <div class="history-main">
+              <span class="history-title">${escapeHtml(renterName)}</span>
+              <span class="history-subtitle">${escapeHtml(renterEmail)}</span>
+            </div>
+
+            <div class="history-info">
+              ${escapeHtml(formatDate(startDate))} – ${escapeHtml(formatDate(endDate))}
+            </div>
+
+            <div class="history-status">
+              ${escapeHtml(statusText)}
+            </div>
+
+            <div class="history-price hide-tablet">
+              ${escapeHtml(price)} Kč
+            </div>
+
+            <div class="row-actions">
+              <button class="history-toggle-button" type="button" onclick="toggleHistoryRequest('${escapeHtml(reservationId)}', this)">
+                Detail
+              </button>
+            </div>
+          </div>
+
+          <div class="history-detail" id="history-request-detail-${escapeHtml(reservationId)}">
+            ${renderRequestDetailContent(reservation, status)}
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleRequestDetail(reservationId, button) {
+      const detail = document.getElementById("request-detail-" + reservationId);
+
+      if (!detail) {
+        return;
+      }
+
+      const isOpen = detail.classList.contains("open");
+
+      if (isOpen) {
+        detail.classList.remove("open");
+        button.textContent = "Detail";
+        return;
+      }
+
+      detail.classList.add("open");
+      button.textContent = "Skrýt";
+    }
+
+    function toggleHistoryRequest(reservationId, button) {
+      const detail = document.getElementById("history-request-detail-" + reservationId);
+
+      if (!detail) {
+        return;
+      }
+
+      const isOpen = detail.classList.contains("open");
+
+      if (isOpen) {
+        detail.classList.remove("open");
+        button.textContent = "Detail";
+        return;
+      }
+
+      detail.classList.add("open");
+      button.textContent = "Skrýt";
+    }
+
+    function toggleRequestPanel(panelId, button) {
+      const panel = document.getElementById(panelId);
+
+      if (!panel) {
+        return;
+      }
+
+      const isOpen = panel.classList.contains("open");
+      const isImportant = button.getAttribute("data-important") === "true";
+
+      if (isOpen) {
+        panel.classList.remove("open");
+        button.textContent = button.getAttribute("data-closed-text");
+
+        if (isImportant) {
+          button.classList.add("important");
+        }
+
+        return;
+      }
+
+      panel.classList.add("open");
+      button.textContent = button.getAttribute("data-open-text");
+      button.classList.remove("important");
+    }
+
+    function toggleOfferDetail(detailId, button) {
+      const detail = document.getElementById(detailId);
+
+      if (!detail) {
+        return;
+      }
+
+      const isOpen = detail.classList.contains("open");
+
+      if (isOpen) {
+        detail.classList.remove("open");
+        button.textContent = "Spravovat";
+        return;
+      }
+
+      detail.classList.add("open");
+      button.textContent = "Skrýt";
+    }
+
+    function renderRequestPanel(panelId, title, count, content) {
+      const countText = count === 1 ? "1 žádost" : count + " žádostí";
+
+      return `
+        <section class="request-panel" id="${escapeHtml(panelId)}">
+          <div class="request-panel-header">
+            <h3>${escapeHtml(title)}</h3>
+            <span>${escapeHtml(countText)}</span>
+          </div>
+
+          <div class="request-list">
+            ${content}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderOffer(offer, requests) {
+      const offerId = String(offer.id);
+      const offerName = getOfferName(offer);
+      const offerCity = getOfferCity(offer);
+      const offerCategory = getOfferCategory(offer);
+      const offerPrice = getOfferPrice(offer);
+      const isDraft = isOfferDraft(offer);
+
+      const openRequests = requests.filter(function (reservation) {
+        return isOpenStatus(reservation.status);
+      });
+
+      const closedRequests = requests.filter(function (reservation) {
+        return isClosedStatus(reservation.status);
+      });
+
+      const openPanelId = "open-panel-" + offerId;
+      const historyPanelId = "history-panel-" + offerId;
+      const offerDetailId = "offer-detail-" + offerId;
+
+      const openRequestsButtonText = openRequests.length
+        ? "Vyřídit žádosti (" + openRequests.length + ")"
+        : "Otevřené žádosti (0)";
+
+      const openContent = openRequests.length
+        ? openRequests.map(renderRequest).join("")
+        : `<p class="request-empty-note">U této nabídky teď není žádná otevřená žádost.</p>`;
+
+      const historyContent = closedRequests.length
+        ? closedRequests.map(renderHistoryRequestRow).join("")
+        : `<p class="request-empty-note">Tady budou dokončené, odmítnuté nebo zrušené žádosti k této nabídce.</p>`;
+
+      const ownerActionRequests = openRequests.filter(function (reservation) {
+        return [
+          STATUS_PENDING,
+          STATUS_PAID,
+          STATUS_PICKED_UP
+        ].includes(reservation.status);
+      });
+
+      const openButtonClass = ownerActionRequests.length ? "request-toggle-button important" : "request-toggle-button";
+      const countClass = ownerActionRequests.length ? "count-pill important" : "count-pill success";
+
+      const requestsColumnHtml = isDraft
+        ? `
+          <div class="request-counts hide-tablet">
+            <span class="count-pill">Nezveřejněno</span>
+          </div>
+        `
+        : `
+          <div class="request-counts hide-tablet">
+            <span class="${countClass}">Otevřené: ${escapeHtml(openRequests.length)}</span>
+            <span class="count-pill">Historie: ${escapeHtml(closedRequests.length)}</span>
+          </div>
+        `;
+
+      const feeColumnHtml = isDraft
+        ? `
+          <div class="table-value muted hide-tablet">
+            Až po zveřejnění
+          </div>
+        `
+        : `
+          <div class="table-value muted hide-tablet">
+            ${PLATFORM_FEE_PERCENT} % provize
+          </div>
+        `;
+
+      const actionsHtml = isDraft
+        ? `
+          <button class="small-button orange" type="button" onclick="publishOffer('${escapeHtml(offerId)}')">Zveřejnit</button>
+          <a class="small-button light" href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">Upravit</a>
+          <button class="small-button light" type="button" onclick="deleteOffer('${escapeHtml(offerId)}')">Smazat</button>
+        `
+        : `
+          <button class="history-toggle-button" type="button" id="offer-manage-toggle-${escapeHtml(offerId)}" onclick="toggleOfferDetail('${escapeHtml(offerDetailId)}', this)">
+            Spravovat
+          </button>
+          <a class="small-button light" href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">Upravit</a>
+          <button class="small-button light" type="button" onclick="deleteOffer('${escapeHtml(offerId)}')">Smazat</button>
+        `;
+
+      const detailHtml = isDraft
+        ? ""
+        : `
+          <div class="offer-detail" id="${escapeHtml(offerDetailId)}">
+            <div class="offer-detail-grid">
+              <div class="mini-stat">
+                <span>Místo</span>
+                <strong>${escapeHtml(offerCity)}</strong>
+              </div>
+
+              <div class="mini-stat">
+                <span>Kategorie</span>
+                <strong>${escapeHtml(offerCategory)}</strong>
+              </div>
+
+              <div class="mini-stat">
+                <span>Otevřené žádosti</span>
+                <strong>${escapeHtml(openRequests.length)}</strong>
+              </div>
+
+              <div class="mini-stat">
+                <span>Historie</span>
+                <strong>${escapeHtml(closedRequests.length)}</strong>
+              </div>
+            </div>
+
+            <div class="offer-actions">
+              <button
+                class="${openButtonClass}"
+                type="button"
+                id="open-toggle-${escapeHtml(offerId)}"
+                onclick="toggleRequestPanel('${escapeHtml(openPanelId)}', this)"
+                data-closed-text="${escapeHtml(openRequestsButtonText)}"
+                data-open-text="Skrýt žádosti"
+                data-important="${ownerActionRequests.length ? "true" : "false"}"
+              >
+                ${escapeHtml(openRequestsButtonText)}
+              </button>
+
+              <button
+                class="request-toggle-button"
+                type="button"
+                id="history-toggle-${escapeHtml(offerId)}"
+                onclick="toggleRequestPanel('${escapeHtml(historyPanelId)}', this)"
+                data-closed-text="Historie (${escapeHtml(closedRequests.length)})"
+                data-open-text="Skrýt historii"
+                data-important="false"
+              >
+                Historie (${escapeHtml(closedRequests.length)})
+              </button>
+
+              <a class="small-button light" href="detail.html?id=${encodeURIComponent(offerId)}">Veřejný detail</a>
+            </div>
+
+            ${renderRequestPanel(openPanelId, "Otevřené žádosti", openRequests.length, openContent)}
+            ${renderRequestPanel(historyPanelId, "Historie žádostí", closedRequests.length, historyContent)}
+          </div>
+        `;
+
+      return `
+        <div class="offer-row-wrapper">
+          <div class="offer-row">
+            <div class="offer-tool">
+              ${renderToolImage(offer)}
+
+              <div>
+                <span class="offer-title">${escapeHtml(offerName)}</span>
+                <span class="offer-subtitle">${escapeHtml(offerCity)} · ${escapeHtml(offerCategory)}</span>
+              </div>
+            </div>
+
+            <div class="table-value">
+              ${escapeHtml(offerPrice)} Kč / den
+            </div>
+
+            <span class="status-pill ${getOfferStatusClass(offer)}">${escapeHtml(getOfferStatus(offer))}</span>
+
+            ${requestsColumnHtml}
+
+            ${feeColumnHtml}
+
+            <div class="offer-actions">
+              ${actionsHtml}
+            </div>
+          </div>
+
+          ${detailHtml}
+        </div>
+      `;
+    }
+
+    function renderOffers() {
+      if (!ownerOffers.length) {
+        renderEmptyState();
+        return;
+      }
+
+      const offersRowsHtml = ownerOffers.map(function (offer) {
+        const offerId = String(offer.id);
+
+        const offerRequests = ownerReservations.filter(function (reservation) {
+          return String(reservation.offerId) === String(offerId);
+        });
+
+        return renderOffer(offer, offerRequests);
+      }).join("");
+
+      document.getElementById("offersList").innerHTML = `
+        <section class="offers-table-card">
+          <div class="offer-table-head">
+            <div>Nabídka</div>
+            <div>Cena</div>
+            <div>Stav</div>
+            <div class="hide-tablet">Žádosti</div>
+            <div class="hide-tablet">Provize</div>
+            <div>Akce</div>
+          </div>
+
+          ${offersRowsHtml}
+        </section>
+      `;
+
+      autoOpenActionOfferFromUrl();
+    }
+
+    function autoOpenActionOfferFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+
+      if (params.get("open") !== "actions") {
+        return;
+      }
+
+      const firstActionReservation = ownerReservations.find(function (reservation) {
+        return [
+          STATUS_PENDING,
+          STATUS_PAID,
+          STATUS_PICKED_UP
+        ].includes(reservation.status);
+      });
+
+      const firstOpenReservation = firstActionReservation || ownerReservations.find(function (reservation) {
+        return isOpenStatus(reservation.status);
+      });
+
+      if (!firstOpenReservation) {
+        return;
+      }
+
+      const offerId = String(firstOpenReservation.offerId || "");
+      const reservationId = String(firstOpenReservation.id || "");
+
+      if (!offerId || !reservationId) {
+        return;
+      }
+
+      setTimeout(function () {
+        const offerDetail = document.getElementById("offer-detail-" + offerId);
+        const offerManageButton = document.getElementById("offer-manage-toggle-" + offerId);
+
+        if (offerDetail) {
+          offerDetail.classList.add("open");
+        }
+
+        if (offerManageButton) {
+          offerManageButton.textContent = "Skrýt";
+        }
+
+        const openPanel = document.getElementById("open-panel-" + offerId);
+        const openButton = document.getElementById("open-toggle-" + offerId);
+
+        if (openPanel) {
+          openPanel.classList.add("open");
+        }
+
+        if (openButton) {
+          openButton.textContent = "Skrýt žádosti";
+          openButton.classList.remove("important");
+        }
+
+        const requestCard = document.getElementById("request-card-" + reservationId);
+
+        if (requestCard) {
+          requestCard.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        }
+      }, 0);
+    }
+
+    async function initializeOwnerOffersPage() {
+      renderSharedNavigation("muj-ucet");
+      renderLoadingState();
+
+      await loadOwnerData();
+
+      renderSharedNavigation("muj-ucet");
+      renderOffers();
+      showAccountMessageFromStorage();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      initializeOwnerOffersPage();
+    });
+  </script>
+
+</body>
+</html>

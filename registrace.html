@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Registrace - Rentulo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f3ee;
+      color: #073f2e;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    .header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .logo-icon::before {
+      content: "✓";
+    }
+
+    .logo-dot {
+      display: none;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 21px;
+      line-height: 1;
+      color: #073f2e;
+    }
+
+    .logo-text small {
+      display: block;
+      margin-top: 3px;
+      font-size: 13px;
+      color: #4d5b55;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 15px;
+    }
+
+    .nav a {
+      font-weight: 500;
+    }
+
+    .nav .active-link {
+      font-weight: 900;
+    }
+
+    .btn-register,
+    .logout-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #006b45;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .auth-page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 14px 20px 32px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 980px;
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      background: white;
+      border: 1px solid #eadfd1;
+      border-radius: 18px;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+    }
+
+    .auth-intro {
+      padding: 24px;
+      background: #fffdf8;
+      border-right: 1px solid #eadfd1;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: #006b45;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .auth-intro h1 {
+      margin: 0 0 10px;
+      color: #073f2e;
+      font-size: 36px;
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+
+    .auth-intro p {
+      margin: 0;
+      color: #334c43;
+      font-size: 15px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    .auth-helper-box {
+      margin-top: 14px;
+      padding: 11px 12px;
+      border-radius: 13px;
+      background: #e2f3eb;
+      border: 1px solid #c7e8d7;
+      color: #073f2e;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .auth-helper-box strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #006b45;
+    }
+
+    .auth-form {
+      padding: 22px 24px;
+      display: block;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .auth-error-message {
+      display: none;
+      grid-column: 1 / -1;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #fff7f0;
+      border: 1px solid #ffe0c8;
+      color: #5b3a22;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .auth-error-message.active {
+      display: block;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      color: #173e33;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .form-group input {
+      display: block;
+      width: 100%;
+      height: 40px;
+      border: 1px solid #d8d0c5;
+      border-radius: 10px;
+      background: white;
+      padding: 0 12px;
+      font-size: 14px;
+      color: #073f2e;
+      font-weight: 700;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #006b45;
+      box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
+    }
+
+    .form-group input.input-error,
+    .terms-check input.input-error {
+      border-color: #df5b00;
+      box-shadow: 0 0 0 3px rgba(223, 91, 0, 0.12);
+    }
+
+    .registration-note {
+      margin: 1px 0 0;
+      font-size: 12px;
+      color: #5b6862;
+      line-height: 1.3;
+      font-weight: 700;
+    }
+
+    .terms-list {
+      grid-column: 1 / -1;
+      display: grid;
+      gap: 7px;
+      margin: 2px 0;
+    }
+
+    .terms-check {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 8px;
+      align-items: start;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: #f8f5f0;
+      border: 1px solid #eee8de;
+      color: #334c43;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .terms-check input {
+      width: 16px;
+      height: 16px;
+      margin: 1px 0 0;
+      accent-color: #006b45;
+      flex-shrink: 0;
+    }
+
+    .terms-check a {
+      color: #006b45;
+      font-weight: 900;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .auth-button {
+      grid-column: 1 / -1;
+      min-height: 41px;
+      border: none;
+      border-radius: 10px;
+      background: #006b45;
+      color: white;
+      padding: 0 18px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .auth-button:hover {
+      background: #00563a;
+    }
+
+    .auth-button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .auth-note {
+      grid-column: 1 / -1;
+      margin: 0;
+      color: #334c43;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .auth-note a {
+      color: #006b45;
+      font-weight: 900;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    @media (max-width: 900px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .auth-card {
+        grid-template-columns: 1fr;
+        max-width: 760px;
+      }
+
+      .auth-intro {
+        border-right: none;
+        border-bottom: 1px solid #eadfd1;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .header,
+      .auth-page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .auth-page {
+        padding-top: 10px;
+      }
+
+      .auth-intro,
+      .auth-form {
+        padding: 16px;
+      }
+
+      .auth-intro h1 {
+        font-size: 30px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group.full,
+      .auth-error-message,
+      .terms-list,
+      .auth-button,
+      .auth-note {
+        grid-column: auto;
+      }
+
+      .auth-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="auth-page">
+
+    <section class="auth-card">
+
+      <div class="auth-intro">
+        <p class="eyebrow">Nový účet</p>
+
+        <h1>Registrace</h1>
+
+        <p>
+          Vytvořte si jeden účet. Se stejným účtem si můžete nářadí půjčovat
+          i nabízet vlastní nářadí ostatním.
+        </p>
+
+        <div class="auth-helper-box">
+          <strong>Účet Rentulo</strong>
+          Registrace se nyní ukládá do Supabase. Telefon a přesná adresa se druhé straně zobrazí až po zaplacení rezervace.
+        </div>
+      </div>
+
+      <form class="auth-form" id="registrationForm">
+        <div class="form-grid">
+
+          <div class="auth-error-message" id="registrationError"></div>
+
+          <div class="form-group">
+            <label for="fullName">Jméno a příjmení</label>
+            <input type="text" id="fullName" placeholder="např. Jan Novák" required />
+          </div>
+
+          <div class="form-group">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" placeholder="např. jan@email.cz" required />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Telefon</label>
+            <input type="tel" id="phone" placeholder="např. +420 777 123 456" required />
+            <p class="registration-note">
+              Telefon se zobrazí až po zaplacení rezervace.
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Heslo</label>
+            <input type="password" id="password" placeholder="Zadejte heslo" required />
+          </div>
+
+          <div class="form-group full">
+            <label for="street">Ulice a číslo popisné</label>
+            <input type="text" id="street" placeholder="např. Dlouhá 12" required />
+          </div>
+
+          <div class="form-group">
+            <label for="city">Město</label>
+            <input type="text" id="city" list="citySuggestions" placeholder="např. Praha" required />
+          </div>
+
+          <div class="form-group">
+            <label for="postalCode">PSČ</label>
+            <input type="text" id="postalCode" placeholder="např. 110 00" required />
+          </div>
+
+          <datalist id="citySuggestions"></datalist>
+
+          <div class="terms-list">
+            <label class="terms-check">
+              <input type="checkbox" id="termsBusiness" />
+              <span>
+                Souhlasím s
+                <a href="obchodni-podminky.html" target="_blank">obchodními podmínkami</a>.
+              </span>
+            </label>
+
+            <label class="terms-check">
+              <input type="checkbox" id="termsPrivacy" />
+              <span>
+                Souhlasím se
+                <a href="ochrana-osobnich-udaju.html" target="_blank">zpracováním osobních údajů</a>.
+              </span>
+            </label>
+
+            <label class="terms-check">
+              <input type="checkbox" id="termsIdentity" />
+              <span>
+                Beru na vědomí, že při osobním předání nářadí může druhá strana přiměřeně ověřit moji totožnost.
+              </span>
+            </label>
+          </div>
+
+          <button type="submit" class="auth-button" id="registrationSubmitButton">
+            Vytvořit účet
+          </button>
+
+          <p class="auth-note">
+            Už máte účet?
+            <a href="prihlaseni.html">Přihlaste se</a>
+          </p>
+
+        </div>
+      </form>
+
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/supabase-config.js"></script>
+
+  <script>
+    const cityPostalCodes = {
+      "praha": "110 00",
+      "brno": "602 00",
+      "ostrava": "702 00",
+      "plzeň": "301 00",
+      "plzen": "301 00",
+      "liberec": "460 01",
+      "olomouc": "779 00",
+      "české budějovice": "370 01",
+      "ceske budejovice": "370 01",
+      "hradec králové": "500 03",
+      "hradec kralove": "500 03",
+      "pardubice": "530 02",
+      "zlín": "760 01",
+      "zlin": "760 01",
+      "havířov": "736 01",
+      "havirov": "736 01",
+      "kladno": "272 01",
+      "most": "434 01",
+      "opava": "746 01",
+      "frýdek-místek": "738 01",
+      "frydek-mistek": "738 01",
+      "karviná": "733 01",
+      "karvina": "733 01",
+      "jihlava": "586 01",
+      "teplice": "415 01",
+      "děčín": "405 02",
+      "decin": "405 02",
+      "chomutov": "430 01",
+      "karlovy vary": "360 01",
+      "jablonec nad nisou": "466 01",
+      "mladá boleslav": "293 01",
+      "mlada boleslav": "293 01",
+      "prostějov": "796 01",
+      "prostejov": "796 01",
+      "přerov": "750 02",
+      "prerov": "750 02",
+      "třinec": "739 61",
+      "trinec": "739 61",
+      "tábor": "390 01",
+      "tabor": "390 01",
+      "znojmo": "669 02",
+      "kolín": "280 02",
+      "kolin": "280 02",
+      "písek": "397 01",
+      "pisek": "397 01",
+      "cheb": "350 02",
+      "příbram": "261 01",
+      "pribram": "261 01",
+      "orlová": "735 14",
+      "orlova": "735 14",
+      "kroměříž": "767 01",
+      "kromeriz": "767 01",
+      "vsetín": "755 01",
+      "vsetin": "755 01",
+      "šumperk": "787 01",
+      "sumperk": "787 01",
+      "uherské hradiště": "686 01",
+      "uherske hradiste": "686 01",
+      "břeclav": "690 02",
+      "breclav": "690 02",
+      "hodonín": "695 01",
+      "hodonin": "695 01",
+      "česká lípa": "470 01",
+      "ceska lipa": "470 01",
+      "litoměřice": "412 01",
+      "litomerice": "412 01",
+      "krnov": "794 01",
+      "sokolov": "356 01"
+    };
+
+    function registrationNormalizeEmail(email) {
+      return String(email || "").trim().toLowerCase();
+    }
+
+    function normalizeCityName(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase();
+    }
+
+    function registrationShowError(message) {
+      const errorBox = document.getElementById("registrationError");
+
+      if (!errorBox) {
+        return;
+      }
+
+      errorBox.textContent = message;
+      errorBox.classList.add("active");
+    }
+
+    function registrationHideError() {
+      const errorBox = document.getElementById("registrationError");
+
+      if (!errorBox) {
+        return;
+      }
+
+      errorBox.textContent = "";
+      errorBox.classList.remove("active");
+    }
+
+    function registrationClearErrors() {
+      const fields = document.querySelectorAll("#registrationForm input");
+
+      fields.forEach(function (field) {
+        field.classList.remove("input-error");
+      });
+    }
+
+    function registrationMarkError(input) {
+      if (input) {
+        input.classList.add("input-error");
+      }
+    }
+
+    function registrationIsEmpty(value) {
+      return String(value || "").trim() === "";
+    }
+
+    function registrationGetInitials(fullName) {
+      if (!fullName) {
+        return "U";
+      }
+
+      const parts = fullName.trim().split(" ").filter(Boolean);
+
+      if (parts.length === 1) {
+        return parts[0].charAt(0).toUpperCase();
+      }
+
+      return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    }
+
+    function registrationGetSupabaseClient() {
+      if (window.rentuloSupabase) {
+        return window.rentuloSupabase;
+      }
+
+      if (typeof rentuloSupabase !== "undefined") {
+        return rentuloSupabase;
+      }
+
+      return null;
+    }
+
+    function registrationSaveCurrentUser(user) {
+      if (typeof saveCurrentUser === "function") {
+        saveCurrentUser(user);
+        return;
+      }
+
+      try {
+        localStorage.setItem("naradiUser", JSON.stringify(user));
+        localStorage.setItem("naradiLoggedIn", "true");
+      } catch (error) {
+        console.warn("Nepodařilo se uložit aktuálního uživatele do localStorage.", error);
+      }
+    }
+
+    function setupCitySuggestions() {
+      const datalist = document.getElementById("citySuggestions");
+
+      if (!datalist) {
+        return;
+      }
+
+      const uniqueCities = [];
+      const seen = {};
+
+      Object.keys(cityPostalCodes).forEach(function (city) {
+        const displayCity = city
+          .split(" ")
+          .map(function (part) {
+            return part.charAt(0).toUpperCase() + part.slice(1);
+          })
+          .join(" ");
+
+        const normalized = normalizeCityName(displayCity);
+
+        if (!seen[normalized]) {
+          seen[normalized] = true;
+          uniqueCities.push(displayCity);
+        }
+      });
+
+      datalist.innerHTML = uniqueCities
+        .sort()
+        .map(function (city) {
+          return `<option value="${city}"></option>`;
+        })
+        .join("");
+    }
+
+    function setupPostalCodeAutocomplete() {
+      const cityInput = document.getElementById("city");
+      const postalCodeInput = document.getElementById("postalCode");
+
+      if (!cityInput || !postalCodeInput) {
+        return;
+      }
+
+      function updatePostalCode() {
+        const city = normalizeCityName(cityInput.value);
+        const postalCode = cityPostalCodes[city];
+
+        if (!postalCode) {
+          return;
+        }
+
+        if (!postalCodeInput.value.trim() || postalCodeInput.dataset.autoFilled === "true") {
+          postalCodeInput.value = postalCode;
+          postalCodeInput.dataset.autoFilled = "true";
+        }
+      }
+
+      cityInput.addEventListener("input", updatePostalCode);
+      cityInput.addEventListener("change", updatePostalCode);
+
+      postalCodeInput.addEventListener("input", function () {
+        postalCodeInput.dataset.autoFilled = "false";
+      });
+    }
+
+    async function createUserAccount(event) {
+      event.preventDefault();
+
+      registrationHideError();
+      registrationClearErrors();
+
+      const supabaseClient = registrationGetSupabaseClient();
+
+      if (!supabaseClient) {
+        registrationShowError("Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js.");
+        return;
+      }
+
+      const fullNameInput = document.getElementById("fullName");
+      const emailInput = document.getElementById("email");
+      const phoneInput = document.getElementById("phone");
+      const streetInput = document.getElementById("street");
+      const cityInput = document.getElementById("city");
+      const postalCodeInput = document.getElementById("postalCode");
+      const passwordInput = document.getElementById("password");
+      const submitButton = document.getElementById("registrationSubmitButton");
+
+      const termsBusiness = document.getElementById("termsBusiness");
+      const termsPrivacy = document.getElementById("termsPrivacy");
+      const termsIdentity = document.getElementById("termsIdentity");
+
+      const requiredFields = [
+        fullNameInput,
+        emailInput,
+        phoneInput,
+        streetInput,
+        cityInput,
+        postalCodeInput,
+        passwordInput
+      ];
+
+      let hasError = false;
+
+      requiredFields.forEach(function (field) {
+        if (registrationIsEmpty(field.value)) {
+          registrationMarkError(field);
+          hasError = true;
+        }
+      });
+
+      if (!termsBusiness.checked) {
+        registrationMarkError(termsBusiness);
+        hasError = true;
+      }
+
+      if (!termsPrivacy.checked) {
+        registrationMarkError(termsPrivacy);
+        hasError = true;
+      }
+
+      if (!termsIdentity.checked) {
+        registrationMarkError(termsIdentity);
+        hasError = true;
+      }
+
+      if (hasError) {
+        registrationShowError("Vyplňte prosím všechna pole a potvrďte všechny souhlasy.");
+        return;
+      }
+
+      if (passwordInput.value.length < 6) {
+        registrationMarkError(passwordInput);
+        registrationShowError("Heslo musí mít alespoň 6 znaků.");
+        return;
+      }
+
+      const email = registrationNormalizeEmail(emailInput.value);
+      const fullName = fullNameInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const street = streetInput.value.trim();
+      const city = cityInput.value.trim();
+      const postalCode = postalCodeInput.value.trim();
+      const now = new Date().toISOString();
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Vytvářím účet...";
+      }
+
+      try {
+        const { data, error } = await supabaseClient.auth.signUp({
+          email: email,
+          password: passwordInput.value,
+          options: {
+            data: {
+              full_name: fullName,
+              phone: phone,
+              street: street,
+              city: city,
+              postal_code: postalCode,
+              terms_business_accepted: true,
+              terms_privacy_accepted: true,
+              terms_identity_accepted: true,
+              terms_accepted_at: now
+            }
+          }
+        });
+
+        if (error) {
+          const message = String(error.message || "");
+
+          if (message.toLowerCase().includes("already registered") || message.toLowerCase().includes("already exists")) {
+            registrationMarkError(emailInput);
+            registrationShowError("Uživatel s tímto e-mailem už existuje. Zkuste se přihlásit.");
+            return;
+          }
+
+          registrationShowError("Registrace se nepodařila: " + message);
+          return;
+        }
+
+        const createdUser = {
+          id: data && data.user ? data.user.id : "supabase-user-" + Date.now(),
+          fullName: fullName,
+          name: fullName,
+          email: email,
+          phone: phone,
+          street: street,
+          city: city,
+          postalCode: postalCode,
+          initials: registrationGetInitials(fullName),
+          role: "user",
+
+          termsBusinessAccepted: true,
+          termsPrivacyAccepted: true,
+          termsIdentityAccepted: true,
+          termsAcceptedAt: now,
+
+          createdAt: now,
+          updatedAt: now,
+          source: "supabase"
+        };
+
+        registrationSaveCurrentUser(createdUser);
+
+        window.location.href = "ucet-vytvoren.html";
+      } catch (error) {
+        console.error(error);
+        registrationShowError("Registrace se nepodařila. Zkontrolujte připojení a zkuste to znovu.");
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Vytvořit účet";
+        }
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      renderSharedNavigation("");
+      setupCitySuggestions();
+      setupPostalCodeAutocomplete();
+
+      const registrationForm = document.getElementById("registrationForm");
+
+      if (registrationForm) {
+        registrationForm.addEventListener("submit", createUserAccount);
+      }
+    });
+  </script>
+</body>
+</html>

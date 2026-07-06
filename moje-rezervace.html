@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Moje rezervace - Rentulo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f3ee;
+      color: #073f2e;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 6px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .logo-icon::before {
+      content: "✓";
+    }
+
+    .logo-dot {
+      display: none;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 19px;
+      line-height: 1;
+      color: #073f2e;
+    }
+
+    .logo-text small {
+      display: block;
+      margin-top: 1px;
+      font-size: 12px;
+      color: #4d5b55;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+    }
+
+    .nav .active-link {
+      font-weight: 800;
+    }
+
+    .btn-register,
+    .logout-link {
+      background: #006b45;
+      color: white !important;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .account-page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 8px 20px 18px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 5px;
+      color: #006b45;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .account-page-header {
+      position: relative;
+      margin-bottom: 12px;
+      padding-right: 165px;
+    }
+
+    .eyebrow {
+      margin: 0 0 2px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #4d5b55;
+    }
+
+    h1 {
+      margin: 0 0 3px;
+      font-size: 28px;
+      line-height: 1;
+      color: #073f2e;
+    }
+
+    .account-page-header p {
+      margin: 0;
+      font-size: 14px;
+      color: #334c43;
+    }
+
+    .top-action-button {
+      position: absolute;
+      right: 0;
+      top: 14px;
+      background: #ff6500;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .top-action-button:hover {
+      background: #e85d00;
+    }
+
+    .account-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .reservation-section {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .reservation-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .reservation-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 12px;
+      border-radius: 14px;
+      background: #ffffff;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+    }
+
+    .reservation-section-header h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #073f2e;
+    }
+
+    .reservation-section-header span {
+      border-radius: 999px;
+      background: #e2f3eb;
+      color: #006b45;
+      padding: 5px 9px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .reservation-section.history .reservation-section-header span {
+      background: #eef1ed;
+      color: #334c43;
+    }
+
+    .reservation-table-card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      overflow: hidden;
+      border: 1px solid #eee4d7;
+    }
+
+    .reservation-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .reservation-table th {
+      background: #f8f5f0;
+      color: #4d5b55;
+      text-align: left;
+      padding: 9px 10px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      border-bottom: 1px solid #e5ddd2;
+      white-space: nowrap;
+    }
+
+    .reservation-table th:last-child {
+      text-align: right;
+    }
+
+    .reservation-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #eee4d7;
+      vertical-align: middle;
+      color: #173e33;
+    }
+
+    .reservation-table td:last-child {
+      text-align: right;
+    }
+
+    .reservation-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .reservation-row {
+      transition: background 0.2s ease, outline 0.2s ease;
+    }
+
+    .reservation-row:hover {
+      background: #fbfaf7;
+    }
+
+    .tool-cell {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 9px;
+      align-items: center;
+      min-width: 180px;
+    }
+
+    .tool-thumb {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: #ece6dc;
+      border: 1px solid #e3dace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: #073f2e;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .tool-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .tool-name {
+      display: block;
+      color: #073f2e;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .tool-meta {
+      display: block;
+      margin-top: 1px;
+      color: #5b6862;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .date-cell,
+    .price-cell {
+      white-space: nowrap;
+      font-weight: 800;
+      color: #073f2e;
+    }
+
+    .owner-cell {
+      color: #334c43;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: #fff0e6;
+      color: #df5b00;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .status-paid {
+      background: #e2f3eb;
+      color: #006b45;
+    }
+
+    .status-finished {
+      background: #eef1ed;
+      color: #334c43;
+    }
+
+    .status-rejected {
+      background: #fff0e6;
+      color: #df5b00;
+    }
+
+    .table-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      flex-wrap: wrap;
+      min-width: 155px;
+    }
+
+    .small-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      border-radius: 9px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      background: #006b45;
+      color: white;
+      white-space: nowrap;
+      min-height: 32px;
+    }
+
+    .small-button:hover {
+      background: #00563a;
+    }
+
+    .small-button.light {
+      background: #eee8de;
+      color: #073f2e;
+    }
+
+    .small-button.light:hover {
+      background: #e3dace;
+    }
+
+    .small-button.orange {
+      background: #ff6500;
+      color: white;
+    }
+
+    .small-button.orange:hover {
+      background: #e85d00;
+    }
+
+    .small-button:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
+    .detail-row {
+      display: none;
+    }
+
+    .detail-row.open {
+      display: table-row;
+    }
+
+    .detail-row td {
+      background: #fbfaf7;
+      padding: 0;
+      text-align: left;
+    }
+
+    .reservation-detail-panel {
+      padding: 11px 12px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .info-box {
+      background: #ffffff;
+      border: 1px solid #eee4d7;
+      border-radius: 11px;
+      padding: 8px 9px;
+      min-height: 48px;
+    }
+
+    .info-box span {
+      display: block;
+      color: #5b6862;
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .info-box strong {
+      display: block;
+      font-size: 14px;
+      color: #073f2e;
+    }
+
+    .payment-box,
+    .contact-box,
+    .reservation-state-box,
+    .review-box {
+      border-radius: 12px;
+      padding: 9px 10px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .payment-box.waiting {
+      background: #fff7f0;
+      border: 1px solid #ffe0c8;
+      color: #5b3a22;
+    }
+
+    .payment-box.paid {
+      background: #e2f3eb;
+      border: 1px solid #c7e8d7;
+      color: #073f2e;
+    }
+
+    .reservation-state-box.active {
+      background: #e2f3eb;
+      border: 1px solid #c7e8d7;
+      color: #073f2e;
+    }
+
+    .reservation-state-box.finished {
+      background: #eef1ed;
+      border: 1px solid #dde5df;
+      color: #334c43;
+    }
+
+    .reservation-state-box.rejected {
+      background: #fff0e6;
+      border: 1px solid #ffd5b8;
+      color: #5b3a22;
+    }
+
+    .review-box {
+      background: #fffdf8;
+      border: 1px solid #eee4d7;
+      color: #073f2e;
+    }
+
+    .payment-box strong,
+    .contact-box strong,
+    .reservation-state-box strong,
+    .review-box strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #073f2e;
+    }
+
+    .payment-box.waiting strong,
+    .reservation-state-box.rejected strong {
+      color: #df5b00;
+    }
+
+    .payment-lines,
+    .contact-lines,
+    .review-lines {
+      display: grid;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .contact-box.hidden {
+      background: #fff7f0;
+      border: 1px solid #ffe0c8;
+      color: #5b3a22;
+    }
+
+    .contact-box.visible {
+      background: #e2f3eb;
+      border: 1px solid #c7e8d7;
+      color: #073f2e;
+    }
+
+    .contact-box.hidden strong {
+      color: #df5b00;
+    }
+
+    .section-empty-note {
+      margin: 0;
+      padding: 12px;
+      border-radius: 14px;
+      background: #ffffff;
+      color: #5b6862;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+    }
+
+    .account-empty-state {
+      background: white;
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+    }
+
+    .account-empty-state h2 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      color: #073f2e;
+    }
+
+    .account-empty-state p {
+      margin: 0 0 14px;
+      color: #334c43;
+      font-size: 15px;
+    }
+
+    .account-empty-state a {
+      display: inline-flex;
+      background: #ff6500;
+      color: white;
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 980px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .account-page-header {
+        padding-right: 0;
+      }
+
+      .top-action-button {
+        position: static;
+        display: inline-flex;
+        margin-top: 10px;
+      }
+
+      .reservation-table-card {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+        overflow: visible;
+      }
+
+      .reservation-table,
+      .reservation-table tbody,
+      .reservation-table tr,
+      .reservation-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .reservation-table thead {
+        display: none;
+      }
+
+      .reservation-row {
+        margin-bottom: 8px;
+        padding: 12px;
+        border-radius: 16px;
+        background: #ffffff;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+        border: 1px solid #eee4d7;
+      }
+
+      .reservation-row td {
+        border-bottom: none;
+        padding: 5px 0;
+        text-align: left;
+      }
+
+      .reservation-row td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 2px;
+        color: #5b6862;
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+
+      .reservation-row td:first-child::before {
+        display: none;
+      }
+
+      .tool-cell {
+        grid-template-columns: 42px 1fr;
+      }
+
+      .tool-thumb {
+        width: 42px;
+        height: 42px;
+      }
+
+      .owner-cell,
+      .date-cell,
+      .price-cell {
+        white-space: normal;
+      }
+
+      .table-actions {
+        justify-content: flex-start;
+        min-width: 0;
+        margin-top: 4px;
+      }
+
+      .detail-row.open {
+        display: block;
+      }
+
+      .detail-row td {
+        display: block;
+        padding: 0;
+        background: transparent;
+      }
+
+      .reservation-detail-panel {
+        margin-bottom: 10px;
+        padding: 12px;
+        border-radius: 16px;
+        background: #fbfaf7;
+        border: 1px solid #eee4d7;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .account-page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .reservation-section-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+      }
+
+      .table-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .small-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <span class="logo-dot"></span>
+      </div>
+
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+        <small>Sousedská půjčovna nářadí</small>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="account-page">
+
+    <a href="muj-ucet.html" class="back-link">← Zpět do účtu</a>
+
+    <section class="account-page-header">
+      <p class="eyebrow">Moje půjčování</p>
+
+      <h1>Moje rezervace</h1>
+
+      <p>Přehled žádostí o půjčení, které jste sami odeslali.</p>
+
+      <a href="vysledky.html" class="top-action-button">Najít nářadí</a>
+    </section>
+
+    <section class="account-list" id="reservationsList"></section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/reservations.js"></script>
+  <script src="js/supabase-config.js"></script>
+
+  <script>
+    const PLATFORM_FEE_PERCENT = 10;
+    let supabaseReservations = [];
+
+    function getSupabaseClient() {
+      if (window.rentuloSupabase) {
+        return window.rentuloSupabase;
+      }
+
+      if (typeof rentuloSupabase !== "undefined") {
+        return rentuloSupabase;
+      }
+
+      return null;
+    }
+
+    async function getCurrentSupabaseUser() {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        return null;
+      }
+
+      const { data, error } = await supabaseClient.auth.getUser();
+
+      if (error || !data || !data.user) {
+        return null;
+      }
+
+      return data.user;
+    }
+
+    function escapeHtml(text) {
+      return String(text === undefined || text === null ? "" : text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function getStars(rating) {
+      const count = Number(rating) || 0;
+      let stars = "";
+
+      for (let i = 1; i <= 5; i++) {
+        stars += i <= count ? "★" : "☆";
+      }
+
+      return stars;
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) {
+        return "-";
+      }
+
+      const date = new Date(dateString);
+
+      if (isNaN(date.getTime())) {
+        return dateString;
+      }
+
+      return date.toLocaleDateString("cs-CZ");
+    }
+
+    function formatDateTime(dateString) {
+      if (!dateString) {
+        return "-";
+      }
+
+      const date = new Date(dateString);
+
+      if (isNaN(date.getTime())) {
+        return dateString;
+      }
+
+      return date.toLocaleString("cs-CZ");
+    }
+
+    function getSafeReservationStatusText(status) {
+      if (typeof getReservationStatusText === "function") {
+        return getReservationStatusText(status);
+      }
+
+      if (status === "pending") {
+        return "Čeká na potvrzení";
+      }
+
+      if (status === "approved") {
+        return "Čeká na platbu";
+      }
+
+      if (status === "paid") {
+        return "Zaplaceno";
+      }
+
+      if (status === "picked_up") {
+        return "Vyzvednuto";
+      }
+
+      if (status === "returned") {
+        return "Vráceno";
+      }
+
+      if (status === "rejected") {
+        return "Odmítnuto";
+      }
+
+      if (status === "cancelled") {
+        return "Zrušeno";
+      }
+
+      return status || "Čeká na potvrzení";
+    }
+
+    function normalizeSupabaseReservation(row) {
+      return {
+        id: row.id,
+        reservationId: row.id,
+
+        offerId: row.offer_id,
+        toolId: row.offer_id,
+        naradiId: row.offer_id,
+
+        ownerId: row.owner_id,
+        renterId: row.renter_id,
+
+        toolName: row.offer_name || "Nářadí",
+        offerName: row.offer_name || "Nářadí",
+        naradiName: row.offer_name || "Nářadí",
+
+        category: row.category || "Nářadí",
+        city: row.city || "",
+
+        pricePerDay: Number(row.price_per_day || 0),
+        price: Number(row.price_per_day || 0),
+        deposit: Number(row.deposit || 0),
+
+        startDate: row.start_date || row.date_from,
+        endDate: row.end_date || row.date_to,
+        dateFrom: row.start_date || row.date_from,
+        dateTo: row.end_date || row.date_to,
+
+        totalDays: Number(row.total_days || row.days || 0),
+        days: Number(row.total_days || row.days || 0),
+        totalPrice: Number(row.total_price || 0),
+
+        platformFeePercent: Number(row.platform_fee_percent || PLATFORM_FEE_PERCENT),
+        platformFeeAmount: Number(row.platform_fee_amount || 0),
+        ownerPayout: Number(row.owner_payout || 0),
+
+        renterName: row.renter_name || "",
+        renterEmail: row.renter_email || "",
+        renterPhone: row.renter_phone || "",
+
+        ownerName: row.owner_name || "Majitel",
+        ownerEmail: row.owner_email || "",
+        ownerPhone: row.owner_phone || "",
+
+        pickupPhone: row.pickup_phone || row.owner_phone || "",
+        pickupStreet: row.pickup_street || "",
+        pickupCity: row.pickup_city || row.city || "",
+        pickupPostalCode: row.pickup_postal_code || "",
+        pickupFullAddress: row.pickup_full_address || "",
+        pickupNote: row.pickup_note || "",
+
+        status: row.status || "pending",
+        statusText: getSafeReservationStatusText(row.status || "pending"),
+
+        contactVisibleAfterPayment: Boolean(row.contact_visible_after_payment),
+
+        paidAt: row.paid_at || "",
+        paymentProviderStatus: row.payment_provider_status || "",
+
+        createdAt: row.created_at || "",
+        updatedAt: row.updated_at || "",
+
+        source: "supabase"
+      };
+    }
+
+    async function loadMyReservationsFromSupabase() {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        return [];
+      }
+
+      const supabaseUser = await getCurrentSupabaseUser();
+
+      if (!supabaseUser) {
+        window.location.href = "prihlaseni.html";
+        return [];
+      }
+
+      const { data, error } = await supabaseClient
+        .from("reservations")
+        .select("*")
+        .eq("renter_id", supabaseUser.id)
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (error) {
+        console.error(error);
+        alert("Rezervace se nepodařilo načíst ze Supabase. Podívejte se prosím do konzole.");
+        return [];
+      }
+
+      return Array.isArray(data)
+        ? data.map(normalizeSupabaseReservation)
+        : [];
+    }
+
+    function getSafeReservationStatus(reservation) {
+      if (typeof getReservationStatus === "function") {
+        return getReservationStatus(reservation);
+      }
+
+      return reservation.status || "pending";
+    }
+
+    function getSafeReservationToolName(reservation) {
+      if (typeof getReservationToolName === "function") {
+        return getReservationToolName(reservation);
+      }
+
+      return reservation.toolName || reservation.offerName || reservation.naradiName || "Nářadí";
+    }
+
+    function getSafeReservationDateFrom(reservation) {
+      if (typeof getReservationDateFrom === "function") {
+        return getReservationDateFrom(reservation);
+      }
+
+      return reservation.startDate || reservation.dateFrom || "";
+    }
+
+    function getSafeReservationDateTo(reservation) {
+      if (typeof getReservationDateTo === "function") {
+        return getReservationDateTo(reservation);
+      }
+
+      return reservation.endDate || reservation.dateTo || "";
+    }
+
+    function getSafeReservationOfferId(reservation) {
+      if (typeof getReservationOfferId === "function") {
+        return getReservationOfferId(reservation);
+      }
+
+      return reservation.offerId || reservation.toolId || reservation.naradiId || "";
+    }
+
+    function getSafeReservationTotalPrice(reservation) {
+      if (typeof getReservationTotalPrice === "function") {
+        return getReservationTotalPrice(reservation);
+      }
+
+      const totalPrice = Number(reservation.totalPrice || 0);
+
+      if (totalPrice > 0) {
+        return totalPrice;
+      }
+
+      const days = Number(reservation.totalDays || reservation.days || 0);
+      const pricePerDay = Number(reservation.pricePerDay || reservation.price || 0);
+
+      return days * pricePerDay;
+    }
+
+    function getSafeReservationPlatformFee(reservation, percent) {
+      if (typeof getReservationPlatformFee === "function") {
+        return getReservationPlatformFee(reservation, percent);
+      }
+
+      if (reservation.platformFeeAmount !== undefined && reservation.platformFeeAmount !== null) {
+        return Number(reservation.platformFeeAmount) || 0;
+      }
+
+      return Math.round(getSafeReservationTotalPrice(reservation) * percent / 100);
+    }
+
+    function getSafeReservationOwnerPayout(reservation, percent) {
+      if (typeof getReservationOwnerPayout === "function") {
+        return getReservationOwnerPayout(reservation, percent);
+      }
+
+      if (reservation.ownerPayout !== undefined && reservation.ownerPayout !== null) {
+        return Number(reservation.ownerPayout) || 0;
+      }
+
+      return getSafeReservationTotalPrice(reservation) - getSafeReservationPlatformFee(reservation, percent);
+    }
+
+    function safeIsOpenReservationStatus(status) {
+      if (typeof isOpenReservationStatus === "function") {
+        return isOpenReservationStatus(status);
+      }
+
+      return [
+        "pending",
+        "approved",
+        "paid",
+        "picked_up",
+        "Čeká na potvrzení",
+        "Čeká na platbu",
+        "Zaplaceno",
+        "Vyzvednuto"
+      ].includes(status);
+    }
+
+    function safeIsClosedReservationStatus(status) {
+      if (typeof isClosedReservationStatus === "function") {
+        return isClosedReservationStatus(status);
+      }
+
+      return [
+        "returned",
+        "rejected",
+        "cancelled",
+        "Vráceno",
+        "Odmítnuto",
+        "Zrušeno"
+      ].includes(status);
+    }
+
+    function getSafeReservationContactVisible(status) {
+      if (typeof getReservationContactVisible === "function") {
+        return getReservationContactVisible(status);
+      }
+
+      return [
+        "paid",
+        "picked_up",
+        "returned",
+        "Zaplaceno",
+        "Vyzvednuto",
+        "Vráceno"
+      ].includes(status);
+    }
+
+    function isMapUsefulForStatus(status) {
+      return status === "paid" || status === "picked_up";
+    }
+
+    function getReservationOwnerName(reservation) {
+      return reservation.ownerName || reservation.owner || "Majitel";
+    }
+
+    function getPickupAddress(reservation) {
+      return (
+        reservation.pickupFullAddress ||
+        [reservation.pickupStreet, reservation.pickupCity, reservation.pickupPostalCode].filter(Boolean).join(", ") ||
+        [reservation.ownerStreet, reservation.ownerCity, reservation.ownerPostalCode].filter(Boolean).join(", ")
+      );
+    }
+
+    function getPickupPhone(reservation) {
+      return reservation.pickupPhone || reservation.ownerPhone || "";
+    }
+
+    function getPickupCity(reservation) {
+      return reservation.pickupCity || reservation.ownerCity || reservation.city || "-";
+    }
+
+    function getMapUrl(address) {
+      return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(address);
+    }
+
+    function getReservationPhoto() {
+      return "";
+    }
+
+    function renderToolThumb(reservation) {
+      const toolName = getSafeReservationToolName(reservation);
+      const photo = getReservationPhoto(reservation);
+
+      if (photo) {
+        return `
+          <div class="tool-thumb">
+            <img src="${escapeHtml(photo)}" alt="${escapeHtml(toolName)}">
+          </div>
+        `;
+      }
+
+      return `
+        <div class="tool-thumb">⌁</div>
+      `;
+    }
+
+    function renderEmptyState() {
+      document.getElementById("reservationsList").innerHTML = `
+        <section class="account-empty-state">
+          <h2>Zatím nemáte žádné rezervace.</h2>
+          <p>Najděte nářadí ve svém okolí a pošlete první žádost o půjčení.</p>
+          <a href="vysledky.html">Najít nářadí</a>
+        </section>
+      `;
+    }
+
+    function renderLoadingState() {
+      document.getElementById("reservationsList").innerHTML = `
+        <section class="account-empty-state">
+          <h2>Načítám rezervace...</h2>
+          <p>Chvíli strpení, načítáme vaše rezervace ze Supabase.</p>
+        </section>
+      `;
+    }
+
+    async function payReservation(reservationId) {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        alert("Supabase klient není načtený.");
+        return;
+      }
+
+      const supabaseUser = await getCurrentSupabaseUser();
+
+      if (!supabaseUser) {
+        alert("Pro zaplacení se musíte znovu přihlásit.");
+        window.location.href = "prihlaseni.html";
+        return;
+      }
+
+      const confirmPayment = confirm(
+        "Toto je testovací platba. Opravdu chcete označit rezervaci jako zaplacenou?"
+      );
+
+      if (!confirmPayment) {
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from("reservations")
+        .update({
+          status: "paid",
+          contact_visible_after_payment: true,
+          paid_at: new Date().toISOString(),
+          payment_provider_status: "paid_test"
+        })
+        .eq("id", reservationId)
+        .eq("renter_id", supabaseUser.id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error(error);
+        alert("Platbu se nepodařilo uložit do Supabase. Podívejte se prosím do konzole.");
+        return;
+      }
+
+      try {
+        const localReservations = typeof getReservations === "function" ? getReservations() : [];
+
+        const updatedLocalReservations = localReservations.map(function (reservation) {
+          const localId = String(
+            reservation.id ||
+            reservation.reservationId ||
+            ""
+          );
+
+          if (localId !== String(reservationId)) {
+            return reservation;
+          }
+
+          return {
+            ...reservation,
+            status: "paid",
+            statusText: "Zaplaceno",
+            contactVisibleAfterPayment: true,
+            paidAt: data && data.paid_at ? data.paid_at : new Date().toISOString(),
+            paymentProviderStatus: "paid_test",
+            updatedAt: new Date().toISOString()
+          };
+        });
+
+        if (typeof saveReservations === "function") {
+          saveReservations(updatedLocalReservations);
+        }
+      } catch (localError) {
+        console.warn("Lokální kopii rezervace se nepodařilo aktualizovat.", localError);
+      }
+
+      supabaseReservations = await loadMyReservationsFromSupabase();
+
+      renderSharedNavigation("muj-ucet");
+      renderReservations();
+
+      openReservationDetail(reservationId);
+    }
+
+    function saveRenterReview(reservationId) {
+      alert("Hodnocení napojíme na Supabase později.");
+      openReservationDetail(reservationId);
+    }
+
+    function openReservationDetail(reservationId) {
+      setTimeout(function () {
+        const detail = document.getElementById("reservation-detail-" + reservationId);
+
+        if (detail) {
+          detail.classList.add("open");
+        }
+
+        const button = document.getElementById("detail-toggle-" + reservationId);
+
+        if (button) {
+          button.textContent = "Skrýt detail";
+        }
+      }, 0);
+    }
+
+    function toggleReservationDetail(reservationId, button) {
+      const detail = document.getElementById("reservation-detail-" + reservationId);
+
+      if (!detail) {
+        return;
+      }
+
+      const isOpen = detail.classList.contains("open");
+
+      if (isOpen) {
+        detail.classList.remove("open");
+        button.textContent = "Detail";
+        return;
+      }
+
+      detail.classList.add("open");
+      button.textContent = "Skrýt detail";
+    }
+
+    function renderOwnerReviewForRenterBox(reservation, status) {
+      if (status !== "returned") {
+        return "";
+      }
+
+      return `
+        <div class="review-box">
+          <strong>Hodnocení od majitele</strong>
+          Majitel vás zatím neohodnotil. Hodnocení napojíme na Supabase později.
+        </div>
+      `;
+    }
+
+    function renderRenterReviewBox(reservation, status) {
+      if (status !== "returned") {
+        return "";
+      }
+
+      return `
+        <div class="review-box">
+          <strong>Ohodnotit půjčení</strong>
+          Hodnocení napojíme na Supabase později.
+        </div>
+      `;
+    }
+
+    function renderPaymentBox(reservation, status, totalPrice, platformFee, ownerPayout) {
+      if (status === "approved") {
+        return `
+          <div class="payment-box waiting">
+            <strong>Platba přes provozovatele platformy</strong>
+            Kliknutím na tlačítko Zaplatit provedete testovací platbu.
+            <div class="payment-lines">
+              <span>Celkem zaplatíte: ${escapeHtml(totalPrice)} Kč</span>
+              <span>Provize Rentulo 10 %: ${escapeHtml(platformFee)} Kč</span>
+              <span>Majitel dostane: ${escapeHtml(ownerPayout)} Kč</span>
+            </div>
+          </div>
+        `;
+      }
+
+      if (getSafeReservationContactVisible(status)) {
+        const paymentTitle = status === "returned"
+          ? "Platba byla přijata a půjčení je dokončeno"
+          : "Platba přijata přes provozovatele platformy";
+
+        return `
+          <div class="payment-box paid">
+            <strong>${paymentTitle}</strong>
+            Rentulo si ponechá provizi 10 % a majiteli bude vyplaceno 90 % z půjčovného.
+            <div class="payment-lines">
+              <span>Celkem zaplaceno: ${escapeHtml(totalPrice)} Kč</span>
+              <span>Provize Rentulo: ${escapeHtml(platformFee)} Kč</span>
+              <span>Částka pro majitele: ${escapeHtml(ownerPayout)} Kč</span>
+              <span>Stav platby: ${escapeHtml(reservation.paymentProviderStatus || "paid")}</span>
+              <span>Zaplaceno: ${escapeHtml(formatDateTime(reservation.paidAt))}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      return "";
+    }
+
+    function renderReservationStateBox(reservation, status) {
+      if (status === "pending") {
+        return `
+          <div class="reservation-state-box rejected">
+            <strong>Žádost čeká na potvrzení</strong>
+            Majitel zatím vaši žádost nepotvrdil.
+          </div>
+        `;
+      }
+
+      if (status === "approved") {
+        return `
+          <div class="reservation-state-box active">
+            <strong>Žádost je potvrzená</strong>
+            Teď můžete dokončit platbu. Po zaplacení se zobrazí telefon a přesná adresa.
+          </div>
+        `;
+      }
+
+      if (status === "paid") {
+        return `
+          <div class="reservation-state-box active">
+            <strong>Zaplaceno – domluvte se s majitelem na předání</strong>
+            Kontaktujte majitele a domluvte si přesný čas vyzvednutí.
+          </div>
+        `;
+      }
+
+      if (status === "picked_up") {
+        return `
+          <div class="reservation-state-box active">
+            <strong>Nářadí bylo označeno jako vyzvednuté</strong>
+            Půjčení právě probíhá.
+          </div>
+        `;
+      }
+
+      if (status === "returned") {
+        return `
+          <div class="reservation-state-box finished">
+            <strong>Vráceno – půjčení je dokončeno</strong>
+            Rezervace byla úspěšně ukončena. Už není potřeba žádná další akce.
+          </div>
+        `;
+      }
+
+      if (status === "rejected") {
+        return `
+          <div class="reservation-state-box rejected">
+            <strong>Žádost byla odmítnuta</strong>
+            Majitel vaši žádost odmítl.
+          </div>
+        `;
+      }
+
+      if (status === "cancelled") {
+        return `
+          <div class="reservation-state-box rejected">
+            <strong>Rezervace byla zrušena</strong>
+            Tato rezervace už nepokračuje.
+          </div>
+        `;
+      }
+
+      return "";
+    }
+
+    function renderContactBox(reservation, status) {
+      const address = getPickupAddress(reservation);
+      const phone = getPickupPhone(reservation);
+      const city = getPickupCity(reservation);
+
+      if (!getSafeReservationContactVisible(status)) {
+        return `
+          <div class="contact-box hidden">
+            <strong>Kontaktní údaje jsou skryté</strong>
+            Telefon a přesná adresa se zobrazí až po zaplacení.
+            <div class="contact-lines">
+              <span>Město: ${escapeHtml(city)}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      const contactTitle = status === "returned"
+        ? "Kontaktní údaje k dokončené rezervaci"
+        : "Údaje pro vyzvednutí";
+
+      const returnedNote = status === "returned"
+        ? "<span>Rezervace je dokončená. Kontaktní údaje zůstávají dostupné, protože půjčení bylo zaplaceno.</span>"
+        : "";
+
+      return `
+        <div class="contact-box visible">
+          <strong>${contactTitle}</strong>
+          <div class="contact-lines">
+            ${returnedNote}
+            <span>Telefon: ${escapeHtml(phone || "Telefon není uložen")}</span>
+            <span>Adresa: ${escapeHtml(address || "Adresa není uložená")}</span>
+            ${reservation.pickupNote ? `<span>Poznámka: ${escapeHtml(reservation.pickupNote)}</span>` : ""}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderReservationDetailPanel(reservation) {
+      const status = getSafeReservationStatus(reservation);
+
+      const startDate = getSafeReservationDateFrom(reservation);
+      const endDate = getSafeReservationDateTo(reservation);
+
+      const totalPrice = getSafeReservationTotalPrice(reservation);
+      const deposit = Number(reservation.deposit || 0);
+      const platformFee = getSafeReservationPlatformFee(reservation, PLATFORM_FEE_PERCENT);
+      const ownerPayout = getSafeReservationOwnerPayout(reservation, PLATFORM_FEE_PERCENT);
+
+      return `
+        <div class="reservation-detail-panel">
+          <div class="detail-grid">
+            <div class="info-box">
+              <span>Termín</span>
+              <strong>${escapeHtml(formatDate(startDate))} – ${escapeHtml(formatDate(endDate))}</strong>
+            </div>
+
+            <div class="info-box">
+              <span>Celkem k platbě</span>
+              <strong>${escapeHtml(totalPrice)} Kč</strong>
+            </div>
+
+            <div class="info-box">
+              <span>Kauce</span>
+              <strong>${escapeHtml(deposit)} Kč</strong>
+            </div>
+
+            <div class="info-box">
+              <span>Platba</span>
+              <strong>${getSafeReservationContactVisible(status) ? "zaplaceno" : "čeká na platbu"}</strong>
+            </div>
+
+            <div class="info-box">
+              <span>Provize 10 %</span>
+              <strong>${escapeHtml(platformFee)} Kč</strong>
+            </div>
+
+            <div class="info-box">
+              <span>Majitel dostane</span>
+              <strong>${escapeHtml(ownerPayout)} Kč</strong>
+            </div>
+          </div>
+
+          ${renderReservationStateBox(reservation, status)}
+
+          ${renderPaymentBox(reservation, status, totalPrice, platformFee, ownerPayout)}
+
+          ${renderContactBox(reservation, status)}
+
+          ${renderOwnerReviewForRenterBox(reservation, status)}
+
+          ${renderRenterReviewBox(reservation, status)}
+        </div>
+      `;
+    }
+
+    function getStatusClass(status) {
+      if (status === "paid" || status === "picked_up") {
+        return "status-paid";
+      }
+
+      if (status === "returned") {
+        return "status-finished";
+      }
+
+      if (status === "rejected" || status === "cancelled") {
+        return "status-rejected";
+      }
+
+      return "";
+    }
+
+    function renderReservationRow(reservation, isHistorySection) {
+      const status = getSafeReservationStatus(reservation);
+      const statusText = getSafeReservationStatusText(status);
+
+      const toolName = getSafeReservationToolName(reservation);
+      const city = getPickupCity(reservation);
+      const ownerName = getReservationOwnerName(reservation);
+
+      const startDate = getSafeReservationDateFrom(reservation);
+      const endDate = getSafeReservationDateTo(reservation);
+      const totalPrice = getSafeReservationTotalPrice(reservation);
+      const reservationId = reservation.id || reservation.reservationId;
+      const offerId = getSafeReservationOfferId(reservation);
+      const pickupAddress = getPickupAddress(reservation);
+
+      let actionButtons = `
+        <button class="small-button light" id="detail-toggle-${escapeHtml(reservationId)}" type="button" onclick="toggleReservationDetail('${escapeHtml(reservationId)}', this)">
+          Detail
+        </button>
+      `;
+
+      if (status === "approved") {
+        actionButtons += `
+          <button class="small-button orange" type="button" onclick="payReservation('${escapeHtml(reservationId)}')">
+            Zaplatit
+          </button>
+        `;
+      }
+
+      if (isMapUsefulForStatus(status) && pickupAddress) {
+        actionButtons += `
+          <a class="small-button light" href="${escapeHtml(getMapUrl(pickupAddress))}" target="_blank">
+            Mapa
+          </a>
+        `;
+      }
+
+      if (offerId && !isHistorySection) {
+        actionButtons += `
+          <a class="small-button" href="detail.html?id=${encodeURIComponent(offerId)}">
+            Nářadí
+          </a>
+        `;
+      }
+
+      return `
+        <tr class="reservation-row" id="reservation-row-${escapeHtml(reservationId)}">
+          <td data-label="Nářadí">
+            <div class="tool-cell">
+              ${renderToolThumb(reservation)}
+              <div>
+                <span class="tool-name">${escapeHtml(toolName)}</span>
+                <span class="tool-meta">${escapeHtml(city)}</span>
+              </div>
+            </div>
+          </td>
+
+          <td class="owner-cell" data-label="Majitel">${escapeHtml(ownerName)}</td>
+
+          <td class="date-cell" data-label="Termín">
+            ${escapeHtml(formatDate(startDate))} – ${escapeHtml(formatDate(endDate))}
+          </td>
+
+          <td data-label="Stav">
+            <span class="status-pill ${getStatusClass(status)}">${escapeHtml(statusText)}</span>
+          </td>
+
+          <td class="price-cell" data-label="Cena">${escapeHtml(totalPrice)} Kč</td>
+
+          <td data-label="Akce">
+            <div class="table-actions">
+              ${actionButtons}
+            </div>
+          </td>
+        </tr>
+
+        <tr class="detail-row" id="reservation-detail-${escapeHtml(reservationId)}">
+          <td colspan="6">
+            ${renderReservationDetailPanel(reservation)}
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderReservationTable(reservations, isHistorySection) {
+      return `
+        <div class="reservation-table-card">
+          <table class="reservation-table">
+            <thead>
+              <tr>
+                <th>Nářadí</th>
+                <th>Majitel</th>
+                <th>Termín</th>
+                <th>Stav</th>
+                <th>Cena</th>
+                <th>Akce</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${reservations.map(function (reservation) {
+                return renderReservationRow(reservation, isHistorySection);
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderReservationSection(title, reservations, emptyText, sectionClass, isHistorySection) {
+      const countText = reservations.length === 1
+        ? "1 rezervace"
+        : reservations.length + " rezervací";
+
+      const content = reservations.length
+        ? renderReservationTable(reservations, isHistorySection)
+        : `<p class="section-empty-note">${escapeHtml(emptyText)}</p>`;
+
+      return `
+        <section class="reservation-section ${escapeHtml(sectionClass)}">
+          <div class="reservation-section-header">
+            <h2>${escapeHtml(title)}</h2>
+            <span>${escapeHtml(countText)}</span>
+          </div>
+
+          ${content}
+        </section>
+      `;
+    }
+
+    function renderReservations() {
+      const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+
+      if (!currentUser) {
+        window.location.href = "prihlaseni.html";
+        return;
+      }
+
+      const reservations = supabaseReservations;
+
+      if (!reservations.length) {
+        renderEmptyState();
+        return;
+      }
+
+      const sortedReservations = reservations.slice().sort(function (a, b) {
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      });
+
+      const activeReservations = sortedReservations.filter(function (reservation) {
+        return safeIsOpenReservationStatus(getSafeReservationStatus(reservation));
+      });
+
+      const historyReservations = sortedReservations.filter(function (reservation) {
+        return safeIsClosedReservationStatus(getSafeReservationStatus(reservation));
+      });
+
+      document.getElementById("reservationsList").innerHTML =
+        renderReservationSection(
+          "Aktivní rezervace",
+          activeReservations,
+          "Nemáte žádné aktivní rezervace.",
+          "active",
+          false
+        ) +
+        renderReservationSection(
+          "Historie rezervací",
+          historyReservations,
+          "V historii zatím nejsou žádné dokončené ani odmítnuté rezervace.",
+          "history",
+          true
+        );
+    }
+
+    async function initializeReservationsPage() {
+      renderSharedNavigation("muj-ucet");
+      renderLoadingState();
+
+      const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+
+      if (!currentUser) {
+        window.location.href = "prihlaseni.html";
+        return;
+      }
+
+      supabaseReservations = await loadMyReservationsFromSupabase();
+
+      renderSharedNavigation("muj-ucet");
+      renderReservations();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      initializeReservationsPage();
+    });
+  </script>
+
+</body>
+</html>
