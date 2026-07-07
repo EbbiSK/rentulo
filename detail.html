@@ -1698,75 +1698,12 @@ total_price: totalPrice,
         return;
       }
 
-      try {
-        const localReservations = typeof getReservations === "function" ? getReservations() : [];
-
-        localReservations.push({
-          id: data && data.id ? data.id : "reservation-" + Date.now(),
-
-          offerId: offer.id,
-          naradiId: offer.id,
-          toolId: offer.id,
-
-          ownerId: ownerId,
-          renterId: supabaseUser.id,
-
-          offerName: getOfferName(offer),
-          naradiName: getOfferName(offer),
-          toolName: getOfferName(offer),
-
-          category: getOfferCategory(offer),
-          city: getOfferCity(offer),
-
-          pricePerDay: pricePerDay,
-          price: pricePerDay,
-          deposit: deposit,
-
-          startDate: startDate,
-          endDate: endDate,
-          dateFrom: startDate,
-          dateTo: endDate,
-
-          totalDays: days,
-          days: days,
-          totalPrice: totalPrice,
-
-          platformFeePercent: PLATFORM_FEE_PERCENT,
-          platformFeeAmount: platformFeeAmount,
-          ownerPayout: ownerPayout,
-
-          renterName: getUserName(currentUser),
-          renterEmail: getUserEmail(currentUser),
-          renterPhone: getUserPhone(currentUser),
-
-          ownerName: "Majitel",
-          ownerPhone: pickupPhone,
-          pickupPhone: pickupPhone,
-          pickupStreet: pickupStreet,
-          pickupCity: pickupCity,
-          pickupPostalCode: pickupPostalCode,
-          pickupFullAddress: pickupFullAddress,
-          pickupNote: pickupNote,
-
-          status: "pending",
-          statusText: "Čeká na potvrzení",
-
-          contactVisibleAfterPayment: false,
-          source: "supabase",
-
-          createdAt: new Date().toISOString()
-        });
-
-        if (typeof saveReservations === "function") {
-          saveReservations(localReservations);
-        }
-      } catch (localError) {
-        console.warn("Lokální kopii rezervace se nepodařilo uložit.", localError);
-      }
-
       if (data && data.id) {
-        window.location.href = "rezervace.html?id=" + encodeURIComponent(data.id);
-        return;
+        try {
+          sessionStorage.setItem("rentuloLastCreatedReservationId", data.id);
+        } catch (storageError) {
+          console.warn("ID nové rezervace se nepodařilo uložit do sessionStorage.", storageError);
+        }
       }
 
       window.location.href = "moje-rezervace.html";
