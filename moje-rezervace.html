@@ -750,6 +750,7 @@
   <script>
     const PLATFORM_FEE_PERCENT = 10;
     let supabaseReservations = [];
+    let supabaseReviews = [];
 
     function getSupabaseClient() {
       if (window.rentuloSupabase) {
@@ -797,6 +798,52 @@
       }
 
       return stars;
+    }
+
+    function findRenterReviewForReservation(reservation) {
+      if (!reservation) {
+        return null;
+      }
+
+      const reservationId = reservation.id || reservation.reservationId;
+      const renterId = reservation.renterId;
+
+      return supabaseReviews.find(function (review) {
+        return (
+          String(review.reservation_id) === String(reservationId) &&
+          String(review.reviewer_id) === String(renterId)
+        );
+      }) || null;
+    }
+
+    function findOwnerReviewForReservation(reservation) {
+      if (!reservation) {
+        return null;
+      }
+
+      const reservationId = reservation.id || reservation.reservationId;
+      const ownerId = reservation.ownerId;
+
+      return supabaseReviews.find(function (review) {
+        return (
+          String(review.reservation_id) === String(reservationId) &&
+          String(review.reviewer_id) === String(ownerId)
+        );
+      }) || null;
+    }
+
+    function renderSavedReview(review) {
+      if (!review) {
+        return "";
+      }
+
+      return `
+        <div class="review-lines">
+          <span>${escapeHtml(getStars(review.rating))}</span>
+          ${review.text ? `<span>${escapeHtml(review.text)}</span>` : ""}
+          <span>Odesláno: ${escapeHtml(formatDateTime(review.created_at))}</span>
+        </div>
+      `;
     }
 
     function formatDate(dateString) {
@@ -960,6 +1007,35 @@
       return Array.isArray(data)
         ? data.map(normalizeSupabaseReservation)
         : [];
+    }
+
+    async function loadMyReviewsFromSupabase() {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        return [];
+      }
+
+      const supabaseUser = await getCurrentSupabaseUser();
+
+      if (!supabaseUser) {
+        return [];
+      }
+
+      const { data, error } = await supabaseClient
+        .from("reviews")
+        .select("*")
+        .or("reviewer_id.eq." + supabaseUser.id + ",reviewed_user_id.eq." + supabaseUser.id)
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (error) {
+        console.error("Hodnocení se nepodařilo načíst:", error);
+        return [];
+      }
+
+      return Array.isArray(data) ? data : [];
     }
 
     function getSafeReservationStatus(reservation) {
@@ -1234,6 +1310,7 @@
       }
 
       supabaseReservations = await loadMyReservationsFromSupabase();
+      supabaseReviews = await loadMyReviewsFromSupabase();
 
       renderSharedNavigation("muj-ucet");
       renderReservations();
@@ -1242,81 +1319,89 @@
     }
 
     async function saveRenterReview(reservationId) {
-  const reservation = supabaseReservations.find(function (item) {
-  const itemId = item.id || item.reservationId;
-  return String(itemId) === String(reservationId);
-});
+      const reservation = supabaseReservations.find(function (item) {
+        const itemId = item.id || item.reservationId;
+        return String(itemId) === String(reservationId);
+      });
 
-  if (!reservation) {
-    alert("Rezervace nebyla nalezena.");
-    return;
-  }
+      if (!reservation) {
+        alert("Rezervace nebyla nalezena.");
+        return;
+      }
 
-  const currentUser = getCurrentUser();
+      const supabaseUser = await getCurrentSupabaseUser();
 
-  if (!currentUser || !currentUser.id) {
-    alert("Pro odeslání hodnocení se musíte přihlásit.");
-    return;
-  }
+      if (!supabaseUser || !supabaseUser.id) {
+        alert("Pro odeslání hodnocení se musíte přihlásit.");
+        return;
+      }
 
-  const ratingElement = document.getElementById("renter-review-rating-" + reservationId);
-  const textElement = document.getElementById("renter-review-text-" + reservationId);
+      const existingReview = findRenterReviewForReservation(reservation);
 
-  const rating = Number(ratingElement ? ratingElement.value : 0);
-  const text = textElement ? textElement.value.trim() : "";
+      if (existingReview) {
+        alert("Tuto rezervaci jste už hodnotili.");
+        return;
+      }
 
-  if (!rating || rating < 1 || rating > 5) {
-    alert("Vyberte počet hvězdiček.");
-    return;
-  }
+      const ratingElement = document.getElementById("renter-review-rating-" + reservationId);
+      const textElement = document.getElementById("renter-review-text-" + reservationId);
 
-  if (!text) {
-    alert("Napište krátký komentář k půjčení.");
-    return;
-  }
+      const rating = Number(ratingElement ? ratingElement.value : 0);
+      const text = textElement ? textElement.value.trim() : "";
 
-  const reviewToInsert = {
-    reservation_id: reservation.id || reservation.reservationId,
-    reviewer_id: currentUser.id,
-    reviewed_user_id: reservation.ownerId,
-    offer_id: reservation.offerId,
-    rating: rating,
-    text: text
-  };
+      if (!rating || rating < 1 || rating > 5) {
+        alert("Vyberte počet hvězdiček.");
+        return;
+      }
 
-  if (!reviewToInsert.reviewed_user_id) {
-    alert("Chybí ID majitele pro hodnocení.");
-    return;
-  }
+      if (!text) {
+        alert("Napište krátký komentář k půjčení.");
+        return;
+      }
 
-  const reviewSupabaseClient = getSupabaseClient();
+      const reviewToInsert = {
+        reservation_id: reservation.id || reservation.reservationId,
+        reviewer_id: supabaseUser.id,
+        reviewed_user_id: reservation.ownerId,
+        offer_id: reservation.offerId,
+        rating: rating,
+        text: text
+      };
 
-if (!reviewSupabaseClient) {
-  alert("Supabase klient není dostupný. Obnovte stránku a zkuste to znovu.");
-  return;
-}
+      if (!reviewToInsert.reviewed_user_id) {
+        alert("Chybí ID majitele pro hodnocení.");
+        return;
+      }
 
-const { error } = await reviewSupabaseClient
-  .from("reviews")
-  .insert(reviewToInsert);
+      const reviewSupabaseClient = getSupabaseClient();
 
-  if (error) {
-    console.error("Chyba při ukládání hodnocení:", error);
+      if (!reviewSupabaseClient) {
+        alert("Supabase klient není dostupný. Obnovte stránku a zkuste to znovu.");
+        return;
+      }
 
-    if (String(error.message || "").includes("duplicate")) {
-      alert("Tuto rezervaci jste už hodnotili.");
-    } else {
-      alert("Hodnocení se nepodařilo uložit.");
+      const { error } = await reviewSupabaseClient
+        .from("reviews")
+        .insert(reviewToInsert);
+
+      if (error) {
+        console.error("Chyba při ukládání hodnocení:", error);
+
+        if (String(error.message || "").includes("duplicate")) {
+          alert("Tuto rezervaci jste už hodnotili.");
+        } else {
+          alert("Hodnocení se nepodařilo uložit.");
+        }
+
+        return;
+      }
+
+      alert("Hodnocení bylo uloženo.");
+      supabaseReservations = await loadMyReservationsFromSupabase();
+      supabaseReviews = await loadMyReviewsFromSupabase();
+      renderReservations();
+      openReservationDetail(reservationId);
     }
-
-    return;
-  }
-
-  alert("Hodnocení bylo uloženo.");
-  supabaseReservations = await loadMyReservationsFromSupabase();
-  renderReservations();
-  openReservationDetail(reservationId);
-}
 
     function openReservationDetail(reservationId) {
       setTimeout(function () {
@@ -1358,48 +1443,69 @@ const { error } = await reviewSupabaseClient
         return "";
       }
 
+      const ownerReview = findOwnerReviewForReservation(reservation);
+
+      if (ownerReview) {
+        return `
+          <div class="review-box">
+            <strong>Hodnocení od majitele</strong>
+            ${renderSavedReview(ownerReview)}
+          </div>
+        `;
+      }
+
       return `
         <div class="review-box">
           <strong>Hodnocení od majitele</strong>
-          Majitel vás zatím neohodnotil. Hodnocení napojíme na Supabase později.
+          Majitel vás zatím neohodnotil.
         </div>
       `;
     }
 
     function renderRenterReviewBox(reservation, status) {
-  if (status !== "returned") {
-    return "";
-  }
+      if (status !== "returned") {
+        return "";
+      }
 
-  const reservationId = reservation.id || reservation.reservationId;
+      const reservationId = reservation.id || reservation.reservationId;
+      const renterReview = findRenterReviewForReservation(reservation);
 
-  return `
-    <div class="review-box">
-      <strong>Ohodnotit majitele</strong>
-      <div class="review-lines">
-        <label>
-          Počet hvězdiček
-          <select id="renter-review-rating-${reservationId}">
-            <option value="5">★★★★★ - výborné</option>
-            <option value="4">★★★★☆ - dobré</option>
-            <option value="3">★★★☆☆ - průměrné</option>
-            <option value="2">★★☆☆☆ - slabé</option>
-            <option value="1">★☆☆☆☆ - špatné</option>
-          </select>
-        </label>
+      if (renterReview) {
+        return `
+          <div class="review-box">
+            <strong>Hodnocení bylo odesláno</strong>
+            ${renderSavedReview(renterReview)}
+          </div>
+        `;
+      }
 
-        <label>
-          Komentář
-          <textarea id="renter-review-text-${reservationId}" rows="3" placeholder="Jak proběhlo půjčení?"></textarea>
-        </label>
+      return `
+        <div class="review-box">
+          <strong>Ohodnotit majitele</strong>
+          <div class="review-lines">
+            <label>
+              Počet hvězdiček
+              <select id="renter-review-rating-${reservationId}">
+                <option value="5">★★★★★ - výborné</option>
+                <option value="4">★★★★☆ - dobré</option>
+                <option value="3">★★★☆☆ - průměrné</option>
+                <option value="2">★★☆☆☆ - slabé</option>
+                <option value="1">★☆☆☆☆ - špatné</option>
+              </select>
+            </label>
 
-        <button type="button" class="btn-primary" onclick="saveRenterReview('${reservationId}')">
-          Odeslat hodnocení
-        </button>
-      </div>
-    </div>
-  `;
-}
+            <label>
+              Komentář
+              <textarea id="renter-review-text-${reservationId}" rows="3" placeholder="Jak proběhlo půjčení?"></textarea>
+            </label>
+
+            <button type="button" class="btn-primary small-button" onclick="saveRenterReview('${reservationId}')">
+              Odeslat hodnocení
+            </button>
+          </div>
+        </div>
+      `;
+    }
 
     function renderPaymentBox(reservation, status, totalPrice, platformFee, ownerPayout) {
       if (status === "approved") {
@@ -1804,6 +1910,7 @@ const { error } = await reviewSupabaseClient
       }
 
       supabaseReservations = await loadMyReservationsFromSupabase();
+      supabaseReviews = await loadMyReviewsFromSupabase();
 
       renderSharedNavigation("muj-ucet");
       renderReservations();
