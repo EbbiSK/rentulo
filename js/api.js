@@ -442,9 +442,7 @@ async function apiCreateReservation(reservationData) {
 
   reservations.push(newReservation);
 
-  if (typeof saveReservations === "function") {
-    saveReservations(reservations);
-  }
+  
 
   return apiClone(newReservation);
 }
@@ -468,9 +466,7 @@ async function apiUpdateReservationStatus(id, status) {
 
   reservations[index] = updatedReservation;
 
-  if (typeof saveReservations === "function") {
-    saveReservations(reservations);
-  }
+  
 
   return apiClone(updatedReservation);
 }

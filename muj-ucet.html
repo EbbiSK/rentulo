@@ -884,32 +884,7 @@
       return merged;
     }
 
-    function syncLocalDataFromSupabase() {
-      try {
-        const allSupabaseReservations = mergeById(
-          supabaseOwnerReservations,
-          supabaseRenterReservations
-        );
-
-        if (typeof getReservations === "function" && typeof saveReservations === "function") {
-          const localReservations = getReservations();
-          const mergedReservations = mergeById(localReservations, allSupabaseReservations);
-          saveReservations(mergedReservations);
-        }
-      } catch (error) {
-        console.warn("Lokální rezervace se nepodařilo synchronizovat se Supabase.", error);
-      }
-
-      try {
-        if (typeof getOffers === "function" && typeof saveOffers === "function") {
-          const localOffers = getOffers();
-          const mergedOffers = mergeById(localOffers, supabaseOffers);
-          saveOffers(mergedOffers);
-        }
-      } catch (error) {
-        console.warn("Lokální nabídky se nepodařilo synchronizovat se Supabase.", error);
-      }
-    }
+    
 
     async function loadSupabaseAccountData() {
       const supabaseClient = getSupabaseClient();
@@ -966,7 +941,7 @@
         ? renterReservationsResult.data.map(normalizeSupabaseReservation)
         : [];
 
-      syncLocalDataFromSupabase();
+      
 
       return true;
     }

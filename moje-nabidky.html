@@ -1262,36 +1262,8 @@
       `;
     }
 
-    function updateLocalReservationCopy(reservationId, newStatus) {
-      try {
-        const localReservations = typeof getReservations === "function" ? getReservations() : [];
-
-        const updatedLocalReservations = localReservations.map(function (reservation) {
-          const localId = String(
-            reservation.id ||
-            reservation.reservationId ||
-            ""
-          );
-
-          if (localId !== String(reservationId)) {
-            return reservation;
-          }
-
-          return {
-            ...reservation,
-            status: newStatus,
-            statusText: getStatusText(newStatus),
-            updatedAt: new Date().toISOString()
-          };
-        });
-
-        if (typeof saveReservations === "function") {
-          saveReservations(updatedLocalReservations);
-        }
-      } catch (localError) {
-        console.warn("Lokální kopii rezervace se nepodařilo aktualizovat.", localError);
-      }
-    }
+    
+    
 
     async function updateReservationStatus(reservationId, newStatus) {
       const supabaseClient = getSupabaseClient();
@@ -1316,7 +1288,7 @@
         return null;
       }
 
-      updateLocalReservationCopy(reservationId, newStatus);
+      
 
       return data ? normalizeReservation(data) : null;
     }

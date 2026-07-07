@@ -1277,37 +1277,9 @@
         return;
       }
 
-      try {
-        const localReservations = typeof getReservations === "function" ? getReservations() : [];
+      
 
-        const updatedLocalReservations = localReservations.map(function (reservation) {
-          const localId = String(
-            reservation.id ||
-            reservation.reservationId ||
-            ""
-          );
-
-          if (localId !== String(reservationId)) {
-            return reservation;
-          }
-
-          return {
-            ...reservation,
-            status: "paid",
-            statusText: "Zaplaceno",
-            contactVisibleAfterPayment: true,
-            paidAt: data && data.paid_at ? data.paid_at : new Date().toISOString(),
-            paymentProviderStatus: "paid_test",
-            updatedAt: new Date().toISOString()
-          };
-        });
-
-        if (typeof saveReservations === "function") {
-          saveReservations(updatedLocalReservations);
-        }
-      } catch (localError) {
-        console.warn("Lokální kopii rezervace se nepodařilo aktualizovat.", localError);
-      }
+        
 
       supabaseReservations = await loadMyReservationsFromSupabase();
       supabaseReviews = await loadMyReviewsFromSupabase();
