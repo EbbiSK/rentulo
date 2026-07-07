@@ -965,39 +965,6 @@ owner_id: row.owner_id,
       return data || null;
     }
 
-    async function isOfferReservedInSupabase(offerId) {
-      const supabaseClient = getSupabaseClient();
-
-      if (!supabaseClient || !offerId) {
-        return false;
-      }
-
-      const blockingStatuses = [
-        "pending",
-        "approved",
-        "paid",
-        "picked_up",
-        "Čeká na potvrzení",
-        "Čeká na platbu",
-        "Zaplaceno",
-        "Vyzvednuto"
-      ];
-
-      const { data, error } = await supabaseClient
-        .from("reservations")
-        .select("id")
-        .eq("offer_id", offerId)
-        .in("status", blockingStatuses)
-        .limit(1);
-
-      if (error) {
-        console.warn("Dostupnost nabídky se nepodařilo načíst ze Supabase.", error);
-        return false;
-      }
-
-      return Array.isArray(data) && data.length > 0;
-    }
-
     function getOfferPickupPhone(offer, pickupData) {
       return (
         (pickupData && pickupData.pickup_phone) ||
@@ -1222,7 +1189,7 @@ owner_id: row.owner_id,
           </button>
 
           <div class="note">
-            Rezervaci půjde odeslat až ve chvíli, kdy bude nabídka aktivní a nebude mít otevřenou rezervaci v Supabase.
+            Rezervaci půjde odeslat až ve chvíli, kdy bude nabídka aktivní a nebude mít otevřenou rezervaci.
           </div>
         </aside>
       `;
@@ -1323,6 +1290,47 @@ Přesná adresa a telefon zůstanou skryté až do zaplacení.
       `;
     }
 
+    function getOfferReservedFlag(offer) {
+      if (!offer) {
+        return false;
+      }
+
+      return Boolean(
+        offer.isReserved === true ||
+        offer.is_reserved === true ||
+        offer.reserved === true
+      );
+    }
+
+    async function isOfferReservedInSupabase(offerId) {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient || !offerId) {
+        return false;
+      }
+
+      const blockingStatuses = [
+        "pending",
+        "approved",
+        "paid",
+        "picked_up"
+      ];
+
+      const { data, error } = await supabaseClient
+        .from("reservations")
+        .select("id, status")
+        .eq("offer_id", offerId)
+        .in("status", blockingStatuses)
+        .limit(1);
+
+      if (error) {
+        console.warn("Dostupnost nabídky se nepodařilo načíst ze Supabase.", error);
+        return false;
+      }
+
+      return Array.isArray(data) && data.length > 0;
+    }
+
     function renderDetail(offer) {
       if (!offer) {
         renderNotFound();
@@ -1350,7 +1358,7 @@ Přesná adresa a telefon zůstanou skryté až do zaplacení.
 const ownerId = String(offer.ownerId || offer.owner_id || "");
 const isOwner = currentUserId && ownerId && currentUserId === ownerId;
 
-const isReserved = Boolean(offer.isReserved || offer.supabaseReserved);
+const isReserved = getOfferReservedFlag(offer);
 const isActive = isOfferActive(offer);
 const hasGps = offerHasGpsLocation(offer);
 
@@ -1365,7 +1373,7 @@ const hasGps = offerHasGpsLocation(offer);
         availabilityPanelText = "Tato nabídka zatím není aktivní. Rezervaci nelze odeslat.";
       } else if (isReserved) {
         availabilityText = "Momentálně rezervováno";
-        availabilityPanelText = "Toto nářadí má právě otevřenou rezervaci.";
+        availabilityPanelText = "Toto nářadí má právě otevřenou rezervaci v Supabase. Novou žádost zatím nelze odeslat.";
       }
 
       let sidebarContent = "";
@@ -1402,7 +1410,7 @@ const hasGps = offerHasGpsLocation(offer);
           ownerPublicName,
           ownerPublicCity,
           "Nářadí teď není dostupné",
-          "Tato nabídka má otevřenou rezervaci."
+          "Tato nabídka má otevřenou rezervaci v Supabase."
         );
       } else {
         sidebarContent = renderBookingSidebar(
