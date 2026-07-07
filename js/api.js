@@ -328,10 +328,6 @@ async function apiDeleteOffer(id) {
 ========================= */
 
 async function apiGetReservations() {
-  if (typeof getReservations === "function") {
-    return apiClone(getReservations());
-  }
-
   return [];
 }
 
