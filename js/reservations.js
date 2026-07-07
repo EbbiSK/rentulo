@@ -82,7 +82,7 @@ function getReservationOfferId(reservation) {
     return "";
   }
 
-  return reservation.toolId || reservation.offerId || reservation.naradiId || "";
+  return reservation.offer_id || reservation.offerId || reservation.toolId || reservation.naradiId || "";
 }
 
 function getReservationToolName(reservation) {
@@ -91,6 +91,7 @@ function getReservationToolName(reservation) {
   }
 
   return (
+    reservation.offer_name ||
     reservation.toolName ||
     reservation.offerName ||
     reservation.naradiName ||
@@ -104,6 +105,7 @@ function getReservationRenterName(reservation) {
   }
 
   return (
+    reservation.renter_name ||
     reservation.renterName ||
     reservation.userName ||
     reservation.borrowerName ||
@@ -117,6 +119,7 @@ function getReservationRenterEmail(reservation) {
   }
 
   return (
+    reservation.renter_email ||
     reservation.renterEmail ||
     reservation.userEmail ||
     reservation.borrowerEmail ||
@@ -130,6 +133,7 @@ function getReservationRenterPhone(reservation) {
   }
 
   return (
+    reservation.renter_phone ||
     reservation.renterPhone ||
     reservation.userPhone ||
     reservation.borrowerPhone ||
@@ -247,15 +251,19 @@ function isClosedReservation(reservation) {
   return isClosedReservationStatus(getReservationStatus(reservation));
 }
 
-function getBlockingReservationsForOffer(offerId) {
-  const reservations = getReservations();
+/*
+  Dostupnosť ponúk sa už nemá počítať z localStorage.
 
-  return reservations.filter(function (reservation) {
-    return (
-      String(getReservationOfferId(reservation)) === String(offerId) &&
-      isBlockingReservation(reservation)
-    );
-  });
+  Aktuálny stav ponuky sa má načítať priamo zo Supabase:
+  - vysledky.html používa otvorené rezervácie z tabuľky reservations,
+  - detail.html kontroluje otvorenú rezerváciu v tabuľke reservations.
+
+  Tieto staré funkcie nechávame iba kvôli kompatibilite so stránkami,
+  ktoré ich ešte môžu volať. Už však nesiahajú do lokálnych rezervácií.
+*/
+
+function getBlockingReservationsForOffer() {
+  return [];
 }
 
 function isOfferCurrentlyReserved(offer) {
@@ -263,9 +271,19 @@ function isOfferCurrentlyReserved(offer) {
     return false;
   }
 
-  const offerId = offer.id || offer.offerId || offer.naradiId;
+  if (offer.isReserved === true) {
+    return true;
+  }
 
-  return getBlockingReservationsForOffer(offerId).length > 0;
+  if (offer.hasOpenReservation === true) {
+    return true;
+  }
+
+  if (offer.reserved === true) {
+    return true;
+  }
+
+  return false;
 }
 
 function reservationBlocksOfferDelete(reservation) {
@@ -277,7 +295,7 @@ function getReservationDateFrom(reservation) {
     return "";
   }
 
-  return reservation.startDate || reservation.dateFrom || "";
+  return reservation.start_date || reservation.startDate || reservation.dateFrom || "";
 }
 
 function getReservationDateTo(reservation) {
@@ -285,7 +303,7 @@ function getReservationDateTo(reservation) {
     return "";
   }
 
-  return reservation.endDate || reservation.dateTo || "";
+  return reservation.end_date || reservation.endDate || reservation.dateTo || "";
 }
 
 function getReservationTotalPrice(reservation) {
@@ -294,6 +312,7 @@ function getReservationTotalPrice(reservation) {
   }
 
   return Number(
+    reservation.total_price ||
     reservation.totalPrice ||
     reservation.price ||
     reservation.pricePerDay ||
@@ -307,9 +326,15 @@ function getReservationPlatformFee(reservation, platformFeePercent) {
   }
 
   const totalPrice = getReservationTotalPrice(reservation);
-  const percent = Number(platformFeePercent || reservation.platformFeePercent || 10);
+  const percent = Number(
+    platformFeePercent ||
+    reservation.platform_fee_percent ||
+    reservation.platformFeePercent ||
+    10
+  );
 
   return Number(
+    reservation.platform_fee_amount ||
     reservation.platformFeeAmount ||
     Math.round(totalPrice * percent / 100)
   );
@@ -323,7 +348,7 @@ function getReservationOwnerPayout(reservation, platformFeePercent) {
   const totalPrice = getReservationTotalPrice(reservation);
   const platformFee = getReservationPlatformFee(reservation, platformFeePercent);
 
-  return Number(reservation.ownerPayout || totalPrice - platformFee);
+  return Number(reservation.owner_payout || reservation.ownerPayout || totalPrice - platformFee);
 }
 
 function getReservationContactVisible(status) {
