@@ -1242,10 +1242,10 @@
     }
 
     async function saveRenterReview(reservationId) {
-  const reservation = reservations.find(function (item) {
-    const itemId = item.id || item.reservationId;
-    return String(itemId) === String(reservationId);
-  });
+  const reservation = supabaseReservations.find(function (item) {
+  const itemId = item.id || item.reservationId;
+  return String(itemId) === String(reservationId);
+});
 
   if (!reservation) {
     alert("Rezervace nebyla nalezena.");
