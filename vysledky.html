@@ -745,7 +745,7 @@
         </div>
 
         <div class="filter-note">
-          Dostupnost se zatím počítá podle otevřených lokálních rezervací. Rezervace napojíme na Supabase v dalším kroku.
+          Dostupnost se načítá z otevřených rezervací v Supabase. Uzavřené, odmítnuté a zrušené rezervace nabídku neblokují.
         </div>
       </aside>
 
@@ -764,6 +764,7 @@
   <script>
     let resultsOffers = [];
     let resultsRatingSummaries = {};
+    let resultsReservedOfferIds = new Set();
 
     function getSupabaseClient() {
       if (window.rentuloSupabase) {
@@ -1011,6 +1012,73 @@
           ratingCount: ratingRow.rating_count
         };
       });
+    }
+
+    function getSupabaseReservationOfferId(reservation) {
+      if (!reservation) {
+        return "";
+      }
+
+      return String(
+        reservation.offer_id ||
+        reservation.offerId ||
+        reservation.naradiId ||
+        reservation.toolId ||
+        ""
+      );
+    }
+
+    async function loadReservedOfferIdsFromSupabase() {
+      resultsReservedOfferIds = new Set();
+
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        return;
+      }
+
+      const blockingStatuses = [
+        "pending",
+        "approved",
+        "paid",
+        "picked_up"
+      ];
+
+      const { data, error } = await supabaseClient
+        .from("reservations")
+        .select("offer_id, status")
+        .in("status", blockingStatuses);
+
+      if (error) {
+        console.warn("Dostupnost nabídek se nepodařilo načíst ze Supabase.", error);
+        return;
+      }
+
+      if (!Array.isArray(data)) {
+        return;
+      }
+
+      data.forEach(function (reservation) {
+        const offerId = getSupabaseReservationOfferId(reservation);
+
+        if (offerId) {
+          resultsReservedOfferIds.add(offerId);
+        }
+      });
+    }
+
+    function isOfferReservedInResults(offer) {
+      const offerId = String(getOfferId(offer) || "");
+
+      if (offerId && resultsReservedOfferIds.has(offerId)) {
+        return true;
+      }
+
+      if (typeof isOfferCurrentlyReserved === "function") {
+        return isOfferCurrentlyReserved(offer);
+      }
+
+      return false;
     }
 
     function getOwnerRatingSummary(offer) {
@@ -1301,9 +1369,7 @@
       const category = getOfferCategory(offer);
       const price = getOfferPrice(offer);
       const deposit = getOfferDeposit(offer);
-      const isReserved = typeof isOfferCurrentlyReserved === "function"
-        ? isOfferCurrentlyReserved(offer)
-        : false;
+      const isReserved = isOfferReservedInResults(offer);
 
       const availabilityClass = isReserved ? "unavailable" : "available";
       const availabilityText = isReserved ? "Momentálně rezervováno" : "Dostupné";
@@ -1368,9 +1434,7 @@
       const city = normalizeText(getOfferCity(offer));
       const postalCode = normalizeText(offer.postalCode || offer.psc || "");
       const price = getOfferPrice(offer);
-      const isReserved = typeof isOfferCurrentlyReserved === "function"
-        ? isOfferCurrentlyReserved(offer)
-        : false;
+      const isReserved = isOfferReservedInResults(offer);
 
       const what = normalizeText(whatQuery);
       const where = normalizeText(whereQuery);
@@ -1708,6 +1772,7 @@
 
       resultsOffers = await loadOffersFromSupabase();
       await loadRatingSummariesForOffers(resultsOffers);
+      await loadReservedOfferIdsFromSupabase();
 
       renderResults();
     }
