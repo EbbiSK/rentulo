@@ -12,21 +12,17 @@ function navLoadJson(key, fallback) {
 }
 
 function navIsLoggedIn() {
-  const rentuloLoggedIn = localStorage.getItem("rentuloLoggedIn") === "true";
-  const oldNaradiLoggedIn = localStorage.getItem("naradiLoggedIn") === "true";
-
-  return rentuloLoggedIn || oldNaradiLoggedIn;
+  return localStorage.getItem("rentuloLoggedIn") === "true";
 }
 
 function navGetCurrentUser() {
   const rentuloUser = navLoadJson("rentuloUser", null);
-  const oldNaradiUser = navLoadJson("naradiUser", null);
 
   if (!navIsLoggedIn()) {
     return null;
   }
 
-  return rentuloUser || oldNaradiUser || null;
+  return rentuloUser || null;
 }
 
 function navGetSupabaseClient() {

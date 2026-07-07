@@ -44,14 +44,11 @@ function normalizeEmail(email) {
 function saveCurrentUser(user) {
   if (typeof saveJson === "function") {
     saveJson("rentuloUser", user);
-    saveJson("naradiUser", user);
   } else {
     localStorage.setItem("rentuloUser", JSON.stringify(user));
-    localStorage.setItem("naradiUser", JSON.stringify(user));
   }
 
   localStorage.setItem("rentuloLoggedIn", "true");
-  localStorage.setItem("naradiLoggedIn", "true");
 }
 
 function findUserByEmail(email) {
