@@ -763,6 +763,7 @@
 
   <script>
     let resultsOffers = [];
+    let resultsRatingSummaries = {};
 
     function getSupabaseClient() {
       if (window.rentuloSupabase) {
@@ -897,6 +898,9 @@
     function normalizeSupabaseOffer(row) {
       return {
         id: row.id,
+        ownerId: row.owner_id,
+        owner_id: row.owner_id,
+
         name: row.name,
         title: row.name,
         nazev: row.name,
@@ -958,6 +962,79 @@
       return Array.isArray(data)
         ? data.map(normalizeSupabaseOffer)
         : [];
+    }
+
+    function getOfferOwnerId(offer) {
+      return String(offer.ownerId || offer.owner_id || offer.userId || offer.user_id || "");
+    }
+
+    async function loadRatingSummariesForOffers(offers) {
+      resultsRatingSummaries = {};
+
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient || !Array.isArray(offers) || !offers.length) {
+        return;
+      }
+
+      const ownerIds = Array.from(new Set(
+        offers
+          .map(getOfferOwnerId)
+          .filter(Boolean)
+      ));
+
+      if (!ownerIds.length) {
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from("user_rating_summary")
+        .select("user_id, average_rating, rating_count")
+        .in("user_id", ownerIds);
+
+      if (error) {
+        console.warn("Hodnocení majitelů se nepodařilo načíst.", error);
+        return;
+      }
+
+      if (!Array.isArray(data)) {
+        return;
+      }
+
+      data.forEach(function (ratingRow) {
+        if (!ratingRow || !ratingRow.user_id) {
+          return;
+        }
+
+        resultsRatingSummaries[String(ratingRow.user_id)] = {
+          averageRating: ratingRow.average_rating,
+          ratingCount: ratingRow.rating_count
+        };
+      });
+    }
+
+    function getOwnerRatingSummary(offer) {
+      const ownerId = getOfferOwnerId(offer);
+
+      if (!ownerId || !resultsRatingSummaries[ownerId]) {
+        return null;
+      }
+
+      return resultsRatingSummaries[ownerId];
+    }
+
+    function formatOwnerRating(offer) {
+      const summary = getOwnerRatingSummary(offer);
+
+      if (!summary || !summary.ratingCount) {
+        return "Zatím bez hodnocení";
+      }
+
+      return "⭐ " +
+        summary.averageRating +
+        " / 5 (" +
+        summary.ratingCount +
+        " hodnocení)";
     }
 
     function getOfferDistanceKm(offer) {
@@ -1261,6 +1338,11 @@
               <div class="result-info-box ${availabilityClass}">
                 <span>Dostupnost</span>
                 <strong>${escapeHtml(availabilityText)}</strong>
+              </div>
+
+              <div class="result-info-box">
+                <span>Hodnocení majitele</span>
+                <strong>${escapeHtml(formatOwnerRating(offer))}</strong>
               </div>
 
               ${renderDistanceBox(offer)}
@@ -1625,6 +1707,7 @@
       renderEmptyResults("loading");
 
       resultsOffers = await loadOffersFromSupabase();
+      await loadRatingSummariesForOffers(resultsOffers);
 
       renderResults();
     }
