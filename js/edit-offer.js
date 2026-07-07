@@ -1,11 +1,40 @@
 let editOfferPhotoDataUrl = "";
+let editCurrentOffer = null;
+let editHasBlockingReservation = false;
+let editSaveInProgress = false;
 
 document.addEventListener("DOMContentLoaded", function () {
   protectEditOfferPage();
-  loadOfferForEdit();
-  setupEditOfferPhotoUpload();
-  setupEditOfferSave();
+  initializeEditOfferPage();
 });
+
+function getEditSupabaseClient() {
+  if (window.rentuloSupabase) {
+    return window.rentuloSupabase;
+  }
+
+  if (typeof rentuloSupabase !== "undefined") {
+    return rentuloSupabase;
+  }
+
+  return null;
+}
+
+async function getEditSupabaseUser() {
+  const supabaseClient = getEditSupabaseClient();
+
+  if (!supabaseClient) {
+    return null;
+  }
+
+  const { data, error } = await supabaseClient.auth.getUser();
+
+  if (error || !data || !data.user) {
+    return null;
+  }
+
+  return data.user;
+}
 
 function editShowMessage(message, type = "error") {
   let messageBox = document.querySelector(".site-message");
@@ -42,10 +71,6 @@ function editIsEmpty(value) {
   return String(value === undefined || value === null ? "" : value).trim() === "";
 }
 
-function editNormalizeEmail(email) {
-  return String(email || "").trim().toLowerCase();
-}
-
 function editMoneyToNumber(value) {
   const cleanedValue = String(value === undefined || value === null ? "" : value)
     .replace(/\s/g, "")
@@ -58,7 +83,7 @@ function editMoneyToNumber(value) {
     return 0;
   }
 
-  return numberValue;
+  return Math.round(numberValue);
 }
 
 function editValueOrEmpty(value) {
@@ -70,41 +95,27 @@ function getEditToolId() {
   return params.get("id");
 }
 
-function getEditTool() {
-  const id = getEditToolId();
-
-  if (!id) {
-    return null;
-  }
-
-  const tools = getOffers();
-
-  return tools.find(function (tool) {
-    return String(tool.id || tool.offerId || tool.naradiId) === String(id);
-  }) || null;
-}
-
-function getEditOfferPhoto(tool) {
-  if (!tool) {
+function getEditOfferPhoto(offer) {
+  if (!offer) {
     return "";
   }
 
-  return tool.photoDataUrl || tool.imageDataUrl || tool.image || tool.photo || "";
+  return offer.photo_url || offer.photoUrl || offer.image || offer.photo || "";
 }
 
-function renderEditPhotoPreview(dataUrl) {
+function renderEditPhotoPreview(photoValue) {
   const preview = document.querySelector("#editPhotoPreview");
 
   if (!preview) {
     return;
   }
 
-  if (!dataUrl) {
+  if (!photoValue) {
     preview.innerHTML = "Bez fotky";
     return;
   }
 
-  preview.innerHTML = `<img src="${dataUrl}" alt="Fotka nářadí">`;
+  preview.innerHTML = `<img src="${photoValue}" alt="Fotka nářadí">`;
 }
 
 function updateEditPhotoStatus(message, type) {
@@ -144,8 +155,7 @@ function resizeEditImageToDataUrl(file, callback) {
       const context = canvas.getContext("2d");
       context.drawImage(image, 0, 0, width, height);
 
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.78);
-      callback(dataUrl);
+      callback(canvas.toDataURL("image/jpeg", 0.78));
     };
 
     image.onerror = function () {
@@ -211,153 +221,6 @@ function setupEditOfferPhotoUpload() {
   }
 }
 
-function isCurrentUserOwnerOfEditedTool(tool) {
-  const user = getCurrentUser();
-
-  if (!user || !tool || !tool.ownerEmail) {
-    return false;
-  }
-
-  return editNormalizeEmail(getUserEmail(user)) === editNormalizeEmail(tool.ownerEmail);
-}
-
-function editGetReservationOfferId(reservation) {
-  if (typeof getReservationOfferId === "function") {
-    return getReservationOfferId(reservation);
-  }
-
-  if (!reservation) {
-    return "";
-  }
-
-  return reservation.toolId || reservation.offerId || reservation.naradiId || "";
-}
-
-function editGetReservationStatus(reservation) {
-  if (typeof getReservationStatus === "function") {
-    return getReservationStatus(reservation);
-  }
-
-  if (!reservation) {
-    return "pending";
-  }
-
-  return reservation.status || "pending";
-}
-
-function editNormalizeReservationStatus(status) {
-  if (typeof normalizeReservationStatus === "function") {
-    return normalizeReservationStatus(status);
-  }
-
-  const normalizedStatus = String(status || "pending").trim().toLowerCase();
-
-  if (normalizedStatus === "čeká na potvrzení") {
-    return "pending";
-  }
-
-  if (normalizedStatus === "čeká na platbu") {
-    return "approved";
-  }
-
-  if (normalizedStatus === "zaplaceno") {
-    return "paid";
-  }
-
-  if (normalizedStatus === "vyzvednuto") {
-    return "picked_up";
-  }
-
-  if (normalizedStatus === "vráceno") {
-    return "returned";
-  }
-
-  if (normalizedStatus === "odmítnuto") {
-    return "rejected";
-  }
-
-  if (normalizedStatus === "zrušeno") {
-    return "cancelled";
-  }
-
-  return normalizedStatus;
-}
-
-function editIsBlockingReservationStatus(status) {
-  if (typeof isBlockingReservationStatus === "function") {
-    return isBlockingReservationStatus(status);
-  }
-
-  const normalizedStatus = editNormalizeReservationStatus(status);
-
-  return (
-    normalizedStatus === "pending" ||
-    normalizedStatus === "approved" ||
-    normalizedStatus === "paid" ||
-    normalizedStatus === "picked_up"
-  );
-}
-
-function editToolHasBlockingReservation(tool) {
-  if (!tool) {
-    return false;
-  }
-
-  const toolId = tool.id || tool.offerId || tool.naradiId;
-
-  if (!toolId) {
-    return false;
-  }
-
-  const reservations = getReservations();
-
-  return reservations.some(function (reservation) {
-    const reservationOfferId = editGetReservationOfferId(reservation);
-    const reservationStatus = editGetReservationStatus(reservation);
-
-    return (
-      String(reservationOfferId) === String(toolId) &&
-      editIsBlockingReservationStatus(reservationStatus)
-    );
-  });
-}
-
-function editLockPriceFieldsIfReserved(tool) {
-  const priceInput = document.querySelector("#edit-price");
-  const depositInput = document.querySelector("#edit-deposit");
-
-  if (!priceInput || !depositInput) {
-    return;
-  }
-
-  const hasBlockingReservation = editToolHasBlockingReservation(tool);
-
-  if (!hasBlockingReservation) {
-    priceInput.readOnly = false;
-    depositInput.readOnly = false;
-    priceInput.classList.remove("locked-input");
-    depositInput.classList.remove("locked-input");
-    return;
-  }
-
-  priceInput.readOnly = true;
-  depositInput.readOnly = true;
-  priceInput.classList.add("locked-input");
-  depositInput.classList.add("locked-input");
-
-  const existingNotice = document.querySelector(".edit-price-lock-notice");
-
-  if (existingNotice) {
-    return;
-  }
-
-  const notice = document.createElement("p");
-  notice.className = "edit-price-lock-notice";
-  notice.textContent = "Cena a kauce jsou zamčené, protože nabídka má aktivní rezervaci.";
-
-  depositInput.insertAdjacentElement("afterend", notice);
-}
-
 function getEditPageElement() {
   return document.querySelector(".edit-page") || document.querySelector(".offer-page");
 }
@@ -391,57 +254,131 @@ function protectEditOfferPage() {
   `;
 }
 
-function loadOfferForEdit() {
-  if (!isLoggedIn()) {
-    return;
-  }
-
+function showEditOfferNotFound() {
   const editPage = getEditPageElement();
 
   if (!editPage) {
     return;
   }
 
-  const tool = getEditTool();
+  editPage.innerHTML = `
+    <section class="login-required-box">
+      <p class="eyebrow">Nabídka nenalezena</p>
 
-  if (!tool) {
-    editPage.innerHTML = `
-      <section class="login-required-box">
-        <p class="eyebrow">Nabídka nenalezena</p>
+      <h1>Tuto nabídku se nepodařilo najít.</h1>
 
-        <h1>Tuto nabídku se nepodařilo najít.</h1>
+      <p>
+        Nabídka mohla být smazána nebo odkaz není správný.
+      </p>
 
-        <p>
-          Nabídka mohla být smazána nebo odkaz není správný.
-        </p>
+      <div class="login-required-actions">
+        <a href="moje-nabidky.html">Zpět na moje nabídky</a>
+      </div>
+    </section>
+  `;
+}
 
-        <div class="login-required-actions">
-          <a href="moje-nabidky.html">Zpět na moje nabídky</a>
-        </div>
-      </section>
-    `;
+function showEditOfferForbidden() {
+  const editPage = getEditPageElement();
+
+  if (!editPage) {
     return;
   }
 
-  if (!isCurrentUserOwnerOfEditedTool(tool)) {
-    editPage.innerHTML = `
-      <section class="login-required-box">
-        <p class="eyebrow">Nemáte oprávnění</p>
+  editPage.innerHTML = `
+    <section class="login-required-box">
+      <p class="eyebrow">Nemáte oprávnění</p>
 
-        <h1>Tuto nabídku nemůžete upravovat.</h1>
+      <h1>Tuto nabídku nemůžete upravovat.</h1>
 
-        <p>
-          Upravovat můžete pouze nabídky, které jste sami vytvořili.
-        </p>
+      <p>
+        Upravovat můžete pouze nabídky, které jste sami vytvořili.
+      </p>
 
-        <div class="login-required-actions">
-          <a href="moje-nabidky.html">Zpět na moje nabídky</a>
-        </div>
-      </section>
-    `;
+      <div class="login-required-actions">
+        <a href="moje-nabidky.html">Zpět na moje nabídky</a>
+      </div>
+    </section>
+  `;
+}
+
+async function loadOfferFromSupabase(offerId) {
+  const supabaseClient = getEditSupabaseClient();
+
+  if (!supabaseClient) {
+    throw new Error("Supabase klient není načtený.");
+  }
+
+  const { data, error } = await supabaseClient
+    .from("offers")
+    .select("*")
+    .eq("id", offerId)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+async function offerHasOpenReservationInSupabase(offerId) {
+  const supabaseClient = getEditSupabaseClient();
+
+  if (!supabaseClient || !offerId) {
+    return false;
+  }
+
+  const { data, error } = await supabaseClient
+    .from("reservations")
+    .select("id,status")
+    .eq("offer_id", offerId)
+    .in("status", ["pending", "approved", "paid", "picked_up"])
+    .limit(1);
+
+  if (error) {
+    console.warn("Nepodařilo se ověřit aktivní rezervace nabídky.", error);
+    return false;
+  }
+
+  return Array.isArray(data) && data.length > 0;
+}
+
+function editLockPriceFields(hasBlockingReservation) {
+  const priceInput = document.querySelector("#edit-price");
+  const depositInput = document.querySelector("#edit-deposit");
+
+  if (!priceInput || !depositInput) {
     return;
   }
 
+  if (!hasBlockingReservation) {
+    priceInput.readOnly = false;
+    depositInput.readOnly = false;
+    priceInput.classList.remove("locked-input");
+    depositInput.classList.remove("locked-input");
+    return;
+  }
+
+  priceInput.readOnly = true;
+  depositInput.readOnly = true;
+  priceInput.classList.add("locked-input");
+  depositInput.classList.add("locked-input");
+
+  const existingNotice = document.querySelector(".edit-price-lock-notice");
+
+  if (existingNotice) {
+    return;
+  }
+
+  const notice = document.createElement("p");
+  notice.className = "edit-price-lock-notice";
+  notice.textContent = "Cena a kauce jsou zamčené, protože nabídka má aktivní rezervaci.";
+
+  depositInput.insertAdjacentElement("afterend", notice);
+}
+
+function fillEditForm(offer) {
   const nameInput = document.querySelector("#edit-name");
   const categorySelect = document.querySelector("#edit-category");
   const cityInput = document.querySelector("#edit-city");
@@ -463,15 +400,15 @@ function loadOfferForEdit() {
     return;
   }
 
-  nameInput.value = tool.name || tool.title || tool.nazev || "";
-  categorySelect.value = tool.category || tool.kategorie || "Vyberte kategorii";
-  cityInput.value = tool.city || tool.mesto || tool.location || "";
-  postalInput.value = tool.postalCode || tool.postal || tool.psc || "";
-  priceInput.value = editValueOrEmpty(tool.price || tool.pricePerDay || tool.cena);
-  depositInput.value = editValueOrEmpty(tool.deposit !== undefined && tool.deposit !== null ? tool.deposit : tool.kauce);
-  descriptionInput.value = tool.description || tool.popis || "";
+  nameInput.value = offer.name || "";
+  categorySelect.value = offer.category || "Vyberte kategorii";
+  cityInput.value = offer.city || "";
+  postalInput.value = offer.postal_code || "";
+  priceInput.value = editValueOrEmpty(offer.price_per_day);
+  depositInput.value = editValueOrEmpty(offer.deposit);
+  descriptionInput.value = offer.description || "";
 
-  editOfferPhotoDataUrl = getEditOfferPhoto(tool);
+  editOfferPhotoDataUrl = getEditOfferPhoto(offer);
   renderEditPhotoPreview(editOfferPhotoDataUrl);
 
   if (editOfferPhotoDataUrl) {
@@ -480,9 +417,124 @@ function loadOfferForEdit() {
     updateEditPhotoStatus("Tato nabídka zatím nemá fotku.", "");
   }
 
-  editLockPriceFieldsIfReserved(tool);
+  document.title = "Upravit nabídku - " + (offer.name || "Nabídka");
+}
 
-  document.title = "Upravit nabídku - " + (tool.name || tool.title || tool.nazev || "Nabídka");
+function dataUrlToBlob(dataUrl) {
+  const parts = dataUrl.split(",");
+  const metadata = parts[0];
+  const base64 = parts[1];
+
+  const mimeMatch = metadata.match(/data:(.*?);base64/);
+  const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
+
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+
+  return new Blob([bytes], {
+    type: mimeType
+  });
+}
+
+async function uploadEditedOfferPhoto(supabaseClient, userId) {
+  if (!editOfferPhotoDataUrl) {
+    return null;
+  }
+
+  if (!editOfferPhotoDataUrl.startsWith("data:")) {
+    return editOfferPhotoDataUrl;
+  }
+
+  const photoBlob = dataUrlToBlob(editOfferPhotoDataUrl);
+  const fileName = userId + "/" + Date.now() + "-offer.jpg";
+
+  updateEditPhotoStatus("Nahrávám fotku do Supabase...", "");
+
+  const { error } = await supabaseClient.storage
+    .from("offer-photos")
+    .upload(fileName, photoBlob, {
+      contentType: "image/jpeg",
+      upsert: false
+    });
+
+  if (error) {
+    throw error;
+  }
+
+  const { data } = supabaseClient.storage
+    .from("offer-photos")
+    .getPublicUrl(fileName);
+
+  updateEditPhotoStatus("Fotka byla nahraná.", "success");
+
+  return data && data.publicUrl ? data.publicUrl : null;
+}
+
+function setEditSavingState(isSaving) {
+  const saveButton = document.querySelector("#save-edit-button");
+
+  if (!saveButton) {
+    return;
+  }
+
+  saveButton.disabled = isSaving;
+  saveButton.textContent = isSaving ? "Ukládám změny..." : "Uložit změny";
+}
+
+async function initializeEditOfferPage() {
+  if (!isLoggedIn()) {
+    return;
+  }
+
+  const offerId = getEditToolId();
+
+  if (!offerId) {
+    showEditOfferNotFound();
+    return;
+  }
+
+  const supabaseClient = getEditSupabaseClient();
+
+  if (!supabaseClient) {
+    editShowMessage("Supabase klient není načtený.");
+    return;
+  }
+
+  try {
+    const supabaseUser = await getEditSupabaseUser();
+
+    if (!supabaseUser) {
+      showEditOfferForbidden();
+      return;
+    }
+
+    const offer = await loadOfferFromSupabase(offerId);
+
+    if (!offer) {
+      showEditOfferNotFound();
+      return;
+    }
+
+    if (String(offer.owner_id) !== String(supabaseUser.id)) {
+      showEditOfferForbidden();
+      return;
+    }
+
+    editCurrentOffer = offer;
+    editHasBlockingReservation = await offerHasOpenReservationInSupabase(offer.id);
+
+    fillEditForm(offer);
+    editLockPriceFields(editHasBlockingReservation);
+    setupEditOfferPhotoUpload();
+    setupEditOfferSave();
+  } catch (error) {
+    console.error(error);
+    showEditOfferNotFound();
+  }
 }
 
 function setupEditOfferSave() {
@@ -492,17 +544,27 @@ function setupEditOfferSave() {
     return;
   }
 
-  saveButton.addEventListener("click", function () {
+  saveButton.addEventListener("click", async function () {
+    if (editSaveInProgress) {
+      return;
+    }
+
     editClearErrors();
 
-    const tool = getEditTool();
-
-    if (!tool) {
+    if (!editCurrentOffer) {
       editShowMessage("Nabídku se nepodařilo načíst.");
       return;
     }
 
-    if (!isCurrentUserOwnerOfEditedTool(tool)) {
+    const supabaseClient = getEditSupabaseClient();
+    const supabaseUser = await getEditSupabaseUser();
+
+    if (!supabaseClient || !supabaseUser) {
+      editShowMessage("Nejste přihlášený v Supabase. Přihlaste se prosím znovu.");
+      return;
+    }
+
+    if (String(editCurrentOffer.owner_id) !== String(supabaseUser.id)) {
       editShowMessage("Tuto nabídku nemůžete upravovat.");
       return;
     }
@@ -530,31 +592,22 @@ function setupEditOfferSave() {
 
     let hasError = false;
 
-    const requiredFields = [
-      nameInput,
-      cityInput,
-      postalInput,
-      descriptionInput
-    ];
-
-    requiredFields.forEach(function (field) {
+    [nameInput, cityInput, postalInput, descriptionInput].forEach(function (field) {
       if (editIsEmpty(field.value)) {
         editMarkError(field);
         hasError = true;
       }
     });
 
-    if (categorySelect.selectedIndex === 0) {
+    if (categorySelect.selectedIndex === 0 || editIsEmpty(categorySelect.value)) {
       editMarkError(categorySelect);
       hasError = true;
     }
 
-    const hasBlockingReservation = editToolHasBlockingReservation(tool);
+    let priceValue = Number(editCurrentOffer.price_per_day || 0);
+    let depositValue = Number(editCurrentOffer.deposit || 0);
 
-    let priceValue = Number(tool.price || tool.pricePerDay || 0);
-    let depositValue = Number(tool.deposit || 0);
-
-    if (!hasBlockingReservation) {
+    if (!editHasBlockingReservation) {
       if (editIsEmpty(priceInput.value)) {
         editMarkError(priceInput);
         hasError = true;
@@ -584,43 +637,50 @@ function setupEditOfferSave() {
       return;
     }
 
-    const tools = getOffers();
+    editSaveInProgress = true;
+    setEditSavingState(true);
 
-    const updatedTools = tools.map(function (item) {
-      if (String(item.id || item.offerId || item.naradiId) !== String(tool.id || tool.offerId || tool.naradiId)) {
-        return item;
-      }
+    try {
+      const photoUrl = await uploadEditedOfferPhoto(supabaseClient, supabaseUser.id);
 
-      return {
-        ...item,
+      const updatePayload = {
         name: nameInput.value.trim(),
-        title: nameInput.value.trim(),
         category: categorySelect.value.trim(),
         city: cityInput.value.trim(),
-        postalCode: postalInput.value.trim(),
-        price: priceValue,
-        pricePerDay: priceValue,
-        deposit: depositValue,
+        postal_code: postalInput.value.trim(),
         description: descriptionInput.value.trim(),
-
-        photoDataUrl: editOfferPhotoDataUrl,
-        imageDataUrl: editOfferPhotoDataUrl,
-        image: editOfferPhotoDataUrl,
-
-        updatedAt: new Date().toISOString()
+        photo_url: photoUrl
       };
-    });
 
-    saveOffers(updatedTools);
+      if (!editHasBlockingReservation) {
+        updatePayload.price_per_day = priceValue;
+        updatePayload.deposit = depositValue;
+      }
 
-    if (hasBlockingReservation) {
-      editShowMessage("Změny byly uloženy. Cena a kauce zůstaly stejné, protože nabídka má aktivní rezervaci.", "success");
-    } else {
-      editShowMessage("Změny byly uloženy.", "success");
+      const { error } = await supabaseClient
+        .from("offers")
+        .update(updatePayload)
+        .eq("id", editCurrentOffer.id)
+        .eq("owner_id", supabaseUser.id);
+
+      if (error) {
+        throw error;
+      }
+
+      if (editHasBlockingReservation) {
+        editShowMessage("Změny byly uloženy. Cena a kauce zůstaly stejné, protože nabídka má aktivní rezervaci.", "success");
+      } else {
+        editShowMessage("Změny byly uloženy.", "success");
+      }
+
+      setTimeout(function () {
+        window.location.href = "moje-nabidky.html";
+      }, 900);
+    } catch (error) {
+      console.error(error);
+      editSaveInProgress = false;
+      setEditSavingState(false);
+      editShowMessage("Změny se nepodařilo uložit. Zkontrolujte konzoli nebo Supabase pravidla.");
     }
-
-    setTimeout(function () {
-      window.location.href = "moje-nabidky.html";
-    }, 900);
   });
 }
