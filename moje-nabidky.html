@@ -866,6 +866,7 @@
 
     let ownerOffers = [];
     let ownerReservations = [];
+    let ownerReviews = [];
 
     function getSupabaseClient() {
       if (window.rentuloSupabase) {
@@ -1087,6 +1088,45 @@
       };
     }
 
+    function normalizeReview(row) {
+      return {
+        id: row.id,
+        reservationId: row.reservation_id,
+        reviewerId: row.reviewer_id,
+        reviewedUserId: row.reviewed_user_id,
+        offerId: row.offer_id,
+        rating: Number(row.rating || 0),
+        text: row.text || "",
+        createdAt: row.created_at || ""
+      };
+    }
+
+    function getStars(rating) {
+      const count = Math.max(0, Math.min(5, Number(rating) || 0));
+      let stars = "";
+
+      for (let i = 1; i <= 5; i++) {
+        stars += i <= count ? "★" : "☆";
+      }
+
+      return stars;
+    }
+
+    function findOwnerReviewForRenter(reservation) {
+      if (!reservation) {
+        return null;
+      }
+
+      return ownerReviews.find(function (review) {
+        const sameReservation = String(review.reservationId || "") === String(reservation.id || "");
+        const sameReviewer = String(review.reviewerId || "") === String(reservation.ownerId || "");
+        const sameReviewedUser = !reservation.renterId ||
+          String(review.reviewedUserId || "") === String(reservation.renterId || "");
+
+        return sameReservation && sameReviewer && sameReviewedUser;
+      }) || null;
+    }
+
     async function loadOwnerData() {
       const supabaseClient = getSupabaseClient();
 
@@ -1130,12 +1170,28 @@
         return;
       }
 
+      const reviewsResult = await supabaseClient
+        .from("reviews")
+        .select("*")
+        .or("reviewer_id.eq." + supabaseUser.id + ",reviewed_user_id.eq." + supabaseUser.id)
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (reviewsResult.error) {
+        console.warn("Hodnocení se nepodařilo načíst ze Supabase.", reviewsResult.error);
+      }
+
       ownerOffers = Array.isArray(offersResult.data)
         ? offersResult.data.map(normalizeOffer)
         : [];
 
       ownerReservations = Array.isArray(reservationsResult.data)
         ? reservationsResult.data.map(normalizeReservation)
+        : [];
+
+      ownerReviews = reviewsResult && Array.isArray(reviewsResult.data)
+        ? reviewsResult.data.map(normalizeReview)
         : [];
     }
 
@@ -1518,6 +1574,152 @@
         </div>
       `;
     }
+    function renderOwnerReviewForRenterBox(reservation, status) {
+      if (status !== STATUS_RETURNED) {
+        return "";
+      }
+
+      const reservationId = reservation.id;
+      const existingReview = findOwnerReviewForRenter(reservation);
+
+      if (existingReview) {
+        return `
+          <div class="request-contact-box">
+            <strong>Hodnocení zákazníka bylo odesláno</strong>
+            <div style="margin-top: 6px; color: #006b45; font-size: 15px;">
+              ${escapeHtml(getStars(existingReview.rating))}
+            </div>
+            <div style="margin-top: 6px;">
+              ${escapeHtml(existingReview.text || "Bez komentáře")}
+            </div>
+            <div style="margin-top: 6px; color: #5b6862; font-size: 12px;">
+              Odesláno: ${escapeHtml(formatDate(existingReview.createdAt))}
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="request-contact-box">
+          <strong>Ohodnotit zákazníka</strong>
+          <div style="margin-top: 10px;">
+            <label>
+              Počet hvězdiček
+              <select id="owner-review-rating-${escapeHtml(reservationId)}">
+                <option value="5">★★★★★ - výborné</option>
+                <option value="4">★★★★☆ - dobré</option>
+                <option value="3">★★★☆☆ - průměrné</option>
+                <option value="2">★★☆☆☆ - slabé</option>
+                <option value="1">★☆☆☆☆ - špatné</option>
+              </select>
+            </label>
+          </div>
+
+          <div style="margin-top: 10px;">
+            <label>
+              Komentář
+              <textarea id="owner-review-text-${escapeHtml(reservationId)}" rows="3" placeholder="Jak proběhlo půjčení?"></textarea>
+            </label>
+          </div>
+
+          <button class="small-button" type="button" onclick="saveOwnerReviewForRenter('${escapeHtml(reservationId)}')">
+            Odeslat hodnocení
+          </button>
+        </div>
+      `;
+    }
+
+    async function saveOwnerReviewForRenter(reservationId) {
+      const reservation = ownerReservations.find(function (item) {
+        return String(item.id) === String(reservationId);
+      });
+
+      if (!reservation) {
+        alert("Rezervace nebyla nalezena.");
+        return;
+      }
+
+      if (reservation.status !== STATUS_RETURNED) {
+        alert("Zákazníka můžete ohodnotit až po dokončení půjčení.");
+        return;
+      }
+
+      const existingReview = findOwnerReviewForRenter(reservation);
+
+      if (existingReview) {
+        alert("Tuto rezervaci jste už hodnotili.");
+        return;
+      }
+
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        alert("Supabase klient není načtený.");
+        return;
+      }
+
+      const supabaseUser = await getCurrentSupabaseUser();
+
+      if (!supabaseUser) {
+        window.location.href = "prihlaseni.html";
+        return;
+      }
+
+      const ratingElement = document.getElementById("owner-review-rating-" + reservationId);
+      const textElement = document.getElementById("owner-review-text-" + reservationId);
+
+      const rating = Number(ratingElement ? ratingElement.value : 5);
+      const text = textElement ? textElement.value.trim() : "";
+
+      if (!reservation.renterId) {
+        alert("Chybí ID zákazníka pro hodnocení.");
+        return;
+      }
+
+      const reviewToInsert = {
+        reservation_id: reservation.id,
+        reviewer_id: supabaseUser.id,
+        reviewed_user_id: reservation.renterId,
+        offer_id: reservation.offerId,
+        rating: rating,
+        text: text
+      };
+
+      const { error } = await supabaseClient
+        .from("reviews")
+        .insert(reviewToInsert);
+
+      if (error) {
+        console.error("Chyba při ukládání hodnocení:", error);
+
+        if (String(error.message || "").toLowerCase().includes("duplicate")) {
+          alert("Tuto rezervaci jste už hodnotili.");
+        } else {
+          alert("Hodnocení se nepodařilo uložit.");
+        }
+
+        return;
+      }
+
+      alert("Hodnocení bylo uloženo.");
+      await loadOwnerData();
+      renderOffers();
+
+      setTimeout(function () {
+        reopenReservationAfterRender(reservationId, "history");
+
+        const historyDetail = document.getElementById("history-request-detail-" + reservationId);
+        const openDetail = document.getElementById("request-detail-" + reservationId);
+
+        if (historyDetail) {
+          historyDetail.classList.add("open");
+        }
+
+        if (openDetail) {
+          openDetail.classList.add("open");
+        }
+      }, 0);
+    }
 
     function renderRequestDetailContent(reservation, status) {
       const price = reservation.totalPrice;
@@ -1549,6 +1751,8 @@
           </div>
 
           ${renderReservationContactBlock(reservation)}
+
+          ${renderOwnerReviewForRenterBox(reservation, status)}
 
           ${renderRequestNote(status)}
         </div>
