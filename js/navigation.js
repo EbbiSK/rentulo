@@ -112,14 +112,7 @@ function navGetTools() {
 }
 
 function navGetReservations() {
-  if (typeof getReservations === "function") {
-    return getReservations();
-  }
-
-  const rentuloReservations = navLoadJson("rentuloReservations", []);
-  const oldNaradiReservations = navLoadJson("naradiRezervace", []);
-
-  return navMergeById(rentuloReservations, oldNaradiReservations);
+  return [];
 }
 
 function navGetToolId(tool) {
@@ -262,7 +255,7 @@ function navGetNotificationCount() {
   }
 
   const tools = navGetTools();
-  const reservations = navGetReservations();
+  const reservations = [];
 
   const myToolIds = tools
     .filter(function (tool) {

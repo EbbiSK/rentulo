@@ -63,77 +63,7 @@ function findUserByEmail(email) {
   }) || null;
 }
 
-function findUserFromOldData(email) {
-  const normalizedEmail = normalizeEmail(email);
 
-  const currentUser = getCurrentUser();
-
-  if (currentUser && normalizeEmail(getUserEmail(currentUser)) === normalizedEmail) {
-    return currentUser;
-  }
-
-  const offers = getOffers();
-
-  const offer = offers.find(function (item) {
-    return normalizeEmail(item.ownerEmail) === normalizedEmail;
-  });
-
-  if (offer) {
-    return {
-      fullName: offer.ownerName || "Uživatel",
-      email: offer.ownerEmail,
-      phone: offer.ownerPhone || offer.pickupPhone || "Telefon není vyplněn",
-      street: offer.ownerStreet || "",
-      city: offer.ownerCity || "",
-      postalCode: offer.ownerPostalCode || "",
-      password: "",
-      initials: getInitials(offer.ownerName || "Uživatel")
-    };
-  }
-
-  const reservations = getReservations();
-
-  const reservation = reservations.find(function (item) {
-    return (
-      normalizeEmail(item.borrowerEmail) === normalizedEmail ||
-      normalizeEmail(item.renterEmail) === normalizedEmail ||
-      normalizeEmail(item.userEmail) === normalizedEmail
-    );
-  });
-
-  if (reservation) {
-    const fullName =
-      reservation.borrowerName ||
-      reservation.renterName ||
-      reservation.userName ||
-      "Uživatel";
-
-    const userEmail =
-      reservation.borrowerEmail ||
-      reservation.renterEmail ||
-      reservation.userEmail ||
-      email;
-
-    const phone =
-      reservation.borrowerPhone ||
-      reservation.renterPhone ||
-      reservation.userPhone ||
-      "Telefon není vyplněn";
-
-    return {
-      fullName: fullName,
-      email: userEmail,
-      phone: phone,
-      street: "",
-      city: "",
-      postalCode: "",
-      password: "",
-      initials: getInitials(fullName)
-    };
-  }
-
-  return null;
-}
 
 function addOrUpdateUser(user) {
   const users = getUsers();
@@ -381,9 +311,7 @@ function saveUserFromLogin() {
 
     let user = findUserByEmail(email);
 
-    if (!user) {
-      user = findUserFromOldData(email);
-    }
+    
 
     if (!user) {
       event.preventDefault();
