@@ -1422,6 +1422,44 @@
       return data && data.publicUrl ? data.publicUrl : "";
     }
 
+    function createSupabaseOfferObject(status, supabaseUser, photoUrl) {
+      const currentUser = getCurrentUser();
+      const pickupAddress = getPickupAddress(currentUser);
+
+      const pickupLatitudeValue = getInputValue("pickupLatitude");
+      const pickupLongitudeValue = getInputValue("pickupLongitude");
+
+      const pickupLatitude = pickupLatitudeValue ? Number(pickupLatitudeValue) : null;
+      const pickupLongitude = pickupLongitudeValue ? Number(pickupLongitudeValue) : null;
+
+      const hasPickupGps =
+        pickupLatitude !== null &&
+        pickupLongitude !== null &&
+        !Number.isNaN(pickupLatitude) &&
+        !Number.isNaN(pickupLongitude);
+
+      return {
+        owner_id: supabaseUser.id,
+        name: getInputValue("toolName"),
+        category: getInputValue("toolCategory"),
+        description: getInputValue("toolDescription"),
+        city: getInputValue("toolCity"),
+        postal_code: getInputValue("toolPostalCode"),
+        price_per_day: parseMoneyValue(getInputValue("toolPrice")),
+        deposit: parseMoneyValue(getInputValue("toolDeposit")),
+        status: status,
+        photo_url: photoUrl || null,
+
+        pickup_street: pickupAddress.street,
+        pickup_city: pickupAddress.city,
+        pickup_postal_code: pickupAddress.postalCode,
+        pickup_note: pickupAddress.note,
+        pickup_phone: getUserPhone(currentUser),
+        pickup_latitude: hasPickupGps ? pickupLatitude : null,
+        pickup_longitude: hasPickupGps ? pickupLongitude : null
+      };
+    }
+
     function setOfferSavingState(isSaving, status) {
       const publishOfferButton = document.getElementById("publishOfferButton");
       const saveDraftButton = document.getElementById("saveDraftButton");
