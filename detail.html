@@ -965,6 +965,39 @@ owner_id: row.owner_id,
       return data || null;
     }
 
+    async function isOfferReservedInSupabase(offerId) {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient || !offerId) {
+        return false;
+      }
+
+      const blockingStatuses = [
+        "pending",
+        "approved",
+        "paid",
+        "picked_up",
+        "Čeká na potvrzení",
+        "Čeká na platbu",
+        "Zaplaceno",
+        "Vyzvednuto"
+      ];
+
+      const { data, error } = await supabaseClient
+        .from("reservations")
+        .select("id")
+        .eq("offer_id", offerId)
+        .in("status", blockingStatuses)
+        .limit(1);
+
+      if (error) {
+        console.warn("Dostupnost nabídky se nepodařilo načíst ze Supabase.", error);
+        return false;
+      }
+
+      return Array.isArray(data) && data.length > 0;
+    }
+
     function getOfferPickupPhone(offer, pickupData) {
       return (
         (pickupData && pickupData.pickup_phone) ||
@@ -1189,7 +1222,7 @@ owner_id: row.owner_id,
           </button>
 
           <div class="note">
-            Rezervaci půjde odeslat až ve chvíli, kdy bude nabídka aktivní a nebude mít otevřenou rezervaci.
+            Rezervaci půjde odeslat až ve chvíli, kdy bude nabídka aktivní a nebude mít otevřenou rezervaci v Supabase.
           </div>
         </aside>
       `;
@@ -1317,7 +1350,7 @@ Přesná adresa a telefon zůstanou skryté až do zaplacení.
 const ownerId = String(offer.ownerId || offer.owner_id || "");
 const isOwner = currentUserId && ownerId && currentUserId === ownerId;
 
-const isReserved = false;
+const isReserved = Boolean(offer.isReserved || offer.supabaseReserved);
 const isActive = isOfferActive(offer);
 const hasGps = offerHasGpsLocation(offer);
 
@@ -1846,6 +1879,8 @@ total_price: totalPrice,
         renderNotFound();
         return;
       }
+
+      offer.isReserved = await isOfferReservedInSupabase(offer.id);
 
       renderDetail(offer);
     }
