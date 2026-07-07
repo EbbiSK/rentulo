@@ -1289,9 +1289,19 @@
     return;
   }
 
-  const { error } = await supabaseClient
-    .from("reviews")
-    .insert(reviewToInsert);
+  const reviewSupabaseClient =
+  typeof supabaseClient !== "undefined"
+    ? supabaseClient
+    : window.supabaseClient;
+
+if (!reviewSupabaseClient) {
+  alert("Supabase klient není dostupný. Obnovte stránku a zkuste to znovu.");
+  return;
+}
+
+const { error } = await reviewSupabaseClient
+  .from("reviews")
+  .insert(reviewToInsert);
 
   if (error) {
     console.error("Chyba při ukládání hodnocení:", error);
