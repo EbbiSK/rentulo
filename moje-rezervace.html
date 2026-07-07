@@ -1289,10 +1289,7 @@
     return;
   }
 
-  const reviewSupabaseClient =
-  typeof supabaseClient !== "undefined"
-    ? supabaseClient
-    : window.supabaseClient;
+  const reviewSupabaseClient = getSupabaseClient();
 
 if (!reviewSupabaseClient) {
   alert("Supabase klient není dostupný. Obnovte stránku a zkuste to znovu.");
