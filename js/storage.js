@@ -34,259 +34,19 @@ function getItemId(item) {
   );
 }
 
-function getOfferPhotoValue(offer) {
-  if (!offer) {
-    return "";
-  }
-
-  return offer.photoDataUrl || offer.imageDataUrl || offer.image || offer.photo || "";
-}
-
-function offerHasPhoto(offer) {
-  return Boolean(getOfferPhotoValue(offer));
-}
-
-function getOfferContentKey(offer) {
-  if (!offer) {
-    return "";
-  }
-
-  return [
-    offer.name || offer.title || offer.nazev || "",
-    offer.category || offer.kategorie || "",
-    offer.city || offer.mesto || offer.location || "",
-    offer.postalCode || offer.psc || "",
-    offer.price || offer.pricePerDay || offer.cena || "",
-    offer.deposit || offer.kauce || "",
-    offer.ownerEmail || ""
-  ].map(normalizeStorageText).join("|");
-}
-
-function getReservationContentKey(reservation) {
-  if (!reservation) {
-    return "";
-  }
-
-  return [
-    reservation.offerId || reservation.toolId || reservation.naradiId || "",
-    reservation.renterEmail || reservation.userEmail || reservation.borrowerEmail || "",
-    reservation.startDate || reservation.dateFrom || "",
-    reservation.endDate || reservation.dateTo || "",
-    reservation.status || ""
-  ].map(normalizeStorageText).join("|");
-}
-
-function getOfferCompletenessScore(offer) {
-  if (!offer) {
-    return 0;
-  }
-
-  let score = 0;
-
+function clearLegacyLocalCollectionData() {
   [
-    offer.id,
-    offer.name || offer.title || offer.nazev,
-    offer.category || offer.kategorie,
-    offer.city || offer.mesto || offer.location,
-    offer.postalCode || offer.psc,
-    offer.price || offer.pricePerDay || offer.cena,
-    offer.deposit || offer.kauce,
-    offer.description,
-    offer.ownerEmail,
-    offer.pickupLatitude,
-    offer.pickupLongitude,
-    offer.pickupStreet,
-    offer.pickupCity,
-    offer.pickupPostalCode,
-    offer.pickupFullAddress
-  ].forEach(function (value) {
-    if (value !== undefined && value !== null && String(value).trim() !== "") {
-      score += 1;
-    }
+    "rentuloUsers",
+    "naradiUsers",
+    "rentuloOffers",
+    "naradiNabidky",
+    "rentuloReservations",
+    "naradiRezervace",
+    "rentuloNotifications",
+    "naradiNotifications"
+  ].forEach(function (key) {
+    localStorage.removeItem(key);
   });
-
-  if (offerHasPhoto(offer)) {
-    score += 20;
-  }
-
-  return score;
-}
-
-function mergeDuplicateOffers(existingOffer, newOffer) {
-  if (!existingOffer) {
-    return newOffer;
-  }
-
-  if (!newOffer) {
-    return existingOffer;
-  }
-
-  const existingPhoto = getOfferPhotoValue(existingOffer);
-  const newPhoto = getOfferPhotoValue(newOffer);
-
-  const existingScore = getOfferCompletenessScore(existingOffer);
-  const newScore = getOfferCompletenessScore(newOffer);
-
-  const baseOffer = newScore > existingScore ? newOffer : existingOffer;
-  const otherOffer = baseOffer === newOffer ? existingOffer : newOffer;
-
-  const mergedOffer = {
-    ...otherOffer,
-    ...baseOffer
-  };
-
-  const finalPhoto = newPhoto || existingPhoto || "";
-
-  if (finalPhoto) {
-    mergedOffer.photoDataUrl = finalPhoto;
-    mergedOffer.imageDataUrl = finalPhoto;
-    mergedOffer.image = finalPhoto;
-  }
-
-  if (!mergedOffer.title && mergedOffer.name) {
-    mergedOffer.title = mergedOffer.name;
-  }
-
-  if (!mergedOffer.name && mergedOffer.title) {
-    mergedOffer.name = mergedOffer.title;
-  }
-
-  if (!mergedOffer.pricePerDay && mergedOffer.price) {
-    mergedOffer.pricePerDay = mergedOffer.price;
-  }
-
-  if (!mergedOffer.price && mergedOffer.pricePerDay) {
-    mergedOffer.price = mergedOffer.pricePerDay;
-  }
-
-  return mergedOffer;
-}
-
-function mergeStorageArrays(primaryItems, secondaryItems) {
-  const mergedItems = [];
-
-  if (Array.isArray(primaryItems)) {
-    mergedItems.push(...primaryItems);
-  }
-
-  if (Array.isArray(secondaryItems)) {
-    secondaryItems.forEach(function (secondaryItem) {
-      const secondaryId = getItemId(secondaryItem);
-      const secondaryEmail = normalizeStorageEmail(secondaryItem && secondaryItem.email);
-
-      const alreadyExists = mergedItems.some(function (item) {
-        const itemId = getItemId(item);
-        const itemEmail = normalizeStorageEmail(item && item.email);
-
-        if (itemId && secondaryId && itemId === secondaryId) {
-          return true;
-        }
-
-        if (itemEmail && secondaryEmail && itemEmail === secondaryEmail) {
-          return true;
-        }
-
-        return false;
-      });
-
-      if (!alreadyExists) {
-        mergedItems.push(secondaryItem);
-      }
-    });
-  }
-
-  return mergedItems;
-}
-
-function mergeOffers(primaryOffers, secondaryOffers) {
-  const mergedOffers = [];
-
-  function addOfferIfMissing(offer) {
-    if (!offer) {
-      return;
-    }
-
-    const offerId = getItemId(offer);
-    const offerContentKey = getOfferContentKey(offer);
-
-    const existingIndex = mergedOffers.findIndex(function (existingOffer) {
-      const existingId = getItemId(existingOffer);
-      const existingContentKey = getOfferContentKey(existingOffer);
-
-      if (offerId && existingId && offerId === existingId) {
-        return true;
-      }
-
-      if (offerContentKey && existingContentKey && offerContentKey === existingContentKey) {
-        return true;
-      }
-
-      return false;
-    });
-
-    if (existingIndex === -1) {
-      mergedOffers.push(offer);
-      return;
-    }
-
-    mergedOffers[existingIndex] = mergeDuplicateOffers(mergedOffers[existingIndex], offer);
-  }
-
-  if (Array.isArray(primaryOffers)) {
-    primaryOffers.forEach(addOfferIfMissing);
-  }
-
-  if (Array.isArray(secondaryOffers)) {
-    secondaryOffers.forEach(addOfferIfMissing);
-  }
-
-  return mergedOffers;
-}
-
-function mergeReservations(primaryReservations, secondaryReservations) {
-  const mergedReservations = [];
-
-  function addReservationIfMissing(reservation) {
-    if (!reservation) {
-      return;
-    }
-
-    const reservationId = getItemId(reservation);
-    const reservationContentKey = getReservationContentKey(reservation);
-
-    const alreadyExists = mergedReservations.some(function (existingReservation) {
-      const existingId = getItemId(existingReservation);
-      const existingContentKey = getReservationContentKey(existingReservation);
-
-      if (reservationId && existingId && reservationId === existingId) {
-        return true;
-      }
-
-      if (
-        reservationContentKey &&
-        existingContentKey &&
-        reservationContentKey === existingContentKey
-      ) {
-        return true;
-      }
-
-      return false;
-    });
-
-    if (!alreadyExists) {
-      mergedReservations.push(reservation);
-    }
-  }
-
-  if (Array.isArray(primaryReservations)) {
-    primaryReservations.forEach(addReservationIfMissing);
-  }
-
-  if (Array.isArray(secondaryReservations)) {
-    secondaryReservations.forEach(addReservationIfMissing);
-  }
-
-  return mergedReservations;
 }
 
 function isLoggedIn() {
@@ -354,94 +114,68 @@ function getUserPhone(user) {
   return user.phone || user.telefon || user.userPhone || "";
 }
 
-function getUsers() {
-  const rentuloUsers = loadJson("rentuloUsers", []);
-  const oldNaradiUsers = loadJson("naradiUsers", []);
+/*
+  Supabase je teraz hlavný zdroj dát pre:
+  - používateľské profily,
+  - ponuky,
+  - rezervácie,
+  - notifikácie.
 
-  return mergeStorageArrays(rentuloUsers, oldNaradiUsers);
+  Tieto funkcie nechávame kvôli starším stránkam a kompatibilite,
+  ale už nevracajú ani neukladajú lokálne kolekcie, aby lokálne dáta
+  neprebíjali stav zo Supabase.
+*/
+
+function getUsers() {
+  clearLegacyLocalCollectionData();
+  return [];
 }
 
-function saveUsers(users) {
-  saveJson("rentuloUsers", users);
-  saveJson("naradiUsers", users);
+function saveUsers() {
+  clearLegacyLocalCollectionData();
 }
 
 function getOffers() {
-  const rentuloOffers = loadJson("rentuloOffers", []);
-  const oldNaradiOffers = loadJson("naradiNabidky", []);
-
-  const mergedOffers = mergeOffers(rentuloOffers, oldNaradiOffers);
-
-  if (
-    mergedOffers.length !== rentuloOffers.length ||
-    mergedOffers.length !== oldNaradiOffers.length ||
-    JSON.stringify(mergedOffers) !== JSON.stringify(rentuloOffers) ||
-    JSON.stringify(mergedOffers) !== JSON.stringify(oldNaradiOffers)
-  ) {
-    saveOffers(mergedOffers);
-  }
-
-  return mergedOffers;
+  clearLegacyLocalCollectionData();
+  return [];
 }
 
-function saveOffers(offers) {
-  const cleanOffers = mergeOffers(offers, []);
-
-  saveJson("rentuloOffers", cleanOffers);
-  saveJson("naradiNabidky", cleanOffers);
+function saveOffers() {
+  clearLegacyLocalCollectionData();
 }
 
 function getReservations() {
-  const rentuloReservations = loadJson("rentuloReservations", []);
-  const oldNaradiReservations = loadJson("naradiRezervace", []);
-
-  const mergedReservations = mergeReservations(rentuloReservations, oldNaradiReservations);
-
-  if (
-    mergedReservations.length !== rentuloReservations.length ||
-    mergedReservations.length !== oldNaradiReservations.length
-  ) {
-    saveReservations(mergedReservations);
-  }
-
-  return mergedReservations;
+  clearLegacyLocalCollectionData();
+  return [];
 }
 
-function saveReservations(reservations) {
-  const cleanReservations = mergeReservations(reservations, []);
-
-  saveJson("rentuloReservations", cleanReservations);
-  saveJson("naradiRezervace", cleanReservations);
+function saveReservations() {
+  clearLegacyLocalCollectionData();
 }
 
 function getNotifications() {
-  const rentuloNotifications = loadJson("rentuloNotifications", []);
-  const oldNaradiNotifications = loadJson("naradiNotifications", []);
-
-  return mergeStorageArrays(rentuloNotifications, oldNaradiNotifications);
+  clearLegacyLocalCollectionData();
+  return [];
 }
 
-function saveNotifications(notifications) {
-  saveJson("rentuloNotifications", notifications);
-  saveJson("naradiNotifications", notifications);
+function saveNotifications() {
+  clearLegacyLocalCollectionData();
 }
 
 function addSimulatedPhoneNotification(notificationData) {
-  const notifications = getNotifications();
+  console.warn(
+    "addSimulatedPhoneNotification už nepoužíva localStorage. Notifikácie sa majú ukladať do Supabase.",
+    notificationData || {}
+  );
 
-  const notification = {
-    id: "notification-" + Date.now(),
-    type: notificationData.type || "notification",
-    recipientName: notificationData.recipientName || "Uživatel",
-    recipientEmail: notificationData.recipientEmail || "",
-    recipientPhone: notificationData.recipientPhone || "",
-    message: notificationData.message || "",
-    status: "simulated",
+  return {
+    id: "notification-disabled-" + Date.now(),
+    type: notificationData && notificationData.type ? notificationData.type : "notification",
+    recipientName: notificationData && notificationData.recipientName ? notificationData.recipientName : "Uživatel",
+    recipientEmail: notificationData && notificationData.recipientEmail ? notificationData.recipientEmail : "",
+    recipientPhone: notificationData && notificationData.recipientPhone ? notificationData.recipientPhone : "",
+    message: notificationData && notificationData.message ? notificationData.message : "",
+    status: "disabled-local-storage",
     createdAt: new Date().toISOString()
   };
-
-  notifications.push(notification);
-  saveNotifications(notifications);
-
-  return notification;
 }
