@@ -1397,6 +1397,7 @@ const hasGps = offerHasGpsLocation(offer);
 
               <div class="badges">
                 <span class="badge">Ověřený majitel</span>
+                <span class="badge" id="ownerRatingBadge">Hodnocení majitele: načítám...</span>
                 <span class="badge ${statusBadgeClass}">${escapeHtml(offerStatus)}</span>
                 <span class="badge ${availabilityBadgeClass}">${escapeHtml(availabilityText)}</span>
                 <span class="badge">Provize platformy ${PLATFORM_FEE_PERCENT} %</span>
@@ -1479,10 +1480,57 @@ const hasGps = offerHasGpsLocation(offer);
         </div>
       `;
 
+      loadOwnerRating(ownerId);
+
       if (currentUser && !isOwner && isActive && !isReserved) {
   setupBookingForm(offer);
 }
     }
+
+    async function loadOwnerRating(ownerId) {
+      const ratingBadge = document.getElementById("ownerRatingBadge");
+
+      if (!ratingBadge) {
+        return;
+      }
+
+      if (!ownerId) {
+        ratingBadge.textContent = "Hodnocení majitele: zatím bez hodnocení";
+        return;
+      }
+
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        ratingBadge.textContent = "Hodnocení majitele: nedostupné";
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from("user_rating_summary")
+        .select("average_rating, rating_count")
+        .eq("user_id", ownerId)
+        .maybeSingle();
+
+      if (error) {
+        console.warn("Hodnocení majitele se nepodařilo načíst.", error);
+        ratingBadge.textContent = "Hodnocení majitele: nedostupné";
+        return;
+      }
+
+      if (!data || !data.rating_count) {
+        ratingBadge.textContent = "Hodnocení majitele: zatím bez hodnocení";
+        return;
+      }
+
+      ratingBadge.textContent =
+        "Hodnocení majitele: ⭐ " +
+        data.average_rating +
+        " / 5 (" +
+        data.rating_count +
+        " hodnocení)";
+    }
+
     async function getCurrentSupabaseUser() {
       const supabaseClient = getSupabaseClient();
 
