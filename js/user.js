@@ -15,8 +15,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   Důležité:
   Pri prihlásení už nevytvárame nový účet automaticky.
-  Používateľ sa môže prihlásiť iba vtedy, keď existuje v rentuloUsers,
-  naradiUsers alebo keď ho nájdeme v starších demo dátach.
+Používateľ sa môže prihlásiť iba vtedy, keď existuje v rentuloUsers
+alebo keď ho nájdeme v starších demo dátach.
 */
 
 function getInitials(fullName) {

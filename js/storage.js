@@ -49,30 +49,11 @@ function clearLegacyLocalCollectionData() {
   });
 }
 
-function isLoggedIn() {
-  const rentuloLoggedIn = localStorage.getItem("rentuloLoggedIn") === "true";
-  const oldNaradiLoggedIn = localStorage.getItem("naradiLoggedIn") === "true";
 
-  return rentuloLoggedIn || oldNaradiLoggedIn;
-}
-
-function getCurrentUser() {
-  const rentuloUser = loadJson("rentuloUser", null);
-  const oldNaradiUser = loadJson("naradiUser", null);
-
-  if (!isLoggedIn()) {
-    return null;
-  }
-
-  return rentuloUser || oldNaradiUser || null;
-}
 
 function saveCurrentUser(user) {
   saveJson("rentuloUser", user);
   localStorage.setItem("rentuloLoggedIn", "true");
-
-  saveJson("naradiUser", user);
-  localStorage.setItem("naradiLoggedIn", "true");
 }
 
 function clearCurrentUser() {

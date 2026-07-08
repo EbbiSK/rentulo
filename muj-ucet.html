@@ -678,7 +678,7 @@
       }
 
       try {
-        const value = localStorage.getItem("rentuloUser") || localStorage.getItem("naradiUser");
+        const value = localStorage.getItem("rentuloUser");
         return value ? JSON.parse(value) : null;
       } catch (error) {
         return null;
