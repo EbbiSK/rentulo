@@ -216,7 +216,7 @@ function setupOfferForm() {
   const draftButton = toolForm.querySelector(".btn-secondary");
 
   if (publishButton) {
-    publishButton.addEventListener("click", function () {
+    publishButton.addEventListener("click", async function () {
       clearErrors(toolForm);
 
       const currentUser = getCurrentUser();
@@ -366,9 +366,11 @@ function setupOfferForm() {
         pickupLocationSource: pickupLatitude && pickupLongitude ? "browser_geolocation" : ""
       };
 
-      const tools = getOffers();
-      tools.push(newTool);
-      saveOffers(tools);
+      if (typeof apiCreateOffer === "function") {
+  await apiCreateOffer(newTool);
+} else {
+  throw new Error("API pro uložení nabídky není dostupné.");
+}
 
       showMessage("Nabídka byla uložena.", "success");
 
@@ -387,19 +389,18 @@ function setupOfferForm() {
 
 /* MAZÁNÍ PONUKY */
 
-function deleteStoredTool(id) {
+async function deleteStoredTool(id) {
   const confirmed = confirm("Opravdu chcete tuto nabídku smazat?");
 
   if (!confirmed) {
     return;
   }
 
-  const tools = getOffers();
+  if (typeof apiDeleteOffer === "function") {
+  await apiDeleteOffer(id);
+} else {
+  throw new Error("API pro smazání nabídky není dostupné.");
+}
 
-  const updatedTools = tools.filter(function (tool) {
-    return String(tool.id) !== String(id);
-  });
-
-  saveOffers(updatedTools);
-  window.location.reload();
+window.location.reload();
 }

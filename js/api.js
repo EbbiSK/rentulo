@@ -102,23 +102,7 @@ async function apiRegister(userData) {
     throw new Error("Chýbajú údaje používateľa.");
   }
 
-  const users = typeof getUsers === "function" ? getUsers() : [];
-  const email = apiNormalizeEmail(userData.email);
-
-  const existingUser = users.find(function (user) {
-    const userEmail = apiNormalizeEmail(
-      user.email ||
-      user.userEmail ||
-      user.mail ||
-      ""
-    );
-
-    return userEmail === email;
-  });
-
-  if (existingUser) {
-    throw new Error("Účet s týmto e-mailom už existuje.");
-  }
+  
 
   const now = apiNow();
 
@@ -130,11 +114,7 @@ async function apiRegister(userData) {
     updatedAt: now
   };
 
-  users.push(newUser);
-
-  if (typeof saveUsers === "function") {
-    saveUsers(users);
-  }
+  
 
   if (typeof saveCurrentUser === "function") {
     saveCurrentUser(newUser);
@@ -144,7 +124,7 @@ async function apiRegister(userData) {
 }
 
 async function apiLogin(email, password) {
-  const users = typeof getUsers === "function" ? getUsers() : [];
+  const users = [];
   const normalizedEmail = apiNormalizeEmail(email);
 
   const user = users.find(function (item) {
@@ -193,10 +173,6 @@ async function apiLogout() {
 ========================= */
 
 async function apiGetOffers() {
-  if (typeof getOffers === "function") {
-    return apiClone(getOffers());
-  }
-
   return [];
 }
 
@@ -269,11 +245,7 @@ async function apiCreateOffer(offerData) {
     updatedAt: now
   };
 
-  offers.push(newOffer);
-
-  if (typeof saveOffers === "function") {
-    saveOffers(offers);
-  }
+  
 
   return apiClone(newOffer);
 }
@@ -296,11 +268,7 @@ async function apiUpdateOffer(id, offerData) {
     updatedAt: apiNow()
   };
 
-  offers[index] = updatedOffer;
-
-  if (typeof saveOffers === "function") {
-    saveOffers(offers);
-  }
+  
 
   return apiClone(updatedOffer);
 }
@@ -316,9 +284,7 @@ async function apiDeleteOffer(id) {
     throw new Error("Ponuka nebola nájdená.");
   }
 
-  if (typeof saveOffers === "function") {
-    saveOffers(filteredOffers);
-  }
+  
 
   return true;
 }
@@ -472,10 +438,6 @@ async function apiUpdateReservationStatus(id, status) {
 ========================= */
 
 async function apiGetNotifications() {
-  if (typeof getNotifications === "function") {
-    return apiClone(getNotifications());
-  }
-
   return [];
 }
 
@@ -494,11 +456,7 @@ async function apiCreateNotification(notificationData) {
     createdAt: notificationData.createdAt || now
   };
 
-  notifications.push(newNotification);
-
-  if (typeof saveNotifications === "function") {
-    saveNotifications(notifications);
-  }
+  
 
   return apiClone(newNotification);
 }

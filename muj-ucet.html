@@ -486,6 +486,7 @@
           <strong id="profileName">Uživatel</strong>
           <span>Ověřený účet</span>
           <small id="profileEmail">email@example.cz</small>
+          <small id="profileRating">Hodnocení: zatím bez hodnocení</small>
         </div>
       </div>
     </section>
@@ -700,15 +701,39 @@
 
       return user && user.email ? user.email : "";
     }
+async function loadCurrentUserRating(user) {
+  if (!user || !user.id) {
+    return null;
+  }
 
-    function updateProfileBox(user) {
+  const supabaseClient = getSupabaseClient();
+
+  if (!supabaseClient) {
+    return null;
+  }
+
+  const { data, error } = await supabaseClient
+    .from("user_rating_summary")
+    .select("average_rating, rating_count")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.warn("Hodnocení uživatele se nepodařilo načíst:", error);
+    return null;
+  }
+
+  return data;
+}
+    async function updateProfileBox(user) {
       const name = getUserNameSafe(user);
       const email = getUserEmailSafe(user);
 
       const greeting = document.getElementById("accountGreeting");
-      const profileName = document.getElementById("profileName");
-      const profileEmail = document.getElementById("profileEmail");
-      const profileAvatar = document.getElementById("profileAvatar");
+const profileName = document.getElementById("profileName");
+const profileEmail = document.getElementById("profileEmail");
+const profileRating = document.getElementById("profileRating");
+const profileAvatar = document.getElementById("profileAvatar");
 
       if (greeting) {
         greeting.textContent = "Dobrý den";
@@ -721,7 +746,20 @@
       if (profileEmail) {
         profileEmail.textContent = email || "E-mail není uložen";
       }
+if (profileRating) {
+  profileRating.textContent = "Hodnocení: zatím bez hodnocení";
 
+  const ratingSummary = await loadCurrentUserRating(user);
+
+  if (ratingSummary && ratingSummary.rating_count) {
+    profileRating.textContent =
+      "Hodnocení: ⭐ " +
+      ratingSummary.average_rating +
+      " / 5 (" +
+      ratingSummary.rating_count +
+      " hodnocení)";
+  }
+}
       if (profileAvatar) {
         profileAvatar.textContent = name.charAt(0).toUpperCase();
       }

@@ -107,41 +107,21 @@ function getUserPhone(user) {
   neprebíjali stav zo Supabase.
 */
 
-function getUsers() {
-  clearLegacyLocalCollectionData();
-  return [];
-}
 
-function saveUsers() {
-  clearLegacyLocalCollectionData();
-}
 
-function getOffers() {
-  clearLegacyLocalCollectionData();
-  return [];
-}
 
-function saveOffers() {
-  clearLegacyLocalCollectionData();
-}
 
-function getReservations() {
-  clearLegacyLocalCollectionData();
-  return [];
-}
 
-function saveReservations() {
-  clearLegacyLocalCollectionData();
-}
 
-function getNotifications() {
-  clearLegacyLocalCollectionData();
-  return [];
-}
 
-function saveNotifications() {
-  clearLegacyLocalCollectionData();
-}
+
+
+
+
+
+
+
+
 
 function addSimulatedPhoneNotification(notificationData) {
   console.warn(

@@ -42,17 +42,12 @@ function normalizeEmail(email) {
 }
 
 function saveCurrentUser(user) {
-  if (typeof saveJson === "function") {
-    saveJson("rentuloUser", user);
-  } else {
-    localStorage.setItem("rentuloUser", JSON.stringify(user));
-  }
-
+  saveJson("rentuloUser", user);
   localStorage.setItem("rentuloLoggedIn", "true");
 }
 
 function findUserByEmail(email) {
-  const users = getUsers();
+  const users = [];
   const normalizedEmail = normalizeEmail(email);
 
   return users.find(function (user) {
@@ -63,7 +58,7 @@ function findUserByEmail(email) {
 
 
 function addOrUpdateUser(user) {
-  const users = getUsers();
+  const users = [];
   const normalizedEmail = normalizeEmail(user.email);
 
   const existingIndex = users.findIndex(function (item) {
@@ -79,7 +74,7 @@ function addOrUpdateUser(user) {
     users.push(user);
   }
 
-  saveUsers(users);
+  
   saveCurrentUser(user);
 }
 

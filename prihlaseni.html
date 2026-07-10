@@ -488,12 +488,7 @@
         return;
       }
 
-      try {
-        localStorage.setItem("rentuloUser", JSON.stringify(user));
-localStorage.setItem("rentuloLoggedIn", "true");
-      } catch (error) {
-        console.warn("Nepodařilo se uložit aktuálního uživatele do localStorage.", error);
-      }
+      
     }
 
     function saveRememberLogin(rememberLogin) {

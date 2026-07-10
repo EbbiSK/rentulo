@@ -97,14 +97,7 @@ function navMergeById(primaryItems, secondaryItems) {
 }
 
 function navGetTools() {
-  if (typeof getOffers === "function") {
-    return getOffers();
-  }
-
-  const rentuloOffers = navLoadJson("rentuloOffers", []);
-  const oldNaradiOffers = navLoadJson("naradiNabidky", []);
-
-  return navMergeById(rentuloOffers, oldNaradiOffers);
+  return [];
 }
 
 function navGetReservations() {
