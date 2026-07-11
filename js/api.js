@@ -495,20 +495,39 @@ async function apiGetNotifications() {
 
 async function apiCreateNotification(notificationData) {
   if (!notificationData) {
-    throw new Error("Chýbajú údaje notifikácie.");
+    throw new Error("Chybějí údaje notifikácie.");
   }
 
-  const notifications = await apiGetNotifications();
+  const supabaseClient = apiGetSupabaseClient();
+
+  if (!supabaseClient) {
+    throw new Error("Supabase klient není dostupný.");
+  }
+
   const now = apiNow();
 
   const newNotification = {
     ...notificationData,
     id: notificationData.id || apiCreateId("notification"),
     status: notificationData.status || "unread",
-    createdAt: notificationData.createdAt || now
+    created_at:
+      notificationData.created_at ||
+      notificationData.createdAt ||
+      now
   };
 
-  
+  delete newNotification.createdAt;
 
-  return apiClone(newNotification);
+  const { data, error } = await supabaseClient
+    .from("notifications")
+    .insert([newNotification])
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error("Notifikaci se nepodařilo uložit:", error);
+    throw error;
+  }
+
+  return data;
 }
