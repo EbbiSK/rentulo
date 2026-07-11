@@ -1011,8 +1011,7 @@ if (profileRating) {
       const pendingRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
         return normalizeStatus(reservation.status) === STATUS_PENDING;
       }).length;
-window.rentuloAccountNotificationCount =
-  pendingRequestsCount + waitingPaymentCount;
+
       const paidRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
         return normalizeStatus(reservation.status) === STATUS_PAID;
       }).length;
@@ -1025,6 +1024,9 @@ window.rentuloAccountNotificationCount =
         pendingRequestsCount +
         paidRequestsCount +
         pickedUpRequestsCount;
+
+window.rentuloAccountNotificationCount =
+  ownerActionRequiredCount + waitingPaymentCount;
 
       const reservationsCard = document.getElementById("reservationsCard");
       const offersCard = document.getElementById("offersCard");
