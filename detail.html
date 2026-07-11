@@ -1604,7 +1604,7 @@ const hasGps = offerHasGpsLocation(offer);
         return;
       }
 
-      const currentUser = getCurrentUser();
+      const currentUser = await apiGetCurrentUser();
 
       if (!currentUser) {
         alert("Pro odeslání žádosti se musíte přihlásit.");
