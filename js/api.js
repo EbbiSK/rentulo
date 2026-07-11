@@ -90,11 +90,24 @@ function apiGetReservationId(reservation) {
 ========================= */
 
 async function apiGetCurrentUser() {
-  if (typeof getCurrentUser === "function") {
-    return apiClone(getCurrentUser());
+  const storedUser =
+    localStorage.getItem("naradiUser") ||
+    localStorage.getItem("rentuloUser");
+
+  const isLoggedIn =
+    localStorage.getItem("naradiLoggedIn") === "true" ||
+    localStorage.getItem("rentuloLoggedIn") === "true";
+
+  if (!storedUser || !isLoggedIn) {
+    return null;
   }
 
-  return null;
+  try {
+    return apiClone(JSON.parse(storedUser));
+  } catch (error) {
+    console.warn("Přihlášeného uživatele se nepodařilo načíst:", error);
+    return null;
+  }
 }
 
 async function apiRegister(userData) {
