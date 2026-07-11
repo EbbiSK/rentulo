@@ -1331,7 +1331,7 @@ Přesná adresa a telefon zůstanou skryté až do zaplacení.
       return Array.isArray(data) && data.length > 0;
     }
 
-    function renderDetail(offer) {
+    async function renderDetail(offer) {
       if (!offer) {
         renderNotFound();
         return;
@@ -1339,7 +1339,7 @@ Přesná adresa a telefon zůstanou skryté až do zaplacení.
 
       currentOffer = offer;
 
-      const currentUser = getCurrentUser();
+      const currentUser = await apiGetCurrentUser();
 
       const ownerPublicName = "Majitel";
       const ownerPublicCity = getOfferCity(offer);
