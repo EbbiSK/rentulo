@@ -1826,9 +1826,8 @@
       `;
     }
 
-    function renderReservations() {
-      const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : null;
-
+    async function renderReservations() {
+      const currentUser = await apiGetCurrentUser();
       if (!currentUser) {
         window.location.href = "prihlaseni.html";
         return;
@@ -1874,7 +1873,7 @@
       renderSharedNavigation("muj-ucet");
       renderLoadingState();
 
-      const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+      const currentUser = await apiGetCurrentUser();
 
       if (!currentUser) {
         window.location.href = "prihlaseni.html";
