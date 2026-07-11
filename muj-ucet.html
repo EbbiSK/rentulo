@@ -978,10 +978,7 @@ if (profileRating) {
       supabaseRenterReservations = Array.isArray(renterReservationsResult.data)
         ? renterReservationsResult.data.map(normalizeSupabaseReservation)
         : [];
-window.rentuloNavigationReservations = [
-  ...supabaseOwnerReservations,
-  ...supabaseRenterReservations
-];
+
       
 
       return true;

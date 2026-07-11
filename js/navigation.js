@@ -244,11 +244,8 @@ function navGetNotificationCount() {
   }
 
   const tools = navGetTools();
-  const reservations = Array.isArray(window.rentuloNavigationReservations)
-  ? window.rentuloNavigationReservations
-  : typeof getReservations === "function"
-    ? getReservations()
-    : [];
+  const reservations =
+  typeof getReservations === "function" ? getReservations() : [];
 
   const myToolIds = tools
     .filter(function (tool) {
