@@ -395,7 +395,9 @@ function renderSharedNavigation(activePage) {
   navInjectStyles();
 
   const currentUser = navGetCurrentUser();
-  const notificationCount = navGetNotificationCount();
+  const notificationCount =
+  Number(window.rentuloAccountNotificationCount) ||
+  navGetNotificationCount();
 
   const accountBadge = notificationCount > 0
     ? `<span class="nav-notification-badge">${notificationCount > 99 ? "99+" : notificationCount}</span>`

@@ -1011,7 +1011,7 @@ if (profileRating) {
       const pendingRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
         return normalizeStatus(reservation.status) === STATUS_PENDING;
       }).length;
-
+window.rentuloAccountNotificationCount = pendingRequestsCount;
       const paidRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
         return normalizeStatus(reservation.status) === STATUS_PAID;
       }).length;
