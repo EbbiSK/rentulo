@@ -173,7 +173,25 @@ async function apiLogout() {
 ========================= */
 
 async function apiGetOffers() {
-  return [];
+  const supabaseClient = apiGetSupabaseClient();
+
+  if (!supabaseClient) {
+    return [];
+  }
+
+  const { data, error } = await supabaseClient
+    .from("offers")
+    .select("*")
+    .order("created_at", {
+      ascending: false
+    });
+
+  if (error) {
+    console.warn("Ponuky se nepodařilo načíst:", error);
+    return [];
+  }
+
+  return Array.isArray(data) ? data.map(apiNormalizeOffer) : [];
 }
 
 async function apiGetOfferById(id) {
@@ -294,9 +312,25 @@ async function apiDeleteOffer(id) {
 ========================= */
 
 async function apiGetReservations() {
-  return [];
-}
+  const supabaseClient = apiGetSupabaseClient();
 
+  if (!supabaseClient) {
+    return [];
+  }
+
+  const { data, error } = await supabaseClient
+    .from("reservations")
+    .select("*")
+    .order("created_at", {
+      ascending: false
+    });
+
+  if (error) {
+    console.warn("Rezervace se nepodařilo načíst:", error);
+    return [];
+  }
+return Array.isArray(data) ? data.map(apiNormalizeReservation) : [];
+}
 async function apiGetReservationById(id) {
   const reservations = await apiGetReservations();
 
@@ -438,7 +472,25 @@ async function apiUpdateReservationStatus(id, status) {
 ========================= */
 
 async function apiGetNotifications() {
-  return [];
+  const supabaseClient = apiGetSupabaseClient();
+
+  if (!supabaseClient) {
+    return [];
+  }
+
+  const { data, error } = await supabaseClient
+    .from("notifications")
+    .select("*")
+    .order("created_at", {
+      ascending: false
+    });
+
+  if (error) {
+    console.warn("Notifikace se nepodařilo načíst:", error);
+    return [];
+  }
+
+  return Array.isArray(data) ? data : [];
 }
 
 async function apiCreateNotification(notificationData) {
