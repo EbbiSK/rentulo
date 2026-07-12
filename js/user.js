@@ -13,10 +13,10 @@ document.addEventListener("DOMContentLoaded", function () {
   - přihlášení
   - zobrazení údajů v Můj účet
 
-  Důležité:
-  Pri prihlásení už nevytvárame nový účet automaticky.
-Používateľ sa môže prihlásiť iba vtedy, keď existuje v rentuloUsers
-alebo keď ho nájdeme v starších demo dátach.
+  Dôležité:
+Pri prihlásení už nevytvárame nový účet automaticky.
+Používateľ sa môže prihlásiť iba cez účet uložený v Supabase Auth
+a údaje profilu sa načítavajú z tabuľky profiles.
 */
 
 function getInitials(fullName) {
