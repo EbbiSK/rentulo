@@ -570,13 +570,7 @@
   <script src="js/supabase-config.js"></script>
 
   <script>
-    const STATUS_PENDING = "pending";
-    const STATUS_APPROVED = "approved";
-    const STATUS_PAID = "paid";
-    const STATUS_PICKED_UP = "picked_up";
-    const STATUS_RETURNED = "returned";
-    const STATUS_REJECTED = "rejected";
-    const STATUS_CANCELLED = "cancelled";
+
 
     let supabaseOffers = [];
     let supabaseOwnerReservations = [];
@@ -615,62 +609,27 @@
     }
 
     function normalizeStatus(status) {
-      const value = String(status || STATUS_PENDING).trim().toLowerCase();
-
-      if (value === "čeká na potvrzení") {
-        return STATUS_PENDING;
-      }
-
-      if (value === "čeká na platbu") {
-        return STATUS_APPROVED;
-      }
-
-      if (value === "zaplaceno") {
-        return STATUS_PAID;
-      }
-
-      if (value === "vyzvednuto") {
-        return STATUS_PICKED_UP;
-      }
-
-      if (value === "vráceno") {
-        return STATUS_RETURNED;
-      }
-
-      if (value === "odmítnuto") {
-        return STATUS_REJECTED;
-      }
-
-      if (value === "zrušeno") {
-        return STATUS_CANCELLED;
-      }
-
-      return value || STATUS_PENDING;
-    }
+  return normalizeReservationStatus(status);
+}
 
     function isOpenStatus(status) {
-      const normalizedStatus = normalizeStatus(status);
-
-      return [
-        STATUS_PENDING,
-        STATUS_APPROVED,
-        STATUS_PAID,
-        STATUS_PICKED_UP
-      ].includes(normalizedStatus);
-    }
+  return isOpenReservationStatus(
+    normalizeStatus(status)
+  );
+}
 
     function isOwnerActionStatus(status) {
-      const normalizedStatus = normalizeStatus(status);
+  const normalizedStatus = normalizeStatus(status);
 
-      return [
-        STATUS_PENDING,
-        STATUS_PAID,
-        STATUS_PICKED_UP
-      ].includes(normalizedStatus);
-    }
+  return [
+    RESERVATION_STATUS_PENDING,
+    RESERVATION_STATUS_PAID,
+    RESERVATION_STATUS_PICKED_UP
+  ].includes(normalizedStatus);
+}
 
     function isWaitingForPaymentStatus(status) {
-      return normalizeStatus(status) === STATUS_APPROVED;
+      return normalizeStatus(status) === RESERVATION_STATUS_APPROVED;
     }
 
     function getCurrentUserSafe() {
