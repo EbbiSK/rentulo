@@ -852,17 +852,12 @@
   <script src="js/storage.js"></script>
   <script src="js/reservations.js"></script>
   <script src="js/supabase-config.js"></script>
-
+<script src="js/reservation-status.js"></script>
   <script>
     const PLATFORM_FEE_PERCENT = 10;
 
-    const STATUS_PENDING = "pending";
-    const STATUS_APPROVED = "approved";
-    const STATUS_PAID = "paid";
-    const STATUS_PICKED_UP = "picked_up";
-    const STATUS_RETURNED = "returned";
-    const STATUS_REJECTED = "rejected";
-    const STATUS_CANCELLED = "cancelled";
+    
+    
 
     let ownerOffers = [];
     let ownerReservations = [];
@@ -920,31 +915,31 @@
     }
 
     function getStatusText(status) {
-      if (status === STATUS_PENDING) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING) {
         return "Čeká na potvrzení";
       }
 
-      if (status === STATUS_APPROVED) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
         return "Čeká na platbu";
       }
 
-      if (status === STATUS_PAID) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PAID) {
         return "Zaplaceno";
       }
 
-      if (status === STATUS_PICKED_UP) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
         return "Vyzvednuto";
       }
 
-      if (status === STATUS_RETURNED) {
+     if (normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED) {
         return "Vráceno";
       }
 
-      if (status === STATUS_REJECTED) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_REJECTED) {
         return "Odmítnuto";
       }
 
-      if (status === STATUS_CANCELLED) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_CANCELLED) {
         return "Zrušeno";
       }
 
@@ -952,29 +947,35 @@
     }
 
     function isOpenStatus(status) {
-      return [
-        STATUS_PENDING,
-        STATUS_APPROVED,
-        STATUS_PAID,
-        STATUS_PICKED_UP
-      ].includes(status);
-    }
+  const normalizedStatus = normalizeReservationStatus(status);
+
+  return [
+    RESERVATION_STATUS_PENDING,
+    RESERVATION_STATUS_APPROVED,
+    RESERVATION_STATUS_PAID,
+    RESERVATION_STATUS_PICKED_UP
+  ].includes(normalizedStatus);
+}
 
     function isClosedStatus(status) {
-      return [
-        STATUS_RETURNED,
-        STATUS_REJECTED,
-        STATUS_CANCELLED
-      ].includes(status);
-    }
+  const normalizedStatus = normalizeReservationStatus(status);
+
+  return [
+    RESERVATION_STATUS_RETURNED,
+    RESERVATION_STATUS_REJECTED,
+    RESERVATION_STATUS_CANCELLED
+  ].includes(normalizedStatus);
+}
 
     function canShowContact(status) {
-      return [
-        STATUS_PAID,
-        STATUS_PICKED_UP,
-        STATUS_RETURNED
-      ].includes(status);
-    }
+  const normalizedStatus = normalizeReservationStatus(status);
+
+  return [
+    RESERVATION_STATUS_PAID,
+    RESERVATION_STATUS_PICKED_UP,
+    RESERVATION_STATUS_RETURNED
+  ].includes(normalizedStatus);
+}
 
     function showAccountMessage(title, text) {
       const messageBox = document.getElementById("accountMessage");
@@ -1080,7 +1081,9 @@
 
         ownerName: row.owner_name || "Majitel",
 
-        status: row.status || STATUS_PENDING,
+        status: normalizeReservationStatus(
+  row.status || RESERVATION_STATUS_PENDING
+),
         contactVisibleAfterPayment: Boolean(row.contact_visible_after_payment),
 
         createdAt: row.created_at || "",
@@ -1294,22 +1297,34 @@
     }
 
     async function approveReservation(reservationId) {
-      await updateReservationStatus(reservationId, STATUS_APPROVED);
+      await updateReservationStatus(
+  reservationId,
+  RESERVATION_STATUS_APPROVED
+);
       await reloadAndReopen(reservationId, "open");
     }
 
     async function rejectReservation(reservationId) {
-      await updateReservationStatus(reservationId, STATUS_REJECTED);
+     await updateReservationStatus(
+  reservationId,
+  RESERVATION_STATUS_REJECTED
+);
       await reloadAndReopen(reservationId, "history");
     }
 
     async function markReservationPickedUp(reservationId) {
-      await updateReservationStatus(reservationId, STATUS_PICKED_UP);
+      await updateReservationStatus(
+  reservationId,
+  RESERVATION_STATUS_PICKED_UP
+);
       await reloadAndReopen(reservationId, "open");
     }
 
     async function markReservationReturned(reservationId) {
-      await updateReservationStatus(reservationId, STATUS_RETURNED);
+      await updateReservationStatus(
+  reservationId,
+  RESERVATION_STATUS_RETURNED
+);
       await reloadAndReopen(reservationId, "history");
     }
 
@@ -1434,31 +1449,31 @@
     }
 
     function renderRequestNote(status) {
-      if (status === STATUS_PENDING) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING) {
         return `<p class="request-note">Nová žádost čeká na vaše potvrzení nebo odmítnutí.</p>`;
       }
 
-      if (status === STATUS_APPROVED) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
         return `<p class="request-note">Žádost byla potvrzena. Čeká se na platbu zákazníka.</p>`;
       }
 
-      if (status === STATUS_PAID) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PAID) {
         return `<p class="request-note success">Rezervace je zaplacena. Po předání nářadí ji označte jako vyzvednutou.</p>`;
       }
 
-      if (status === STATUS_PICKED_UP) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
         return `<p class="request-note success">Nářadí bylo označeno jako vyzvednuté. Po vrácení dokončete půjčení.</p>`;
       }
 
-      if (status === STATUS_RETURNED) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED) {
         return `<p class="request-note success">Vráceno – půjčení je dokončeno. Už není potřeba žádná další akce.</p>`;
       }
 
-      if (status === STATUS_REJECTED) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_REJECTED) {
         return `<p class="request-note">Žádost byla odmítnuta. Nabídka už touto žádostí není blokovaná.</p>`;
       }
 
-      if (status === STATUS_CANCELLED) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_CANCELLED) {
         return `<p class="request-note">Rezervace byla zrušena. Nabídka už touto žádostí není blokovaná.</p>`;
       }
 
@@ -1466,17 +1481,22 @@
     }
 
     function getRequestStatusClass(status) {
-      if (status === STATUS_PAID || status === STATUS_PICKED_UP) {
-        return "paid";
-      }
+  const normalizedStatus = normalizeReservationStatus(status);
 
-      if (status === STATUS_RETURNED) {
-        return "finished";
-      }
+  if (
+    normalizedStatus === RESERVATION_STATUS_PAID ||
+    normalizedStatus === RESERVATION_STATUS_PICKED_UP
+  ) {
+    return "paid";
+  }
 
-      if (status === STATUS_APPROVED) {
-        return "active";
-      }
+  if (normalizedStatus === RESERVATION_STATUS_RETURNED) {
+    return "finished";
+  }
+
+  if (normalizedStatus === RESERVATION_STATUS_APPROVED) {
+    return "active";
+  }
 
       return "";
     }
@@ -1485,7 +1505,7 @@
       const reservationId = reservation.id;
       const actions = [];
 
-      if (status === STATUS_PENDING) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING) {
         actions.push(`
           <button class="small-button" type="button" onclick="approveReservation('${escapeHtml(reservationId)}')">Potvrdit</button>
         `);
@@ -1495,7 +1515,7 @@
         `);
       }
 
-      if (status === STATUS_PAID) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PAID) {
         actions.push(`
           <button class="small-button orange" type="button" onclick="markReservationPickedUp('${escapeHtml(reservationId)}')">
             Označit jako vyzvednuto
@@ -1503,7 +1523,7 @@
         `);
       }
 
-      if (status === STATUS_PICKED_UP) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
         actions.push(`
           <button class="small-button" type="button" onclick="markReservationReturned('${escapeHtml(reservationId)}')">
             Označit jako vráceno
@@ -1528,11 +1548,13 @@
       const renterEmail = reservation.renterEmail || "E-mail není uložen";
       const renterPhone = reservation.renterPhone || "Telefon není uložen";
 
-      const contactTitle = reservation.status === STATUS_RETURNED
+      const contactTitle =
+  normalizeReservationStatus(reservation.status) === RESERVATION_STATUS_RETURNED
         ? "Kontakt na zákazníka k dokončené rezervaci"
         : "Kontakt na zájemce";
 
-      const returnedNote = reservation.status === STATUS_RETURNED
+      const returnedNote =
+  normalizeReservationStatus(reservation.status) === RESERVATION_STATUS_RETURNED
         ? "Rezervace je dokončená, kontakt zůstává dostupný pro případné zpětné dohledání. "
         : "";
 
@@ -1547,7 +1569,10 @@
       `;
     }
     function renderOwnerReviewForRenterBox(reservation, status) {
-      if (status !== STATUS_RETURNED) {
+      if (
+  normalizeReservationStatus(status) !==
+  RESERVATION_STATUS_RETURNED
+) {
         return "";
       }
 
@@ -1611,7 +1636,10 @@
         return;
       }
 
-      if (reservation.status !== STATUS_RETURNED) {
+      if (
+  normalizeReservationStatus(reservation.status) !==
+  RESERVATION_STATUS_RETURNED
+) {
         alert("Zákazníka můžete ohodnotit až po dokončení půjčení.");
         return;
       }
@@ -1961,11 +1989,13 @@
         : `<p class="request-empty-note">Tady budou dokončené, odmítnuté nebo zrušené žádosti k této nabídce.</p>`;
 
       const ownerActionRequests = openRequests.filter(function (reservation) {
-        return [
-          STATUS_PENDING,
-          STATUS_PAID,
-          STATUS_PICKED_UP
-        ].includes(reservation.status);
+        const normalizedStatus = normalizeReservationStatus(reservation.status);
+
+return [
+  RESERVATION_STATUS_PENDING,
+  RESERVATION_STATUS_PAID,
+  RESERVATION_STATUS_PICKED_UP
+].includes(normalizedStatus);
       });
 
       const openButtonClass = ownerActionRequests.length ? "request-toggle-button important" : "request-toggle-button";
@@ -2143,11 +2173,13 @@
       }
 
       const firstActionReservation = ownerReservations.find(function (reservation) {
-        return [
-          STATUS_PENDING,
-          STATUS_PAID,
-          STATUS_PICKED_UP
-        ].includes(reservation.status);
+        const normalizedStatus = normalizeReservationStatus(reservation.status);
+
+return [
+  RESERVATION_STATUS_PENDING,
+  RESERVATION_STATUS_PAID,
+  RESERVATION_STATUS_PICKED_UP
+].includes(normalizedStatus);
       });
 
       const firstOpenReservation = firstActionReservation || ownerReservations.find(function (reservation) {
