@@ -889,9 +889,12 @@
         return "Čeká na platbu";
       }
 
-      if (status === "paid") {
-        return "Zaplaceno";
-      }
+      if (
+  normalizeReservationStatus(status) ===
+  RESERVATION_STATUS_PAID
+) {
+  return "Zaplaceno";
+}
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
         return "Vyzvednuto";
@@ -905,9 +908,12 @@
         return "Odmítnuto";
       }
 
-      if (status === "cancelled") {
-        return "Zrušeno";
-      }
+      if (
+  normalizeReservationStatus(status) ===
+  RESERVATION_STATUS_CANCELLED
+) {
+  return "Zrušeno";
+}
 
       return status || "Čeká na potvrzení";
     }
@@ -1122,51 +1128,22 @@
     }
 
     function safeIsOpenReservationStatus(status) {
-      if (typeof isOpenReservationStatus === "function") {
-        return isOpenReservationStatus(status);
-      }
-
-      return [
-        "pending",
-        "approved",
-        "paid",
-        "picked_up",
-        "Čeká na potvrzení",
-        "Čeká na platbu",
-        "Zaplaceno",
-        "Vyzvednuto"
-      ].includes(status);
-    }
+  return isOpenReservationStatus(
+    normalizeReservationStatus(status)
+  );
+}
 
     function safeIsClosedReservationStatus(status) {
-      if (typeof isClosedReservationStatus === "function") {
-        return isClosedReservationStatus(status);
-      }
-
-      return [
-        "returned",
-        "rejected",
-        "cancelled",
-        "Vráceno",
-        "Odmítnuto",
-        "Zrušeno"
-      ].includes(status);
-    }
+  return isClosedReservationStatus(
+    normalizeReservationStatus(status)
+  );
+}
 
     function getSafeReservationContactVisible(status) {
-      if (typeof getReservationContactVisible === "function") {
-        return getReservationContactVisible(status);
-      }
-
-      return [
-        "paid",
-        "picked_up",
-        "returned",
-        "Zaplaceno",
-        "Vyzvednuto",
-        "Vráceno"
-      ].includes(status);
-    }
+  return getReservationContactVisible(
+    normalizeReservationStatus(status)
+  );
+}
 
     function isMapUsefulForStatus(status) {
       const normalizedStatus = normalizeReservationStatus(status);
@@ -1580,7 +1557,10 @@ return (
         `;
       }
 
-      if (status === "cancelled") {
+      if (
+  normalizeReservationStatus(status) ===
+  RESERVATION_STATUS_CANCELLED
+) {
         return `
           <div class="reservation-state-box rejected">
             <strong>Rezervace byla zrušena</strong>
@@ -1706,7 +1686,7 @@ return (
 
       if (
   normalizedStatus === RESERVATION_STATUS_REJECTED ||
-  status === "cancelled"
+ normalizedStatus === RESERVATION_STATUS_CANCELLED
 ) {
         return "status-rejected";
       }
