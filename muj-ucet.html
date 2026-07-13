@@ -819,31 +819,31 @@ if (profileRating) {
     function getStatusText(status) {
       const normalizedStatus = normalizeStatus(status);
 
-      if (normalizedStatus === STATUS_PENDING) {
+      if (normalizedStatus === RESERVATION_STATUS_PENDING) {
         return "Čeká na potvrzení";
       }
 
-      if (normalizedStatus === STATUS_APPROVED) {
+      if (normalizedStatus === RESERVATION_STATUS_APPROVED) {
         return "Čeká na platbu";
       }
 
-      if (normalizedStatus === STATUS_PAID) {
+      if (normalizedStatus === RESERVATION_STATUS_PAID) {
         return "Zaplaceno";
       }
 
-      if (normalizedStatus === STATUS_PICKED_UP) {
+      if (normalizedStatus === RESERVATION_STATUS_PICKED_UP) {
         return "Vyzvednuto";
       }
 
-      if (normalizedStatus === STATUS_RETURNED) {
+      if (normalizedStatus === RESERVATION_STATUS_RETURNED) {
         return "Vráceno";
       }
 
-      if (normalizedStatus === STATUS_REJECTED) {
+      if (normalizedStatus === RESERVATION_STATUS_REJECTED) {
         return "Odmítnuto";
       }
 
-      if (normalizedStatus === STATUS_CANCELLED) {
+      if (normalizedStatus === RESERVATION_STATUS_CANCELLED) {
         return "Zrušeno";
       }
 
@@ -968,15 +968,15 @@ if (profileRating) {
       }).length;
 
       const pendingRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
-        return normalizeStatus(reservation.status) === STATUS_PENDING;
+        return normalizeStatus(reservation.status) === RESERVATION_STATUS_PENDING;
       }).length;
 
       const paidRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
-        return normalizeStatus(reservation.status) === STATUS_PAID;
+        return normalizeStatus(reservation.status) === RESERVATION_STATUS_PAID;
       }).length;
 
       const pickedUpRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
-        return normalizeStatus(reservation.status) === STATUS_PICKED_UP;
+        return normalizeStatus(reservation.status) === RESERVATION_STATUS_PICKED_UP;
       }).length;
 
       const ownerActionRequiredCount =
