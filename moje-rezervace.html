@@ -745,6 +745,7 @@
   <script src="js/navigation.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/reservations.js"></script>
+  <script src="js/reservation-status.js"></script>
  <script src="js/supabase-config.js"></script>
 <script src="js/api.js"></script>
 
@@ -880,11 +881,11 @@
         return getReservationStatusText(status);
       }
 
-      if (status === "pending") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING) {
         return "Čeká na potvrzení";
       }
 
-      if (status === "approved") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
         return "Čeká na platbu";
       }
 
@@ -892,15 +893,15 @@
         return "Zaplaceno";
       }
 
-      if (status === "picked_up") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
         return "Vyzvednuto";
       }
 
-      if (status === "returned") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED) {
         return "Vráceno";
       }
 
-      if (status === "rejected") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_REJECTED) {
         return "Odmítnuto";
       }
 
@@ -1168,7 +1169,12 @@
     }
 
     function isMapUsefulForStatus(status) {
-      return status === "paid" || status === "picked_up";
+      const normalizedStatus = normalizeReservationStatus(status);
+
+return (
+  normalizedStatus === RESERVATION_STATUS_PAID ||
+  normalizedStatus === RESERVATION_STATUS_PICKED_UP
+);
     }
 
     function getReservationOwnerName(reservation) {
@@ -1481,7 +1487,7 @@
     }
 
     function renderPaymentBox(reservation, status, totalPrice, platformFee, ownerPayout) {
-      if (status === "approved") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
         return `
           <div class="payment-box waiting">
             <strong>Platba přes provozovatele platformy</strong>
@@ -1496,7 +1502,8 @@
       }
 
       if (getSafeReservationContactVisible(status)) {
-        const paymentTitle = status === "returned"
+        const paymentTitle =
+  normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED
           ? "Platba byla přijata a půjčení je dokončeno"
           : "Platba přijata přes provozovatele platformy";
 
@@ -1519,7 +1526,7 @@
     }
 
     function renderReservationStateBox(reservation, status) {
-      if (status === "pending") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING) {
         return `
           <div class="reservation-state-box rejected">
             <strong>Žádost čeká na potvrzení</strong>
@@ -1528,7 +1535,7 @@
         `;
       }
 
-      if (status === "approved") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
         return `
           <div class="reservation-state-box active">
             <strong>Žádost je potvrzená</strong>
@@ -1537,7 +1544,7 @@
         `;
       }
 
-      if (status === "paid") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PAID) {
         return `
           <div class="reservation-state-box active">
             <strong>Zaplaceno – domluvte se s majitelem na předání</strong>
@@ -1546,7 +1553,7 @@
         `;
       }
 
-      if (status === "picked_up") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
         return `
           <div class="reservation-state-box active">
             <strong>Nářadí bylo označeno jako vyzvednuté</strong>
@@ -1555,7 +1562,7 @@
         `;
       }
 
-      if (status === "returned") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED) {
         return `
           <div class="reservation-state-box finished">
             <strong>Vráceno – půjčení je dokončeno</strong>
@@ -1564,7 +1571,7 @@
         `;
       }
 
-      if (status === "rejected") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_REJECTED) {
         return `
           <div class="reservation-state-box rejected">
             <strong>Žádost byla odmítnuta</strong>
@@ -1602,11 +1609,13 @@
         `;
       }
 
-      const contactTitle = status === "returned"
+      const contactTitle =
+  normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED
         ? "Kontaktní údaje k dokončené rezervaci"
         : "Údaje pro vyzvednutí";
 
-      const returnedNote = status === "returned"
+      const returnedNote =
+  normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED
         ? "<span>Rezervace je dokončená. Kontaktní údaje zůstávají dostupné, protože půjčení bylo zaplaceno.</span>"
         : "";
 
@@ -1682,15 +1691,23 @@
     }
 
     function getStatusClass(status) {
-      if (status === "paid" || status === "picked_up") {
-        return "status-paid";
-      }
+  const normalizedStatus = normalizeReservationStatus(status);
 
-      if (status === "returned") {
+  if (
+    normalizedStatus === RESERVATION_STATUS_PAID ||
+    normalizedStatus === RESERVATION_STATUS_PICKED_UP
+  ) {
+    return "status-paid";
+  }
+
+      if (normalizedStatus === RESERVATION_STATUS_RETURNED) {
         return "status-finished";
       }
 
-      if (status === "rejected" || status === "cancelled") {
+      if (
+  normalizedStatus === RESERVATION_STATUS_REJECTED ||
+  status === "cancelled"
+) {
         return "status-rejected";
       }
 
@@ -1718,7 +1735,7 @@
         </button>
       `;
 
-      if (status === "approved") {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
         actionButtons += `
           <button class="small-button orange" type="button" onclick="payReservation('${escapeHtml(reservationId)}')">
             Zaplatit
