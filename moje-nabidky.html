@@ -915,56 +915,19 @@
     }
 
     function getStatusText(status) {
-      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING) {
-        return "Čeká na potvrzení";
-      }
-
-      if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
-        return "Čeká na platbu";
-      }
-
-      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PAID) {
-        return "Zaplaceno";
-      }
-
-      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
-        return "Vyzvednuto";
-      }
-
-     if (normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED) {
-        return "Vráceno";
-      }
-
-      if (normalizeReservationStatus(status) === RESERVATION_STATUS_REJECTED) {
-        return "Odmítnuto";
-      }
-
-      if (normalizeReservationStatus(status) === RESERVATION_STATUS_CANCELLED) {
-        return "Zrušeno";
-      }
-
-      return status || "Čeká na potvrzení";
-    }
+  return getReservationStatusText(status);
+}
 
     function isOpenStatus(status) {
-  const normalizedStatus = normalizeReservationStatus(status);
-
-  return [
-    RESERVATION_STATUS_PENDING,
-    RESERVATION_STATUS_APPROVED,
-    RESERVATION_STATUS_PAID,
-    RESERVATION_STATUS_PICKED_UP
-  ].includes(normalizedStatus);
+  return isOpenReservationStatus(
+    normalizeReservationStatus(status)
+  );
 }
 
     function isClosedStatus(status) {
-  const normalizedStatus = normalizeReservationStatus(status);
-
-  return [
-    RESERVATION_STATUS_RETURNED,
-    RESERVATION_STATUS_REJECTED,
-    RESERVATION_STATUS_CANCELLED
-  ].includes(normalizedStatus);
+  return isClosedReservationStatus(
+    normalizeReservationStatus(status)
+  );
 }
 
     function canShowContact(status) {
