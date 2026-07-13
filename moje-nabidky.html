@@ -931,13 +931,7 @@
 }
 
     function canShowContact(status) {
-  const normalizedStatus = normalizeReservationStatus(status);
-
-  return [
-    RESERVATION_STATUS_PAID,
-    RESERVATION_STATUS_PICKED_UP,
-    RESERVATION_STATUS_RETURNED
-  ].includes(normalizedStatus);
+  return getReservationContactVisible(status);
 }
 
     function showAccountMessage(title, text) {
