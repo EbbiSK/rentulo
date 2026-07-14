@@ -45,37 +45,7 @@ const BLOCKING_RESERVATION_STATUSES = [
   LEGACY_RESERVATION_STATUS_PICKED_UP
 ];
 
-function normalizeReservationStatus(status) {
-  if (status === LEGACY_RESERVATION_STATUS_PENDING) {
-    return RESERVATION_STATUS_PENDING;
-  }
 
-  if (status === LEGACY_RESERVATION_STATUS_APPROVED) {
-    return RESERVATION_STATUS_APPROVED;
-  }
-
-  if (status === LEGACY_RESERVATION_STATUS_PAID) {
-    return RESERVATION_STATUS_PAID;
-  }
-
-  if (status === LEGACY_RESERVATION_STATUS_PICKED_UP) {
-    return RESERVATION_STATUS_PICKED_UP;
-  }
-
-  if (status === LEGACY_RESERVATION_STATUS_RETURNED) {
-    return RESERVATION_STATUS_RETURNED;
-  }
-
-  if (status === LEGACY_RESERVATION_STATUS_REJECTED) {
-    return RESERVATION_STATUS_REJECTED;
-  }
-
-  if (status === LEGACY_RESERVATION_STATUS_CANCELLED) {
-    return RESERVATION_STATUS_CANCELLED;
-  }
-
-  return status || RESERVATION_STATUS_PENDING;
-}
 
 function getReservationOfferId(reservation) {
   if (!reservation) {
