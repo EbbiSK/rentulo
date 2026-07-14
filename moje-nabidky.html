@@ -1447,7 +1447,7 @@
     return "paid";
   }
 
-  if (normalizedStatus === RESERVATION_STATUS_RETURNED) {
+  if (isClosedReservationStatus(normalizedStatus)) {
     return "finished";
   }
 
@@ -1455,8 +1455,8 @@
     return "active";
   }
 
-      return "";
-    }
+  return "";
+}
 
     function renderRequestActions(reservation, status) {
       const reservationId = reservation.id;
