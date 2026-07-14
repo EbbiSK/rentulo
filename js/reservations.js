@@ -110,33 +110,7 @@ function getReservationStatusText(status) {
   return status || "Čeká na potvrzení";
 }
 
-function isOpenReservationStatus(status) {
-  const normalizedStatus = normalizeReservationStatus(status);
 
-  return OPEN_RESERVATION_STATUSES.includes(status) ||
-    OPEN_RESERVATION_STATUSES.includes(normalizedStatus);
-}
-
-function isClosedReservationStatus(status) {
-  const normalizedStatus = normalizeReservationStatus(status);
-
-  return CLOSED_RESERVATION_STATUSES.includes(status) ||
-    CLOSED_RESERVATION_STATUSES.includes(normalizedStatus);
-}
-
-function isBlockingReservationStatus(status) {
-  const normalizedStatus = normalizeReservationStatus(status);
-
-  if (
-    CLOSED_RESERVATION_STATUSES.includes(status) ||
-    CLOSED_RESERVATION_STATUSES.includes(normalizedStatus)
-  ) {
-    return false;
-  }
-
-  return BLOCKING_RESERVATION_STATUSES.includes(status) ||
-    BLOCKING_RESERVATION_STATUSES.includes(normalizedStatus);
-}
 
 function isPendingReservationStatus(status) {
   return normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING;
