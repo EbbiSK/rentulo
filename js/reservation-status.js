@@ -55,6 +55,39 @@ function normalizeReservationStatus(status) {
 
   return statusMap[normalizedStatus] || normalizedStatus;
 }
+function getReservationStatusText(status) {
+  const normalizedStatus = normalizeReservationStatus(status);
+
+  if (normalizedStatus === RESERVATION_STATUS_PENDING) {
+    return "Čeká na potvrzení";
+  }
+
+  if (normalizedStatus === RESERVATION_STATUS_APPROVED) {
+    return "Čeká na platbu";
+  }
+
+  if (normalizedStatus === RESERVATION_STATUS_PAID) {
+    return "Zaplaceno";
+  }
+
+  if (normalizedStatus === RESERVATION_STATUS_PICKED_UP) {
+    return "Vyzvednuto";
+  }
+
+  if (normalizedStatus === RESERVATION_STATUS_RETURNED) {
+    return "Vráceno";
+  }
+
+  if (normalizedStatus === RESERVATION_STATUS_REJECTED) {
+    return "Odmítnuto";
+  }
+
+  if (normalizedStatus === RESERVATION_STATUS_CANCELLED) {
+    return "Zrušeno";
+  }
+
+  return status || "Čeká na potvrzení";
+}
 function isOpenReservationStatus(status) {
   const normalizedStatus = normalizeReservationStatus(status);
 
