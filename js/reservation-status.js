@@ -88,6 +88,25 @@ function getReservationStatusText(status) {
 
   return status || "Čeká na potvrzení";
 }
+function isPendingReservationStatus(status) {
+  return normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING;
+}
+
+function isApprovedReservationStatus(status) {
+  return normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED;
+}
+
+function isPaidReservationStatus(status) {
+  return normalizeReservationStatus(status) === RESERVATION_STATUS_PAID;
+}
+
+function isPickedUpReservationStatus(status) {
+  return normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP;
+}
+
+function isReturnedReservationStatus(status) {
+  return normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED;
+}
 function isOpenReservationStatus(status) {
   const normalizedStatus = normalizeReservationStatus(status);
 

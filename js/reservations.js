@@ -80,25 +80,7 @@ function getReservationStatus(reservation) {
 
 
 
-function isPendingReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING;
-}
 
-function isApprovedReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED;
-}
-
-function isPaidReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_PAID;
-}
-
-function isPickedUpReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP;
-}
-
-function isReturnedReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED;
-}
 
 function isRejectedReservationStatus(status) {
   return normalizeReservationStatus(status) === RESERVATION_STATUS_REJECTED;
