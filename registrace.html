@@ -879,7 +879,33 @@ localStorage.setItem("rentuloLoggedIn", "true");
           updatedAt: now,
           source: "supabase"
         };
+const { error: profileError } = await supabaseClient
+  .from("profiles")
+  .upsert(
+    {
+      id: createdUser.id,
+      full_name: createdUser.fullName,
+      email: createdUser.email,
+      phone: createdUser.phone,
+      street: createdUser.street,
+      city: createdUser.city,
+      postal_code: createdUser.postalCode,
+      initials: createdUser.initials,
+      role: createdUser.role,
+      terms_business_accepted: createdUser.termsBusinessAccepted,
+      terms_privacy_accepted: createdUser.termsPrivacyAccepted,
+      terms_identity_accepted: createdUser.termsIdentityAccepted,
+      terms_accepted_at: createdUser.termsAcceptedAt,
+      updated_at: createdUser.updatedAt
+    },
+    {
+      onConflict: "id"
+    }
+  );
 
+if (profileError) {
+  throw profileError;
+}
         registrationSaveCurrentUser(createdUser);
 
         window.location.href = "ucet-vytvoren.html";
