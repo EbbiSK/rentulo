@@ -4,7 +4,7 @@ const RESERVATION_STATUS_PAID = "paid";
 const RESERVATION_STATUS_PICKED_UP = "picked_up";
 const RESERVATION_STATUS_RETURNED = "returned";
 const RESERVATION_STATUS_REJECTED = "rejected";
-
+const RESERVATION_STATUS_CANCELLED = "cancelled";
 const LEGACY_RESERVATION_STATUS_PENDING = "Čeká na potvrzení";
 const LEGACY_RESERVATION_STATUS_APPROVED = "Čeká na platbu";
 const LEGACY_RESERVATION_STATUS_PAID = "Zaplaceno";
