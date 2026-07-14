@@ -107,6 +107,13 @@ function isPickedUpReservationStatus(status) {
 function isReturnedReservationStatus(status) {
   return normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED;
 }
+function isRejectedReservationStatus(status) {
+  return normalizeReservationStatus(status) === RESERVATION_STATUS_REJECTED;
+}
+
+function isCancelledReservationStatus(status) {
+  return normalizeReservationStatus(status) === RESERVATION_STATUS_CANCELLED;
+}
 function isOpenReservationStatus(status) {
   const normalizedStatus = normalizeReservationStatus(status);
 
