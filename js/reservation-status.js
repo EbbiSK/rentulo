@@ -88,6 +88,13 @@ function getReservationStatusText(status) {
 
   return status || "Čeká na potvrzení";
 }
+function getReservationStatus(reservation) {
+  if (!reservation) {
+    return RESERVATION_STATUS_PENDING;
+  }
+
+  return normalizeReservationStatus(reservation.status);
+}
 function isPendingReservationStatus(status) {
   return normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING;
 }

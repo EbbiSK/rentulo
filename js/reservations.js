@@ -68,13 +68,7 @@ function getReservationRenterPhone(reservation) {
   );
 }
 
-function getReservationStatus(reservation) {
-  if (!reservation) {
-    return RESERVATION_STATUS_PENDING;
-  }
 
-  return normalizeReservationStatus(reservation.status);
-}
 
 
 
