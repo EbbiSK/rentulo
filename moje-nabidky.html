@@ -1945,15 +1945,10 @@
         ? closedRequests.map(renderHistoryRequestRow).join("")
         : `<p class="request-empty-note">Tady budou dokončené, odmítnuté nebo zrušené žádosti k této nabídce.</p>`;
 
-      const ownerActionRequests = openRequests.filter(function (reservation) {
-        const normalizedStatus = normalizeReservationStatus(reservation.status);
 
-return [
-  RESERVATION_STATUS_PENDING,
-  RESERVATION_STATUS_PAID,
-  RESERVATION_STATUS_PICKED_UP
-].includes(normalizedStatus);
-      });
+        const ownerActionRequests = openRequests.filter(function (reservation) {
+  return isOwnerActionStatus(reservation.status);
+});
 
       const openButtonClass = ownerActionRequests.length ? "request-toggle-button important" : "request-toggle-button";
       const countClass = ownerActionRequests.length ? "count-pill important" : "count-pill success";
