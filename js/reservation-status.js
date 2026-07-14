@@ -140,3 +140,14 @@ function isBlockingReservationStatus(status) {
   return BLOCKING_RESERVATION_STATUSES.includes(status) ||
     BLOCKING_RESERVATION_STATUSES.includes(normalizedStatus);
 }
+function isBlockingReservation(reservation) {
+  return isBlockingReservationStatus(getReservationStatus(reservation));
+}
+
+function isOpenReservation(reservation) {
+  return isOpenReservationStatus(getReservationStatus(reservation));
+}
+
+function isClosedReservation(reservation) {
+  return isClosedReservationStatus(getReservationStatus(reservation));
+}

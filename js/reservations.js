@@ -84,17 +84,7 @@ function getReservationStatus(reservation) {
 
 
 
-function isBlockingReservation(reservation) {
-  return isBlockingReservationStatus(getReservationStatus(reservation));
-}
 
-function isOpenReservation(reservation) {
-  return isOpenReservationStatus(getReservationStatus(reservation));
-}
-
-function isClosedReservation(reservation) {
-  return isClosedReservationStatus(getReservationStatus(reservation));
-}
 
 /*
   Dostupnosť ponúk sa už nemá počítať z localStorage.
