@@ -191,7 +191,7 @@
         });
 
       if (error) {
-        console.error(error);
+       console.error("Ponuky sa nepodařilo načíst.");
         renderEmptyResults("load-error");
         return [];
       }
