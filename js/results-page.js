@@ -185,7 +185,9 @@
 
       const { data, error } = await supabaseClient
         .from("public_offers")
-        .select("*")
+        .select(
+  "id, owner_id, name, category, description, city, postal_code, price_per_day, deposit, status, photo_url, created_at, updated_at"
+)
         .order("created_at", {
           ascending: false
         });
