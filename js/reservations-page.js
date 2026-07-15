@@ -249,7 +249,7 @@
       const { data, error } = await supabaseClient
         .from("reservations")
         .select(
-  "id, offer_id, owner_id, renter_id, offer_name, category, city, price_per_day, deposit, start_date, date_from, end_date, date_to, total_days, days, total_price, platform_fee_percent, platform_fee_amount, owner_payout, renter_name, renter_email, renter_phone, owner_name, owner_email, owner_phone, pickup_phone, pickup_street, pickup_city, pickup_postal_code, pickup_full_address, pickup_note, status, contact_visible_after_payment, paid_at, payment_provider_status, created_at, updated_at"
+  "id, offer_id, owner_id, renter_id, offer_name, category, city, price_per_day, deposit, start_date, date_from, end_date, date_to, total_days, days, total_price, platform_fee_percent, platform_fee_amount, owner_payout, renter_name, renter_email, renter_phone, owner_name, owner_phone, pickup_phone, pickup_street, pickup_city, pickup_postal_code, pickup_full_address, pickup_note, status, contact_visible_after_payment, paid_at, payment_provider_status, created_at, updated_at"
 )
         .eq("renter_id", supabaseUser.id)
         .order("created_at", {
