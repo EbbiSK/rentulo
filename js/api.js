@@ -90,23 +90,53 @@ function apiGetReservationId(reservation) {
 ========================= */
 
 async function apiGetCurrentUser() {
+  const supabaseClient =
+    typeof rentuloSupabase !== "undefined" ? rentuloSupabase : null;
+
+  if (!supabaseClient) {
+    return null;
+  }
+
+  const { data, error } = await supabaseClient.auth.getUser();
+
+  if (error || !data || !data.user) {
+    if (typeof clearCurrentUser === "function") {
+      clearCurrentUser();
+    }
+
+    return null;
+  }
+
   const storedUser =
     localStorage.getItem("naradiUser") ||
     localStorage.getItem("rentuloUser");
 
-  const isLoggedIn =
-    localStorage.getItem("naradiLoggedIn") === "true" ||
-    localStorage.getItem("rentuloLoggedIn") === "true";
-
-  if (!storedUser || !isLoggedIn) {
-    return null;
+  if (!storedUser) {
+    return apiClone(data.user);
   }
 
   try {
-    return apiClone(JSON.parse(storedUser));
+    const profile = JSON.parse(storedUser);
+
+    if (
+      profile.id &&
+      profile.id !== data.user.id
+    ) {
+      if (typeof clearCurrentUser === "function") {
+        clearCurrentUser();
+      }
+
+      return null;
+    }
+
+    return apiClone({
+      ...profile,
+      id: data.user.id,
+      email: data.user.email || profile.email
+    });
   } catch (error) {
     console.warn("Přihlášeného uživatele se nepodařilo načíst:", error);
-    return null;
+    return apiClone(data.user);
   }
 }
 
