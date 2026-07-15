@@ -230,7 +230,7 @@
         .in("user_id", ownerIds);
 
       if (error) {
-        console.warn("Hodnocení majitelů se nepodařilo načíst.", error);
+        console.warn("Hodnocení majitelů se nepodařilo načíst.");
         return;
       }
 
@@ -286,7 +286,7 @@
         .in("status", blockingStatuses);
 
       if (error) {
-        console.warn("Dostupnost nabídek se nepodařilo načíst ze Supabase.", error);
+        console.warn("Dostupnost nabídek se nepodařilo načíst ze Supabase.");
         return;
       }
 

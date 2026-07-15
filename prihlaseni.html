@@ -525,7 +525,7 @@
         .maybeSingle();
 
       if (error) {
-        console.warn("Profil se nepodařilo načíst.", error);
+        console.warn("Profil se nepodařilo načíst.");
         return null;
       }
 
@@ -661,7 +661,7 @@
 
         window.location.href = "muj-ucet.html";
       } catch (error) {
-        console.error(error);
+        console.error("Přihlášení se nepodařilo.");
         showLoginError("Přihlášení se nepodařilo. Zkontrolujte připojení a zkuste to znovu.");
       } finally {
         if (submitButton) {

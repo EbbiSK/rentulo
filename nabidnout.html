@@ -1529,7 +1529,7 @@
         sessionStorage.setItem("rentuloOfferSaved", status);
         window.location.href = "moje-nabidky.html";
       } catch (error) {
-        console.error(error);
+        console.error("Nabídku se nepodařilo uložit.");
         offerSaveInProgress = false;
         setOfferSavingState(false, status);
 
