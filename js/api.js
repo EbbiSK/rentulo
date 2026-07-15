@@ -511,7 +511,8 @@ async function apiCreateNotification(notificationData) {
     throw new Error("Chybějí údaje notifikácie.");
   }
 
-  const supabaseClient = apiGetSupabaseClient();
+  const supabaseClient =
+  typeof rentuloSupabase !== "undefined" ? rentuloSupabase : null;
 
   if (!supabaseClient) {
     throw new Error("Supabase klient není dostupný.");
