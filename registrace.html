@@ -425,7 +425,7 @@
         </div>
       </div>
 
-      <form class="auth-form" id="registrationForm">
+      <form id="registrationForm" autocomplete="off">
         <div class="form-grid">
 
           <div class="auth-error-message" id="registrationError"></div>
@@ -437,7 +437,14 @@
 
           <div class="form-group">
             <label for="email">E-mail</label>
-            <input type="email" id="email" placeholder="např. jan@email.cz" required />
+            <input
+  type="email"
+  id="email"
+  name="registration-email"
+  autocomplete="off"
+  placeholder="např. jan@novak.cz"
+  required
+>
           </div>
 
           <div class="form-group">
@@ -450,7 +457,14 @@
 
           <div class="form-group">
             <label for="password">Heslo</label>
-            <input type="password" id="password" placeholder="Zadejte heslo" required />
+            <input
+  type="password"
+  id="password"
+  name="registration-password"
+  autocomplete="new-password"
+  placeholder="Zadejte heslo"
+  required
+>
           </div>
 
           <div class="form-group full">
