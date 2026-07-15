@@ -248,7 +248,9 @@
 
       const offersResult = await supabaseClient
         .from("offers")
-        .select("*")
+        .select(
+  "id, owner_id, name, category, description, city, pickup_city, postal_code, price_per_day, deposit, status, photo_url, created_at, updated_at"
+)
         .eq("owner_id", supabaseUser.id)
         .order("created_at", {
           ascending: false
@@ -262,7 +264,9 @@
 
       const reservationsResult = await supabaseClient
         .from("reservations")
-        .select("*")
+        .select(
+  "id, offer_id, owner_id, renter_id, offer_name, category, city, price_per_day, deposit, start_date, date_from, end_date, date_to, total_days, days, total_price, platform_fee_percent, platform_fee_amount, owner_payout, renter_name, renter_email, renter_phone, owner_name, status, contact_visible_after_payment, created_at, updated_at"
+)
         .eq("owner_id", supabaseUser.id)
         .order("created_at", {
           ascending: false
@@ -276,7 +280,9 @@
 
       const reviewsResult = await supabaseClient
         .from("reviews")
-        .select("*")
+        .select(
+  "id, reservation_id, reviewer_id, reviewed_user_id, offer_id, rating, text, created_at"
+)
         .or("reviewer_id.eq." + supabaseUser.id + ",reviewed_user_id.eq." + supabaseUser.id)
         .order("created_at", {
           ascending: false
