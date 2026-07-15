@@ -1089,7 +1089,15 @@
         ? closedRequests.map(renderHistoryRequestRow).join("")
         : `<p class="request-empty-note">Tady budou dokončené, odmítnuté nebo zrušené žádosti k této nabídce.</p>`;
 
+function isOwnerActionStatus(status) {
+  const normalizedStatus = normalizeReservationStatus(status);
 
+  return [
+    RESERVATION_STATUS_APPROVED,
+    RESERVATION_STATUS_PAID,
+    RESERVATION_STATUS_PICKED_UP
+  ].includes(normalizedStatus);
+}
         const ownerActionRequests = openRequests.filter(function (reservation) {
   return isOwnerActionStatus(reservation.status);
 });
