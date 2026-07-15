@@ -1630,13 +1630,7 @@ const hasGps = offerHasGpsLocation(offer);
       const platformFeeAmount = Math.round(totalPrice * PLATFORM_FEE_PERCENT / 100);
       const ownerPayout = totalPrice - platformFeeAmount;
 
-      const pickupData = await loadOfferPrivatePickupData(offer.id);
-      const pickupPhone = getOfferPickupPhone(offer, pickupData);
-      const pickupStreet = getOfferPickupStreet(offer, pickupData);
-      const pickupCity = getOfferPickupCity(offer, pickupData);
-      const pickupPostalCode = getOfferPickupPostalCode(offer, pickupData);
-      const pickupNote = getOfferPickupNote(offer, pickupData);
-      const pickupFullAddress = getOfferPickupFullAddress(offer, pickupData);
+
 
       const reservationToInsert = {
         offer_id: offer.id,
@@ -1669,13 +1663,7 @@ total_price: totalPrice,
         renter_phone: getUserPhone(currentUser),
 
         owner_name: "Majitel",
-        owner_phone: pickupPhone,
-        pickup_phone: pickupPhone,
-        pickup_street: pickupStreet,
-        pickup_city: pickupCity,
-        pickup_postal_code: pickupPostalCode,
-        pickup_full_address: pickupFullAddress,
-        pickup_note: pickupNote,
+
 
         contact_visible_after_payment: false
       };
