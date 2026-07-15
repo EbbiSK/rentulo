@@ -1,7 +1,10 @@
-﻿drop view if exists public.public_offers;
+﻿drop policy if exists offers_select_public_active
+on public.offers;
+
+drop view if exists public.public_offers;
 
 create view public.public_offers
-with (security_invoker = true)
+with (security_invoker = false)
 as
 select
   id,
@@ -21,11 +24,5 @@ select
 from public.offers
 where status = 'active';
 
-drop policy if exists offers_select_public_active
-on public.offers;
-
-create policy offers_select_public_active
-on public.offers
-for select
-to anon, authenticated
-using (status = 'active');
+revoke all on public.public_offers from public;
+grant select on public.public_offers to anon, authenticated;
