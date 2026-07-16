@@ -38,11 +38,7 @@
   return normalizeReservationStatus(status);
 }
 
-    function isOpenStatus(status) {
-  return isOpenReservationStatus(
-    normalizeStatus(status)
-  );
-}
+
 
     function isOwnerActionStatus(status) {
   const normalizedStatus = normalizeStatus(status);
@@ -350,11 +346,11 @@ if (profileRating) {
       const myOffers = supabaseOffers;
       const myReservations = supabaseRenterReservations;
       const incomingOpenRequests = supabaseOwnerReservations.filter(function (reservation) {
-        return isOpenStatus(reservation.status);
+        return isOpenReservationStatus(reservation.status);
       });
 
       const activeReservations = myReservations.filter(function (reservation) {
-        return isOpenStatus(reservation.status);
+        return isOpenReservationStatus(reservation.status);
       });
 
       const waitingPaymentCount = myReservations.filter(function (reservation) {

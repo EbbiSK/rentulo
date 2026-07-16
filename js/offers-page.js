@@ -60,11 +60,7 @@
 
 
 
-    function isOpenStatus(status) {
-  return isOpenReservationStatus(
-    normalizeReservationStatus(status)
-  );
-}
+    
 
     function isClosedStatus(status) {
   return isClosedReservationStatus(
