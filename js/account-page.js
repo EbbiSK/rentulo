@@ -30,9 +30,7 @@
       return data.user;
     }
 
-    function normalizeAccountEmail(email) {
-      return String(email || "").trim().toLowerCase();
-    }
+
 
     
 
