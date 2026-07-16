@@ -58,9 +58,7 @@
       return date.toLocaleDateString("cs-CZ");
     }
 
-    function getStatusText(status) {
-  return getReservationStatusText(status);
-}
+
 
     function isOpenStatus(status) {
   return isOpenReservationStatus(
@@ -868,7 +866,7 @@
 
     function renderRequest(reservation) {
       const status = reservation.status;
-      const statusText = getStatusText(status);
+      const statusText = getReservationStatusText(status);
 
       const renterName = reservation.renterName || "Zájemce";
       const renterEmail = canShowContact(status)
@@ -917,7 +915,7 @@
 
     function renderHistoryRequestRow(reservation) {
       const status = reservation.status;
-      const statusText = getStatusText(status);
+      const statusText = getReservationStatusText(status);
 
       const renterName = reservation.renterName || "Zájemce";
       const renterEmail = canShowContact(status)

@@ -231,7 +231,7 @@ if (profileRating) {
         ownerName: row.owner_name || "Majitel",
 
         status: normalizeStatus(row.status || STATUS_PENDING),
-        statusText: getStatusText(row.status || STATUS_PENDING),
+        statusText: getReservationStatusText(row.status || STATUS_PENDING),
 
         contactVisibleAfterPayment: Boolean(row.contact_visible_after_payment),
 
@@ -242,9 +242,7 @@ if (profileRating) {
       };
     }
 
-    function getStatusText(status) {
-  return getReservationStatusText(status);
-}
+
 
     function mergeById(localItems, supabaseItems) {
       const merged = [];
