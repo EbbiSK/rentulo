@@ -44,14 +44,7 @@ function isEmpty(value) {
 
 
 
-function escapeHTML(text) {
-  return String(text || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
+
 
 function moneyToNumber(value) {
   const cleanedValue = String(value || "")
