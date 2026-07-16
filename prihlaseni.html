@@ -470,17 +470,6 @@
       }
     }
 
-    function loginGetSupabaseClient() {
-      if (window.rentuloSupabase) {
-        return window.rentuloSupabase;
-      }
-
-      if (typeof rentuloSupabase !== "undefined") {
-        return rentuloSupabase;
-      }
-
-      return null;
-    }
 
     function loginGetInitials(fullName) {
       if (!fullName) {
@@ -586,7 +575,7 @@
       hideLoginError();
       clearLoginErrors();
 
-      const supabaseClient = loginGetSupabaseClient();
+      const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
         showLoginError("Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js.");
