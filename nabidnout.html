@@ -1426,7 +1426,10 @@
     }
 
     function createSupabaseOfferObject(status, supabaseUser, photoUrl) {
-      const currentUser = getCurrentUser();
+      const currentUser =
+  typeof getCurrentUserSafe === "function"
+    ? getCurrentUserSafe()
+    : null;
       const pickupAddress = getPickupAddress(currentUser);
 
       const pickupLatitudeValue = getInputValue("pickupLatitude");
