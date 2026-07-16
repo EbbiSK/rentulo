@@ -1487,7 +1487,7 @@
         return;
       }
 
-      if (!isLoggedIn() || !getCurrentUser()) {
+      if (!navIsLoggedIn()) {
         showOfferLoginRequired();
         return;
       }
