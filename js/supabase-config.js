@@ -37,6 +37,16 @@ function formatDate(dateString) {
 
   return date.toLocaleDateString("cs-CZ");
 }
+function getStars(rating) {
+  const count = Math.max(0, Math.min(5, Number(rating) || 0));
+  let stars = "";
+
+  for (let i = 1; i <= 5; i++) {
+    stars += i <= count ? "★" : "☆";
+  }
+
+  return stars;
+}
 async function getCurrentSupabaseUser() {
   const supabaseClient = getSupabaseClient();
 

@@ -150,16 +150,7 @@
       };
     }
 
-    function getStars(rating) {
-      const count = Math.max(0, Math.min(5, Number(rating) || 0));
-      let stars = "";
 
-      for (let i = 1; i <= 5; i++) {
-        stars += i <= count ? "★" : "☆";
-      }
-
-      return stars;
-    }
 
     function findOwnerReviewForRenter(reservation) {
       if (!reservation) {

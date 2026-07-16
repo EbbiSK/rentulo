@@ -8,16 +8,7 @@
 
 
 
-    function getStars(rating) {
-      const count = Number(rating) || 0;
-      let stars = "";
 
-      for (let i = 1; i <= 5; i++) {
-        stars += i <= count ? "★" : "☆";
-      }
-
-      return stars;
-    }
 
     function findRenterReviewForReservation(reservation) {
       if (!reservation) {
