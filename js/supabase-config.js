@@ -24,6 +24,19 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
+function formatDate(dateString) {
+  if (!dateString) {
+    return "-";
+  }
+
+  const date = new Date(dateString);
+
+  if (isNaN(date.getTime())) {
+    return dateString;
+  }
+
+  return date.toLocaleDateString("cs-CZ");
+}
 async function getCurrentSupabaseUser() {
   const supabaseClient = getSupabaseClient();
 

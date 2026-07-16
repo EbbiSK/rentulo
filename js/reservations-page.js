@@ -65,19 +65,7 @@
       `;
     }
 
-    function formatDate(dateString) {
-      if (!dateString) {
-        return "-";
-      }
 
-      const date = new Date(dateString);
-
-      if (isNaN(date.getTime())) {
-        return dateString;
-      }
-
-      return date.toLocaleDateString("cs-CZ");
-    }
 
     function formatDateTime(dateString) {
       if (!dateString) {
