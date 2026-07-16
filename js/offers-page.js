@@ -456,7 +456,10 @@
 
     async function deleteOffer(offerId) {
       const blockingReservations = ownerReservations.filter(function (reservation) {
-        return String(reservation.offerId) === String(offerId) && isOpenStatus(reservation.status);
+        return String(reservation.offerId) === String(offerId) &&
+  isOpenReservationStatus(
+    normalizeReservationStatus(reservation.status)
+  );
       });
 
       if (blockingReservations.length > 0) {
@@ -1066,7 +1069,9 @@
       const isDraft = isOfferDraft(offer);
 
       const openRequests = requests.filter(function (reservation) {
-        return isOpenStatus(reservation.status);
+        return isOpenReservationStatus(
+  normalizeReservationStatus(reservation.status)
+);
       });
 
       const closedRequests = requests.filter(function (reservation) {
@@ -1287,7 +1292,9 @@ return [
       });
 
       const firstOpenReservation = firstActionReservation || ownerReservations.find(function (reservation) {
-        return isOpenStatus(reservation.status);
+        return isOpenReservationStatus(
+  normalizeReservationStatus(reservation.status)
+);
       });
 
       if (!firstOpenReservation) {
