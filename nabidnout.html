@@ -1302,13 +1302,21 @@
         };
       }
 
-      return {
-        mode: "profile",
-        street: currentUser.street || currentUser.ulice || "",
-        city: currentUser.city || currentUser.mesto || getInputValue("toolCity"),
-        postalCode: currentUser.postalCode || currentUser.psc || getInputValue("toolPostalCode"),
-        note: ""
-      };
+     const safeUser = currentUser || {};
+
+return {
+  mode: "profile",
+  street: safeUser.street || safeUser.ulice || "",
+  city:
+    safeUser.city ||
+    safeUser.mesto ||
+    getInputValue("toolCity"),
+  postalCode:
+    safeUser.postalCode ||
+    safeUser.psc ||
+    getInputValue("toolPostalCode"),
+  note: ""
+};
     }
 
     function getFullPickupAddress(pickupAddress) {
