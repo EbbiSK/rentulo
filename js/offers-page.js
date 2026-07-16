@@ -633,7 +633,7 @@
     }
 
     function renderReservationContactBlock(reservation) {
-      if (!canShowContact(reservation.status)) {
+      if (!getReservationContactVisible(status)) {
         return `
           <div class="request-contact-box locked">
             <strong>Kontakt zatím skrytý</strong>
