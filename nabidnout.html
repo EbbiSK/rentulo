@@ -823,7 +823,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/navigation.js"></script>
   <script src="js/storage.js"></script>
-  <script src="js/account-page.js"></script>
+
   <script src="js/supabase-config.js"></script>
 
   <script>
@@ -1064,11 +1064,22 @@
         });
       }
     }
+function getOfferCurrentUserSafe() {
+  if (typeof getCurrentUser === "function") {
+    return getCurrentUser();
+  }
 
+  try {
+    const value = localStorage.getItem("rentuloUser");
+    return value ? JSON.parse(value) : null;
+  } catch (error) {
+    return null;
+  }
+}
     function fillProfileAddressAsDefault() {
       const currentUser =
   typeof getCurrentUserSafe === "function"
-    ? getCurrentUserSafe()
+    ? getOfferCurrentUserSafe()
     : null;
       const toolCityInput = document.getElementById("toolCity");
       const toolPostalInput = document.getElementById("toolPostalCode");
@@ -1437,7 +1448,7 @@ return {
     function createSupabaseOfferObject(status, supabaseUser, photoUrl) {
       const currentUser =
   typeof getCurrentUserSafe === "function"
-    ? getCurrentUserSafe()
+    ? getOfferCurrentUserSafe()
     : null;
       const pickupAddress = getPickupAddress(currentUser);
 
