@@ -12,14 +12,7 @@
     .trim();
 }
 
-    function escapeHtml(value) {
-      return String(value === undefined || value === null ? "" : value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+
 
     function parseStoredMoney(value) {
       if (value === undefined || value === null || value === "") {

@@ -6,14 +6,7 @@
 
 
 
-    function escapeHtml(text) {
-      return String(text === undefined || text === null ? "" : text)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+
 
     function getStars(rating) {
       const count = Number(rating) || 0;

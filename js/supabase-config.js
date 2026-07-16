@@ -16,6 +16,14 @@ function getSupabaseClient() {
 
   return null;
 }
+function escapeHtml(value) {
+  return String(value === undefined || value === null ? "" : value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 async function getCurrentSupabaseUser() {
   const supabaseClient = getSupabaseClient();
 
