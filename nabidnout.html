@@ -1065,7 +1065,10 @@
     }
 
     function fillProfileAddressAsDefault() {
-      const currentUser = getCurrentUser();
+      const currentUser =
+  typeof getCurrentUserSafe === "function"
+    ? getCurrentUserSafe()
+    : null;
       const toolCityInput = document.getElementById("toolCity");
       const toolPostalInput = document.getElementById("toolPostalCode");
 
