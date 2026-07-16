@@ -1,17 +1,7 @@
     const PLATFORM_FEE_PERCENT = 10;
     let currentOffer = null;
 
-    function getSupabaseClient() {
-      if (window.rentuloSupabase) {
-        return window.rentuloSupabase;
-      }
-
-      if (typeof rentuloSupabase !== "undefined") {
-        return rentuloSupabase;
-      }
-
-      return null;
-    }
+  
 
     function escapeHtml(value) {
       return String(value === undefined || value === null ? "" : value)

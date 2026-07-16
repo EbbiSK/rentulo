@@ -2,17 +2,7 @@
     let supabaseReservations = [];
     let supabaseReviews = [];
 
-    function getSupabaseClient() {
-      if (window.rentuloSupabase) {
-        return window.rentuloSupabase;
-      }
 
-      if (typeof rentuloSupabase !== "undefined") {
-        return rentuloSupabase;
-      }
-
-      return null;
-    }
 
 
 

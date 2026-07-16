@@ -2,17 +2,7 @@
     let resultsRatingSummaries = {};
     let resultsReservedOfferIds = new Set();
 
-    function getSupabaseClient() {
-      if (window.rentuloSupabase) {
-        return window.rentuloSupabase;
-      }
 
-      if (typeof rentuloSupabase !== "undefined") {
-        return rentuloSupabase;
-      }
-
-      return null;
-    }
 
     function normalizeText(value) {
   return String(value === undefined || value === null ? "" : value)

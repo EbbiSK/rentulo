@@ -902,17 +902,7 @@
       "sokolov": "356 01"
     };
 
-    function getSupabaseClient() {
-      if (window.rentuloSupabase) {
-        return window.rentuloSupabase;
-      }
 
-      if (typeof rentuloSupabase !== "undefined") {
-        return rentuloSupabase;
-      }
-
-      return null;
-    }
 
     async function getSupabaseUser() {
       const supabaseClient = getSupabaseClient();
