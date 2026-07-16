@@ -47,6 +47,13 @@ function getStars(rating) {
 
   return stars;
 }
+function normalizeText(value) {
+  return String(value === undefined || value === null ? "" : value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
 async function getCurrentSupabaseUser() {
   const supabaseClient = getSupabaseClient();
 
