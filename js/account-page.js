@@ -34,14 +34,12 @@
       return String(email || "").trim().toLowerCase();
     }
 
-    function normalizeStatus(status) {
-  return normalizeReservationStatus(status);
-}
+    
 
 
 
     function isOwnerActionStatus(status) {
-  const normalizedStatus = normalizeStatus(status);
+  const normalizedStatus = normalizeReservationStatus(status);
 
   return [
     RESERVATION_STATUS_PENDING,
@@ -51,7 +49,7 @@
 }
 
     function isWaitingForPaymentStatus(status) {
-      return normalizeStatus(status) === RESERVATION_STATUS_APPROVED;
+      return normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED;
     }
 
     function getCurrentUserSafe() {
@@ -226,7 +224,7 @@ if (profileRating) {
 
         ownerName: row.owner_name || "Majitel",
 
-        status: normalizeStatus(row.status || STATUS_PENDING),
+        status: normalizeReservationStatus(row.status || STATUS_PENDING),
         statusText: getReservationStatusText(row.status || STATUS_PENDING),
 
         contactVisibleAfterPayment: Boolean(row.contact_visible_after_payment),
@@ -358,15 +356,15 @@ if (profileRating) {
       }).length;
 
       const pendingRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
-        return normalizeStatus(reservation.status) === RESERVATION_STATUS_PENDING;
+        return normalizeReservationStatus(reservation.status) === RESERVATION_STATUS_PENDING;
       }).length;
 
       const paidRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
-        return normalizeStatus(reservation.status) === RESERVATION_STATUS_PAID;
+        return normalizeReservationStatus(reservation.status) === RESERVATION_STATUS_PAID;
       }).length;
 
       const pickedUpRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
-        return normalizeStatus(reservation.status) === RESERVATION_STATUS_PICKED_UP;
+        return normalizeReservationStatus(reservation.status) === RESERVATION_STATUS_PICKED_UP;
       }).length;
 
       const ownerActionRequiredCount =
