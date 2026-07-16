@@ -62,11 +62,7 @@
 
     
 
-    function isClosedStatus(status) {
-  return isClosedReservationStatus(
-    normalizeReservationStatus(status)
-  );
-}
+    
 
     function canShowContact(status) {
   return getReservationContactVisible(status);
@@ -1075,7 +1071,9 @@
       });
 
       const closedRequests = requests.filter(function (reservation) {
-        return isClosedStatus(reservation.status);
+        isClosedReservationStatus(
+  normalizeReservationStatus(reservation.status)
+)
       });
 
       const openPanelId = "open-panel-" + offerId;
