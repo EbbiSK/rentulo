@@ -19,21 +19,7 @@
       return null;
     }
 
-    async function getCurrentSupabaseUser() {
-      const supabaseClient = getSupabaseClient();
-
-      if (!supabaseClient) {
-        return null;
-      }
-
-      const { data, error } = await supabaseClient.auth.getUser();
-
-      if (error || !data || !data.user) {
-        return null;
-      }
-
-      return data.user;
-    }
+    
 
     function escapeHtml(value) {
       return String(value === undefined || value === null ? "" : value)
