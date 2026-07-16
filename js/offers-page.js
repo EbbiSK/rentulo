@@ -64,9 +64,7 @@
 
     
 
-    function canShowContact(status) {
-  return getReservationContactVisible(status);
-}
+
 
     function showAccountMessage(title, text) {
       const messageBox = document.getElementById("accountMessage");
@@ -864,7 +862,7 @@
       const statusText = getReservationStatusText(status);
 
       const renterName = reservation.renterName || "Zájemce";
-      const renterEmail = canShowContact(status)
+      const renterEmail = getReservationContactVisible(status)
         ? reservation.renterEmail || "E-mail není uložen"
         : "Kontakt se zobrazí po zaplacení";
 
@@ -913,7 +911,7 @@
       const statusText = getReservationStatusText(status);
 
       const renterName = reservation.renterName || "Zájemce";
-      const renterEmail = canShowContact(status)
+      const renterEmail = getReservationContactVisible(status)
         ? reservation.renterEmail || "E-mail není uložen"
         : "Kontakt se zobrazí po zaplacení";
 
