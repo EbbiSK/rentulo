@@ -207,11 +207,7 @@
     }
 
     .account-table-card {
-      overflow: hidden;
-      background: white;
-      border: 1px solid #eadfd1;
-      border-radius: 16px;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      background: transparent;
     }
 
     .account-table-title {
@@ -219,15 +215,13 @@
       justify-content: space-between;
       gap: 12px;
       align-items: center;
-      padding: 11px 13px;
-      background: #fffdf8;
-      border-bottom: 1px solid #eadfd1;
+      margin-bottom: 12px;
     }
 
     .account-table-title h2 {
       margin: 0;
       color: #073f2e;
-      font-size: 17px;
+      font-size: 21px;
     }
 
     .account-table-title span {
@@ -236,65 +230,81 @@
       font-weight: 800;
     }
 
-    .account-table-head,
-    .account-action-row {
-      display: grid;
-      grid-template-columns: 1.15fr 1.8fr 0.65fr 0.65fr;
-      gap: 10px;
-      align-items: center;
-      padding: 9px 12px;
-    }
-
     .account-table-head {
-      background: #f8f5f0;
-      border-bottom: 1px solid #eadfd1;
-      color: #526158;
-      font-size: 12px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
+      display: none;
+    }
+
+    .account-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
     }
 
     .account-action-row {
-      min-height: 58px;
+      position: relative;
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr) auto;
+      grid-template-areas:
+        "icon main button"
+        "icon description button"
+        "icon type button";
+      gap: 5px 12px;
+      align-items: center;
+      min-height: 138px;
+      padding: 17px;
+      border: 1px solid #eadfd1;
+      border-radius: 18px;
       background: white;
-      border-bottom: 1px solid #eee8de;
-      transition: background 0.18s ease;
-    }
-
-    .account-action-row:last-child {
-      border-bottom: none;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
     }
 
     .account-action-row:hover {
-      background: #fffdf8;
+      transform: translateY(-2px);
+      border-color: #d7c8b7;
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.06);
+    }
+
+    .account-action-icon {
+      grid-area: icon;
+      width: 52px;
+      height: 52px;
+      border-radius: 15px;
+      background: #f4efe7;
+      color: #006b45;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 900;
     }
 
     .account-action-main {
+      grid-area: main;
       min-width: 0;
     }
 
     .account-action-title {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 7px;
       color: #073f2e;
-      font-size: 14px;
+      font-size: 18px;
       font-weight: 900;
-      line-height: 1.25;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      line-height: 1.2;
     }
 
     .account-action-description {
-      color: #334c43;
+      grid-area: description;
+      color: #4d5b55;
       font-size: 13px;
       font-weight: 700;
-      line-height: 1.3;
+      line-height: 1.35;
     }
 
     .account-type-pill {
+      grid-area: type;
       display: inline-flex;
       width: fit-content;
       border-radius: 999px;
@@ -307,93 +317,59 @@
     }
 
     .account-action-button {
+      grid-area: button;
       display: inline-flex;
       justify-content: center;
       align-items: center;
       width: fit-content;
-      justify-self: end;
-      border-radius: 9px;
+      align-self: center;
+      border-radius: 11px;
       background: #006b45;
       color: white;
-      padding: 7px 11px;
-      font-size: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
       font-weight: 900;
       white-space: nowrap;
       transition: background 0.18s ease;
     }
 
-    .account-action-button:hover {
-      background: #00563a;
-    }
-
-    .account-action-button.light {
-      background: #eee8de;
-      color: #073f2e;
-    }
-
-    .account-action-button.light:hover {
-      background: #e3dace;
-    }
-
-    .account-action-button.orange {
-      background: #ff6500;
-      color: white;
-    }
-
-    .account-action-button.orange:hover {
-      background: #e85d00;
-    }
+    .account-action-button:hover { background: #00563a; }
+    .account-action-button.light { background: #eee8de; color: #073f2e; }
+    .account-action-button.light:hover { background: #e3dace; }
+    .account-action-button.orange { background: #ff6500; color: white; }
+    .account-action-button.orange:hover { background: #e85d00; }
 
     .account-card-badge {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 22px;
-      height: 22px;
+      min-width: 24px;
+      height: 24px;
       padding: 0 7px;
       border-radius: 999px;
       background: #e2f3eb;
       color: #006b45;
       font-size: 12px;
-      line-height: 22px;
+      line-height: 24px;
       font-weight: 900;
       text-align: center;
       flex-shrink: 0;
     }
 
-    .account-card-badge.hidden {
-      display: none;
-    }
-
-    .account-card-badge.alert {
-      background: #ff6500;
-      color: white;
-    }
+    .account-card-badge.hidden { display: none; }
+    .account-card-badge.alert { background: #ff6500; color: white; }
 
     .account-action-alert {
-      background: #fff7f0 !important;
-      outline: 2px solid rgba(255, 101, 0, 0.2);
-      outline-offset: -2px;
+      background: #fff8f2 !important;
+      border-color: #ffb37f;
+      box-shadow: 0 10px 28px rgba(255, 101, 0, 0.10);
     }
 
-    .account-action-alert .account-action-description {
-      color: #df5b00;
-      font-weight: 900;
-    }
-
-    .account-action-alert .account-type-pill {
-      background: #fff0e6;
-      color: #df5b00;
-    }
-
-    .account-action-alert .account-action-button {
-      background: #ff6500;
-      color: white;
-    }
-
-    .account-action-alert .account-action-button:hover {
-      background: #e85d00;
-    }
+    .account-action-alert .account-action-icon { background: #fff0e6; color: #df5b00; }
+    .account-action-alert .account-action-description { color: #df5b00; font-weight: 900; }
+    .account-action-alert .account-type-pill { background: #fff0e6; color: #df5b00; }
+    .account-action-alert .account-action-button { background: #ff6500; color: white; }
+    .account-action-alert .account-action-button:hover { background: #e85d00; }
 
     @media (max-width: 900px) {
       .header {
@@ -410,18 +386,12 @@
         grid-template-columns: 1fr;
       }
 
-      .account-table-head {
-        display: none;
+      .account-actions-grid {
+        grid-template-columns: 1fr;
       }
 
       .account-action-row {
-        grid-template-columns: 1fr;
-        gap: 7px;
-        padding: 12px;
-      }
-
-      .account-action-button {
-        justify-self: start;
+        min-height: 126px;
       }
     }
 
@@ -446,8 +416,25 @@
         flex-direction: column;
       }
 
+      .account-action-row {
+        grid-template-columns: 44px minmax(0, 1fr);
+        grid-template-areas:
+          "icon main"
+          "icon description"
+          "type type"
+          "button button";
+        padding: 15px;
+      }
+
+      .account-action-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 21px;
+      }
+
       .account-action-button {
         width: 100%;
+        margin-top: 5px;
       }
     }
   </style>
@@ -495,70 +482,57 @@
 
     <section class="account-table-card">
       <div class="account-table-title">
-        <h2>Rychlé akce</h2>
-        <span>Přehled účtu</span>
+        <h2>Co chcete udělat?</h2>
+        <span>Vyberte jednu z hlavních částí účtu</span>
       </div>
 
-      <div class="account-table-head">
-        <div>Oblast</div>
-        <div>Stav</div>
-        <div>Typ</div>
-        <div>Akce</div>
+      <div class="account-actions-grid">
+        <a href="vysledky.html" class="account-action-row">
+          <div class="account-action-icon" aria-hidden="true">⌕</div>
+          <div class="account-action-main">
+            <strong class="account-action-title">Najít nářadí</strong>
+          </div>
+          <span class="account-action-description">Vyhledejte dostupné nářadí k půjčení ve vašem okolí.</span>
+          <span class="account-type-pill">Půjčení</span>
+          <span class="account-action-button">Prohlédnout nabídky</span>
+        </a>
+
+        <a href="nabidnout.html" class="account-action-row">
+          <div class="account-action-icon" aria-hidden="true">＋</div>
+          <div class="account-action-main">
+            <strong class="account-action-title">Nabídnout nářadí</strong>
+          </div>
+          <span class="account-action-description">Přidejte vlastní nářadí a začněte ho bezpečně půjčovat.</span>
+          <span class="account-type-pill">Nabídka</span>
+          <span class="account-action-button">Přidat nářadí</span>
+        </a>
+
+        <a href="moje-rezervace.html" class="account-action-row" id="reservationsCard">
+          <div class="account-action-icon" aria-hidden="true">▣</div>
+          <div class="account-action-main">
+            <strong class="account-action-title">
+              Moje rezervace
+              <span class="account-card-badge hidden" id="reservationsBadge">0</span>
+            </strong>
+          </div>
+          <span class="account-action-description" id="reservationsText">Co si chci půjčit</span>
+          <span class="account-type-pill">Moje půjčení</span>
+          <span class="account-action-button light">Spravovat rezervace</span>
+        </a>
+
+        <a href="moje-nabidky.html?open=actions" class="account-action-row" id="offersCard">
+          <div class="account-action-icon" aria-hidden="true">⌂</div>
+          <div class="account-action-main">
+            <strong class="account-action-title">
+              Moje nabídky
+              <span class="account-card-badge hidden" id="offersBadge">0</span>
+            </strong>
+          </div>
+          <span class="account-action-description" id="offersText">Co nabízím a žádosti od lidí</span>
+          <span class="account-type-pill">Moje nářadí</span>
+          <span class="account-action-button light">Spravovat nabídky</span>
+        </a>
       </div>
-
-      <a href="vysledky.html" class="account-action-row">
-        <div class="account-action-main">
-          <strong class="account-action-title">Najít nářadí</strong>
-        </div>
-
-        <span class="account-action-description">Vyhledat nářadí k půjčení ve vašem okolí</span>
-
-        <span class="account-type-pill">Půjčení</span>
-
-        <span class="account-action-button">Otevřít</span>
-      </a>
-
-      <a href="nabidnout.html" class="account-action-row">
-        <div class="account-action-main">
-          <strong class="account-action-title">Nabídnout nářadí</strong>
-        </div>
-
-        <span class="account-action-description">Přidat vlastní nářadí a začít ho půjčovat</span>
-
-        <span class="account-type-pill">Nabídka</span>
-
-        <span class="account-action-button">Přidat</span>
-      </a>
-
-      <a href="moje-rezervace.html" class="account-action-row" id="reservationsCard">
-        <div class="account-action-main">
-          <strong class="account-action-title">
-            Moje rezervace
-            <span class="account-card-badge hidden" id="reservationsBadge">0</span>
-          </strong>
-        </div>
-
-        <span class="account-action-description" id="reservationsText">Co si chci půjčit</span>
-
-        <span class="account-type-pill">Moje půjčení</span>
-
-        <span class="account-action-button light">Spravovat</span>
-      </a>
-
-      <a href="moje-nabidky.html?open=actions" class="account-action-row" id="offersCard">
-        <div class="account-action-main">
-          <strong class="account-action-title">
-            Moje nabídky
-            <span class="account-card-badge hidden" id="offersBadge">0</span>
-          </strong>
-        </div>
-
-        <span class="account-action-description" id="offersText">Co nabízím a žádosti od lidí</span>
-
-        <span class="account-type-pill">Moje nářadí</span>
-
-        <span class="account-action-button light">Spravovat</span>
-      </a>
     </section>
 
   </main>

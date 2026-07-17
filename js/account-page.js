@@ -2,18 +2,50 @@
     let supabaseOwnerReservations = [];
     let supabaseRenterReservations = [];
 
-    
+    function getSupabaseClient() {
+      if (window.rentuloSupabase) {
+        return window.rentuloSupabase;
+      }
 
-    
+      if (typeof rentuloSupabase !== "undefined") {
+        return rentuloSupabase;
+      }
 
+      return null;
+    }
 
+    async function getCurrentSupabaseUser() {
+      const supabaseClient = getSupabaseClient();
 
-    
+      if (!supabaseClient) {
+        return null;
+      }
 
+      const { data, error } = await supabaseClient.auth.getUser();
 
+      if (error || !data || !data.user) {
+        return null;
+      }
+
+      return data.user;
+    }
+
+    function normalizeAccountEmail(email) {
+      return String(email || "").trim().toLowerCase();
+    }
+
+    function normalizeStatus(status) {
+  return normalizeReservationStatus(status);
+}
+
+    function isOpenStatus(status) {
+  return isOpenReservationStatus(
+    normalizeStatus(status)
+  );
+}
 
     function isOwnerActionStatus(status) {
-  const normalizedStatus = normalizeReservationStatus(status);
+  const normalizedStatus = normalizeStatus(status);
 
   return [
     RESERVATION_STATUS_PENDING,
@@ -23,7 +55,7 @@
 }
 
     function isWaitingForPaymentStatus(status) {
-      return normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED;
+      return normalizeStatus(status) === RESERVATION_STATUS_APPROVED;
     }
 
     function getCurrentUserSafe() {
@@ -198,8 +230,8 @@ if (profileRating) {
 
         ownerName: row.owner_name || "Majitel",
 
-        status: normalizeReservationStatus(row.status || STATUS_PENDING),
-        statusText: getReservationStatusText(row.status || STATUS_PENDING),
+        status: normalizeStatus(row.status || STATUS_PENDING),
+        statusText: getStatusText(row.status || STATUS_PENDING),
 
         contactVisibleAfterPayment: Boolean(row.contact_visible_after_payment),
 
@@ -210,7 +242,9 @@ if (profileRating) {
       };
     }
 
-
+    function getStatusText(status) {
+  return getReservationStatusText(status);
+}
 
     function mergeById(localItems, supabaseItems) {
       const merged = [];
@@ -318,11 +352,11 @@ if (profileRating) {
       const myOffers = supabaseOffers;
       const myReservations = supabaseRenterReservations;
       const incomingOpenRequests = supabaseOwnerReservations.filter(function (reservation) {
-        return isOpenReservationStatus(reservation.status);
+        return isOpenStatus(reservation.status);
       });
 
       const activeReservations = myReservations.filter(function (reservation) {
-        return isOpenReservationStatus(reservation.status);
+        return isOpenStatus(reservation.status);
       });
 
       const waitingPaymentCount = myReservations.filter(function (reservation) {
@@ -330,15 +364,15 @@ if (profileRating) {
       }).length;
 
       const pendingRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
-        return normalizeReservationStatus(reservation.status) === RESERVATION_STATUS_PENDING;
+        return normalizeStatus(reservation.status) === RESERVATION_STATUS_PENDING;
       }).length;
 
       const paidRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
-        return normalizeReservationStatus(reservation.status) === RESERVATION_STATUS_PAID;
+        return normalizeStatus(reservation.status) === RESERVATION_STATUS_PAID;
       }).length;
 
       const pickedUpRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
-        return normalizeReservationStatus(reservation.status) === RESERVATION_STATUS_PICKED_UP;
+        return normalizeStatus(reservation.status) === RESERVATION_STATUS_PICKED_UP;
       }).length;
 
       const ownerActionRequiredCount =
