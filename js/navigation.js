@@ -317,6 +317,25 @@ function navInjectStyles() {
     .logout-link:hover {
       background: #00563a;
     }
+     @media (max-width: 600px) {
+  .nav {
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .nav a,
+  .nav button {
+    font-size: 14px;
+  }
+
+  .nav-account-link {
+    gap: 5px;
+  }
+
+  .logout-link {
+    padding: 10px 16px;
+  }
+} 
   `;
 
   document.head.appendChild(style);
