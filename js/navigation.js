@@ -440,3 +440,10 @@ function renderSharedNavigation(activePage) {
     });
   }
 }
+document.addEventListener("DOMContentLoaded", function () {
+  const page = document.body.dataset.navigationPage;
+
+  if (page) {
+    renderSharedNavigation(page);
+  }
+});
