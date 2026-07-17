@@ -7,21 +7,76 @@
     let ownerReservations = [];
     let ownerReviews = [];
 
+    function getSupabaseClient() {
+      if (window.rentuloSupabase) {
+        return window.rentuloSupabase;
+      }
 
+      if (typeof rentuloSupabase !== "undefined") {
+        return rentuloSupabase;
+      }
 
-    
+      return null;
+    }
 
+    async function getCurrentSupabaseUser() {
+      const supabaseClient = getSupabaseClient();
 
+      if (!supabaseClient) {
+        return null;
+      }
 
+      const { data, error } = await supabaseClient.auth.getUser();
 
+      if (error || !data || !data.user) {
+        return null;
+      }
 
+      return data.user;
+    }
 
+    function escapeHtml(value) {
+      return String(value === undefined || value === null ? "" : value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-    
+    function formatDate(dateString) {
+      if (!dateString) {
+        return "-";
+      }
 
-    
+      const date = new Date(dateString);
 
+      if (isNaN(date.getTime())) {
+        return dateString;
+      }
 
+      return date.toLocaleDateString("cs-CZ");
+    }
+
+    function getStatusText(status) {
+  return getReservationStatusText(status);
+}
+
+    function isOpenStatus(status) {
+  return isOpenReservationStatus(
+    normalizeReservationStatus(status)
+  );
+}
+
+    function isClosedStatus(status) {
+  return isClosedReservationStatus(
+    normalizeReservationStatus(status)
+  );
+}
+
+    function canShowContact(status) {
+  return getReservationContactVisible(status);
+}
 
     function showAccountMessage(title, text) {
       const messageBox = document.getElementById("accountMessage");
@@ -150,7 +205,16 @@
       };
     }
 
+    function getStars(rating) {
+      const count = Math.max(0, Math.min(5, Number(rating) || 0));
+      let stars = "";
 
+      for (let i = 1; i <= 5; i++) {
+        stars += i <= count ? "★" : "☆";
+      }
+
+      return stars;
+    }
 
     function findOwnerReviewForRenter(reservation) {
       if (!reservation) {
@@ -184,9 +248,7 @@
 
       const offersResult = await supabaseClient
         .from("offers")
-        .select(
-  "id, owner_id, name, category, description, city, pickup_city, postal_code, price_per_day, deposit, status, photo_url, created_at, updated_at"
-)
+        .select("*")
         .eq("owner_id", supabaseUser.id)
         .order("created_at", {
           ascending: false
@@ -200,9 +262,7 @@
 
       const reservationsResult = await supabaseClient
         .from("reservations")
-        .select(
-  "id, offer_id, owner_id, renter_id, offer_name, category, city, price_per_day, deposit, start_date, date_from, end_date, date_to, total_days, days, total_price, platform_fee_percent, platform_fee_amount, owner_payout, renter_name, renter_email, renter_phone, owner_name, status, contact_visible_after_payment, created_at, updated_at"
-)
+        .select("*")
         .eq("owner_id", supabaseUser.id)
         .order("created_at", {
           ascending: false
@@ -216,9 +276,7 @@
 
       const reviewsResult = await supabaseClient
         .from("reviews")
-        .select(
-  "id, reservation_id, reviewer_id, reviewed_user_id, offer_id, rating, text, created_at"
-)
+        .select("*")
         .or("reviewer_id.eq." + supabaseUser.id + ",reviewed_user_id.eq." + supabaseUser.id)
         .order("created_at", {
           ascending: false
@@ -235,13 +293,7 @@
       ownerReservations = Array.isArray(reservationsResult.data)
         ? reservationsResult.data.map(normalizeReservation)
         : [];
-console.table(ownerReservations.map(function (reservation) {
-  return {
-    id: reservation.id,
-    offerId: reservation.offerId,
-    status: reservation.status
-  };
-}));
+
       ownerReviews = reviewsResult && Array.isArray(reviewsResult.data)
         ? reviewsResult.data.map(normalizeReview)
         : [];
@@ -404,10 +456,7 @@ console.table(ownerReservations.map(function (reservation) {
 
     async function deleteOffer(offerId) {
       const blockingReservations = ownerReservations.filter(function (reservation) {
-        return String(reservation.offerId) === String(offerId) &&
-  isOpenReservationStatus(
-    normalizeReservationStatus(reservation.status)
-  );
+        return String(reservation.offerId) === String(offerId) && isOpenStatus(reservation.status);
       });
 
       if (blockingReservations.length > 0) {
@@ -587,7 +636,7 @@ console.table(ownerReservations.map(function (reservation) {
     }
 
     function renderReservationContactBlock(reservation) {
-      if (!getReservationContactVisible(status)) {
+      if (!canShowContact(reservation.status)) {
         return `
           <div class="request-contact-box locked">
             <strong>Kontakt zatím skrytý</strong>
@@ -813,10 +862,10 @@ console.table(ownerReservations.map(function (reservation) {
 
     function renderRequest(reservation) {
       const status = reservation.status;
-      const statusText = getReservationStatusText(status);
+      const statusText = getStatusText(status);
 
       const renterName = reservation.renterName || "Zájemce";
-      const renterEmail = getReservationContactVisible(status)
+      const renterEmail = canShowContact(status)
         ? reservation.renterEmail || "E-mail není uložen"
         : "Kontakt se zobrazí po zaplacení";
 
@@ -862,10 +911,10 @@ console.table(ownerReservations.map(function (reservation) {
 
     function renderHistoryRequestRow(reservation) {
       const status = reservation.status;
-      const statusText = getReservationStatusText(status);
+      const statusText = getStatusText(status);
 
       const renterName = reservation.renterName || "Zájemce";
-      const renterEmail = getReservationContactVisible(status)
+      const renterEmail = canShowContact(status)
         ? reservation.renterEmail || "E-mail není uložen"
         : "Kontakt se zobrazí po zaplacení";
 
@@ -1008,9 +1057,47 @@ console.table(ownerReservations.map(function (reservation) {
       `;
     }
 
+    function toggleOfferOverviewFromMenu(offerId, menuElement) {
+      const detail = document.getElementById("offer-detail-" + offerId);
+
+      if (!detail) {
+        return;
+      }
+
+      detail.classList.toggle("open");
+
+      if (menuElement && typeof menuElement.removeAttribute === "function") {
+        menuElement.removeAttribute("open");
+      }
+    }
+
+    function openOfferRequests(offerId) {
+      const offerDetail = document.getElementById("offer-detail-" + offerId);
+      const openPanel = document.getElementById("open-panel-" + offerId);
+      const openButton = document.getElementById("open-toggle-" + offerId);
+
+      if (offerDetail) {
+        offerDetail.classList.add("open");
+      }
+
+      if (openPanel) {
+        openPanel.classList.add("open");
+      }
+
+      if (openButton) {
+        openButton.textContent = "Skrýt žádosti";
+        openButton.classList.remove("important");
+      }
+
+      setTimeout(function () {
+        if (openPanel) {
+          openPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      }, 0);
+    }
+
     function renderOffer(offer, requests) {
-const offerId = String(offer.id);
-console.log("OFFER DEBUG", offer.name, offerId);
+      const offerId = String(offer.id);
       const offerName = getOfferName(offer);
       const offerCity = getOfferCity(offer);
       const offerCategory = getOfferCategory(offer);
@@ -1018,15 +1105,15 @@ console.log("OFFER DEBUG", offer.name, offerId);
       const isDraft = isOfferDraft(offer);
 
       const openRequests = requests.filter(function (reservation) {
-        return isOpenReservationStatus(
-  normalizeReservationStatus(reservation.status)
-);
+        return isOpenStatus(reservation.status);
       });
 
       const closedRequests = requests.filter(function (reservation) {
-        isClosedReservationStatus(
-  normalizeReservationStatus(reservation.status)
-)
+        return isClosedStatus(reservation.status);
+      });
+
+      const ownerActionRequests = openRequests.filter(function (reservation) {
+        return isOwnerActionStatus(reservation.status);
       });
 
       const openPanelId = "open-panel-" + offerId;
@@ -1034,7 +1121,7 @@ console.log("OFFER DEBUG", offer.name, offerId);
       const offerDetailId = "offer-detail-" + offerId;
 
       const openRequestsButtonText = openRequests.length
-        ? "Vyřídit žádosti (" + openRequests.length + ")"
+        ? "Zobrazit žádosti (" + openRequests.length + ")"
         : "Otevřené žádosti (0)";
 
       const openContent = openRequests.length
@@ -1045,60 +1132,29 @@ console.log("OFFER DEBUG", offer.name, offerId);
         ? closedRequests.map(renderHistoryRequestRow).join("")
         : `<p class="request-empty-note">Tady budou dokončené, odmítnuté nebo zrušené žádosti k této nabídce.</p>`;
 
-function isOwnerActionStatus(status) {
-  const normalizedStatus = normalizeReservationStatus(status);
+      let requestStateHtml = `<span class="offer-request-state quiet">Bez otevřených žádostí</span>`;
 
-  return [
-    RESERVATION_STATUS_APPROVED,
-    RESERVATION_STATUS_PAID,
-    RESERVATION_STATUS_PICKED_UP
-  ].includes(normalizedStatus);
-}
-        const ownerActionRequests = openRequests.filter(function (reservation) {
-  return isOwnerActionStatus(reservation.status);
-});
-
-      const openButtonClass = ownerActionRequests.length ? "request-toggle-button important" : "request-toggle-button";
-      const countClass = ownerActionRequests.length ? "count-pill important" : "count-pill success";
-
-      const requestsColumnHtml = isDraft
-        ? `
-          <div class="request-counts hide-tablet">
-            <span class="count-pill">Nezveřejněno</span>
-          </div>
-        `
-        : `
-          <div class="request-counts hide-tablet">
-            <span class="${countClass}">Otevřené: ${escapeHtml(openRequests.length)}</span>
-            <span class="count-pill">Historie: ${escapeHtml(closedRequests.length)}</span>
-          </div>
+      if (isDraft) {
+        requestStateHtml = `<span class="offer-request-state draft">Koncept není zveřejněný</span>`;
+      } else if (ownerActionRequests.length) {
+        requestStateHtml = `
+          <span class="offer-request-state urgent">
+            ${escapeHtml(ownerActionRequests.length)} ${ownerActionRequests.length === 1 ? "žádost čeká" : "žádosti čekají"} na vyřízení
+          </span>
         `;
-
-      const feeColumnHtml = isDraft
-        ? `
-          <div class="table-value muted hide-tablet">
-            Až po zveřejnění
-          </div>
-        `
-        : `
-          <div class="table-value muted hide-tablet">
-            ${PLATFORM_FEE_PERCENT} % provize
-          </div>
+      } else if (openRequests.length) {
+        requestStateHtml = `
+          <span class="offer-request-state active">
+            ${escapeHtml(openRequests.length)} ${openRequests.length === 1 ? "otevřená žádost" : "otevřené žádosti"}
+          </span>
         `;
+      }
 
-      const actionsHtml = isDraft
-        ? `
-          <button class="small-button orange" type="button" onclick="publishOffer('${escapeHtml(offerId)}')">Zveřejnit</button>
-          <a class="small-button light" href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">Upravit</a>
-          <button class="small-button light" type="button" onclick="deleteOffer('${escapeHtml(offerId)}')">Smazat</button>
-        `
-        : `
-          <button class="history-toggle-button" type="button" id="offer-manage-toggle-${escapeHtml(offerId)}" onclick="toggleOfferDetail('${escapeHtml(offerDetailId)}', this)">
-            Spravovat
-          </button>
-          <a class="small-button light" href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">Upravit</a>
-          <button class="small-button light" type="button" onclick="deleteOffer('${escapeHtml(offerId)}')">Smazat</button>
-        `;
+      const primaryActionHtml = isDraft
+        ? `<button class="offer-primary-button orange" type="button" onclick="publishOffer('${escapeHtml(offerId)}')">Zveřejnit nabídku</button>`
+        : openRequests.length
+          ? `<button class="offer-primary-button ${ownerActionRequests.length ? "urgent" : ""}" type="button" onclick="openOfferRequests('${escapeHtml(offerId)}')">${ownerActionRequests.length ? "Vyřídit žádosti" : "Zobrazit žádosti"}</button>`
+          : `<button class="offer-primary-button secondary" type="button" onclick="toggleOfferDetail('${escapeHtml(offerDetailId)}', this)">Přehled nabídky</button>`;
 
       const detailHtml = isDraft
         ? ""
@@ -1109,35 +1165,30 @@ function isOwnerActionStatus(status) {
                 <span>Místo</span>
                 <strong>${escapeHtml(offerCity)}</strong>
               </div>
-
               <div class="mini-stat">
                 <span>Kategorie</span>
                 <strong>${escapeHtml(offerCategory)}</strong>
               </div>
-
               <div class="mini-stat">
                 <span>Otevřené žádosti</span>
                 <strong>${escapeHtml(openRequests.length)}</strong>
               </div>
-
               <div class="mini-stat">
                 <span>Historie</span>
                 <strong>${escapeHtml(closedRequests.length)}</strong>
               </div>
             </div>
 
-            <div class="offer-actions">
+            <div class="offer-detail-actions">
               <button
-                class="${openButtonClass}"
+                class="request-toggle-button ${ownerActionRequests.length ? "important" : ""}"
                 type="button"
                 id="open-toggle-${escapeHtml(offerId)}"
                 onclick="toggleRequestPanel('${escapeHtml(openPanelId)}', this)"
                 data-closed-text="${escapeHtml(openRequestsButtonText)}"
                 data-open-text="Skrýt žádosti"
                 data-important="${ownerActionRequests.length ? "true" : "false"}"
-              >
-                ${escapeHtml(openRequestsButtonText)}
-              </button>
+              >${escapeHtml(openRequestsButtonText)}</button>
 
               <button
                 class="request-toggle-button"
@@ -1147,11 +1198,7 @@ function isOwnerActionStatus(status) {
                 data-closed-text="Historie (${escapeHtml(closedRequests.length)})"
                 data-open-text="Skrýt historii"
                 data-important="false"
-              >
-                Historie (${escapeHtml(closedRequests.length)})
-              </button>
-
-              <a class="small-button light" href="detail.html?id=${encodeURIComponent(offerId)}">Veřejný detail</a>
+              >Historie (${escapeHtml(closedRequests.length)})</button>
             </div>
 
             ${renderRequestPanel(openPanelId, "Otevřené žádosti", openRequests.length, openContent)}
@@ -1160,34 +1207,39 @@ function isOwnerActionStatus(status) {
         `;
 
       return `
-        <div class="offer-row-wrapper">
-          <div class="offer-row">
+        <article class="offer-card ${ownerActionRequests.length ? "has-urgent-request" : ""}">
+          <div class="offer-card-main">
             <div class="offer-tool">
               ${renderToolImage(offer)}
-
-              <div>
-                <span class="offer-title">${escapeHtml(offerName)}</span>
-                <span class="offer-subtitle">${escapeHtml(offerCity)} · ${escapeHtml(offerCategory)}</span>
+              <div class="offer-card-copy">
+                <div class="offer-title-line">
+                  <h2 class="offer-card-title">${escapeHtml(offerName)}</h2>
+                  <span class="status-pill ${getOfferStatusClass(offer)}">${escapeHtml(getOfferStatus(offer))}</span>
+                </div>
+                <p class="offer-card-meta">${escapeHtml(offerCity)} · ${escapeHtml(offerCategory)}</p>
+                <div class="offer-card-summary">
+                  <strong>${escapeHtml(offerPrice)} Kč / den</strong>
+                  ${requestStateHtml}
+                </div>
               </div>
             </div>
 
-            <div class="table-value">
-              ${escapeHtml(offerPrice)} Kč / den
-            </div>
+            <div class="offer-card-controls">
+              ${primaryActionHtml}
 
-            <span class="status-pill ${getOfferStatusClass(offer)}">${escapeHtml(getOfferStatus(offer))}</span>
-
-            ${requestsColumnHtml}
-
-            ${feeColumnHtml}
-
-            <div class="offer-actions">
-              ${actionsHtml}
+              <details class="offer-more-menu">
+                <summary aria-label="Další akce nabídky">•••</summary>
+                <div class="offer-more-menu-panel">
+                  <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">Upravit nabídku</a>
+                  ${isDraft ? "" : `<a href="detail.html?id=${encodeURIComponent(offerId)}">Veřejný detail</a>`}
+                  ${isDraft ? "" : `<button type="button" onclick="toggleOfferOverviewFromMenu('${escapeHtml(offerId)}', this.closest('details'))">Přehled a historie</button>`}
+                  <button class="danger" type="button" onclick="deleteOffer('${escapeHtml(offerId)}')">Smazat nabídku</button>
+                </div>
+              </details>
             </div>
           </div>
-
           ${detailHtml}
-        </div>
+        </article>
       `;
     }
 
@@ -1208,16 +1260,7 @@ function isOwnerActionStatus(status) {
       }).join("");
 
       document.getElementById("offersList").innerHTML = `
-        <section class="offers-table-card">
-          <div class="offer-table-head">
-            <div>Nabídka</div>
-            <div>Cena</div>
-            <div>Stav</div>
-            <div class="hide-tablet">Žádosti</div>
-            <div class="hide-tablet">Provize</div>
-            <div>Akce</div>
-          </div>
-
+        <section class="offers-card-list">
           ${offersRowsHtml}
         </section>
       `;
@@ -1243,9 +1286,7 @@ return [
       });
 
       const firstOpenReservation = firstActionReservation || ownerReservations.find(function (reservation) {
-        return isOpenReservationStatus(
-  normalizeReservationStatus(reservation.status)
-);
+        return isOpenStatus(reservation.status);
       });
 
       if (!firstOpenReservation) {
