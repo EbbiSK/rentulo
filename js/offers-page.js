@@ -1009,7 +1009,8 @@ console.table(ownerReservations.map(function (reservation) {
     }
 
     function renderOffer(offer, requests) {
-      const offerId = String(offer.id);
+const offerId = String(offer.id);
+console.log("OFFER DEBUG", offer.name, offerId);
       const offerName = getOfferName(offer);
       const offerCity = getOfferCity(offer);
       const offerCategory = getOfferCategory(offer);
