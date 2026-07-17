@@ -232,7 +232,7 @@ function protectEditOfferPage() {
     return;
   }
 
-  if (isLoggedIn()) {
+  if (navIsLoggedIn()) {
     return;
   }
 
@@ -486,7 +486,7 @@ function setEditSavingState(isSaving) {
 }
 
 async function initializeEditOfferPage() {
-  if (!isLoggedIn()) {
+  if (!navIsLoggedIn()) {
     return;
   }
 
