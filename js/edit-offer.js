@@ -684,3 +684,6 @@ function setupEditOfferSave() {
     }
   });
 }
+document.addEventListener("DOMContentLoaded", function () {
+  renderSharedNavigation("muj-ucet");
+});
