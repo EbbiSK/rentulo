@@ -235,7 +235,13 @@
       ownerReservations = Array.isArray(reservationsResult.data)
         ? reservationsResult.data.map(normalizeReservation)
         : [];
-
+console.table(ownerReservations.map(function (reservation) {
+  return {
+    id: reservation.id,
+    offerId: reservation.offerId,
+    status: reservation.status
+  };
+}));
       ownerReviews = reviewsResult && Array.isArray(reviewsResult.data)
         ? reviewsResult.data.map(normalizeReview)
         : [];
