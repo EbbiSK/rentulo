@@ -1113,7 +1113,7 @@
       });
 
       const ownerActionRequests = openRequests.filter(function (reservation) {
-        return isOwnerActionStatus(reservation.status);
+        return isOpenStatus(reservation.status);
       });
 
       const openPanelId = "open-panel-" + offerId;
