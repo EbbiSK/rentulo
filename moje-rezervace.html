@@ -703,7 +703,227 @@
         width: 100%;
       }
     }
-  </style>
+  
+
+    /* Card redesign for reservation overview */
+    .reservation-card-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .reservation-card {
+      background: #ffffff;
+      border: 1px solid #e7ddd0;
+      border-radius: 18px;
+      overflow: visible;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.035);
+    }
+
+    .reservation-card.priority {
+      border-color: #ff9b58;
+      box-shadow: 0 10px 28px rgba(255, 98, 0, 0.09);
+    }
+
+    .reservation-card-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px;
+    }
+
+    .reservation-card-tool {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .reservation-card-tool .tool-thumb {
+      width: 64px;
+      height: 64px;
+      flex: 0 0 64px;
+      border-radius: 14px;
+    }
+
+    .reservation-title-line {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .reservation-title-line h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .reservation-card-tool p {
+      margin: 6px 0 0;
+      color: #64706b;
+      font-size: 14px;
+    }
+
+    .reservation-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .reservation-primary-action {
+      min-height: 44px;
+      padding: 10px 17px;
+      border: 0;
+      border-radius: 12px;
+      background: #eee9e1;
+      color: #073f2e;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .reservation-primary-action.orange {
+      background: #ff6200;
+      color: #ffffff;
+    }
+
+    .reservation-more-menu {
+      position: relative;
+    }
+
+    .reservation-more-menu summary {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 44px;
+      border-radius: 12px;
+      background: #eee9e1;
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .reservation-more-menu summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .reservation-more-menu-panel {
+      position: absolute;
+      z-index: 20;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 190px;
+      padding: 8px;
+      background: #ffffff;
+      border: 1px solid #e7ddd0;
+      border-radius: 14px;
+      box-shadow: 0 16px 35px rgba(0, 0, 0, 0.12);
+    }
+
+    .reservation-more-menu-panel a,
+    .reservation-more-menu-panel button {
+      display: block;
+      width: 100%;
+      padding: 10px 11px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #073f2e;
+      text-align: left;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .reservation-more-menu-panel a:hover,
+    .reservation-more-menu-panel button:hover {
+      background: #f6f3ee;
+    }
+
+    .reservation-card-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 0 18px 18px;
+    }
+
+    .reservation-card-meta > div {
+      padding: 12px;
+      border: 1px solid #eee4d8;
+      border-radius: 12px;
+      background: #fcfaf7;
+    }
+
+    .reservation-card-meta span,
+    .reservation-card-meta strong {
+      display: block;
+    }
+
+    .reservation-card-meta span {
+      margin-bottom: 4px;
+      color: #66716d;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .history-card .reservation-card-main {
+      padding: 14px 16px;
+    }
+
+    .history-card .reservation-card-meta {
+      padding: 0 16px 14px;
+    }
+
+    .history-card .reservation-card-tool .tool-thumb {
+      width: 50px;
+      height: 50px;
+      flex-basis: 50px;
+    }
+
+    .detail-row {
+      display: none;
+      border-top: 1px solid #eee4d8;
+      background: #fbfaf7;
+    }
+
+    .detail-row.open {
+      display: block;
+    }
+
+    .detail-row .reservation-detail-panel {
+      padding: 16px 18px 18px;
+    }
+
+    @media (max-width: 760px) {
+      .reservation-card-main {
+        align-items: flex-start;
+      }
+
+      .reservation-card-actions {
+        margin-left: auto;
+      }
+
+      .reservation-card-meta {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .reservation-card-main {
+        flex-direction: column;
+      }
+
+      .reservation-card-actions {
+        width: 100%;
+        margin-left: 0;
+      }
+
+      .reservation-primary-action {
+        flex: 1;
+      }
+    }
+</style>
 </head>
 
 <body>

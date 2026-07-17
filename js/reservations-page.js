@@ -2,13 +2,53 @@
     let supabaseReservations = [];
     let supabaseReviews = [];
 
+    function getSupabaseClient() {
+      if (window.rentuloSupabase) {
+        return window.rentuloSupabase;
+      }
 
+      if (typeof rentuloSupabase !== "undefined") {
+        return rentuloSupabase;
+      }
 
+      return null;
+    }
 
+    async function getCurrentSupabaseUser() {
+      const supabaseClient = getSupabaseClient();
 
+      if (!supabaseClient) {
+        return null;
+      }
 
+      const { data, error } = await supabaseClient.auth.getUser();
 
+      if (error || !data || !data.user) {
+        return null;
+      }
 
+      return data.user;
+    }
+
+    function escapeHtml(text) {
+      return String(text === undefined || text === null ? "" : text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function getStars(rating) {
+      const count = Number(rating) || 0;
+      let stars = "";
+
+      for (let i = 1; i <= 5; i++) {
+        stars += i <= count ? "★" : "☆";
+      }
+
+      return stars;
+    }
 
     function findRenterReviewForReservation(reservation) {
       if (!reservation) {
@@ -56,7 +96,19 @@
       `;
     }
 
+    function formatDate(dateString) {
+      if (!dateString) {
+        return "-";
+      }
 
+      const date = new Date(dateString);
+
+      if (isNaN(date.getTime())) {
+        return dateString;
+      }
+
+      return date.toLocaleDateString("cs-CZ");
+    }
 
     function formatDateTime(dateString) {
       if (!dateString) {
@@ -196,9 +248,7 @@
 
       const { data, error } = await supabaseClient
         .from("reservations")
-        .select(
-  "id, offer_id, owner_id, renter_id, offer_name, category, city, price_per_day, deposit, start_date, date_from, end_date, date_to, total_days, days, total_price, platform_fee_percent, platform_fee_amount, owner_payout, renter_name, renter_email, renter_phone, owner_name, owner_phone, pickup_phone, pickup_street, pickup_city, pickup_postal_code, pickup_full_address, pickup_note, status, contact_visible_after_payment, paid_at, payment_provider_status, created_at, updated_at"
-)
+        .select("*")
         .eq("renter_id", supabaseUser.id)
         .order("created_at", {
           ascending: false
@@ -230,9 +280,7 @@
 
       const { data, error } = await supabaseClient
         .from("reviews")
-        .select(
-  "id, reservation_id, reviewer_id, reviewed_user_id, offer_id, rating, text, created_at"
-)
+        .select("*")
         .or("reviewer_id.eq." + supabaseUser.id + ",reviewed_user_id.eq." + supabaseUser.id)
         .order("created_at", {
           ascending: false
@@ -894,8 +942,9 @@ return (
       return "";
     }
 
-    function renderReservationRow(reservation, isHistorySection) {
+    function renderReservationCard(reservation, isHistorySection) {
       const status = getSafeReservationStatus(reservation);
+      const normalizedStatus = normalizeReservationStatus(status);
       const statusText = getSafeReservationStatusText(status);
 
       const toolName = getSafeReservationToolName(reservation);
@@ -909,96 +958,110 @@ return (
       const offerId = getSafeReservationOfferId(reservation);
       const pickupAddress = getPickupAddress(reservation);
 
-      let actionButtons = `
-        <button class="small-button light" id="detail-toggle-${escapeHtml(reservationId)}" type="button" onclick="toggleReservationDetail('${escapeHtml(reservationId)}', this)">
-          Detail
-        </button>
-      `;
+      const isPaymentRequired = normalizedStatus === RESERVATION_STATUS_APPROVED;
+      const isPriority = !isHistorySection && (
+        isPaymentRequired ||
+        normalizedStatus === RESERVATION_STATUS_PAID ||
+        normalizedStatus === RESERVATION_STATUS_PICKED_UP
+      );
 
-      if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
-        actionButtons += `
-          <button class="small-button orange" type="button" onclick="payReservation('${escapeHtml(reservationId)}')">
+      const primaryAction = isPaymentRequired
+        ? `
+          <button class="reservation-primary-action orange" type="button" onclick="payReservation('${escapeHtml(reservationId)}')">
             Zaplatit
+          </button>
+        `
+        : `
+          <button class="reservation-primary-action" id="detail-toggle-${escapeHtml(reservationId)}" type="button" onclick="toggleReservationDetail('${escapeHtml(reservationId)}', this)">
+            Detail
+          </button>
+        `;
+
+      let menuItems = "";
+
+      if (isPaymentRequired) {
+        menuItems += `
+          <button type="button" onclick="toggleReservationDetail('${escapeHtml(reservationId)}', document.getElementById('detail-toggle-${escapeHtml(reservationId)}'))">
+            Detail rezervace
           </button>
         `;
       }
 
       if (isMapUsefulForStatus(status) && pickupAddress) {
-        actionButtons += `
-          <a class="small-button light" href="${escapeHtml(getMapUrl(pickupAddress))}" target="_blank">
-            Mapa
+        menuItems += `
+          <a href="${escapeHtml(getMapUrl(pickupAddress))}" target="_blank" rel="noopener noreferrer">
+            Mapa vyzvednutí
           </a>
         `;
       }
 
       if (offerId && !isHistorySection) {
-        actionButtons += `
-          <a class="small-button" href="detail.html?id=${encodeURIComponent(offerId)}">
-            Nářadí
+        menuItems += `
+          <a href="detail.html?id=${encodeURIComponent(offerId)}">
+            Detail nářadí
           </a>
         `;
       }
 
+      const secondaryMenu = menuItems
+        ? `
+          <details class="reservation-more-menu">
+            <summary aria-label="Další akce">•••</summary>
+            <div class="reservation-more-menu-panel">
+              ${menuItems}
+            </div>
+          </details>
+        `
+        : "";
+
       return `
-        <tr class="reservation-row" id="reservation-row-${escapeHtml(reservationId)}">
-          <td data-label="Nářadí">
-            <div class="tool-cell">
+        <article class="reservation-card ${isHistorySection ? "history-card" : "active-card"} ${isPriority ? "priority" : ""}" id="reservation-row-${escapeHtml(reservationId)}">
+          <div class="reservation-card-main">
+            <div class="reservation-card-tool">
               ${renderToolThumb(reservation)}
               <div>
-                <span class="tool-name">${escapeHtml(toolName)}</span>
-                <span class="tool-meta">${escapeHtml(city)}</span>
+                <div class="reservation-title-line">
+                  <h3>${escapeHtml(toolName)}</h3>
+                  <span class="status-pill ${getStatusClass(status)}">${escapeHtml(statusText)}</span>
+                </div>
+                <p>${escapeHtml(city)} · Majitel: ${escapeHtml(ownerName)}</p>
               </div>
             </div>
-          </td>
 
-          <td class="owner-cell" data-label="Majitel">${escapeHtml(ownerName)}</td>
-
-          <td class="date-cell" data-label="Termín">
-            ${escapeHtml(formatDate(startDate))} – ${escapeHtml(formatDate(endDate))}
-          </td>
-
-          <td data-label="Stav">
-            <span class="status-pill ${getStatusClass(status)}">${escapeHtml(statusText)}</span>
-          </td>
-
-          <td class="price-cell" data-label="Cena">${escapeHtml(totalPrice)} Kč</td>
-
-          <td data-label="Akce">
-            <div class="table-actions">
-              ${actionButtons}
+            <div class="reservation-card-actions">
+              ${primaryAction}
+              ${secondaryMenu}
             </div>
-          </td>
-        </tr>
+          </div>
 
-        <tr class="detail-row" id="reservation-detail-${escapeHtml(reservationId)}">
-          <td colspan="6">
+          <div class="reservation-card-meta">
+            <div>
+              <span>Termín</span>
+              <strong>${escapeHtml(formatDate(startDate))} – ${escapeHtml(formatDate(endDate))}</strong>
+            </div>
+            <div>
+              <span>Cena</span>
+              <strong>${escapeHtml(totalPrice)} Kč</strong>
+            </div>
+            <div>
+              <span>Stav</span>
+              <strong>${escapeHtml(statusText)}</strong>
+            </div>
+          </div>
+
+          <div class="detail-row" id="reservation-detail-${escapeHtml(reservationId)}">
             ${renderReservationDetailPanel(reservation)}
-          </td>
-        </tr>
+          </div>
+        </article>
       `;
     }
 
-    function renderReservationTable(reservations, isHistorySection) {
+    function renderReservationList(reservations, isHistorySection) {
       return `
-        <div class="reservation-table-card">
-          <table class="reservation-table">
-            <thead>
-              <tr>
-                <th>Nářadí</th>
-                <th>Majitel</th>
-                <th>Termín</th>
-                <th>Stav</th>
-                <th>Cena</th>
-                <th>Akce</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              ${reservations.map(function (reservation) {
-                return renderReservationRow(reservation, isHistorySection);
-              }).join("")}
-            </tbody>
-          </table>
+        <div class="reservation-card-list ${isHistorySection ? "history-list" : "active-list"}">
+          ${reservations.map(function (reservation) {
+            return renderReservationCard(reservation, isHistorySection);
+          }).join("")}
         </div>
       `;
     }
@@ -1009,7 +1072,7 @@ return (
         : reservations.length + " rezervací";
 
       const content = reservations.length
-        ? renderReservationTable(reservations, isHistorySection)
+        ? renderReservationList(reservations, isHistorySection)
         : `<p class="section-empty-note">${escapeHtml(emptyText)}</p>`;
 
       return `
