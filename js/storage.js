@@ -123,20 +123,4 @@ function getUserPhone(user) {
 
 
 
-function addSimulatedPhoneNotification(notificationData) {
-  console.warn(
-    "addSimulatedPhoneNotification už nepoužíva localStorage. Notifikácie sa majú ukladať do Supabase.",
-    notificationData || {}
-  );
 
-  return {
-    id: "notification-disabled-" + Date.now(),
-    type: notificationData && notificationData.type ? notificationData.type : "notification",
-    recipientName: notificationData && notificationData.recipientName ? notificationData.recipientName : "Uživatel",
-    recipientEmail: notificationData && notificationData.recipientEmail ? notificationData.recipientEmail : "",
-    recipientPhone: notificationData && notificationData.recipientPhone ? notificationData.recipientPhone : "",
-    message: notificationData && notificationData.message ? notificationData.message : "",
-    status: "disabled-local-storage",
-    createdAt: new Date().toISOString()
-  };
-}
