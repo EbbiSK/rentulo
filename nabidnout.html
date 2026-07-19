@@ -393,7 +393,16 @@
       font-size: 13px;
       font-weight: 900;
     }
-
+.form-note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f8f5f0;
+  color: #40514a;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 700;
+}
     .form-group input,
     .form-group select,
     .form-group textarea {
@@ -725,11 +734,12 @@
               <label for="toolPrice">Cena za den</label>
               <input id="toolPrice" type="text" placeholder="např. 250 Kč" />
             </div>
-
-            <div class="form-group">
-              <label for="toolDeposit">Vratná kauce</label>
-              <input id="toolDeposit" type="text" placeholder="např. 1000 Kč" />
-            </div>
+<div class="form-group full">
+  <p class="form-note">
+    Případná vratná kauce je dobrovolná a záleží na dohodě mezi pronajímatelem a nájemcem.
+  </p>
+</div>
+            
           </div>
 
           <div class="form-group full">

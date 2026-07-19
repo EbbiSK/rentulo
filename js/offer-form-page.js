@@ -496,7 +496,7 @@ return {
         "toolCity",
         "toolPostalCode",
         "toolPrice",
-        "toolDeposit",
+
         "toolDescription"
       ];
 
@@ -510,17 +510,14 @@ return {
       });
 
       const parsedPrice = parseMoneyValue(getInputValue("toolPrice"));
-      const parsedDeposit = parseMoneyValue(getInputValue("toolDeposit"));
+     const parsedDeposit = 0;
 
       if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
         markOfferFormError("toolPrice");
         hasError = true;
       }
 
-      if (Number.isNaN(parsedDeposit) || parsedDeposit < 0) {
-        markOfferFormError("toolDeposit");
-        hasError = true;
-      }
+      
 
       const pickupUseCustom = document.getElementById("pickupUseCustom");
       const useCustomPickup = pickupUseCustom ? pickupUseCustom.checked : false;
@@ -619,7 +616,7 @@ return {
         city: getInputValue("toolCity"),
         postal_code: getInputValue("toolPostalCode"),
         price_per_day: parseMoneyValue(getInputValue("toolPrice")),
-        deposit: parseMoneyValue(getInputValue("toolDeposit")),
+        deposit: 0,
         status: status,
         photo_url: photoUrl || null,
 
