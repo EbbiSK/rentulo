@@ -422,75 +422,143 @@
 
     <section class="home-landing">
 
-      <div class="home-content">
+  <div class="home-content">
 
-        <h1>Půjčte si nářadí ve svém okolí.</h1>
+    <h1>Půjč si cokoli ve svém okolí.</h1>
 
-        <p class="home-text">
-          Vrtačku, brusku, žebřík nebo zahradní techniku nemusíte hned kupovat.
-          Najděte nářadí poblíž, pošlete žádost a domluvte si vyzvednutí.
-        </p>
+    <p class="home-text">
+      Najdi věci, které právě potřebuješ, přímo od lidí ve svém okolí.
+      Nebo nabídni vlastní věci a vydělávej, když je zrovna nepoužíváš.
+    </p>
 
-        <form class="search-box" id="homeSearchForm">
-          <div class="search-field">
-            <label for="home-search-what">Co hledáte?</label>
-            <input id="home-search-what" type="text" placeholder="např. vrtačka" />
-          </div>
-
-          <div class="search-field">
-            <label for="home-search-where">Kde?</label>
-            <input id="home-search-where" type="text" placeholder="město nebo PSČ" />
-          </div>
-
-          <button type="submit" class="search-button">Najít nářadí</button>
-        </form>
-
-        <div class="home-points">
-          <button type="button" class="home-point-button" data-search="vrtačka">
-            <strong>🏠</strong>
-            <span>Domácnost</span>
-          </button>
-
-          <button type="button" class="home-point-button" data-search="zahradní technika">
-            <strong>🌿</strong>
-            <span>Zahrada</span>
-          </button>
-
-          <button type="button" class="home-point-button" data-search="žebřík">
-            <strong>🏗️</strong>
-            <span>Stavba</span>
-          </button>
-        </div>
-
-        <div class="home-mini-info">
-          <div class="mini-info-box">
-            <strong>1. Vyberete nářadí</strong>
-            <span>Najdete nabídku podle názvu, města nebo okolí.</span>
-          </div>
-
-          <div class="mini-info-box">
-            <strong>2. Pošlete žádost</strong>
-            <span>Majitel žádost potvrdí a potom zaplatíte rezervaci.</span>
-          </div>
-
-          <div class="mini-info-box">
-            <strong>3. Vyzvednete</strong>
-            <span>Kontakt a adresa se zobrazí až po zaplacení.</span>
-          </div>
-        </div>
-
+    <form class="search-box" id="homeSearchForm">
+      <div class="search-field">
+        <label for="home-search-what">Co hledáš?</label>
+        <input
+          id="home-search-what"
+          type="text"
+          placeholder="např. vysavač, gril nebo reproduktor"
+        />
       </div>
 
-      <button class="home-side-card nearby-card" id="nearbyCard" type="button">
-        <span>Dostupné v okolí</span>
-        <strong>Najít nářadí podle mojí polohy</strong>
-        <p>
-          Povolte polohu a Rentulo vám ukáže nabídky ve vašem okolí.
-        </p>
-        <small id="nearbyCardStatus">Klikněte pro hledání v okolí</small>
+      <div class="search-field">
+        <label for="home-search-where">Kde?</label>
+        <input
+          id="home-search-where"
+          type="text"
+          placeholder="město nebo PSČ"
+        />
+      </div>
+
+      <button type="submit" class="search-button">
+        Procházet nabídky
+      </button>
+    </form>
+
+    <div class="home-points">
+
+      <button
+        type="button"
+        class="home-point-button"
+        data-search="domácnost"
+      >
+        <strong>🏠</strong>
+        <span>Domácnost</span>
       </button>
 
-    </section>
+      <button
+        type="button"
+        class="home-point-button"
+        data-search="zahrada"
+      >
+        <strong>🌿</strong>
+        <span>Zahrada</span>
+      </button>
+
+      <button
+        type="button"
+        class="home-point-button"
+        data-search="stavba"
+      >
+        <strong>🏗️</strong>
+        <span>Stavba</span>
+      </button>
+
+      <button
+        type="button"
+        class="home-point-button"
+        data-search="hobby"
+      >
+        <strong>🎯</strong>
+        <span>Hobby</span>
+      </button>
+
+      <button
+        type="button"
+        class="home-point-button"
+        data-search="párty"
+      >
+        <strong>🎉</strong>
+        <span>Párty</span>
+      </button>
+
+      <button
+        type="button"
+        class="home-point-button"
+        data-search="ostatní"
+      >
+        <strong>📦</strong>
+        <span>Ostatní</span>
+      </button>
+
+    </div>
+
+    <div class="home-mini-info">
+
+      <div class="mini-info-box">
+        <strong>1. Najdeš věc</strong>
+        <span>
+          Vyhledáš nabídku podle názvu, kategorie nebo lokality.
+        </span>
+      </div>
+
+      <div class="mini-info-box">
+        <strong>2. Pošleš žádost</strong>
+        <span>
+          Majitel žádost potvrdí a společně domluvíte podrobnosti.
+        </span>
+      </div>
+
+      <div class="mini-info-box">
+        <strong>3. Převezmeš a vrátíš</strong>
+        <span>
+          Věc si převezmeš, použiješ a po skončení rezervace vrátíš.
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <button
+    class="home-side-card nearby-card"
+    id="nearbyCard"
+    type="button"
+  >
+    <span>Nabídky ve tvém okolí</span>
+
+    <strong>Najít věci podle mojí polohy</strong>
+
+    <p>
+      Povol polohu a Rentulo ti ukáže dostupné nabídky od lidí ve tvém okolí.
+    </p>
+
+    <small id="nearbyCardStatus">
+      Klikni pro hledání v okolí
+    </small>
+  </button>
+
+</section>
 
   </main>
 
