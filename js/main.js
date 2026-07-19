@@ -114,7 +114,7 @@ function setupSearchFromHome() {
         markError(whereInput);
       }
 
-      showMessage("Vyplňte, co hledáte a kde chcete nářadí najít.");
+      showMessage("Vyplňte, co hledáte a kde chcete věc najít.");
       return;
     }
 
@@ -180,7 +180,7 @@ function setupResultsSearchButton() {
         markError(whereInput);
       }
 
-      showMessage("Vyplňte, co hledáte a kde chcete nářadí najít.");
+      showMessage("Vyplňte, co hledáte a kde chcete věc najít.");
       return;
     }
 
@@ -191,7 +191,7 @@ function setupResultsSearchButton() {
   });
 }
 
-/* FORMULÁŘ NABÍDNOUT NÁŘADÍ */
+/* FORMULÁŘ NABÍDNOUT VĚC */
 
 function setupOfferForm() {
   const toolForm = document.querySelector(".tool-form");
@@ -210,7 +210,7 @@ function setupOfferForm() {
       const currentUser = getCurrentUser();
 
       if (!isLoggedIn() || !currentUser) {
-        showMessage("Pro přidání nářadí se nejdříve přihlaste.");
+        showMessage("Pro přidání nabídky se nejdříve přihlaste.");
         return;
       }
 
@@ -284,7 +284,7 @@ function setupOfferForm() {
       }
 
       if (hasError) {
-        showMessage("Vyplňte prosím všechny údaje o nářadí. Cena musí být číslo větší než 0.");
+       showMessage("Vyplňte prosím všechny údaje o nabízené věci. Cena musí být číslo větší než 0.");
         return;
       }
 
