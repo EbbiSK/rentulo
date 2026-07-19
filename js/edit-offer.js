@@ -115,7 +115,7 @@ function renderEditPhotoPreview(photoValue) {
     return;
   }
 
-  preview.innerHTML = `<img src="${photoValue}" alt="Fotka nářadí">`;
+  preview.innerHTML = `<img src="${photoValue}" alt="Fotka nabízené věci">`;
 }
 
 function updateEditPhotoStatus(message, type) {
