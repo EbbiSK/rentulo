@@ -1,11 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Upravit nabĂ­dku - Rentulo</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <title>Upravit nabídku - Rentulo</title>
 
   <style>
     * {
@@ -58,7 +57,7 @@
     }
 
     .logo-icon::before {
-      content: "âś“";
+      content: "✓";
     }
 
     .logo-dot {
@@ -233,7 +232,7 @@
     }
 
     .edit-help-list li::before {
-      content: "âś“";
+      content: "✓";
       width: 20px;
       height: 20px;
       border-radius: 7px;
@@ -661,7 +660,7 @@
 
       <div class="logo-text">
         <strong>Rentulo</strong>
-        <small>SousedskĂˇ pĹŻjÄŤovna nĂˇĹ™adĂ­</small>
+        <small>Sousedská půjčovna nářadí</small>
       </div>
     </a>
 
@@ -670,37 +669,37 @@
 
   <main class="edit-page">
 
-    <a href="moje-nabidky.html" class="back-link">â† ZpÄ›t na moje nabĂ­dky</a>
+    <a href="moje-nabidky.html" class="back-link">← Zpět na moje nabídky</a>
 
     <section class="edit-page-header">
-      <p class="eyebrow">Ăšprava nabĂ­dky</p>
+      <p class="eyebrow">Úprava nabídky</p>
 
-      <h1>Upravit nabĂ­dku</h1>
+      <h1>Upravit nabídku</h1>
 
       <p>
-        ZmÄ›Ĺte fotku, nĂˇzev, cenu, kauci, lokalitu nebo popis. Po uloĹľenĂ­ se zmÄ›ny projevĂ­
-        ve vĂ˝sledcĂ­ch vyhledĂˇvĂˇnĂ­ i v detailu nabĂ­dky.
+        Změňte fotku, název, cenu, kauci, lokalitu nebo popis. Po uložení se změny projeví
+        ve výsledcích vyhledávání i v detailu nabídky.
       </p>
 
-      <a href="moje-nabidky.html" class="top-action-button">Moje nabĂ­dky</a>
+      <a href="moje-nabidky.html" class="top-action-button">Moje nabídky</a>
     </section>
 
     <section class="edit-layout">
 
       <section class="edit-card">
         <div class="edit-card-header">
-          <h2>Informace o nĂˇĹ™adĂ­</h2>
+          <h2>Informace o nářadí</h2>
         </div>
 
         <form class="edit-card-body tool-form edit-tool-form">
 
           <div class="photo-upload-box">
             <div class="photo-upload-header">
-              <strong>Fotka nĂˇĹ™adĂ­</strong>
+              <strong>Fotka nářadí</strong>
 
               <p>
-                MĹŻĹľete zmÄ›nit nebo odebrat fotku nabĂ­dky. Pokud fotku nezmÄ›nĂ­te,
-                zĹŻstane uloĹľenĂˇ pĹŻvodnĂ­ fotka.
+                Můžete změnit nebo odebrat fotku nabídky. Pokud fotku nezměníte,
+                zůstane uložená původní fotka.
               </p>
             </div>
 
@@ -717,7 +716,7 @@
                 </button>
 
                 <span class="photo-upload-status" id="editPhotoStatus">
-                  Vyberte novou fotku, nebo ponechte pĹŻvodnĂ­.
+                  Vyberte novou fotku, nebo ponechte původní.
                 </span>
               </div>
             </div>
@@ -725,53 +724,53 @@
 
           <div class="form-grid">
             <div class="form-group">
-              <label for="edit-name">NĂˇzev nĂˇĹ™adĂ­</label>
-              <input id="edit-name" type="text" placeholder="napĹ™. Aku vrtaÄŤka Bosch" />
+              <label for="edit-name">Název nářadí</label>
+              <input id="edit-name" type="text" placeholder="např. Aku vrtačka Bosch" />
             </div>
 
             <div class="form-group">
               <label for="edit-category">Kategorie</label>
               <select id="edit-category">
                 <option>Vyberte kategorii</option>
-                <option>VrtaÄŤky</option>
+                <option>Vrtačky</option>
                 <option>Brusky</option>
                 <option>Pily</option>
-                <option>Ĺ˝ebĹ™Ă­ky</option>
-                <option>ZahradnĂ­ technika</option>
-                <option>StavebnĂ­ technika</option>
-                <option>OstatnĂ­</option>
+                <option>Žebříky</option>
+                <option>Zahradní technika</option>
+                <option>Stavební technika</option>
+                <option>Ostatní</option>
               </select>
             </div>
 
             <div class="form-group">
-              <label for="edit-city">MÄ›sto nebo obec</label>
-              <input id="edit-city" type="text" placeholder="napĹ™. Brno" />
+              <label for="edit-city">Město nebo obec</label>
+              <input id="edit-city" type="text" placeholder="např. Brno" />
             </div>
 
             <div class="form-group">
-              <label for="edit-postal">PSÄŚ</label>
-              <input id="edit-postal" type="text" placeholder="napĹ™. 602 00" />
+              <label for="edit-postal">PSČ</label>
+              <input id="edit-postal" type="text" placeholder="např. 602 00" />
             </div>
 
             <div class="form-group">
               <label for="edit-price">Cena za den</label>
-              <input id="edit-price" type="text" placeholder="napĹ™. 250 KÄŤ" />
+              <input id="edit-price" type="text" placeholder="např. 250 Kč" />
             </div>
 
             <div class="form-group">
-              <label for="edit-deposit">VratnĂˇ kauce</label>
-              <input id="edit-deposit" type="text" placeholder="napĹ™. 1000 KÄŤ" />
+              <label for="edit-deposit">Vratná kauce</label>
+              <input id="edit-deposit" type="text" placeholder="např. 1000 Kč" />
             </div>
           </div>
 
           <div class="form-group full">
-            <label for="edit-description">Popis nĂˇĹ™adĂ­</label>
-            <textarea id="edit-description" placeholder="NapiĹˇte stav nĂˇĹ™adĂ­, co je souÄŤĂˇstĂ­ pĹŻjÄŤenĂ­ a pĹ™Ă­padnĂ© podmĂ­nky."></textarea>
+            <label for="edit-description">Popis nářadí</label>
+            <textarea id="edit-description" placeholder="Napište stav nářadí, co je součástí půjčení a případné podmínky."></textarea>
           </div>
 
           <div class="form-actions">
-            <a href="moje-nabidky.html" class="edit-cancel-button">ZruĹˇit</a>
-            <button type="button" class="btn-primary" id="save-edit-button">UloĹľit zmÄ›ny</button>
+            <a href="moje-nabidky.html" class="edit-cancel-button">Zrušit</a>
+            <button type="button" class="btn-primary" id="save-edit-button">Uložit změny</button>
           </div>
 
         </form>
@@ -779,19 +778,19 @@
 
       <aside class="edit-help-card">
         <div class="edit-help-header">
-          <h2>Co mĹŻĹľete upravit?</h2>
+          <h2>Co můžete upravit?</h2>
         </div>
 
         <div class="edit-help-content">
           <p>
-            Ăšpravy se projevĂ­ na veĹ™ejnĂ©m detailu nabĂ­dky a ve vĂ˝sledcĂ­ch vyhledĂˇvĂˇnĂ­.
+            Úpravy se projeví na veřejném detailu nabídky a ve výsledcích vyhledávání.
           </p>
 
           <ul class="edit-help-list">
-            <li>Fotku, nĂˇzev a kategorii nĂˇĹ™adĂ­</li>
-            <li>MÄ›sto, PSÄŚ a cenu za den</li>
+            <li>Fotku, název a kategorii nářadí</li>
+            <li>Město, PSČ a cenu za den</li>
             <li>Vratnou kauci</li>
-            <li>Popis a podmĂ­nky pĹŻjÄŤenĂ­</li>
+            <li>Popis a podmínky půjčení</li>
           </ul>
         </div>
       </aside>

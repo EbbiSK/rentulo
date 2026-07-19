@@ -1,11 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>MĹŻj ĂşÄŤet - Rentulo</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <title>Můj účet - Rentulo</title>
 
   <style>
     * {
@@ -58,7 +57,7 @@
     }
 
     .logo-icon::before {
-      content: "âś“";
+      content: "✓";
     }
 
     .logo-dot {
@@ -451,7 +450,7 @@
 
       <div class="logo-text">
         <strong>Rentulo</strong>
-        <small>SousedskĂˇ pĹŻjÄŤovna nĂˇĹ™adĂ­</small>
+        <small>Sousedská půjčovna nářadí</small>
       </div>
     </a>
 
@@ -462,19 +461,19 @@
 
     <section class="account-top">
       <div class="account-welcome">
-        <p class="eyebrow">MĹŻj ĂşÄŤet</p>
-        <h1 id="accountGreeting">DobrĂ˝ den</h1>
-        <p>Vyberte akci. DĹŻleĹľitĂ© rezervace a ĹľĂˇdosti se zvĂ˝raznĂ­ automaticky.</p>
+        <p class="eyebrow">Můj účet</p>
+        <h1 id="accountGreeting">Dobrý den</h1>
+        <p>Vyberte akci. Důležité rezervace a žádosti se zvýrazní automaticky.</p>
       </div>
 
       <div class="account-profile-card">
         <div class="profile-avatar" id="profileAvatar">U</div>
 
         <div class="profile-info">
-          <strong id="profileName">UĹľivatel</strong>
-          <span>OvÄ›Ĺ™enĂ˝ ĂşÄŤet</span>
+          <strong id="profileName">Uživatel</strong>
+          <span>Ověřený účet</span>
           <small id="profileEmail">email@example.cz</small>
-          <small id="profileRating">HodnocenĂ­: zatĂ­m bez hodnocenĂ­</small>
+          <small id="profileRating">Hodnocení: zatím bez hodnocení</small>
         </div>
       </div>
     </section>
@@ -483,55 +482,55 @@
 
     <section class="account-table-card">
       <div class="account-table-title">
-        <h2>Co chcete udÄ›lat?</h2>
-        <span>Vyberte jednu z hlavnĂ­ch ÄŤĂˇstĂ­ ĂşÄŤtu</span>
+        <h2>Co chcete udělat?</h2>
+        <span>Vyberte jednu z hlavních částí účtu</span>
       </div>
 
       <div class="account-actions-grid">
         <a href="vysledky.html" class="account-action-row">
-          <div class="account-action-icon" aria-hidden="true">âŚ•</div>
+          <div class="account-action-icon" aria-hidden="true">⌕</div>
           <div class="account-action-main">
-            <strong class="account-action-title">NajĂ­t nĂˇĹ™adĂ­</strong>
+            <strong class="account-action-title">Najít nářadí</strong>
           </div>
-          <span class="account-action-description">Vyhledejte dostupnĂ© nĂˇĹ™adĂ­ k pĹŻjÄŤenĂ­ ve vaĹˇem okolĂ­.</span>
-          <span class="account-type-pill">PĹŻjÄŤenĂ­</span>
-          <span class="account-action-button">ProhlĂ©dnout nabĂ­dky</span>
+          <span class="account-action-description">Vyhledejte dostupné nářadí k půjčení ve vašem okolí.</span>
+          <span class="account-type-pill">Půjčení</span>
+          <span class="account-action-button">Prohlédnout nabídky</span>
         </a>
 
         <a href="nabidnout.html" class="account-action-row">
-          <div class="account-action-icon" aria-hidden="true">ďĽ‹</div>
+          <div class="account-action-icon" aria-hidden="true">＋</div>
           <div class="account-action-main">
-            <strong class="account-action-title">NabĂ­dnout nĂˇĹ™adĂ­</strong>
+            <strong class="account-action-title">Nabídnout nářadí</strong>
           </div>
-          <span class="account-action-description">PĹ™idejte vlastnĂ­ nĂˇĹ™adĂ­ a zaÄŤnÄ›te ho bezpeÄŤnÄ› pĹŻjÄŤovat.</span>
-          <span class="account-type-pill">NabĂ­dka</span>
-          <span class="account-action-button">PĹ™idat nĂˇĹ™adĂ­</span>
+          <span class="account-action-description">Přidejte vlastní nářadí a začněte ho bezpečně půjčovat.</span>
+          <span class="account-type-pill">Nabídka</span>
+          <span class="account-action-button">Přidat nářadí</span>
         </a>
 
         <a href="moje-rezervace.html" class="account-action-row" id="reservationsCard">
-          <div class="account-action-icon" aria-hidden="true">â–Ł</div>
+          <div class="account-action-icon" aria-hidden="true">▣</div>
           <div class="account-action-main">
             <strong class="account-action-title">
               Moje rezervace
               <span class="account-card-badge hidden" id="reservationsBadge">0</span>
             </strong>
           </div>
-          <span class="account-action-description" id="reservationsText">Co si chci pĹŻjÄŤit</span>
-          <span class="account-type-pill">Moje pĹŻjÄŤenĂ­</span>
+          <span class="account-action-description" id="reservationsText">Co si chci půjčit</span>
+          <span class="account-type-pill">Moje půjčení</span>
           <span class="account-action-button light">Spravovat rezervace</span>
         </a>
 
         <a href="moje-nabidky.html?open=actions" class="account-action-row" id="offersCard">
-          <div class="account-action-icon" aria-hidden="true">âŚ‚</div>
+          <div class="account-action-icon" aria-hidden="true">⌂</div>
           <div class="account-action-main">
             <strong class="account-action-title">
-              Moje nabĂ­dky
+              Moje nabídky
               <span class="account-card-badge hidden" id="offersBadge">0</span>
             </strong>
           </div>
-          <span class="account-action-description" id="offersText">Co nabĂ­zĂ­m a ĹľĂˇdosti od lidĂ­</span>
-          <span class="account-type-pill">Moje nĂˇĹ™adĂ­</span>
-          <span class="account-action-button light">Spravovat nabĂ­dky</span>
+          <span class="account-action-description" id="offersText">Co nabízím a žádosti od lidí</span>
+          <span class="account-type-pill">Moje nářadí</span>
+          <span class="account-action-button light">Spravovat nabídky</span>
         </a>
       </div>
     </section>
