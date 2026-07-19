@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Nabídnout nářadí - Rentulo</title>
+  <title>Nabídnout cokoli - Rentulo</title>
 
   <style>
     * {
@@ -656,9 +656,9 @@
     <a href="muj-ucet.html" class="back-link">← Zpět do účtu</a>
 
     <section class="offer-page-header">
-      <p class="eyebrow">Nabídka nářadí</p>
-      <h1>Nabídnout nářadí</h1>
-      <p>Vyplňte jednoduchý formulář. Vaše nabídka se zobrazí lidem, kteří hledají nářadí ve vašem okolí.</p>
+      <p class="eyebrow">Nová nabídka</p>
+      <h1>Nabídnout cokoli</h1>
+      <p>Vyplňte jednoduchý formulář. Vaše nabídka se zobrazí lidem, kteří hledají věci ve vašem okolí.</p>
       <a href="moje-nabidky.html" class="top-action-button">Moje nabídky</a>
     </section>
 
@@ -666,7 +666,7 @@
 
       <section class="offer-card">
         <div class="offer-card-header">
-          <h2>Informace o nářadí</h2>
+          <h2>Informace o nabízené věci</h2>
         </div>
 
         <form class="offer-card-body tool-form" id="offerForm">
@@ -675,7 +675,7 @@
 
           <div class="photo-upload-box">
             <div class="photo-upload-header">
-              <strong>Fotka nářadí</strong>
+              <strong>Fotka nabízené věci</strong>
               <p>Přidejte fotku nabízené věci. Zobrazí se u nabídky a později i ve výsledcích. Fotka je nepovinná.</p>
             </div>
 
@@ -685,28 +685,27 @@
               <div class="photo-upload-actions">
                 <input id="toolPhoto" type="file" accept="image/*" />
                 <button type="button" class="photo-remove-button" id="removeToolPhotoButton">Odebrat fotku</button>
-                <span class="photo-upload-status" id="toolPhotoStatus">Doporučeno: čitelná fotka nářadí. Obrázek se nahraje do Supabase Storage.</span>
+                <span class="photo-upload-status" id="toolPhotoStatus">Doporučeno: kvalitní a dobře osvětlená fotka. Obrázek se nahraje do Supabase Storage.</span>
               </div>
             </div>
           </div>
 
           <div class="form-grid">
             <div class="form-group">
-              <label for="toolName">Název nářadí</label>
-              <input id="toolName" type="text" placeholder="např. Aku vrtačka Bosch" />
+              <label for="toolName"> Název věci</label>
+              <input id="toolName" type="text" placeholder="např. vysavač, gril nebo reproduktor" />
             </div>
 
             <div class="form-group">
               <label for="toolCategory">Kategorie</label>
               <select id="toolCategory">
                 <option value="">Vyberte kategorii</option>
-                <option>Vrtačky</option>
-                <option>Brusky</option>
-                <option>Pily</option>
-                <option>Žebříky</option>
-                <option>Zahradní technika</option>
-                <option>Stavební technika</option>
-                <option>Ostatní</option>
+<option>Domácnost</option>
+<option>Zahrada</option>
+<option>Stavba</option>
+<option>Hobby</option>
+<option>Párty</option>
+<option>Ostatní</option>
               </select>
             </div>
 
@@ -734,8 +733,8 @@
           </div>
 
           <div class="form-group full">
-            <label for="toolDescription">Popis nářadí</label>
-            <textarea id="toolDescription" placeholder="Napište stav nářadí, co je součástí půjčení a případné podmínky."></textarea>
+            <label for="toolDescription">Popis nabízené věci</label>
+            <textarea id="toolDescription" placeholder="Popište stav věci, co je součástí půjčení a případné podmínky."></textarea>
           </div>
 
           <section class="pickup-options">
@@ -808,7 +807,7 @@
           <p>Po zveřejnění se nabídka zobrazí ve výsledcích vyhledávání. Žádosti potom vyřídíte v části Moje nabídky.</p>
 
           <ul class="offer-help-list">
-            <li>Nářadí přidáte do nabídky</li>
+            <li>Věc přidáte do nabídky</li>
             <li>Zájemce pošle žádost o půjčení</li>
             <li>Žádost potvrdíte nebo odmítnete</li>
             <li>Po zaplacení si platforma ponechá provizi 10 %</li>
