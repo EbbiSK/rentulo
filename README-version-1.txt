@@ -1,16 +1,16 @@
 RENTULO - plán verzie 1.0
 
 Cieľ verzie 1.0:
-Vytvoriť jednoduchý a zrozumiteľný tok pre požičanie nářadí medzi ľuďmi.
+Vytvoriť jednoduchý a zrozumiteľný tok pre požičiavanie vecí medzi ľuďmi.
 
 Hlavný tok:
-1. Majiteľ pridá nářadí.
+1. Majiteľ pridá vec.
 2. Záujemca nájde ponuku.
 3. Záujemca pošle žiadosť o půjčení.
 4. Majiteľ žiadosť potvrdí alebo odmietne.
 5. Po potvrdení záujemca zaplatí.
 6. Po platbe sa záujemcovi zobrazí kontakt a adresa vyzdvihnutia.
-7. Nářadí sa označí ako vyzdvihnuté.
+7. Vec sa označí ako vyzdvihnutá.
 8. Po vrátení sa rezervácia označí ako vrátená.
 9. Ponuka je znova dostupná.
 
@@ -31,7 +31,7 @@ Povinné údaje používateľa:
 - PSČ
 - heslo
 
-Ponuky nářadí:
+Ponuky vecí:
 - pridanie ponuky
 - úprava ponuky
 - zmazanie ponuky bez aktívnej rezervácie
@@ -127,12 +127,12 @@ Po platbe sa môže zobrazovať:
 - obľúbené ponuky
 - pokročilé filtrovanie
 - kalendár dostupnosti
-- recenzie nářadí
+- recenzie vecí
 - automatické storno pravidlá
 
 Čo nechať až na neskôr:
 - mobilná aplikácia
-- poistenie nářadí
+- poistenie vecí
 - automatické riešenie sporov
 - firemné účty
 - API pre partnerov
