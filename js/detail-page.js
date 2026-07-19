@@ -194,11 +194,11 @@ owner_id: row.owner_id,
     }
 
     function getOfferName(offer) {
-      return offer.name || offer.title || offer.nazev || "Nářadí";
+      return offer.name || offer.title || offer.nazev || "Věc";
     }
 
     function getOfferCategory(offer) {
-      return offer.category || offer.kategorie || "Nářadí";
+      return offer.category || offer.kategorie || "Ostatní";
     }
 
     function getOfferCity(offer) {
@@ -304,7 +304,7 @@ owner_id: row.owner_id,
     function renderNotFound() {
       document.getElementById("detailContent").innerHTML = `
         <div class="message-card warning">
-          <strong>Nářadí nebylo nalezeno.</strong><br>
+          <strong>Věc nebyla nalezena.</strong><br>
           Tato nabídka neexistuje, není aktivní nebo už byla odstraněna.
           <br>
           <a href="vysledky.html" class="primary-button">Zpět na nabídky</a>
@@ -401,7 +401,7 @@ owner_id: row.owner_id,
           </div>
 
           <div class="availability-box available">
-            <strong>Nářadí je dostupné</strong>
+            <strong>Věc je dostupná</strong>
             Můžete vybrat termín a odeslat žádost o půjčení. Žádost se uloží do Supabase a bude čekat na potvrzení majitelem.
           </div>
 
@@ -538,14 +538,14 @@ const hasGps = offerHasGpsLocation(offer);
       const statusBadgeClass = isActive ? "" : "draft";
 
       let availabilityText = "Dostupné";
-      let availabilityPanelText = "Toto nářadí je momentálně dostupné. Rezervaci uložíme do systému a majitel ji následně potvrdí.";
+      let availabilityPanelText = "Tato věc je momentálně dostupná. Rezervaci uložíme do systému a majitel ji následně potvrdí.";
 
       if (!isActive) {
         availabilityText = "Není aktivní";
         availabilityPanelText = "Tato nabídka zatím není aktivní. Rezervaci nelze odeslat.";
       } else if (isReserved) {
         availabilityText = "Momentálně rezervováno";
-        availabilityPanelText = "Toto nářadí má právě otevřenou rezervaci v Supabase. Novou žádost zatím nelze odeslat.";
+availabilityPanelText = "Tato věc má právě otevřenou rezervaci v Supabase. Novou žádost zatím nelze odeslat.";
       }
 
       let sidebarContent = "";
@@ -561,8 +561,8 @@ const hasGps = offerHasGpsLocation(offer);
 } else if (isOwner) {
   sidebarContent = renderSidebarMessage(
     "",
-    "Toto nářadí patří vám.",
-    "Vlastní nářadí si nemůžete rezervovat. Svoji nabídku můžete spravovat v části Moje nabídky.",
+    "Tato věc patří vám.",
+    "Vlastní věc si nemůžete rezervovat. Svoji nabídku můžete spravovat v části Moje nabídky.",
     "moje-nabidky.html",
     "Moje nabídky"
   );
@@ -581,7 +581,7 @@ const hasGps = offerHasGpsLocation(offer);
           deposit,
           ownerPublicName,
           ownerPublicCity,
-          "Nářadí teď není dostupné",
+          "Věc teď není dostupná",
           "Tato nabídka má otevřenou rezervaci v Supabase."
         );
       } else {
@@ -641,8 +641,8 @@ const hasGps = offerHasGpsLocation(offer);
                   <h2>Podmínky půjčení</h2>
 
                   <p>
-                    Nářadí vraťte čisté a ve stejném stavu.
-                    Vratná kauce je ${escapeHtml(deposit)} Kč.
+                    Věc vraťte čistou a ve stejném stavu.
+
                     Přesné místo vyzvednutí se zobrazí až po zaplacení.
                   </p>
                 </div>
@@ -778,7 +778,7 @@ const hasGps = offerHasGpsLocation(offer);
       }
 
       if (String(supabaseUser.id) === ownerId) {
-        alert("Vlastní nářadí si nemůžete rezervovat.");
+        alert("Vlastní věc si nemůžete rezervovat.");
         renderDetail(offer);
         return;
       }
