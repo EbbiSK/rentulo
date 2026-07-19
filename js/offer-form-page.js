@@ -91,8 +91,8 @@ let offerSaveInProgress = false;
           <h1>Pro přidání nabídky se nejdříve přihlaste.</h1>
 
           <p>
-            Nářadí mohou nabízet pouze přihlášení uživatelé. Po přihlášení
-            se můžete vrátit a přidat vlastní nabídku.
+  Věci mohou nabízet pouze přihlášení uživatelé. Po přihlášení
+se můžete vrátit a přidat vlastní nabídku.
           </p>
 
           <div class="login-required-actions">
@@ -343,7 +343,7 @@ function getOfferCurrentUserSafe() {
         return;
       }
 
-      preview.innerHTML = `<img src="${dataUrl}" alt="Fotka nářadí">`;
+preview.innerHTML = `<img src="${dataUrl}" alt="Fotka nabízené věci">`;
     }
 
     function resizeImageToDataUrl(file, callback) {
