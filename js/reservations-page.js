@@ -307,7 +307,7 @@
         return getReservationToolName(reservation);
       }
 
-      return reservation.toolName || reservation.offerName || reservation.naradiName || "Nářadí";
+      return reservation.toolName || reservation.offerName || reservation.naradiName || "Věc";
     }
 
     function getSafeReservationDateFrom(reservation) {
@@ -451,8 +451,8 @@ return (
       document.getElementById("reservationsList").innerHTML = `
         <section class="account-empty-state">
           <h2>Zatím nemáte žádné rezervace.</h2>
-          <p>Najděte nářadí ve svém okolí a pošlete první žádost o půjčení.</p>
-          <a href="vysledky.html">Najít nářadí</a>
+          <p>Najděte věc ve svém okolí a pošlete první žádost o půjčení.</p>
+          <a href="vysledky.html">Najít věc</a>
         </section>
       `;
     }
@@ -781,7 +781,7 @@ return (
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
         return `
           <div class="reservation-state-box active">
-            <strong>Nářadí bylo označeno jako vyzvednuté</strong>
+            <strong>Věc byla označena jako vyzvednutá</strong>
             Půjčení právě probíhá.
           </div>
         `;
@@ -998,7 +998,7 @@ return (
       if (offerId && !isHistorySection) {
         menuItems += `
           <a href="detail.html?id=${encodeURIComponent(offerId)}">
-            Detail nářadí
+            Detail věci
           </a>
         `;
       }

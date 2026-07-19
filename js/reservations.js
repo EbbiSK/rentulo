@@ -14,7 +14,7 @@ function getReservationOfferId(reservation) {
 
 function getReservationToolName(reservation) {
   if (!reservation) {
-    return "nářadí";
+    return "věc";
   }
 
   return (
@@ -22,7 +22,7 @@ function getReservationToolName(reservation) {
     reservation.toolName ||
     reservation.offerName ||
     reservation.naradiName ||
-    "nářadí"
+    "věc"
   );
 }
 

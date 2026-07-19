@@ -390,7 +390,7 @@
     }
 
     function getOfferName(offer) {
-      return offer.name || offer.title || offer.nazev || "Nářadí";
+      return offer.name || offer.title || offer.nazev || "Věc";
     }
 
     function getOfferCity(offer) {
@@ -398,7 +398,7 @@
     }
 
     function getOfferCategory(offer) {
-      return offer.category || offer.kategorie || "Nářadí";
+      return offer.category || offer.kategorie || "Ostatní";
     }
 
     function getOfferPrice(offer) {
@@ -499,9 +499,9 @@
       if (type === "no-offers") {
         return {
           title: "Zatím zde nejsou žádné nabídky.",
-          message: "Na Rentulu zatím nikdo nepřidal nářadí k půjčení. Můžete přidat první nabídku a vyzkoušet, jak bude stránka fungovat.",
+          message: "Na Rentulu zatím nikdo nepřidal žádnou věc k půjčení. Můžete přidat první nabídku a vyzkoušet, jak bude fungovat.",
           primaryLink: "nabidnout.html",
-          primaryText: "Přidat nářadí",
+          primaryText: "Přidat věc",
           secondaryLink: "index.html",
           secondaryText: "Zpět na úvod"
         };
@@ -535,7 +535,7 @@
         primaryLink: "vysledky.html",
         primaryText: "Zrušit hledání",
         secondaryLink: "nabidnout.html",
-        secondaryText: "Přidat nářadí"
+        secondaryText: "Přidat věc"
       };
     }
 
@@ -590,8 +590,8 @@
       const availabilityText = isReserved ? "Momentálně rezervováno" : "Dostupné";
 
       const availabilityNote = isReserved
-        ? "Toto nářadí má právě otevřenou rezervaci. Detail si můžete zobrazit, ale novou žádost zatím nebude možné odeslat."
-        : "Toto nářadí je momentálně dostupné. Rezervaci dokončíte na detailu nabídky.";
+        ? "Tato věc má právě otevřenou rezervaci. Detail si můžete zobrazit, ale novou žádost zatím nebude možné odeslat."
+        : "Tato věc je momentálně dostupná. Rezervaci dokončíte na detailu nabídky.";
 
       return `
         <article class="result-card">
@@ -802,7 +802,7 @@
         }
 
         if (title) {
-          title.textContent = "Nářadí ve vašem okolí";
+        title.textContent = "Věci ve vašem okolí";
         }
 
         if (description) {
