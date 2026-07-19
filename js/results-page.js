@@ -642,7 +642,28 @@
         </article>
       `;
     }
-
+const HOME_CATEGORY_GROUPS = {
+  domacnost: ["domacnost", "dum a zahrada"],
+  zahrada: ["zahrada", "zahradni technika", "dum a zahrada"],
+  stavba: [
+    "stavba",
+    "vrtacky",
+    "brusky",
+    "pily",
+    "zebriky",
+    "stavebni technika",
+    "dilna a naradi"
+  ],
+  hobby: [
+    "hobby",
+    "sport a volny cas",
+    "elektronika",
+    "deti a rodina",
+    "cestovani a kempovani"
+  ],
+  party: ["party", "party a akce"],
+  ostatni: ["ostatni", "auto a doprava"]
+};
     function offerMatchesSearch(offer, whatQuery, whereQuery, categoryFilter, priceFilter, availabilityFilter) {
       const name = normalizeText(getOfferName(offer));
       const category = normalizeText(getOfferCategory(offer));
@@ -655,9 +676,21 @@
       const where = normalizeText(whereQuery);
       const nearbyMode = isNearbySearchMode();
 
-      if (what && !name.includes(what) && !category.includes(what)) {
-        return false;
-      }
+      if (what) {
+  const groupedCategories = HOME_CATEGORY_GROUPS[what];
+
+  if (groupedCategories) {
+    const matchesGroupedCategory = groupedCategories.some(function (value) {
+      return category.includes(value);
+    });
+
+    if (!matchesGroupedCategory) {
+      return false;
+    }
+  } else if (!name.includes(what) && !category.includes(what)) {
+    return false;
+  }
+}
 
       if (!nearbyMode && where && !city.includes(where) && !postalCode.includes(where)) {
         return false;

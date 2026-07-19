@@ -45,20 +45,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function setupCategorySearch() {
   const categoryButtons = document.querySelectorAll(".home-point-button");
 
-  const categorySearchMap = {
-    domácnost: "Domácnost Dům a zahrada",
-    zahrada: "Zahrada Zahradní technika Dům a zahrada",
-    stavba: "Stavba Vrtačky Brusky Pily Žebříky Stavební technika Dílna a nářadí",
-    hobby: "Hobby Sport a volný čas Elektronika Děti a rodina Cestování a kempování",
-    párty: "Párty Párty a akce",
-    ostatní: "Ostatní Auto a doprava"
-  };
-
   categoryButtons.forEach(function (button) {
     button.addEventListener("click", function () {
-      const category = (button.dataset.search || "").trim().toLowerCase();
-      const searchValue = categorySearchMap[category] || category;
-
+      const searchValue = button.dataset.search || "";
       goToResults(searchValue, "");
     });
   });
