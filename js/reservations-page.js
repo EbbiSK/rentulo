@@ -178,11 +178,11 @@
         ownerId: row.owner_id,
         renterId: row.renter_id,
 
-        toolName: row.offer_name || "Nářadí",
-        offerName: row.offer_name || "Nářadí",
-        naradiName: row.offer_name || "Nářadí",
+        toolName: row.offer_name || "Věc k půjčení",
+offerName: row.offer_name || "Věc k půjčení",
+naradiName: row.offer_name || "Věc k půjčení",
 
-        category: row.category || "Nářadí",
+category: row.category || "Ostatní",
         city: row.city || "",
 
         pricePerDay: Number(row.price_per_day || 0),
