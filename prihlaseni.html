@@ -1,12 +1,343 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>PĹ™ihlĂˇĹˇenĂ­ - Rentulo</title>
+  <title>Přihlášení - Rentulo</title>
 
-  <link rel="stylesheet" href="css/login.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f3ee;
+      color: #073f2e;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    .header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: #006b45;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .logo-icon::before {
+      content: "✓";
+    }
+
+    .logo-dot {
+      display: none;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 21px;
+      line-height: 1;
+      color: #073f2e;
+    }
+
+    .logo-text small {
+      display: block;
+      margin-top: 3px;
+      font-size: 13px;
+      color: #4d5b55;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 15px;
+    }
+
+    .nav a {
+      font-weight: 500;
+    }
+
+    .nav .active-link {
+      font-weight: 900;
+    }
+
+    .btn-register,
+    .logout-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #006b45;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .auth-page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 18px 20px 34px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 760px;
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 0;
+      background: white;
+      border: 1px solid #eadfd1;
+      border-radius: 18px;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+    }
+
+    .auth-intro {
+      padding: 24px;
+      background: #fffdf8;
+      border-right: 1px solid #eadfd1;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: #006b45;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .auth-intro h1 {
+      margin: 0 0 10px;
+      color: #073f2e;
+      font-size: 36px;
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+
+    .auth-intro p {
+      margin: 0;
+      color: #334c43;
+      font-size: 15px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    .auth-form {
+      padding: 24px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .auth-error-message {
+      display: none;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #fff7f0;
+      border: 1px solid #ffe0c8;
+      color: #5b3a22;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .auth-error-message.active {
+      display: block;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 5px;
+    }
+
+    .form-group label {
+      color: #173e33;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .form-group input {
+      width: 100%;
+      height: 42px;
+      border: 1px solid #d8d0c5;
+      border-radius: 10px;
+      background: white;
+      padding: 0 12px;
+      font-size: 14px;
+      color: #073f2e;
+      font-weight: 700;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #006b45;
+      box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
+    }
+
+    .form-group input.input-error {
+      border-color: #df5b00;
+      box-shadow: 0 0 0 3px rgba(223, 91, 0, 0.12);
+    }
+
+    .terms-check {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 8px;
+      align-items: start;
+      padding: 10px 11px;
+      border-radius: 12px;
+      background: #f8f5f0;
+      border: 1px solid #eee8de;
+      color: #334c43;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .terms-check input {
+      width: 16px;
+      height: 16px;
+      margin: 1px 0 0;
+      accent-color: #006b45;
+    }
+
+    .auth-button {
+      min-height: 42px;
+      border: none;
+      border-radius: 10px;
+      background: #006b45;
+      color: white;
+      padding: 0 18px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .auth-button:hover {
+      background: #00563a;
+    }
+
+    .auth-button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .auth-note {
+      margin: 0;
+      padding-top: 2px;
+      color: #334c43;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .auth-note a {
+      color: #006b45;
+      font-weight: 900;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .auth-helper-box {
+      margin-top: 2px;
+      padding: 10px 11px;
+      border-radius: 12px;
+      background: #e2f3eb;
+      border: 1px solid #c7e8d7;
+      color: #073f2e;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .auth-helper-box strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #006b45;
+    }
+
+    @media (max-width: 820px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .auth-card {
+        grid-template-columns: 1fr;
+      }
+
+      .auth-intro {
+        border-right: none;
+        border-bottom: 1px solid #eadfd1;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .header,
+      .auth-page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .auth-page {
+        padding-top: 10px;
+      }
+
+      .auth-intro,
+      .auth-form {
+        padding: 16px;
+      }
+
+      .auth-intro h1 {
+        font-size: 30px;
+      }
+
+      .auth-button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -19,7 +350,7 @@
 
       <div class="logo-text">
         <strong>Rentulo</strong>
-        <small>SousedskĂˇ pĹŻjÄŤovna nĂˇĹ™adĂ­</small>
+        <small>Sousedská půjčovna nářadí</small>
       </div>
     </a>
 
@@ -31,17 +362,17 @@
     <section class="auth-card">
 
       <div class="auth-intro">
-        <p class="eyebrow">VĂ­tejte zpÄ›t</p>
+        <p class="eyebrow">Vítejte zpět</p>
 
-        <h1>PĹ™ihlĂˇĹˇenĂ­</h1>
+        <h1>Přihlášení</h1>
 
         <p>
-          PĹ™ihlaste se ke svĂ©mu ĂşÄŤtu. Po pĹ™ihlĂˇĹˇenĂ­ se otevĹ™e strĂˇnka MĹŻj ĂşÄŤet.
+          Přihlaste se ke svému účtu. Po přihlášení se otevře stránka Můj účet.
         </p>
 
         <div class="auth-helper-box">
-          <strong>ĂšÄŤet Rentulo</strong>
-          PĹ™ihlĂˇĹˇenĂ­ nynĂ­ probĂ­hĂˇ pĹ™es Supabase. PouĹľijte e-mail a heslo z registrace.
+          <strong>Účet Rentulo</strong>
+          Přihlášení nyní probíhá přes Supabase. Použijte e-mail a heslo z registrace.
         </div>
       </div>
 
@@ -56,7 +387,7 @@
   type="email"
   name="email"
   autocomplete="username"
-  placeholder="napĹ™. jan@email.cz"
+  placeholder="např. jan@email.cz"
   required
 />
         </div>
@@ -75,16 +406,16 @@
 
         <label class="terms-check">
           <input id="rememberLogin" type="checkbox" />
-          <span>Zapamatovat pĹ™ihlĂˇĹˇenĂ­ na tomto zaĹ™Ă­zenĂ­.</span>
+          <span>Zapamatovat přihlášení na tomto zařízení.</span>
         </label>
 
         <button type="submit" class="auth-button" id="loginSubmitButton">
-          PĹ™ihlĂˇsit se
+          Přihlásit se
         </button>
 
         <p class="auth-note">
-          JeĹˇtÄ› nemĂˇte ĂşÄŤet?
-          <a href="registrace.html">VytvoĹ™it ĂşÄŤet</a>
+          Ještě nemáte účet?
+          <a href="registrace.html">Vytvořit účet</a>
         </p>
 
       </form>
