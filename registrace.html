@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Registrace - Rentulo</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
   <style>
     * {
@@ -58,7 +59,7 @@
     }
 
     .logo-icon::before {
-      content: "✓";
+      content: "âś“";
     }
 
     .logo-dot {
@@ -398,7 +399,7 @@
 
       <div class="logo-text">
         <strong>Rentulo</strong>
-        <small>Sousedská půjčovna nářadí</small>
+        <small>SousedskĂˇ pĹŻjÄŤovna nĂˇĹ™adĂ­</small>
       </div>
     </a>
 
@@ -410,18 +411,18 @@
     <section class="auth-card">
 
       <div class="auth-intro">
-        <p class="eyebrow">Nový účet</p>
+        <p class="eyebrow">NovĂ˝ ĂşÄŤet</p>
 
         <h1>Registrace</h1>
 
         <p>
-          Vytvořte si jeden účet. Se stejným účtem si můžete nářadí půjčovat
-          i nabízet vlastní nářadí ostatním.
+          VytvoĹ™te si jeden ĂşÄŤet. Se stejnĂ˝m ĂşÄŤtem si mĹŻĹľete nĂˇĹ™adĂ­ pĹŻjÄŤovat
+          i nabĂ­zet vlastnĂ­ nĂˇĹ™adĂ­ ostatnĂ­m.
         </p>
 
         <div class="auth-helper-box">
-          <strong>Účet Rentulo</strong>
-          Registrace se nyní ukládá do Supabase. Telefon a přesná adresa se druhé straně zobrazí až po zaplacení rezervace.
+          <strong>ĂšÄŤet Rentulo</strong>
+          Registrace se nynĂ­ uklĂˇdĂˇ do Supabase. Telefon a pĹ™esnĂˇ adresa se druhĂ© stranÄ› zobrazĂ­ aĹľ po zaplacenĂ­ rezervace.
         </div>
       </div>
 
@@ -431,8 +432,8 @@
           <div class="auth-error-message" id="registrationError"></div>
 
           <div class="form-group">
-            <label for="fullName">Jméno a příjmení</label>
-            <input type="text" id="fullName" placeholder="např. Jan Novák" required />
+            <label for="fullName">JmĂ©no a pĹ™Ă­jmenĂ­</label>
+            <input type="text" id="fullName" placeholder="napĹ™. Jan NovĂˇk" required />
           </div>
 
           <div class="form-group">
@@ -442,16 +443,16 @@
   id="email"
   name="registration-email"
   autocomplete="off"
-  placeholder="např. jan@novak.cz"
+  placeholder="napĹ™. jan@novak.cz"
   required
 >
           </div>
 
           <div class="form-group">
             <label for="phone">Telefon</label>
-            <input type="tel" id="phone" placeholder="např. +420 777 123 456" required />
+            <input type="tel" id="phone" placeholder="napĹ™. +420 777 123 456" required />
             <p class="registration-note">
-              Telefon se zobrazí až po zaplacení rezervace.
+              Telefon se zobrazĂ­ aĹľ po zaplacenĂ­ rezervace.
             </p>
           </div>
 
@@ -468,18 +469,18 @@
           </div>
 
           <div class="form-group full">
-            <label for="street">Ulice a číslo popisné</label>
-            <input type="text" id="street" placeholder="např. Dlouhá 12" required />
+            <label for="street">Ulice a ÄŤĂ­slo popisnĂ©</label>
+            <input type="text" id="street" placeholder="napĹ™. DlouhĂˇ 12" required />
           </div>
 
           <div class="form-group">
-            <label for="city">Město</label>
-            <input type="text" id="city" list="citySuggestions" placeholder="např. Praha" required />
+            <label for="city">MÄ›sto</label>
+            <input type="text" id="city" list="citySuggestions" placeholder="napĹ™. Praha" required />
           </div>
 
           <div class="form-group">
-            <label for="postalCode">PSČ</label>
-            <input type="text" id="postalCode" placeholder="např. 110 00" required />
+            <label for="postalCode">PSÄŚ</label>
+            <input type="text" id="postalCode" placeholder="napĹ™. 110 00" required />
           </div>
 
           <datalist id="citySuggestions"></datalist>
@@ -488,34 +489,34 @@
             <label class="terms-check">
               <input type="checkbox" id="termsBusiness" />
               <span>
-                Souhlasím s
-                <a href="obchodni-podminky.html" target="_blank">obchodními podmínkami</a>.
+                SouhlasĂ­m s
+                <a href="obchodni-podminky.html" target="_blank">obchodnĂ­mi podmĂ­nkami</a>.
               </span>
             </label>
 
             <label class="terms-check">
               <input type="checkbox" id="termsPrivacy" />
               <span>
-                Souhlasím se
-                <a href="ochrana-osobnich-udaju.html" target="_blank">zpracováním osobních údajů</a>.
+                SouhlasĂ­m se
+                <a href="ochrana-osobnich-udaju.html" target="_blank">zpracovĂˇnĂ­m osobnĂ­ch ĂşdajĹŻ</a>.
               </span>
             </label>
 
             <label class="terms-check">
               <input type="checkbox" id="termsIdentity" />
               <span>
-                Beru na vědomí, že při osobním předání nářadí může druhá strana přiměřeně ověřit moji totožnost.
+                Beru na vÄ›domĂ­, Ĺľe pĹ™i osobnĂ­m pĹ™edĂˇnĂ­ nĂˇĹ™adĂ­ mĹŻĹľe druhĂˇ strana pĹ™imÄ›Ĺ™enÄ› ovÄ›Ĺ™it moji totoĹľnost.
               </span>
             </label>
           </div>
 
           <button type="submit" class="auth-button" id="registrationSubmitButton">
-            Vytvořit účet
+            VytvoĹ™it ĂşÄŤet
           </button>
 
           <p class="auth-note">
-            Už máte účet?
-            <a href="prihlaseni.html">Přihlaste se</a>
+            UĹľ mĂˇte ĂşÄŤet?
+            <a href="prihlaseni.html">PĹ™ihlaste se</a>
           </p>
 
         </div>
@@ -533,3 +534,4 @@
   <script src="js/registration-page.js"></script>
 </body>
 </html>
+

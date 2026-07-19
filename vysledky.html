@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Výsledky vyhledávání - Rentulo</title>
+  <title>VĂ˝sledky vyhledĂˇvĂˇnĂ­ - Rentulo</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
   <style>
     * {
@@ -53,7 +54,7 @@
     }
 
     .logo-icon::before {
-      content: "✓";
+      content: "âś“";
     }
 
     .logo-dot {
@@ -356,7 +357,7 @@
     }
 
     .result-image-icon::before {
-      content: "⌁";
+      content: "âŚ";
     }
 
     .result-image span {
@@ -662,7 +663,7 @@
 
       <div class="logo-text">
         <strong>Rentulo</strong>
-        <small>Sousedská půjčovna nářadí</small>
+        <small>SousedskĂˇ pĹŻjÄŤovna nĂˇĹ™adĂ­</small>
       </div>
     </a>
 
@@ -671,28 +672,28 @@
 
   <main class="results-page">
 
-    <a href="index.html" class="results-back-link">← Zpět na úvod</a>
+    <a href="index.html" class="results-back-link">â† ZpÄ›t na Ăşvod</a>
 
     <section class="results-header">
       <div>
-        <p class="eyebrow" id="resultsEyebrow">Výsledky vyhledávání</p>
+        <p class="eyebrow" id="resultsEyebrow">VĂ˝sledky vyhledĂˇvĂˇnĂ­</p>
 
-        <h1 id="resultsTitle">Dostupné nářadí k půjčení</h1>
+        <h1 id="resultsTitle">DostupnĂ© nĂˇĹ™adĂ­ k pĹŻjÄŤenĂ­</h1>
 
         <p id="resultsDescription">
-          Zobrazují se nabídky načtené z databáze Supabase.
+          ZobrazujĂ­ se nabĂ­dky naÄŤtenĂ© z databĂˇze Supabase.
         </p>
       </div>
 
       <div class="results-search">
         <div class="search-field">
-          <label>Co hledáte?</label>
-          <input id="results-search-what" type="text" placeholder="např. vrtačka" />
+          <label>Co hledĂˇte?</label>
+          <input id="results-search-what" type="text" placeholder="napĹ™. vrtaÄŤka" />
         </div>
 
         <div class="search-field">
           <label>Kde?</label>
-          <input id="results-search-where" type="text" placeholder="město nebo PSČ" />
+          <input id="results-search-where" type="text" placeholder="mÄ›sto nebo PSÄŚ" />
         </div>
 
         <button id="results-search-button" type="button">Upravit</button>
@@ -700,9 +701,9 @@
     </section>
 
     <div class="nearby-results-banner" id="nearbyResultsBanner">
-      <strong>Hledání podle vaší polohy</strong>
+      <strong>HledĂˇnĂ­ podle vaĹˇĂ­ polohy</strong>
       <span id="nearbyResultsText">
-        Nabídky s uloženou polohou řadíme podle vzdálenosti od vás. Nabídky bez GPS polohy zobrazujeme pod nimi.
+        NabĂ­dky s uloĹľenou polohou Ĺ™adĂ­me podle vzdĂˇlenosti od vĂˇs. NabĂ­dky bez GPS polohy zobrazujeme pod nimi.
       </span>
     </div>
 
@@ -714,38 +715,38 @@
         <div class="filter-group">
           <label>Kategorie</label>
           <select id="categoryFilter">
-            <option value="">Všechny kategorie</option>
-            <option value="Vrtačky">Vrtačky</option>
+            <option value="">VĹˇechny kategorie</option>
+            <option value="VrtaÄŤky">VrtaÄŤky</option>
             <option value="Brusky">Brusky</option>
             <option value="Pily">Pily</option>
-            <option value="Žebříky">Žebříky</option>
-            <option value="Zahradní technika">Zahradní technika</option>
-            <option value="Stavební technika">Stavební technika</option>
-            <option value="Ostatní">Ostatní</option>
+            <option value="Ĺ˝ebĹ™Ă­ky">Ĺ˝ebĹ™Ă­ky</option>
+            <option value="ZahradnĂ­ technika">ZahradnĂ­ technika</option>
+            <option value="StavebnĂ­ technika">StavebnĂ­ technika</option>
+            <option value="OstatnĂ­">OstatnĂ­</option>
           </select>
         </div>
 
         <div class="filter-group">
           <label>Cena za den</label>
           <select id="priceFilter">
-            <option value="">Bez omezení</option>
-            <option value="100">Do 100 Kč</option>
-            <option value="250">Do 250 Kč</option>
-            <option value="500">Do 500 Kč</option>
+            <option value="">Bez omezenĂ­</option>
+            <option value="100">Do 100 KÄŤ</option>
+            <option value="250">Do 250 KÄŤ</option>
+            <option value="500">Do 500 KÄŤ</option>
           </select>
         </div>
 
         <div class="filter-group">
           <label>Dostupnost</label>
           <select id="availabilityFilter">
-            <option value="">Vše</option>
-            <option value="available">Pouze dostupné</option>
-            <option value="unavailable">Pouze rezervované</option>
+            <option value="">VĹˇe</option>
+            <option value="available">Pouze dostupnĂ©</option>
+            <option value="unavailable">Pouze rezervovanĂ©</option>
           </select>
         </div>
 
         <div class="filter-note">
-          Dostupnost se načítá z otevřených rezervací v Supabase. Uzavřené, odmítnuté a zrušené rezervace nabídku neblokují.
+          Dostupnost se naÄŤĂ­tĂˇ z otevĹ™enĂ˝ch rezervacĂ­ v Supabase. UzavĹ™enĂ©, odmĂ­tnutĂ© a zruĹˇenĂ© rezervace nabĂ­dku neblokujĂ­.
         </div>
       </aside>
 
@@ -765,3 +766,4 @@
 
 </body>
 </html>
+
