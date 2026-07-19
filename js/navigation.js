@@ -429,7 +429,7 @@ function renderSharedNavigation(activePage) {
     nav.innerHTML = `
       <a href="jak-to-funguje.html" class="${isHowActive}">Jak to funguje</a>
       <a href="vysledky.html" class="${isResultsActive}">Prohlédnout nabídky</a>
-      <a href="nabidnout.html" class="${isOfferActive}">Nabídnout nářadí</a>
+      <a href="nabidnout.html" class="${isOfferActive}">Nabídnout cokoli</a>
       <a href="muj-ucet.html" class="nav-account-link ${isAccountActive}">
         Můj účet
         ${accountBadge}
@@ -440,7 +440,7 @@ function renderSharedNavigation(activePage) {
     nav.innerHTML = `
       <a href="jak-to-funguje.html" class="${isHowActive}">Jak to funguje</a>
       <a href="vysledky.html" class="${isResultsActive}">Prohlédnout nabídky</a>
-      <a href="nabidnout.html" class="${isOfferActive}">Nabídnout nářadí</a>
+      <a href="nabidnout.html" class="${isOfferActive}">Nabídnout cokoli</a>
       <a href="prihlaseni.html" class="${isLoginActive}">Přihlásit se</a>
       <a href="registrace.html" class="btn-register ${isRegisterActive}">Registrovat se</a>
     `;
