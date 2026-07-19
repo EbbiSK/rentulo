@@ -216,7 +216,7 @@ function loginNormalizeEmail(email) {
         loginSaveCurrentUser(currentUser);
         saveRememberLogin(rememberInput.checked);
 
-        window.location.href = "muj-ucet.html";
+        window.location.href = "index.html";
       } catch (error) {
         console.error("Přihlášení se nepodařilo.");
         showLoginError("Přihlášení se nepodařilo. Zkontrolujte připojení a zkuste to znovu.");
