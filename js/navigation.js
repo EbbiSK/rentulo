@@ -350,9 +350,9 @@ function renderSharedBranding() {
 
   const logoTextSubtitle = document.querySelector(".logo-text small");
 
-  if (logoTextSubtitle) {
-    logoTextSubtitle.textContent = "Sousedská půjčovna nářadí";
-  }
+if (logoTextSubtitle) {
+  logoTextSubtitle.remove();
+}
 
   const logoTitle = document.querySelector(".logo-title");
 
@@ -362,13 +362,9 @@ function renderSharedBranding() {
 
   const logoSubtitle = document.querySelector(".logo-subtitle");
 
-  if (logoSubtitle) {
-    logoSubtitle.textContent = "Sousedská půjčovna nářadí";
-  }
-
-  if (document.title) {
-    document.title = document.title.replaceAll("Nářadí od sousedů", "Rentulo");
-  }
+if (logoSubtitle) {
+  logoSubtitle.remove();
+}
 }
 
 function navClearLocalLogin() {
