@@ -109,7 +109,7 @@
       if (savedState === "active") {
         showAccountMessage(
           "Nabídka byla zveřejněna.",
-          "Vaše nářadí je teď viditelné ve výsledcích vyhledávání."
+          "Vaše nabídka je teď viditelná ve výsledcích vyhledávání."
         );
 
         sessionStorage.removeItem("rentuloOfferSaved");
@@ -129,8 +129,8 @@
       document.getElementById("offersList").innerHTML = `
         <section class="account-empty-state">
           <h2>Zatím nemáte žádné vlastní nabídky.</h2>
-          <p>Přidejte první nářadí, které chcete půjčovat lidem ve svém okolí.</p>
-          <a href="nabidnout.html">Přidat nářadí</a>
+          <p>Přidejte první věc, kterou chcete půjčovat lidem ve svém okolí.</p>
+<a href="nabidnout.html">Přidat nabídku</a>
         </section>
       `;
     }
@@ -139,8 +139,8 @@
       return {
         id: row.id,
         ownerId: row.owner_id,
-        name: row.name || "Nářadí",
-        category: row.category || "Nářadí",
+        name: row.name || "Věc k půjčení",
+category: row.category || "Ostatní",
         description: row.description || "",
         city: row.city || row.pickup_city || "-",
         postalCode: row.postal_code || "",
@@ -160,8 +160,8 @@
         ownerId: row.owner_id,
         renterId: row.renter_id,
 
-        offerName: row.offer_name || "Nářadí",
-        category: row.category || "Nářadí",
+        offerName: row.offer_name || "Věc k půjčení",
+category: row.category || "Ostatní",
         city: row.city || "",
 
         pricePerDay: Number(row.price_per_day || 0),
@@ -300,11 +300,11 @@
     }
 
     function getOfferName(offer) {
-      return offer.name || "Nářadí";
+      return offer.name || "Věc k půjčení";
     }
 
     function getOfferCategory(offer) {
-      return offer.category || "Nářadí";
+      return offer.category || "Ostatní";
     }
 
     function getOfferCity(offer) {
@@ -559,11 +559,11 @@
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PAID) {
-        return `<p class="request-note success">Rezervace je zaplacena. Po předání nářadí ji označte jako vyzvednutou.</p>`;
+        return `<p class="request-note success">Rezervace je zaplacena. Po předání věci ji označte jako vyzvednutou.</p>`;
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
-        return `<p class="request-note success">Nářadí bylo označeno jako vyzvednuté. Po vrácení dokončete půjčení.</p>`;
+return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po vrácení dokončete půjčení.</p>`;
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED) {
