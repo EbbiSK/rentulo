@@ -701,3 +701,32 @@
     width: 100%;
   }
 }
+/* Kompaktnejšia história */
+.history-list {
+  gap: 8px;
+}
+
+.simple-reservation-row {
+  padding: 7px 12px;
+  margin-bottom: 8px;
+  border-radius: 14px;
+  gap: 14px;
+  min-height: 48px;
+}
+
+.simple-reservation-info strong {
+  font-size: 14px;
+  line-height: 1.15;
+}
+
+.simple-reservation-info span,
+.simple-reservation-date,
+.simple-reservation-price,
+.simple-reservation-status {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.simple-reservation-main {
+  gap: 8px;
+}
