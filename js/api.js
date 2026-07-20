@@ -752,3 +752,6 @@ async function apiCreateNotification(notificationData) {
 
   return data;
 }
+
+
+window.apiGetReservations = apiGetReservations;
