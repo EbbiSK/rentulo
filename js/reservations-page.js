@@ -187,7 +187,6 @@ category: row.category || "Ostatní",
 
         pricePerDay: Number(row.price_per_day || 0),
         price: Number(row.price_per_day || 0),
-        deposit: Number(row.deposit || 0),
 
         startDate: row.start_date || row.date_from,
         endDate: row.end_date || row.date_to,
@@ -867,7 +866,6 @@ return (
       const endDate = getSafeReservationDateTo(reservation);
 
       const totalPrice = getSafeReservationTotalPrice(reservation);
-      const deposit = Number(reservation.deposit || 0);
       const platformFee = getSafeReservationPlatformFee(reservation, PLATFORM_FEE_PERCENT);
       const ownerPayout = getSafeReservationOwnerPayout(reservation, PLATFORM_FEE_PERCENT);
 
@@ -882,11 +880,6 @@ return (
             <div class="info-box">
               <span>Celkem k platbě</span>
               <strong>${escapeHtml(totalPrice)} Kč</strong>
-            </div>
-
-            <div class="info-box">
-              <span>Kauce</span>
-              <strong>${escapeHtml(deposit)} Kč</strong>
             </div>
 
             <div class="info-box">

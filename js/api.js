@@ -129,9 +129,6 @@ function apiNormalizeOffer(row) {
       row.price ??
       0,
 
-    deposit: row.deposit ?? row.kauce ?? 0,
-    kauce: row.kauce ?? row.deposit ?? 0,
-
     status: row.status === "active" ? "Aktivní" : row.status,
     supabaseStatus: row.supabaseStatus || row.status || "",
 

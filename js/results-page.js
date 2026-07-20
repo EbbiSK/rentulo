@@ -135,8 +135,6 @@
         pricePerDay: row.price_per_day,
         cena: row.price_per_day,
 
-        deposit: row.deposit,
-        kauce: row.deposit,
 
         status: row.status === "active" ? "Aktivní" : row.status,
         supabaseStatus: row.status,
@@ -163,7 +161,7 @@
       const { data, error } = await supabaseClient
         .from("public_offers")
         .select(
-  "id, owner_id, name, category, description, city, postal_code, price_per_day, deposit, status, photo_url, created_at, updated_at"
+  "id, owner_id, name, category, description, city, postal_code, price_per_day, status, photo_url, created_at, updated_at"
 )
         .order("created_at", {
           ascending: false
@@ -420,27 +418,6 @@
       return 0;
     }
 
-    function getOfferDeposit(offer) {
-      const possibleValues = [
-        offer.deposit,
-        offer.kauce,
-        offer.depositAmount,
-        offer.depositValue,
-        offer.vratnaKauce,
-        offer.vratnáKauce
-      ];
-
-      for (let i = 0; i < possibleValues.length; i++) {
-        const parsedValue = parseStoredMoney(possibleValues[i]);
-
-        if (parsedValue !== null) {
-          return parsedValue;
-        }
-      }
-
-      return 0;
-    }
-
     function getOfferPhoto(offer) {
       return (
         offer.photoUrl ||
@@ -583,7 +560,6 @@
       const city = getOfferCity(offer);
       const category = getOfferCategory(offer);
       const price = getOfferPrice(offer);
-      const deposit = getOfferDeposit(offer);
       const isReserved = isOfferReservedInResults(offer);
 
       const availabilityClass = isReserved ? "unavailable" : "available";
@@ -609,11 +585,6 @@
               <div class="result-info-box">
                 <span>Cena za den</span>
                 <strong>${escapeHtml(price)} Kč</strong>
-              </div>
-
-              <div class="result-info-box">
-                <span>Kauce</span>
-                <strong>${escapeHtml(deposit)} Kč</strong>
               </div>
 
               <div class="result-info-box ${availabilityClass}">

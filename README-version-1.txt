@@ -40,14 +40,12 @@ Ponuky vecí:
 - detail ponuky
 - fotka ponuky
 - cena za deň
-- kaucia
 - mesto a PSČ
 - popis
 - kategória
 
 Dôležité pravidlá ponúk:
 - ponuka s aktívnou rezerváciou sa nesmie zmazať
-- cena a kaucia sa pri aktívnej rezervácii nemajú meniť
 - koncepty sa nemajú zobrazovať ako verejné ponuky
 
 Vyhľadávanie:
@@ -96,7 +94,6 @@ Platba:
 - záujemca platí cenu půjčení
 - platforma má províziu 10 %
 - majiteľ má nárok na 90 %
-- kaucia sa eviduje oddelene
 - kontakt a adresa sa zobrazia až po platbe
 
 V prototype:

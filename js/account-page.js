@@ -209,7 +209,6 @@ category: row.category || "Ostatní",
 
         pricePerDay: Number(row.price_per_day || 0),
         price: Number(row.price_per_day || 0),
-        deposit: Number(row.deposit || 0),
 
         startDate: row.start_date || row.date_from || "",
         endDate: row.end_date || row.date_to || "",

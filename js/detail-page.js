@@ -65,8 +65,6 @@ owner_id: row.owner_id,
         pricePerDay: row.price_per_day,
         cena: row.price_per_day,
 
-        deposit: row.deposit,
-        kauce: row.deposit,
 
         status: row.status === "active" ? "Aktivní" : row.status,
         supabaseStatus: row.status,
@@ -225,10 +223,6 @@ owner_id: row.owner_id,
       return Number(offer.price || offer.pricePerDay || offer.cena || 0) || 0;
     }
 
-    function getOfferDeposit(offer) {
-      return Number(offer.deposit || offer.kauce || 0) || 0;
-    }
-
     function renderDetailImage(offer) {
       const offerName = getOfferName(offer);
       const photo = getOfferPhoto(offer);
@@ -323,7 +317,7 @@ owner_id: row.owner_id,
       `;
     }
 
-    function renderUnavailableSidebar(price, deposit, ownerPublicName, ownerPublicCity, messageTitle, messageText) {
+    function renderUnavailableSidebar(price, ownerPublicName, ownerPublicCity, messageTitle, messageText) {
       return `
         <aside class="sidebar">
           <div class="price">${escapeHtml(price)}</div>
@@ -338,11 +332,6 @@ owner_id: row.owner_id,
             <div class="info-row">
               <span>Lokalita</span>
               <span>${escapeHtml(ownerPublicCity || "-")}</span>
-            </div>
-
-            <div class="info-row">
-              <span>Kauce</span>
-              <span>${escapeHtml(deposit)} Kč</span>
             </div>
 
             <div class="info-row">
@@ -367,7 +356,7 @@ owner_id: row.owner_id,
       `;
     }
 
-    function renderBookingSidebar(offer, price, deposit, ownerPublicName, ownerPublicCity, ownerGetsPerDay, platformFeePerDay) {
+    function renderBookingSidebar(offer, price, ownerPublicName, ownerPublicCity, ownerGetsPerDay, platformFeePerDay) {
       return `
         <aside class="sidebar">
           <div class="price">${escapeHtml(price)}</div>
@@ -382,11 +371,6 @@ owner_id: row.owner_id,
             <div class="info-row">
               <span>Lokalita</span>
               <span>${escapeHtml(ownerPublicCity || getOfferCity(offer) || "-")}</span>
-            </div>
-
-            <div class="info-row">
-              <span>Kauce</span>
-              <span>${escapeHtml(deposit)} Kč</span>
             </div>
 
             <div class="info-row">
@@ -522,7 +506,6 @@ Přesná adresa a telefon zůstanou skryté až do zaplacení.
       const offerStatus = getOfferStatus(offer);
 
       const price = getOfferPrice(offer);
-      const deposit = getOfferDeposit(offer);
       const platformFeePerDay = Math.round(price * PLATFORM_FEE_PERCENT / 100);
       const ownerGetsPerDay = price - platformFeePerDay;
 
@@ -569,7 +552,6 @@ availabilityPanelText = "Tato věc má právě otevřenou rezervaci v Supabase. 
 } else if (!isActive) {
         sidebarContent = renderUnavailableSidebar(
           price,
-          deposit,
           ownerPublicName,
           ownerPublicCity,
           "Nabídka není aktivní",
@@ -578,7 +560,6 @@ availabilityPanelText = "Tato věc má právě otevřenou rezervaci v Supabase. 
       } else if (isReserved) {
         sidebarContent = renderUnavailableSidebar(
           price,
-          deposit,
           ownerPublicName,
           ownerPublicCity,
           "Věc teď není dostupná",
@@ -588,7 +569,6 @@ availabilityPanelText = "Tato věc má právě otevřenou rezervaci v Supabase. 
         sidebarContent = renderBookingSidebar(
           offer,
           price,
-          deposit,
           ownerPublicName,
           ownerPublicCity,
           ownerGetsPerDay,
@@ -784,7 +764,6 @@ availabilityPanelText = "Tato věc má právě otevřenou rezervaci v Supabase. 
       }
 
       const pricePerDay = getOfferPrice(offer);
-      const deposit = getOfferDeposit(offer);
       const platformFeeAmount = Math.round(totalPrice * PLATFORM_FEE_PERCENT / 100);
       const ownerPayout = totalPrice - platformFeeAmount;
 
@@ -802,7 +781,7 @@ availabilityPanelText = "Tato věc má právě otevřenou rezervaci v Supabase. 
         city: getOfferCity(offer),
 
         price_per_day: pricePerDay,
-        deposit: deposit,
+        deposit: 0,
 
         start_date: startDate,
 end_date: endDate,

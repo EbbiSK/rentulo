@@ -658,7 +658,7 @@ function setupEditOfferSave() {
       }
 
       if (editHasBlockingReservation) {
-        editShowMessage("Změny byly uloženy. Cena a kauce zůstaly stejné, protože nabídka má aktivní rezervaci.", "success");
+        editShowMessage("Změny byly uloženy. Cena zůstala stejná, protože nabídka má aktivní rezervaci.", "success");
       } else {
         editShowMessage("Změny byly uloženy.", "success");
       }

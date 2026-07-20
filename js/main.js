@@ -219,7 +219,6 @@ function setupOfferForm() {
       const cityInput = document.getElementById("toolCity");
       const postalInput = document.getElementById("toolPostalCode");
       const priceInput = document.getElementById("toolPrice");
-      const depositInput = document.getElementById("toolDeposit");
       const descriptionInput = document.getElementById("toolDescription");
 
       const pickupUseCustom = document.getElementById("pickupUseCustom");
@@ -237,7 +236,6 @@ function setupOfferForm() {
         cityInput,
         postalInput,
         priceInput,
-        depositInput,
         descriptionInput
       ];
 
@@ -254,15 +252,9 @@ function setupOfferForm() {
       }
 
       const priceValue = moneyToNumber(priceInput ? priceInput.value : "");
-      const depositValue = moneyToNumber(depositInput ? depositInput.value : "");
 
       if (priceValue <= 0) {
         markError(priceInput);
-        hasError = true;
-      }
-
-      if (depositValue < 0) {
-        markError(depositInput);
         hasError = true;
       }
 
@@ -329,7 +321,7 @@ function setupOfferForm() {
         city: cityInput.value.trim(),
         postalCode: postalInput.value.trim(),
         price: priceValue,
-        deposit: depositValue,
+        deposit: 0,
         description: descriptionInput.value.trim(),
         status: "Aktivní",
 

@@ -137,7 +137,6 @@ Logika platby:
 - záujemca zaplatí cenu požičania
 - platforma si vezme 10 %
 - majiteľ dostane 90 %
-- kaucia sa eviduje samostatne
 - kontakt a presná adresa sa zobrazia až po platbe
 
 Statusy rezervácie:
