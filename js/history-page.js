@@ -7,6 +7,86 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   const reservations = await apiGetReservations();
+  const currentUserId = String(currentUser.id);
 
-  console.log("První rezervace:", reservations[0]);
+  const finishedStatuses = [
+    "returned",
+    "cancelled",
+    "rejected",
+    "declined",
+  ];
+
+  const rentalHistory = reservations.filter(function (reservation) {
+    return (
+      String(reservation.renter_id || reservation.renterId) === currentUserId &&
+      finishedStatuses.includes(String(reservation.status).toLowerCase())
+    );
+  });
+
+  const offerHistory = reservations.filter(function (reservation) {
+    return (
+      String(reservation.owner_id || reservation.ownerId) === currentUserId &&
+      finishedStatuses.includes(String(reservation.status).toLowerCase())
+    );
+  });
+
+  document.getElementById("rentalHistoryCount").textContent =
+    rentalHistory.length + " rezervací";
+
+  document.getElementById("offerHistoryCount").textContent =
+    offerHistory.length + " rezervací";
+
+  document.getElementById("rentalHistoryList").innerHTML =
+    renderHistoryList(rentalHistory);
+
+  document.getElementById("offerHistoryList").innerHTML =
+    renderHistoryList(offerHistory);
 });
+
+function renderHistoryList(reservations) {
+  if (!reservations.length) {
+    return '<p class="section-empty-note">Žádné záznamy v historii.</p>';
+  }
+
+  return `
+    <div class="reservation-card-list history-list">
+      ${reservations
+        .map(function (reservation) {
+          return renderHistoryRow(reservation);
+        })
+        .join("")}
+    </div>
+  `;
+}
+
+function renderHistoryRow(reservation) {
+  const name = reservation.offer_name || "Nabídka";
+  const city = reservation.city || "";
+  const startDate = reservation.date_from || reservation.startDate || "";
+  const endDate = reservation.date_to || reservation.endDate || "";
+  const price = reservation.total_price || reservation.totalPrice || 0;
+  const status = reservation.status || "";
+
+  return `
+    <article class="simple-reservation-row">
+      <div class="simple-reservation-main">
+        <div class="simple-reservation-info">
+          <strong>${escapeHtml(name)}</strong>
+          <span>${escapeHtml(city)}</span>
+        </div>
+      </div>
+
+      <div class="simple-reservation-date">
+        ${escapeHtml(startDate)} – ${escapeHtml(endDate)}
+      </div>
+
+      <div class="simple-reservation-price">
+        ${escapeHtml(price)} Kč
+      </div>
+
+      <div class="simple-reservation-status">
+        ${escapeHtml(status)}
+      </div>
+    </article>
+  `;
+}
