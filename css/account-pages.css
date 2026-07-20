@@ -405,3 +405,34 @@
     grid-template-columns: 1fr;
   }
 }
+.owner-review-select,
+.owner-review-textarea {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px 12px;
+  border: 1px solid #ded8cf;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #063f32;
+  font: inherit;
+  font-weight: 700;
+  box-sizing: border-box;
+}
+
+.owner-review-select {
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.owner-review-textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.owner-review-select:focus,
+.owner-review-textarea:focus {
+  outline: none;
+  border-color: #007a55;
+  box-shadow: 0 0 0 3px rgba(0, 122, 85, 0.12);
+}

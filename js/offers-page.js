@@ -703,7 +703,10 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
           <div style="margin-top: 10px;">
             <label>
               Počet hvězdiček
-              <select id="owner-review-rating-${escapeHtml(reservationId)}">
+              <select
+  id="owner-review-rating-${escapeHtml(reservationId)}"
+  class="owner-review-select"
+>
                 <option value="5">★★★★★ - výborné</option>
                 <option value="4">★★★★☆ - dobré</option>
                 <option value="3">★★★☆☆ - průměrné</option>
@@ -716,8 +719,12 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
           <div style="margin-top: 10px;">
             <label>
               Komentář
-              <textarea id="owner-review-text-${escapeHtml(reservationId)}" rows="3" placeholder="Jak proběhlo půjčení?"></textarea>
-            </label>
+              <textarea
+  id="owner-review-text-${escapeHtml(reservationId)}"
+  class="owner-review-textarea"
+  rows="3"
+  placeholder="Jak proběhlo půjčení?"
+></textarea>
           </div>
 
           <button class="small-button" type="button" onclick="saveOwnerReviewForRenter('${escapeHtml(reservationId)}')">
