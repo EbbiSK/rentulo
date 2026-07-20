@@ -382,7 +382,11 @@ category: row.category || "Ostatní",
 
 window.rentuloAccountNotificationCount =
   ownerActionRequiredCount + waitingPaymentCount;
+const currentNavigationPage = document.body.dataset.navigationPage || "";
 
+if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
+  renderSharedNavigation(currentNavigationPage);
+}
       const reservationsCard = document.getElementById("reservationsCard");
       const offersCard = document.getElementById("offersCard");
 

@@ -395,7 +395,43 @@ async function navLogoutUser() {
 
   window.location.href = "index.html";
 }
+async function navLoadNotificationCountFromSupabase(activePage) {
+  const currentUser = navGetCurrentUser();
 
+  if (!currentUser || typeof apiGetReservations !== "function") {
+    return;
+  }
+
+  const reservations = await apiGetReservations();
+
+  if (!Array.isArray(reservations)) {
+    return;
+  }
+
+  const userId = String(currentUser.id || "");
+  const userEmail = navNormalizeEmail(navGetUserEmail(currentUser));
+
+  const notificationCount = reservations.filter(function (reservation) {
+    const ownerId = String(reservation.ownerId || reservation.owner_id || "");
+    const renterId = String(reservation.renterId || reservation.renter_id || "");
+    const renterEmail = navNormalizeEmail(
+      reservation.renterEmail || reservation.renter_email || ""
+    );
+    const status = navGetReservationStatus(reservation);
+
+    const ownerNeedsAction =
+      ownerId === userId && navRequiresOwnerAction(status);
+
+    const renterNeedsPayment =
+      (renterId === userId || renterEmail === userEmail) &&
+      navIsReservationWaitingForPayment(status);
+
+    return ownerNeedsAction || renterNeedsPayment;
+  }).length;
+
+  window.rentuloAccountNotificationCount = notificationCount;
+  renderSharedNavigation(activePage);
+}
 function renderSharedNavigation(activePage) {
   renderSharedBranding();
 
@@ -459,6 +495,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const page = document.body.dataset.navigationPage;
 
   if (page) {
-    renderSharedNavigation(page);
-  }
+  renderSharedNavigation(page);
+  navLoadNotificationCountFromSupabase(page);
+}
 });
