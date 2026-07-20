@@ -8,5 +8,5 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const reservations = await apiGetReservations();
 
-  console.log("Historie rezervací:", reservations);
+  console.log("První rezervace:", reservations[0]);
 });
