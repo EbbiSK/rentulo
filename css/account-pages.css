@@ -730,3 +730,8 @@
 .simple-reservation-main {
   gap: 8px;
 }
+.simple-reservation-row {
+  min-height: 34px;
+  padding: 3px 12px;
+  margin-bottom: 6px;
+}
