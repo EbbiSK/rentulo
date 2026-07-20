@@ -540,3 +540,22 @@
   font-size: 14px;
   border-radius: 10px;
 }
+.simple-offer-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) 160px 130px 120px auto;
+  gap: 18px;
+  padding: 0 14px 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #65716c;
+}
+
+.simple-offer-head span:last-child {
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .simple-offer-head {
+    display: none;
+  }
+}
