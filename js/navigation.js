@@ -491,11 +491,17 @@ function renderSharedNavigation(activePage) {
     });
   }
 }
-document.addEventListener("DOMContentLoaded", function () {
+function initializeSharedNavigation() {
   const page = document.body.dataset.navigationPage;
 
   if (page) {
-  renderSharedNavigation(page);
-  navLoadNotificationCountFromSupabase(page);
+    renderSharedNavigation(page);
+    navLoadNotificationCountFromSupabase(page);
+  }
 }
-});
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeSharedNavigation);
+} else {
+  initializeSharedNavigation();
+}
