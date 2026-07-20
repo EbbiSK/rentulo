@@ -30,11 +30,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
   });
 
-  document.getElementById("rentalHistoryCount").textContent =
-    rentalHistory.length + " rezervací";
-
-  document.getElementById("offerHistoryCount").textContent =
-    offerHistory.length + " rezervací";
+ 
 
   document.getElementById("rentalHistoryList").innerHTML =
     renderHistoryList(rentalHistory);
