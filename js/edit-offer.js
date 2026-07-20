@@ -346,24 +346,19 @@ async function offerHasOpenReservationInSupabase(offerId) {
 
 function editLockPriceFields(hasBlockingReservation) {
   const priceInput = document.querySelector("#edit-price");
-  const depositInput = document.querySelector("#edit-deposit");
 
-  if (!priceInput || !depositInput) {
+  if (!priceInput) {
     return;
   }
 
   if (!hasBlockingReservation) {
     priceInput.readOnly = false;
-    depositInput.readOnly = false;
     priceInput.classList.remove("locked-input");
-    depositInput.classList.remove("locked-input");
     return;
   }
 
   priceInput.readOnly = true;
-  depositInput.readOnly = true;
   priceInput.classList.add("locked-input");
-  depositInput.classList.add("locked-input");
 
   const existingNotice = document.querySelector(".edit-price-lock-notice");
 
@@ -373,18 +368,19 @@ function editLockPriceFields(hasBlockingReservation) {
 
   const notice = document.createElement("p");
   notice.className = "edit-price-lock-notice";
-  notice.textContent = "Cena a kauce jsou zamčené, protože nabídka má aktivní rezervaci.";
+  notice.textContent =
+    "Cena je zamčená, protože nabídka má aktivní rezervaci.";
 
-  depositInput.insertAdjacentElement("afterend", notice);
+  priceInput.insertAdjacentElement("afterend", notice);
 }
 
 function fillEditForm(offer) {
   const nameInput = document.querySelector("#edit-name");
   const categorySelect = document.querySelector("#edit-category");
   const cityInput = document.querySelector("#edit-city");
-  const postalInput = document.querySelector("#edit-postal-code")
+  const postalInput = document.querySelector("#edit-postal-code");
   const priceInput = document.querySelector("#edit-price");
-  const depositInput = document.querySelector("#edit-deposit");
+  
   const descriptionInput = document.querySelector("#edit-description");
 
   if (
@@ -393,7 +389,7 @@ function fillEditForm(offer) {
     !cityInput ||
     !postalInput ||
     !priceInput ||
-    !depositInput ||
+
     !descriptionInput
   ) {
     editShowMessage("Formulář pro úpravu nabídky se nepodařilo načíst.");
@@ -405,7 +401,7 @@ function fillEditForm(offer) {
   cityInput.value = offer.city || "";
   postalInput.value = offer.postal_code || "";
   priceInput.value = editValueOrEmpty(offer.price_per_day);
-  depositInput.value = editValueOrEmpty(offer.deposit);
+  
   descriptionInput.value = offer.description || "";
 
   editOfferPhotoDataUrl = getEditOfferPhoto(offer);
@@ -574,7 +570,7 @@ function setupEditOfferSave() {
     const cityInput = document.querySelector("#edit-city");
     const postalInput = document.querySelector("#edit-postal-code")
     const priceInput = document.querySelector("#edit-price");
-    const depositInput = document.querySelector("#edit-deposit");
+  
     const descriptionInput = document.querySelector("#edit-description");
 
     if (
@@ -583,7 +579,7 @@ function setupEditOfferSave() {
       !cityInput ||
       !postalInput ||
       !priceInput ||
-      !depositInput ||
+
       !descriptionInput
     ) {
       editShowMessage("Formulář pro úpravu nabídky se nepodařilo načíst.");
@@ -605,7 +601,7 @@ function setupEditOfferSave() {
     }
 
     let priceValue = Number(editCurrentOffer.price_per_day || 0);
-    let depositValue = Number(editCurrentOffer.deposit || 0);
+
 
     if (!editHasBlockingReservation) {
       if (editIsEmpty(priceInput.value)) {
@@ -613,23 +609,17 @@ function setupEditOfferSave() {
         hasError = true;
       }
 
-      if (editIsEmpty(depositInput.value)) {
-        editMarkError(depositInput);
-        hasError = true;
-      }
+      
 
       priceValue = editMoneyToNumber(priceInput.value);
-      depositValue = editMoneyToNumber(depositInput.value);
+      
 
       if (priceValue <= 0) {
         editMarkError(priceInput);
         hasError = true;
       }
 
-      if (depositValue < 0) {
-        editMarkError(depositInput);
-        hasError = true;
-      }
+      
     }
 
     if (hasError) {
@@ -654,7 +644,7 @@ function setupEditOfferSave() {
 
       if (!editHasBlockingReservation) {
         updatePayload.price_per_day = priceValue;
-        updatePayload.deposit = depositValue;
+
       }
 
       const { error } = await supabaseClient
