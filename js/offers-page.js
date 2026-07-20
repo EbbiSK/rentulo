@@ -1249,21 +1249,84 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
         </article>
       `;
     }
+function renderSimpleOffer(offer, requests) {
+  const offerId = String(offer.id);
+  const offerName = getOfferName(offer);
+  const offerCity = getOfferCity(offer);
+  const offerPrice = getOfferPrice(offer);
 
+  const openRequests = requests.filter(function (reservation) {
+    return isOpenStatus(reservation.status);
+  });
+
+  const requestText =
+    openRequests.length === 1
+      ? "1 žádost"
+      : openRequests.length + " žádostí";
+
+  return `
+    <article class="simple-offer-row">
+      <div class="simple-offer-main">
+        ${renderToolImage(offer)}
+
+        <div class="simple-offer-info">
+          <strong class="simple-offer-name">${escapeHtml(offerName)}</strong>
+          <span class="simple-offer-meta">${escapeHtml(offerCity)}</span>
+        </div>
+      </div>
+
+      <div class="simple-offer-value">
+        ${escapeHtml(offerPrice)} Kč / den
+      </div>
+
+      <div class="simple-offer-value">
+        ${escapeHtml(requestText)}
+      </div>
+
+      <div class="simple-offer-value">
+        ${escapeHtml(getOfferStatus(offer))}
+      </div>
+
+      <div class="simple-offer-actions">
+        ${
+          openRequests.length
+            ? `<button
+                type="button"
+                class="offer-primary-button urgent"
+                onclick="openOfferRequests('${escapeHtml(offerId)}')"
+              >
+                Vyřídit žádosti
+              </button>`
+            : `<a href="detail.html?id=${encodeURIComponent(offerId)}">
+                Detail
+              </a>`
+        }
+
+        <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">
+          Upravit
+        </a>
+      </div>
+    </article>
+  `;
+}
     function renderOffers() {
       if (!ownerOffers.length) {
         renderEmptyState();
         return;
       }
 
-      const offersRowsHtml = ownerOffers.map(function (offer) {
+      const offersRowsHtml = ownerOffers.map(function (offer, index) {
         const offerId = String(offer.id);
 
         const offerRequests = ownerReservations.filter(function (reservation) {
           return String(reservation.offerId) === String(offerId);
         });
 
-        return renderOffer(offer, offerRequests);
+        if (index === 0) {
+  return renderSimpleOffer(offer, offerRequests);
+}
+
+return renderOffer(offer, offerRequests);
       }).join("");
 
       document.getElementById("offersList").innerHTML = `
