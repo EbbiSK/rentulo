@@ -393,7 +393,7 @@ async function apiLogout() {
 ========================= */
 
 async function apiGetOffers() {
-  const supabaseClient = apiGetSupabaseClient();
+  const supabaseClient = getSupabaseClient();
 
   if (!supabaseClient) {
     return [];
@@ -532,7 +532,7 @@ async function apiDeleteOffer(id) {
 ========================= */
 
 async function apiGetReservations() {
-  const supabaseClient = apiGetSupabaseClient();
+  const supabaseClient = getSupabaseClient();
 
   if (!supabaseClient) {
     return [];
@@ -692,7 +692,7 @@ async function apiUpdateReservationStatus(id, status) {
 ========================= */
 
 async function apiGetNotifications() {
-  const supabaseClient = apiGetSupabaseClient();
+  const supabaseClient = getSupabaseClient();
 
   if (!supabaseClient) {
     return [];
