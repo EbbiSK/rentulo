@@ -1322,11 +1322,7 @@ function renderSimpleOffer(offer, requests) {
           return String(reservation.offerId) === String(offerId);
         });
 
-        if (index === 0) {
-  return renderSimpleOffer(offer, offerRequests);
-}
-
-return renderOffer(offer, offerRequests);
+        return renderSimpleOffer(offer, offerRequests);
       }).join("");
 
       document.getElementById("offersList").innerHTML = `
