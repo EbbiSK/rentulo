@@ -677,7 +677,7 @@
       <h1>Upravit nabídku</h1>
 
       <p>
-        Změňte fotku, název, cenu, kauci, lokalitu nebo popis. Po uložení se změny projeví
+        Změňte fotku, název, cenu, lokalitu nebo popis. Po uložení se změny projeví
         ve výsledcích vyhledávání i v detailu nabídky.
       </p>
 
@@ -723,7 +723,14 @@
           </div>
 
           <div class="form-grid">
-            
+           <div class="form-group">
+  <label for="edit-name">Název věci</label>
+  <input
+    id="edit-name"
+    type="text"
+    placeholder="např. stan, kočárek nebo Aku vrtačka"
+  />
+</div> 
 
             <div class="form-group">
               <label for="edit-category">Kategorie</label>
@@ -757,11 +764,7 @@
               <input id="edit-price" type="text" placeholder="např. 250 Kč" />
             </div>
 
-            <div class="form-group">
-              <label for="edit-deposit">Vratná kauce</label>
-              <input id="edit-deposit" type="text" placeholder="např. 1000 Kč" />
-            </div>
-          </div>
+            
 
           <div class="form-group full">
   <label for="edit-description">Popis věci</label>
@@ -792,7 +795,7 @@
           <ul class="edit-help-list">
             <li>Fotku, název a kategorii věci</li>
             <li>Město, PSČ a cenu za den</li>
-            <li>Vratnou kauci</li>
+            
             <li>Popis a podmínky půjčení</li>
           </ul>
         </div>
