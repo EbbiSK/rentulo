@@ -1098,24 +1098,13 @@ return (
         return safeIsOpenReservationStatus(getSafeReservationStatus(reservation));
       });
 
-      const historyReservations = sortedReservations.filter(function (reservation) {
-        return safeIsClosedReservationStatus(getSafeReservationStatus(reservation));
-      });
-
       document.getElementById("reservationsList").innerHTML =
         renderReservationSection(
           "Aktivní rezervace",
           activeReservations,
-          "Nemáte žádné aktivní rezervace.",
+          "Nemáte žádné aktivní rezervace. Dokončené, zrušené a odmítnuté záznamy najdete v Historii.",
           "active",
           false
-        ) +
-        renderReservationSection(
-          "Historie rezervací",
-          historyReservations,
-          "V historii zatím nejsou žádné dokončené ani odmítnuté rezervace.",
-          "history",
-          true
         );
     }
 

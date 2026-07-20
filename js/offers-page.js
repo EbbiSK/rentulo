@@ -1113,16 +1113,11 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
         return isOpenStatus(reservation.status);
       });
 
-      const closedRequests = requests.filter(function (reservation) {
-        return isClosedStatus(reservation.status);
-      });
-
       const ownerActionRequests = openRequests.filter(function (reservation) {
         return isOpenStatus(reservation.status);
       });
 
       const openPanelId = "open-panel-" + offerId;
-      const historyPanelId = "history-panel-" + offerId;
       const offerDetailId = "offer-detail-" + offerId;
 
       const openRequestsButtonText = openRequests.length
@@ -1132,10 +1127,6 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
       const openContent = openRequests.length
         ? openRequests.map(renderRequest).join("")
         : `<p class="request-empty-note">U této nabídky teď není žádná otevřená žádost.</p>`;
-
-      const historyContent = closedRequests.length
-        ? closedRequests.map(renderHistoryRequestRow).join("")
-        : `<p class="request-empty-note">Tady budou dokončené, odmítnuté nebo zrušené žádosti k této nabídce.</p>`;
 
       let requestStateHtml = `<span class="offer-request-state quiet">Bez otevřených žádostí</span>`;
 
@@ -1178,10 +1169,6 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
                 <span>Otevřené žádosti</span>
                 <strong>${escapeHtml(openRequests.length)}</strong>
               </div>
-              <div class="mini-stat">
-                <span>Historie</span>
-                <strong>${escapeHtml(closedRequests.length)}</strong>
-              </div>
             </div>
 
             <div class="offer-detail-actions">
@@ -1194,20 +1181,9 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
                 data-open-text="Skrýt žádosti"
                 data-important="${ownerActionRequests.length ? "true" : "false"}"
               >${escapeHtml(openRequestsButtonText)}</button>
-
-              <button
-                class="request-toggle-button"
-                type="button"
-                id="history-toggle-${escapeHtml(offerId)}"
-                onclick="toggleRequestPanel('${escapeHtml(historyPanelId)}', this)"
-                data-closed-text="Historie (${escapeHtml(closedRequests.length)})"
-                data-open-text="Skrýt historii"
-                data-important="false"
-              >Historie (${escapeHtml(closedRequests.length)})</button>
             </div>
 
             ${renderRequestPanel(openPanelId, "Otevřené žádosti", openRequests.length, openContent)}
-            ${renderRequestPanel(historyPanelId, "Historie žádostí", closedRequests.length, historyContent)}
           </div>
         `;
 
