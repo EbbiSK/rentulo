@@ -70,11 +70,9 @@ function renderHistoryRow(reservation) {
           <strong>${escapeHtml(name)}</strong>
           <span>${escapeHtml(city)}</span>
         </div>
-      </div>
-
-      <div class="simple-reservation-date">
-        ${escapeHtml(startDate)} – ${escapeHtml(endDate)}
-      </div>
+      <div class="simple-reservation-info">
+  <strong>${escapeHtml(name)}</strong>
+</div>
 
       <div class="simple-reservation-price">
         ${escapeHtml(price)} Kč
