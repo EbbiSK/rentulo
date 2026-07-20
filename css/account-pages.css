@@ -668,3 +668,36 @@
 #historyContent {
   margin-top: 14px;
 }
+.history-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 24px 0 18px;
+}
+
+.history-switch-button {
+  padding: 16px;
+  border: 1px solid #e8dfd2;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #073f2e;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.history-switch-button.active {
+  background: #007a55;
+  border-color: #007a55;
+  color: #ffffff;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 700px) {
+  .history-switch {
+    grid-template-columns: 1fr;
+  }
+}

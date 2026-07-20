@@ -90,3 +90,21 @@ function renderHistoryRow(reservation) {
     </article>
   `;
 }
+const historyButtons = document.querySelectorAll(".history-switch-button");
+const rentalHistorySection = document.getElementById("rentalHistorySection");
+const offerHistorySection = document.getElementById("offerHistorySection");
+
+historyButtons.forEach(function (button) {
+  button.addEventListener("click", function () {
+    const selectedView = button.dataset.historyView;
+
+    historyButtons.forEach(function (item) {
+      item.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    rentalHistorySection.hidden = selectedView !== "rentals";
+    offerHistorySection.hidden = selectedView !== "offers";
+  });
+});

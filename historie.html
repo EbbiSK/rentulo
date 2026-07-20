@@ -28,21 +28,36 @@
       <p>Přehled dokončených a zrušených rezervací.</p>
     </section>
 
-    <section class="reservation-section">
-  <div class="reservation-section-header">
-    <h2>Moje půjčení</h2>
-    <span id="rentalHistoryCount">0 rezervací</span>
-  </div>
+<div class="history-switch">
+  <button
+    type="button"
+    class="history-switch-button active"
+    data-history-view="rentals"
+  >
+    Historie mých rezervací
+  </button>
 
+  <button
+    type="button"
+    class="history-switch-button"
+    data-history-view="offers"
+  >
+    Historie mých nabídek
+  </button>
+</div>
+
+<section
+  class="reservation-section"
+  id="rentalHistorySection"
+>
   <div id="rentalHistoryList"></div>
 </section>
 
-<section class="reservation-section">
-  <div class="reservation-section-header">
-    <h2>Moje nabídky</h2>
-    <span id="offerHistoryCount">0 rezervací</span>
-  </div>
-
+<section
+  class="reservation-section"
+  id="offerHistorySection"
+  hidden
+>
   <div id="offerHistoryList"></div>
 </section>
   </main>
