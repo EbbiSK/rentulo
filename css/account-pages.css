@@ -436,3 +436,79 @@
   border-color: #007a55;
   box-shadow: 0 0 0 3px rgba(0, 122, 85, 0.12);
 }
+.simple-offer-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) 160px 130px 120px auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px;
+  margin-bottom: 14px;
+  background: #ffffff;
+  border: 1px solid #e8dfd2;
+  border-radius: 18px;
+}
+
+.simple-offer-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.simple-offer-main .tool-image {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  margin: 0;
+}
+
+.simple-offer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.simple-offer-name {
+  font-size: 18px;
+  color: #004d3a;
+}
+
+.simple-offer-meta {
+  color: #5b6862;
+}
+
+.simple-offer-value {
+  font-weight: 700;
+  color: #073f2e;
+}
+
+.simple-offer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.simple-offer-actions a {
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: #f1ece3;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .simple-offer-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .simple-offer-main,
+  .simple-offer-actions {
+    grid-column: 1 / -1;
+  }
+
+  .simple-offer-actions {
+    justify-content: flex-start;
+  }
+}
