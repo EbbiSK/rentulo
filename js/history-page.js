@@ -57,7 +57,6 @@ function renderHistoryList(reservations) {
 
 function renderHistoryRow(reservation) {
   const name = reservation.offer_name || "Nabídka";
-  const city = reservation.city || "";
   const startDate = reservation.date_from || reservation.startDate || "";
   const endDate = reservation.date_to || reservation.endDate || "";
   const price = reservation.total_price || reservation.totalPrice || 0;
@@ -68,11 +67,12 @@ function renderHistoryRow(reservation) {
       <div class="simple-reservation-main">
         <div class="simple-reservation-info">
           <strong>${escapeHtml(name)}</strong>
-          <span>${escapeHtml(city)}</span>
         </div>
-      <div class="simple-reservation-info">
-  <strong>${escapeHtml(name)}</strong>
-</div>
+      </div>
+
+      <div class="simple-reservation-date">
+        ${escapeHtml(startDate)} – ${escapeHtml(endDate)}
+      </div>
 
       <div class="simple-reservation-price">
         ${escapeHtml(price)} Kč
