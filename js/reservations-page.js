@@ -1015,45 +1015,41 @@ return (
         : "";
 
       return `
-        <article class="reservation-card ${isHistorySection ? "history-card" : "active-card"} ${isPriority ? "priority" : ""}" id="reservation-row-${escapeHtml(reservationId)}">
-          <div class="reservation-card-main">
-            <div class="reservation-card-tool">
-              ${renderToolThumb(reservation)}
-              <div>
-                <div class="reservation-title-line">
-                  <h3>${escapeHtml(toolName)}</h3>
-                  <span class="status-pill ${getStatusClass(status)}">${escapeHtml(statusText)}</span>
-                </div>
-                <p>${escapeHtml(city)} · Majitel: ${escapeHtml(ownerName)}</p>
-              </div>
-            </div>
+  <article class="simple-reservation-row ${isPriority ? "priority" : ""}">
+    <div class="simple-reservation-main">
+      ${renderToolThumb(reservation)}
 
-            <div class="reservation-card-actions">
-              ${primaryAction}
-              ${secondaryMenu}
-            </div>
-          </div>
+      <div class="simple-reservation-info">
+        <strong>${escapeHtml(toolName)}</strong>
+        <span>${escapeHtml(city)} · Majitel: ${escapeHtml(ownerName)}</span>
+      </div>
+    </div>
 
-          <div class="reservation-card-meta">
-            <div>
-              <span>Termín</span>
-              <strong>${escapeHtml(formatDate(startDate))} – ${escapeHtml(formatDate(endDate))}</strong>
-            </div>
-            <div>
-              <span>Cena</span>
-              <strong>${escapeHtml(totalPrice)} Kč</strong>
-            </div>
-            <div>
-              <span>Stav</span>
-              <strong>${escapeHtml(statusText)}</strong>
-            </div>
-          </div>
+    <div class="simple-reservation-date">
+      ${escapeHtml(formatDate(startDate))} – ${escapeHtml(formatDate(endDate))}
+    </div>
 
-          <div class="detail-row" id="reservation-detail-${escapeHtml(reservationId)}">
-            ${renderReservationDetailPanel(reservation)}
-          </div>
-        </article>
-      `;
+    <div class="simple-reservation-price">
+      ${escapeHtml(totalPrice)} Kč
+    </div>
+
+    <div class="simple-reservation-status">
+      ${escapeHtml(statusText)}
+    </div>
+
+    <div class="simple-reservation-actions">
+      ${primaryAction}
+      ${secondaryMenu}
+    </div>
+
+    <div
+      class="detail-row"
+      id="reservation-detail-${escapeHtml(reservationId)}"
+    >
+      ${renderReservationDetailPanel(reservation)}
+    </div>
+  </article>
+`;
     }
 
     function renderReservationList(reservations, isHistorySection) {
