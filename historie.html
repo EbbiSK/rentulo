@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Historie - Rentulo</title>
+  <link rel="stylesheet" href="css/account-pages.css" />
+</head>
+
+<body data-navigation-page="muj-ucet">
+  <header class="header">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">✓</span>
+      <span>Rentulo</span>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="account-page">
+    <a href="muj-ucet.html" class="back-link">← Zpět do účtu</a>
+
+    <section class="account-page-header">
+      <h1>Historie</h1>
+      <p>Přehled dokončených a zrušených rezervací.</p>
+    </section>
+
+    <section class="account-list">
+      <div class="history-tabs">
+        <button
+  type="button"
+  class="history-tab active"
+  data-history-type="rentals"
+>
+  Moje půjčení
+</button>
+
+        <button
+  type="button"
+  class="history-tab"
+  data-history-type="offers"
+>
+  Moje nabídky
+</button>
+      </div>
+
+      <div id="historyContent"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/history-page.js"></script>
+</body>
+</html>
