@@ -69,3 +69,4 @@ async function getCurrentSupabaseUser() {
 
   return data.user;
 }
+window.apiGetSupabaseClient = apiGetSupabaseClient;
