@@ -382,7 +382,7 @@ function fillEditForm(offer) {
   const nameInput = document.querySelector("#edit-name");
   const categorySelect = document.querySelector("#edit-category");
   const cityInput = document.querySelector("#edit-city");
-  const postalInput = document.querySelector("#edit-postal");
+  const postalInput = document.querySelector("#edit-postal-code")
   const priceInput = document.querySelector("#edit-price");
   const depositInput = document.querySelector("#edit-deposit");
   const descriptionInput = document.querySelector("#edit-description");
@@ -572,7 +572,7 @@ function setupEditOfferSave() {
     const nameInput = document.querySelector("#edit-name");
     const categorySelect = document.querySelector("#edit-category");
     const cityInput = document.querySelector("#edit-city");
-    const postalInput = document.querySelector("#edit-postal");
+    const postalInput = document.querySelector("#edit-postal-code")
     const priceInput = document.querySelector("#edit-price");
     const depositInput = document.querySelector("#edit-deposit");
     const descriptionInput = document.querySelector("#edit-description");
