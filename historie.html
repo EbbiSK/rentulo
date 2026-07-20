@@ -28,27 +28,23 @@
       <p>Přehled dokončených a zrušených rezervací.</p>
     </section>
 
-    <section class="account-list">
-      <div class="history-tabs">
-        <button
-  type="button"
-  class="history-tab active"
-  data-history-type="rentals"
->
-  Moje půjčení
-</button>
+    <section class="reservation-section">
+  <div class="reservation-section-header">
+    <h2>Moje půjčení</h2>
+    <span id="rentalHistoryCount">0 rezervací</span>
+  </div>
 
-        <button
-  type="button"
-  class="history-tab"
-  data-history-type="offers"
->
-  Moje nabídky
-</button>
-      </div>
+  <div id="rentalHistoryList"></div>
+</section>
 
-      <div id="historyContent"></div>
-    </section>
+<section class="reservation-section">
+  <div class="reservation-section-header">
+    <h2>Moje nabídky</h2>
+    <span id="offerHistoryCount">0 rezervací</span>
+  </div>
+
+  <div id="offerHistoryList"></div>
+</section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
