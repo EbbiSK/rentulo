@@ -642,3 +642,29 @@
     justify-content: flex-start;
   }
 }
+.history-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.history-tab {
+  padding: 9px 14px;
+  border: 1px solid #e8dfd2;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #073f2e;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.history-tab.active {
+  background: #007a55;
+  border-color: #007a55;
+  color: #ffffff;
+}
+
+#historyContent {
+  margin-top: 14px;
+}
