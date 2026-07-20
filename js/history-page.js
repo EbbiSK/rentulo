@@ -60,7 +60,16 @@ function renderHistoryRow(reservation) {
   const startDate = reservation.date_from || reservation.startDate || "";
   const endDate = reservation.date_to || reservation.endDate || "";
   const price = reservation.total_price || reservation.totalPrice || 0;
-  const status = reservation.status || "";
+  const statusMap = {
+  returned: "Vráceno",
+  cancelled: "Zrušeno",
+  canceled: "Zrušeno",
+  rejected: "Odmítnuto",
+  declined: "Odmítnuto",
+};
+
+const rawStatus = String(reservation.status || "").toLowerCase();
+const status = statusMap[rawStatus] || reservation.status || "";
 
   return `
     <article class="simple-reservation-row">
