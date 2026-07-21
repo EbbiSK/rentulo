@@ -1,0 +1,193 @@
+/* Unified compact rows for My offers, My reservations and History */
+.simple-offer-row,
+.simple-reservation-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.6fr) 190px 120px 120px minmax(150px, auto) !important;
+  gap: 14px !important;
+  align-items: center !important;
+  min-height: 58px !important;
+  padding: 6px 12px !important;
+  margin-bottom: 8px !important;
+  background: #fff !important;
+  border: 1px solid #e8dfd2 !important;
+  border-radius: 14px !important;
+}
+
+.simple-offer-main,
+.simple-reservation-main {
+  gap: 9px !important;
+  min-width: 0;
+}
+
+.simple-offer-main .tool-image,
+.simple-reservation-main .tool-image {
+  width: 40px !important;
+  height: 40px !important;
+  flex-basis: 40px !important;
+  border-radius: 9px !important;
+}
+
+.simple-offer-name,
+.simple-reservation-info strong {
+  display: block;
+  font-size: 14px !important;
+  line-height: 1.2 !important;
+  font-weight: 800 !important;
+  color: #073f2e !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.simple-offer-meta,
+.simple-reservation-info span,
+.simple-offer-value,
+.simple-reservation-date,
+.simple-reservation-price {
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+}
+
+.simple-offer-value,
+.simple-reservation-date,
+.simple-reservation-price {
+  font-weight: 700 !important;
+  color: #173e33 !important;
+}
+
+.simple-reservation-status,
+.simple-offer-status {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  justify-self: start;
+  width: fit-content;
+  min-height: 26px;
+  padding: 4px 9px !important;
+  border-radius: 999px;
+  background: #eef1ed;
+  color: #334c43;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  font-weight: 800 !important;
+  white-space: nowrap;
+}
+
+.status-pending,
+.status-approved,
+.status-draft {
+  background: #fff0e6 !important;
+  color: #b94d00 !important;
+}
+
+.status-paid,
+.status-picked_up,
+.status-active {
+  background: #e2f3eb !important;
+  color: #006b45 !important;
+}
+
+.status-returned,
+.status-completed,
+.status-cancelled,
+.status-canceled,
+.status-rejected,
+.status-declined {
+  background: #eef1ed !important;
+  color: #334c43 !important;
+}
+
+.simple-offer-actions,
+.simple-reservation-actions {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end !important;
+  gap: 6px !important;
+  flex-wrap: nowrap;
+}
+
+.simple-offer-actions a,
+.simple-offer-actions button,
+.simple-reservation-actions a,
+.simple-reservation-actions button,
+.simple-reservation-actions summary,
+.reservation-primary-action,
+.offer-primary-button {
+  min-height: 32px !important;
+  padding: 7px 10px !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  font-weight: 800 !important;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.simple-offer-actions a,
+.simple-reservation-actions summary {
+  background: #eee8de !important;
+  color: #073f2e !important;
+}
+
+.simple-offer-actions button,
+.reservation-primary-action,
+.offer-primary-button {
+  background: #006b45 !important;
+  color: #fff !important;
+}
+
+.simple-offer-actions .urgent,
+.reservation-primary-action.orange {
+  background: #df5b00 !important;
+}
+
+.simple-reservation-row .detail-row {
+  grid-column: 1 / -1 !important;
+}
+
+@media (max-width: 900px) {
+  .simple-offer-row,
+  .simple-reservation-row {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 8px 12px !important;
+    min-height: 0 !important;
+    padding: 10px 12px !important;
+  }
+
+  .simple-offer-main,
+  .simple-reservation-main {
+    grid-column: 1 / -1 !important;
+  }
+
+  .simple-offer-value,
+  .simple-reservation-date,
+  .simple-reservation-price,
+  .simple-reservation-status,
+  .simple-offer-status {
+    justify-self: start;
+  }
+
+  .simple-offer-actions,
+  .simple-reservation-actions {
+    grid-column: 1 / -1 !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap;
+    padding-top: 2px;
+  }
+}
+
+@media (max-width: 560px) {
+  .simple-offer-row,
+  .simple-reservation-row {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .simple-offer-actions a,
+  .simple-offer-actions button,
+  .simple-reservation-actions a,
+  .simple-reservation-actions button,
+  .simple-reservation-actions summary {
+    flex: 1 1 auto;
+  }
+}

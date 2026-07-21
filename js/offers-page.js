@@ -1257,7 +1257,7 @@ function renderSimpleOffer(offer, requests) {
         ${escapeHtml(requestText)}
       </div>
 
-      <div class="simple-offer-value">
+      <div class="simple-offer-value simple-offer-status status-${escapeHtml(String(offer.status || "active").toLowerCase())}">
         ${escapeHtml(getOfferStatus(offer))}
       </div>
 

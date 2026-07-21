@@ -1026,7 +1026,7 @@ return (
       ${escapeHtml(totalPrice)} Kč
     </div>
 
-    <div class="simple-reservation-status">
+    <div class="simple-reservation-status status-${escapeHtml(String(normalizedStatus).toLowerCase())}">
       ${escapeHtml(statusText)}
     </div>
 

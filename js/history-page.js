@@ -106,7 +106,7 @@ function renderHistoryRow(reservation) {
         ${escapeHtml(formatHistoryDate(startDate))} – ${escapeHtml(formatHistoryDate(endDate))}
       </div>
       <div class="simple-reservation-price">${escapeHtml(price)} Kč</div>
-      <div class="simple-reservation-status">${escapeHtml(status)}</div>
+      <div class="simple-reservation-status status-${escapeHtml(String(normalizedStatus).toLowerCase())}">${escapeHtml(status)}</div>
     </article>
   `;
 }
