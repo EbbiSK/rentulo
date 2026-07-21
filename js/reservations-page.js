@@ -387,6 +387,75 @@ return (
       `;
     }
 
+    async function cancelReservation(reservationId) {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        alert("Supabase klient není načtený.");
+        return;
+      }
+
+      const supabaseUser = await getCurrentSupabaseUser();
+
+      if (!supabaseUser) {
+        alert("Pro zrušení rezervace se musíte znovu přihlásit.");
+        window.location.href = "prihlaseni.html";
+        return;
+      }
+
+      const reservation = supabaseReservations.find(function (item) {
+        return String(item.id || item.reservationId) === String(reservationId);
+      });
+
+      if (!reservation) {
+        alert("Rezervace nebyla nalezena.");
+        return;
+      }
+
+      const normalizedStatus = normalizeReservationStatus(
+        getSafeReservationStatus(reservation)
+      );
+
+      if (
+        normalizedStatus !== RESERVATION_STATUS_PENDING &&
+        normalizedStatus !== RESERVATION_STATUS_APPROVED
+      ) {
+        alert("Tuto rezervaci už nelze běžně zrušit.");
+        return;
+      }
+
+      const confirmed = confirm(
+        "Opravdu chcete tuto rezervaci zrušit? Termín se znovu uvolní."
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from("reservations")
+        .update({
+          status: "cancelled"
+        })
+        .eq("id", reservationId)
+        .eq("renter_id", supabaseUser.id)
+        .in("status", ["pending", "approved"]);
+
+      if (error) {
+        console.error("Rezervaci se nepodařilo zrušit:", error);
+        alert("Rezervaci se nepodařilo zrušit. Podívejte se prosím do konzole.");
+        return;
+      }
+
+      alert("Rezervace byla zrušena a přesunuta do Historie.");
+
+      supabaseReservations = await loadMyReservationsFromSupabase();
+      supabaseReviews = await loadMyReviewsFromSupabase();
+
+      renderSharedNavigation("muj-ucet");
+      renderReservations();
+    }
+
     async function payReservation(reservationId) {
       const supabaseClient = getSupabaseClient();
 
@@ -898,6 +967,20 @@ return (
         menuItems += `
           <button type="button" onclick="toggleReservationDetail('${escapeHtml(reservationId)}', document.getElementById('detail-toggle-${escapeHtml(reservationId)}'))">
             Detail rezervace
+          </button>
+        `;
+      }
+
+      if (
+        !isHistorySection &&
+        (
+          normalizedStatus === RESERVATION_STATUS_PENDING ||
+          normalizedStatus === RESERVATION_STATUS_APPROVED
+        )
+      ) {
+        menuItems += `
+          <button type="button" class="danger-action" onclick="cancelReservation('${escapeHtml(reservationId)}')">
+            Zrušit rezervaci
           </button>
         `;
       }
