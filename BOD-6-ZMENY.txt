@@ -1,0 +1,13 @@
+BOD 6 - UPRATANIE CSS A JAVASCRIPTU
+
+- Inline CSS z moje-nabidky.html presunute do css/my-offers.css
+- Inline CSS z moje-rezervace.html presunute do css/my-reservations.css
+- Inline CSS z historie.html presunute do css/history.css
+- Vytvoreny js/utils.js pre spolocne funkcie:
+  getSupabaseClient, getCurrentSupabaseUser, escapeHtml, formatDate, normalizeText
+- Vytvoreny js/offer-utils.js pre getOfferName a getOfferPrice
+- Vytvoreny js/reservation-utils.js pre formatDateTime a getStars
+- Odstranene duplikaty pomocnych funkcii z offers-page.js a reservations-page.js
+- Odstranene duplikaty getOfferName/getOfferPrice z detail-page.js, offers-page.js a results-page.js
+- utils.js sa nacitava po supabase-config.js a pred api.js na datovych strankach
+- Syntax vsetkych JavaScript suborov bola skontrolovana cez node --check

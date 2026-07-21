@@ -191,11 +191,7 @@ owner_id: row.owner_id,
       ].filter(Boolean).join(", ");
     }
 
-    function getOfferName(offer) {
-      return offer.name || offer.title || offer.nazev || "Věc";
-    }
-
-    function getOfferCategory(offer) {
+function getOfferCategory(offer) {
       return offer.category || offer.kategorie || "Ostatní";
     }
 
@@ -219,11 +215,7 @@ owner_id: row.owner_id,
       );
     }
 
-    function getOfferPrice(offer) {
-      return Number(offer.price || offer.pricePerDay || offer.cena || 0) || 0;
-    }
-
-    function renderDetailImage(offer) {
+function renderDetailImage(offer) {
       const offerName = getOfferName(offer);
       const photo = getOfferPhoto(offer);
 

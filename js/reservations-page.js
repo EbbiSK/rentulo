@@ -2,54 +2,6 @@
     let supabaseReservations = [];
     let supabaseReviews = [];
 
-    function getSupabaseClient() {
-      if (window.rentuloSupabase) {
-        return window.rentuloSupabase;
-      }
-
-      if (typeof rentuloSupabase !== "undefined") {
-        return rentuloSupabase;
-      }
-
-      return null;
-    }
-
-    async function getCurrentSupabaseUser() {
-      const supabaseClient = getSupabaseClient();
-
-      if (!supabaseClient) {
-        return null;
-      }
-
-      const { data, error } = await supabaseClient.auth.getUser();
-
-      if (error || !data || !data.user) {
-        return null;
-      }
-
-      return data.user;
-    }
-
-    function escapeHtml(text) {
-      return String(text === undefined || text === null ? "" : text)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function getStars(rating) {
-      const count = Number(rating) || 0;
-      let stars = "";
-
-      for (let i = 1; i <= 5; i++) {
-        stars += i <= count ? "★" : "☆";
-      }
-
-      return stars;
-    }
-
     function findRenterReviewForReservation(reservation) {
       if (!reservation) {
         return null;
@@ -94,34 +46,6 @@
           <span>Odesláno: ${escapeHtml(formatDateTime(review.created_at))}</span>
         </div>
       `;
-    }
-
-    function formatDate(dateString) {
-      if (!dateString) {
-        return "-";
-      }
-
-      const date = new Date(dateString);
-
-      if (isNaN(date.getTime())) {
-        return dateString;
-      }
-
-      return date.toLocaleDateString("cs-CZ");
-    }
-
-    function formatDateTime(dateString) {
-      if (!dateString) {
-        return "-";
-      }
-
-      const date = new Date(dateString);
-
-      if (isNaN(date.getTime())) {
-        return dateString;
-      }
-
-      return date.toLocaleString("cs-CZ");
     }
 
     function getSafeReservationStatusText(status) {

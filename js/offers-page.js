@@ -7,57 +7,6 @@
     let ownerReservations = [];
     let ownerReviews = [];
 
-    function getSupabaseClient() {
-      if (window.rentuloSupabase) {
-        return window.rentuloSupabase;
-      }
-
-      if (typeof rentuloSupabase !== "undefined") {
-        return rentuloSupabase;
-      }
-
-      return null;
-    }
-
-    async function getCurrentSupabaseUser() {
-      const supabaseClient = getSupabaseClient();
-
-      if (!supabaseClient) {
-        return null;
-      }
-
-      const { data, error } = await supabaseClient.auth.getUser();
-
-      if (error || !data || !data.user) {
-        return null;
-      }
-
-      return data.user;
-    }
-
-    function escapeHtml(value) {
-      return String(value === undefined || value === null ? "" : value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function formatDate(dateString) {
-      if (!dateString) {
-        return "-";
-      }
-
-      const date = new Date(dateString);
-
-      if (isNaN(date.getTime())) {
-        return dateString;
-      }
-
-      return date.toLocaleDateString("cs-CZ");
-    }
-
     function getStatusText(status) {
   return getReservationStatusText(status);
 }
@@ -203,17 +152,6 @@ category: row.category || "Ostatní",
       };
     }
 
-    function getStars(rating) {
-      const count = Math.max(0, Math.min(5, Number(rating) || 0));
-      let stars = "";
-
-      for (let i = 1; i <= 5; i++) {
-        stars += i <= count ? "★" : "☆";
-      }
-
-      return stars;
-    }
-
     function findOwnerReviewForRenter(reservation) {
       if (!reservation) {
         return null;
@@ -297,11 +235,7 @@ category: row.category || "Ostatní",
         : [];
     }
 
-    function getOfferName(offer) {
-      return offer.name || "Věc k půjčení";
-    }
-
-    function getOfferCategory(offer) {
+function getOfferCategory(offer) {
       return offer.category || "Ostatní";
     }
 
@@ -309,11 +243,7 @@ category: row.category || "Ostatní",
       return offer.city || "-";
     }
 
-    function getOfferPrice(offer) {
-      return Number(offer.price || 0);
-    }
-
-    function getOfferStatus(offer) {
+function getOfferStatus(offer) {
       if (offer.status === "draft") {
         return "Koncept";
       }

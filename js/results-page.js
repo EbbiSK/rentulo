@@ -387,11 +387,7 @@
       return offer.id || offer.offerId || offer.naradiId;
     }
 
-    function getOfferName(offer) {
-      return offer.name || offer.title || offer.nazev || "Věc";
-    }
-
-    function getOfferCity(offer) {
+function getOfferCity(offer) {
       return offer.city || offer.mesto || offer.location || "-";
     }
 
@@ -399,26 +395,7 @@
       return offer.category || offer.kategorie || "Ostatní";
     }
 
-    function getOfferPrice(offer) {
-      const possibleValues = [
-        offer.price,
-        offer.pricePerDay,
-        offer.price_per_day,
-        offer.cena
-      ];
-
-      for (let i = 0; i < possibleValues.length; i++) {
-        const parsedValue = parseStoredMoney(possibleValues[i]);
-
-        if (parsedValue !== null) {
-          return parsedValue;
-        }
-      }
-
-      return 0;
-    }
-
-    function getOfferPhoto(offer) {
+function getOfferPhoto(offer) {
       return (
         offer.photoUrl ||
         offer.photo_url ||
