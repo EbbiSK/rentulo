@@ -1,4 +1,4 @@
-﻿create or replace function public.protect_reservation_status_transition()
+create or replace function public.protect_reservation_status_transition()
 returns trigger
 language plpgsql
 security definer
