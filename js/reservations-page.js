@@ -97,14 +97,12 @@
 
         offerId: row.offer_id,
         toolId: row.offer_id,
-        naradiId: row.offer_id,
 
         ownerId: row.owner_id,
         renterId: row.renter_id,
 
         toolName: row.offer_name || "Věc k půjčení",
 offerName: row.offer_name || "Věc k půjčení",
-naradiName: row.offer_name || "Věc k půjčení",
 
 category: row.category || "Ostatní",
         city: row.city || "",
@@ -230,7 +228,7 @@ category: row.category || "Ostatní",
         return getReservationToolName(reservation);
       }
 
-      return reservation.toolName || reservation.offerName || reservation.naradiName || "Věc";
+      return reservation.toolName || reservation.offerName || "Věc";
     }
 
     function getSafeReservationDateFrom(reservation) {
@@ -254,7 +252,7 @@ category: row.category || "Ostatní",
         return getReservationOfferId(reservation);
       }
 
-      return reservation.offerId || reservation.toolId || reservation.naradiId || "";
+      return reservation.offerId || reservation.toolId || "";
     }
 
     function getSafeReservationTotalPrice(reservation) {

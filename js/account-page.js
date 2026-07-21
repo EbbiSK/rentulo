@@ -195,14 +195,12 @@ category: row.category || "Ostatní",
 
         offerId: row.offer_id,
         toolId: row.offer_id,
-        naradiId: row.offer_id,
 
         ownerId: row.owner_id,
         renterId: row.renter_id,
 
         offerName: row.offer_name || "Věc k půjčení",
-toolName: row.offer_name || "Věc k půjčení",
-naradiName: row.offer_name || "Věc k půjčení",
+        toolName: row.offer_name || "Věc k půjčení",
 
 category: row.category || "Ostatní",
         city: row.city || "",

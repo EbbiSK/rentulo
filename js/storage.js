@@ -19,38 +19,6 @@ function normalizeStorageText(value) {
   return String(value || "").trim().toLowerCase();
 }
 
-function getItemId(item) {
-  if (!item) {
-    return "";
-  }
-
-  return String(
-    item.id ||
-    item.userId ||
-    item.offerId ||
-    item.naradiId ||
-    item.reservationId ||
-    ""
-  );
-}
-
-function clearLegacyLocalCollectionData() {
-  [
-    "rentuloUsers",
-    "naradiUsers",
-    "rentuloOffers",
-    "naradiNabidky",
-    "rentuloReservations",
-    "naradiRezervace",
-    "rentuloNotifications",
-    "naradiNotifications"
-  ].forEach(function (key) {
-    localStorage.removeItem(key);
-  });
-}
-
-
-
 function saveCurrentUser(user) {
   saveJson("rentuloUser", user);
   localStorage.setItem("rentuloLoggedIn", "true");
@@ -61,8 +29,6 @@ function clearCurrentUser() {
   localStorage.removeItem("rentuloLoggedIn");
   localStorage.removeItem("rentuloRememberLogin");
 
-  localStorage.removeItem("naradiUser");
-  localStorage.removeItem("naradiLoggedIn");
 }
 
 function getUserEmail(user) {

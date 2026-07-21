@@ -70,7 +70,6 @@ function navMergeById(primaryItems, secondaryItems) {
       const secondaryId = String(
         secondaryItem.id ||
         secondaryItem.offerId ||
-        secondaryItem.naradiId ||
         secondaryItem.reservationId ||
         ""
       );
@@ -79,7 +78,6 @@ function navMergeById(primaryItems, secondaryItems) {
         const itemId = String(
           item.id ||
           item.offerId ||
-          item.naradiId ||
           item.reservationId ||
           ""
         );
@@ -112,7 +110,6 @@ function navGetToolId(tool) {
   return (
     tool.id ||
     tool.offerId ||
-    tool.naradiId ||
     ""
   );
 }
@@ -142,7 +139,6 @@ function navGetReservationToolId(reservation) {
   return (
     reservation.toolId ||
     reservation.offerId ||
-    reservation.naradiId ||
     ""
   );
 }
@@ -376,8 +372,6 @@ function navClearLocalLogin() {
   localStorage.removeItem("rentuloUser");
   localStorage.removeItem("rentuloRememberLogin");
 
-  localStorage.removeItem("naradiLoggedIn");
-  localStorage.removeItem("naradiUser");
 }
 
 async function navLogoutUser() {

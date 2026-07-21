@@ -9,7 +9,7 @@ function getReservationOfferId(reservation) {
     return "";
   }
 
-  return reservation.offer_id || reservation.offerId || reservation.toolId || reservation.naradiId || "";
+  return reservation.offer_id || reservation.offerId || reservation.toolId || "";
 }
 
 function getReservationToolName(reservation) {
@@ -21,7 +21,6 @@ function getReservationToolName(reservation) {
     reservation.offer_name ||
     reservation.toolName ||
     reservation.offerName ||
-    reservation.naradiName ||
     "věc"
   );
 }

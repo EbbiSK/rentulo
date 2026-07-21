@@ -235,7 +235,6 @@
       return String(
         reservation.offer_id ||
         reservation.offerId ||
-        reservation.naradiId ||
         reservation.toolId ||
         ""
       );
@@ -384,7 +383,7 @@
     }
 
     function getOfferId(offer) {
-      return offer.id || offer.offerId || offer.naradiId;
+      return offer.id || offer.offerId;
     }
 
 function getOfferCity(offer) {

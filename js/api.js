@@ -68,7 +68,6 @@ function apiGetOfferId(offer) {
   return (
     offer.id ||
     offer.offerId ||
-    offer.naradiId ||
     ""
   );
 }
@@ -281,9 +280,7 @@ async function apiGetCurrentUser() {
     return null;
   }
 
-  const storedUser =
-    localStorage.getItem("naradiUser") ||
-    localStorage.getItem("rentuloUser");
+  const storedUser = localStorage.getItem("rentuloUser");
 
   if (!storedUser) {
     return apiClone(data.user);
@@ -378,8 +375,6 @@ async function apiLogout() {
     localStorage.removeItem("rentuloUser");
     localStorage.removeItem("rentuloRememberLogin");
 
-    localStorage.removeItem("naradiLoggedIn");
-    localStorage.removeItem("naradiUser");
   }
 
   return true;
