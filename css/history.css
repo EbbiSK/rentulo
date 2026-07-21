@@ -137,3 +137,130 @@
         padding-right: 14px;
       }
     }
+
+.history-record {
+  background: #fff;
+  border: 1px solid #e6ddd1;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.history-record + .history-record {
+  margin-top: 10px;
+}
+
+.history-record .simple-reservation-row {
+  border: 0;
+  border-radius: 0;
+}
+
+.history-detail-button,
+.history-primary-button {
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.history-detail-button {
+  background: #efe9df;
+  color: #073f2e;
+}
+
+.history-primary-button {
+  align-self: flex-start;
+  background: #006b45;
+  color: #fff;
+}
+
+.history-detail {
+  display: none;
+  padding: 14px;
+  border-top: 1px solid #eee5da;
+  background: #fbf9f5;
+}
+
+.history-detail.open {
+  display: block;
+}
+
+.history-detail-grid,
+.history-review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.history-detail-grid > div,
+.history-review-box {
+  padding: 12px;
+  border: 1px solid #e8dfd4;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.history-detail-grid span,
+.history-review-box small {
+  display: block;
+  color: #64706b;
+  font-size: 12px;
+}
+
+.history-detail-grid strong {
+  display: block;
+  margin-top: 4px;
+}
+
+.history-review-grid {
+  margin-top: 12px;
+}
+
+.history-review-box {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.history-review-box label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.history-review-box select,
+.history-review-box textarea {
+  width: 100%;
+  border: 1px solid #d9d0c4;
+  border-radius: 9px;
+  padding: 9px;
+  font: inherit;
+  background: #fff;
+}
+
+.history-review-stars {
+  color: #006b45;
+  font-size: 18px;
+  letter-spacing: 1px;
+}
+
+.history-review-waiting {
+  color: #53615b;
+}
+
+@media (max-width: 760px) {
+  .history-detail-grid,
+  .history-review-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .history-record .simple-reservation-row {
+    align-items: stretch;
+  }
+
+  .history-detail-button {
+    width: 100%;
+  }
+}
