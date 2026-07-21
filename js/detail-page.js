@@ -791,9 +791,6 @@ total_price: totalPrice,
         renter_email: getUserEmail(currentUser),
         renter_phone: getUserPhone(currentUser),
 
-        owner_name: "Majitel",
-
-
         contact_visible_after_payment: false
       };
 
