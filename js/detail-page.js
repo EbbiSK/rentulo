@@ -438,22 +438,10 @@ Přesná adresa a telefon zůstanou skryté až do zaplacení.
       `;
     }
 
-    function getOfferReservedFlag(offer) {
-      if (!offer) {
-        return false;
-      }
-
-      return Boolean(
-        offer.isReserved === true ||
-        offer.is_reserved === true ||
-        offer.reserved === true
-      );
-    }
-
-    async function isOfferReservedInSupabase(offerId) {
+    async function hasReservationDateConflict(offerId, startDate, endDate) {
       const supabaseClient = getSupabaseClient();
 
-      if (!supabaseClient || !offerId) {
+      if (!supabaseClient || !offerId || !startDate || !endDate) {
         return false;
       }
 
@@ -466,14 +454,16 @@ Přesná adresa a telefon zůstanou skryté až do zaplacení.
 
       const { data, error } = await supabaseClient
         .from("reservations")
-        .select("id, status")
+        .select("id")
         .eq("offer_id", offerId)
         .in("status", blockingStatuses)
+        .lt("start_date", endDate)
+        .gt("end_date", startDate)
         .limit(1);
 
       if (error) {
-        console.warn("Dostupnost nabídky se nepodařilo načíst ze Supabase.", error);
-        return false;
+        console.warn("Dostupnost termínu se nepodařilo ověřit.", error);
+        throw error;
       }
 
       return Array.isArray(data) && data.length > 0;
@@ -505,11 +495,10 @@ Přesná adresa a telefon zůstanou skryté až do zaplacení.
 const ownerId = String(offer.ownerId || offer.owner_id || "");
 const isOwner = currentUserId && ownerId && currentUserId === ownerId;
 
-const isReserved = getOfferReservedFlag(offer);
 const isActive = isOfferActive(offer);
 const hasGps = offerHasGpsLocation(offer);
 
-      const availabilityBadgeClass = isActive && !isReserved ? "available" : "unavailable";
+      const availabilityBadgeClass = isActive ? "available" : "unavailable";
       const statusBadgeClass = isActive ? "" : "draft";
 
       let availabilityText = "Dostupné";
@@ -518,9 +507,6 @@ const hasGps = offerHasGpsLocation(offer);
       if (!isActive) {
         availabilityText = "Není aktivní";
         availabilityPanelText = "Tato nabídka zatím není aktivní. Rezervaci nelze odeslat.";
-      } else if (isReserved) {
-        availabilityText = "Momentálně rezervováno";
-availabilityPanelText = "Tato věc má právě otevřenou rezervaci v Supabase. Novou žádost zatím nelze odeslat.";
       }
 
       let sidebarContent = "";
@@ -548,14 +534,6 @@ availabilityPanelText = "Tato věc má právě otevřenou rezervaci v Supabase. 
           ownerPublicCity,
           "Nabídka není aktivní",
           "Tato nabídka je uložená jako koncept nebo není zveřejněná."
-        );
-      } else if (isReserved) {
-        sidebarContent = renderUnavailableSidebar(
-          price,
-          ownerPublicName,
-          ownerPublicCity,
-          "Věc teď není dostupná",
-          "Tato nabídka má otevřenou rezervaci v Supabase."
         );
       } else {
         sidebarContent = renderBookingSidebar(
@@ -667,7 +645,7 @@ availabilityPanelText = "Tato věc má právě otevřenou rezervaci v Supabase. 
 
       loadOwnerRating(ownerId);
 
-      if (currentUser && !isOwner && isActive && !isReserved) {
+      if (currentUser && !isOwner && isActive) {
   setupBookingForm(offer);
 }
     }
@@ -803,7 +781,14 @@ total_price: totalPrice,
       if (error) {
         console.error(error);
 
-        if (String(error.message || "").includes("row-level security")) {
+        const errorMessage = String(error.message || "");
+
+        if (errorMessage.includes("Reservation dates overlap")) {
+          alert("Vybraný termín už mezitím obsadila jiná rezervace. Zvolte prosím jiný termín.");
+          return;
+        }
+
+        if (errorMessage.includes("row-level security")) {
           alert("Rezervaci se nepodařilo uložit kvůli bezpečnostním pravidlům. Zkuste se odhlásit a znovu přihlásit.");
           return;
         }
@@ -835,12 +820,13 @@ total_price: totalPrice,
       }
 
       const today = new Date().toISOString().split("T")[0];
+      let availabilityCheckVersion = 0;
 
       startDateInput.min = today;
       endDateInput.min = getNextDate(today);
 
-      function setRentButtonState(isValid) {
-        if (isValid) {
+      function setRentButtonState(state) {
+        if (state === "available") {
           rentButton.disabled = false;
           rentButton.classList.remove("disabled");
           rentButton.textContent = "Požádat o půjčení";
@@ -849,10 +835,18 @@ total_price: totalPrice,
 
         rentButton.disabled = true;
         rentButton.classList.add("disabled");
-        rentButton.textContent = "Vyberte termín";
+
+        if (state === "checking") {
+          rentButton.textContent = "Ověřuji termín...";
+        } else if (state === "conflict") {
+          rentButton.textContent = "Termín je obsazený";
+        } else {
+          rentButton.textContent = "Vyberte termín";
+        }
       }
 
-      function updateCalculation() {
+      async function updateCalculation() {
+        const checkVersion = ++availabilityCheckVersion;
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
 
@@ -872,23 +866,57 @@ total_price: totalPrice,
         const days = getDaysBetween(activeStartDate, activeEndDate);
         const total = days * getOfferPrice(offer);
 
-        calcDays.textContent = days > 0 ? days + " dní" : "-";
+        calcDays.textContent = days > 0 ? days + (days === 1 ? " den" : " dní") : "-";
         calcTotal.textContent = days > 0 ? total + " Kč" : "-";
 
-        if (bookingDateHelp) {
-          if (!activeStartDate || !activeEndDate) {
-            bookingDateHelp.textContent =
-              "Vyberte datum půjčení a potom datum vrácení. Datum vrácení musí být později než datum půjčení.";
-          } else if (days <= 0) {
-            bookingDateHelp.textContent =
-              "Datum vrácení musí být později než datum půjčení.";
-          } else {
-            bookingDateHelp.textContent =
-              "Termín je vybraný. Po kliknutí odešlete žádost majiteli.";
+        if (!activeStartDate || !activeEndDate || days <= 0) {
+          if (bookingDateHelp) {
+            bookingDateHelp.textContent = !activeStartDate || !activeEndDate
+              ? "Vyberte datum půjčení a potom datum vrácení. Datum vrácení musí být později než datum půjčení."
+              : "Datum vrácení musí být později než datum půjčení.";
           }
+          setRentButtonState("invalid");
+          return;
         }
 
-        setRentButtonState(days > 0);
+        setRentButtonState("checking");
+        if (bookingDateHelp) {
+          bookingDateHelp.textContent = "Ověřuji dostupnost vybraného termínu...";
+        }
+
+        try {
+          const hasConflict = await hasReservationDateConflict(
+            offer.id,
+            activeStartDate,
+            activeEndDate
+          );
+
+          if (checkVersion !== availabilityCheckVersion) {
+            return;
+          }
+
+          if (hasConflict) {
+            setRentButtonState("conflict");
+            if (bookingDateHelp) {
+              bookingDateHelp.textContent = "Vybraný termín je už obsazený. Zvolte prosím jiné datum.";
+            }
+            return;
+          }
+
+          setRentButtonState("available");
+          if (bookingDateHelp) {
+            bookingDateHelp.textContent = "Termín je volný. Po kliknutí odešlete žádost majiteli.";
+          }
+        } catch (error) {
+          if (checkVersion !== availabilityCheckVersion) {
+            return;
+          }
+
+          setRentButtonState("invalid");
+          if (bookingDateHelp) {
+            bookingDateHelp.textContent = "Dostupnost termínu se nepodařilo ověřit. Obnovte stránku a zkuste to znovu.";
+          }
+        }
       }
 
       startDateInput.addEventListener("change", updateCalculation);
@@ -896,7 +924,7 @@ total_price: totalPrice,
 
       updateCalculation();
 
-      rentButton.addEventListener("click", function () {
+      rentButton.addEventListener("click", async function () {
         if (rentButton.disabled) {
           return;
         }
@@ -914,8 +942,23 @@ total_price: totalPrice,
 
         rentButton.disabled = true;
         rentButton.classList.add("disabled");
-        rentButton.textContent = "Odesílám žádost...";
+        rentButton.textContent = "Ověřuji termín...";
 
+        try {
+          const hasConflict = await hasReservationDateConflict(offer.id, startDate, endDate);
+
+          if (hasConflict) {
+            alert("Vybraný termín je už obsazený. Zvolte prosím jiné datum.");
+            updateCalculation();
+            return;
+          }
+        } catch (error) {
+          alert("Dostupnost termínu se nepodařilo ověřit. Zkuste to prosím znovu.");
+          updateCalculation();
+          return;
+        }
+
+        rentButton.textContent = "Odesílám žádost...";
         createSupabaseReservation(offer, startDate, endDate, days, total);
       });
     }
@@ -938,8 +981,6 @@ total_price: totalPrice,
         renderNotFound();
         return;
       }
-
-      offer.isReserved = await isOfferReservedInSupabase(offer.id);
 
       renderDetail(offer);
     }

@@ -739,16 +739,15 @@
         </div>
 
         <div class="filter-group">
-          <label>Dostupnost</label>
+          <label>Dostupnost termínu</label>
           <select id="availabilityFilter">
-            <option value="">Vše</option>
-            <option value="available">Pouze dostupné</option>
-            <option value="unavailable">Pouze rezervované</option>
+            <option value="">Ověří se v detailu</option>
+            <option value="available">Nabídky s výběrem termínu</option>
           </select>
         </div>
 
         <div class="filter-note">
-          Dostupnost se načítá z otevřených rezervací v Supabase. Uzavřené, odmítnuté a zrušené rezervace nabídku neblokují.
+          Konkrétní termín se ověří až po výběru data v detailu. Jiná rezervace blokuje pouze překrývající se dny.
         </div>
       </aside>
 

@@ -536,14 +536,9 @@ function getOfferPhoto(offer) {
       const city = getOfferCity(offer);
       const category = getOfferCategory(offer);
       const price = getOfferPrice(offer);
-      const isReserved = isOfferReservedInResults(offer);
-
-      const availabilityClass = isReserved ? "unavailable" : "available";
-      const availabilityText = isReserved ? "Momentálně rezervováno" : "Dostupné";
-
-      const availabilityNote = isReserved
-        ? "Tato věc má právě otevřenou rezervaci. Detail si můžete zobrazit, ale novou žádost zatím nebude možné odeslat."
-        : "Tato věc je momentálně dostupná. Rezervaci dokončíte na detailu nabídky.";
+      const availabilityClass = "available";
+      const availabilityText = "Termín ověříme";
+      const availabilityNote = "Nabídku lze rezervovat ve volném termínu. Dostupnost konkrétních dat ověříte v detailu.";
 
       return `
         <article class="result-card">
@@ -617,7 +612,6 @@ const HOME_CATEGORY_GROUPS = {
       const city = normalizeText(getOfferCity(offer));
       const postalCode = normalizeText(offer.postalCode || offer.psc || "");
       const price = getOfferPrice(offer);
-      const isReserved = isOfferReservedInResults(offer);
 
       const what = normalizeText(whatQuery);
       const where = normalizeText(whereQuery);
@@ -651,11 +645,7 @@ const HOME_CATEGORY_GROUPS = {
         return false;
       }
 
-      if (availabilityFilter === "available" && isReserved) {
-        return false;
-      }
-
-      if (availabilityFilter === "unavailable" && !isReserved) {
+      if (availabilityFilter === "unavailable") {
         return false;
       }
 
@@ -967,7 +957,6 @@ const HOME_CATEGORY_GROUPS = {
 
       resultsOffers = await loadOffersFromSupabase();
       await loadRatingSummariesForOffers(resultsOffers);
-      await loadReservedOfferIdsFromSupabase();
 
       renderResults();
     }

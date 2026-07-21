@@ -1,0 +1,14 @@
+Oprava dostupnosti podle terminu
+
+Zmenene soubory:
+- js/detail-page.js
+- js/results-page.js
+- vysledky.html
+- supabase/migrations/20260721_prevent_overlapping_reservations.sql
+
+Chovani:
+- Nabidka se neblokuje cela kvuli jedne aktivni rezervaci.
+- Detail overuje konkretni zvoleny termin.
+- Prekryv se pocita jako interval [start_date, end_date).
+- 22. 7. - 23. 7. je jeden den a dalsi rezervace muze zacit 23. 7.
+- Databazovy trigger zabrani ulozeni prekryvajici se rezervace.
