@@ -1158,6 +1158,7 @@ function renderSimpleOffer(offer, requests) {
   const offerName = getOfferName(offer);
   const offerCity = getOfferCity(offer);
   const offerPrice = getOfferPrice(offer);
+  const openPanelId = "open-panel-" + offerId;
 
   const openRequests = requests.filter(function (reservation) {
     return isOpenStatus(reservation.status);
@@ -1168,49 +1169,57 @@ function renderSimpleOffer(offer, requests) {
       ? "1 žádost"
       : openRequests.length + " žádostí";
 
+  const openContent = openRequests.length
+    ? openRequests.map(renderRequest).join("")
+    : `<p class="request-empty-note">U této nabídky teď není žádná otevřená žádost.</p>`;
+
   return `
-    <article class="simple-offer-row">
-      <div class="simple-offer-main">
-        ${renderToolImage(offer)}
+    <div class="simple-offer-record">
+      <article class="simple-offer-row">
+        <div class="simple-offer-main">
+          ${renderToolImage(offer)}
 
-        <div class="simple-offer-info">
-          <strong class="simple-offer-name">${escapeHtml(offerName)}</strong>
-          <span class="simple-offer-meta">${escapeHtml(offerCity)}</span>
+          <div class="simple-offer-info">
+            <strong class="simple-offer-name">${escapeHtml(offerName)}</strong>
+            <span class="simple-offer-meta">${escapeHtml(offerCity)}</span>
+          </div>
         </div>
-      </div>
 
-      <div class="simple-offer-value">
-        ${escapeHtml(offerPrice)} Kč / den
-      </div>
+        <div class="simple-offer-value">
+          ${escapeHtml(offerPrice)} Kč / den
+        </div>
 
-      <div class="simple-offer-value">
-        ${escapeHtml(requestText)}
-      </div>
+        <div class="simple-offer-value">
+          ${escapeHtml(requestText)}
+        </div>
 
-      <div class="simple-offer-value simple-offer-status status-${escapeHtml(String(offer.status || "active").toLowerCase())}">
-        ${escapeHtml(getOfferStatus(offer))}
-      </div>
+        <div class="simple-offer-value simple-offer-status status-${escapeHtml(String(offer.status || "active").toLowerCase())}">
+          ${escapeHtml(getOfferStatus(offer))}
+        </div>
 
-      <div class="simple-offer-actions">
-        ${
-          openRequests.length
-            ? `<button
-                type="button"
-                class="offer-primary-button urgent"
-                onclick="openOfferRequests('${escapeHtml(offerId)}')"
-              >
-                Vyřídit žádosti
-              </button>`
-            : `<a href="detail.html?id=${encodeURIComponent(offerId)}">
-                Detail
-              </a>`
-        }
+        <div class="simple-offer-actions">
+          ${
+            openRequests.length
+              ? `<button
+                  type="button"
+                  class="offer-primary-button urgent"
+                  onclick="openOfferRequests('${escapeHtml(offerId)}')"
+                >
+                  Vyřídit žádosti
+                </button>`
+              : `<a href="detail.html?id=${encodeURIComponent(offerId)}">
+                  Detail
+                </a>`
+          }
 
-        <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">
-          Upravit
-        </a>
-      </div>
-    </article>
+          <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">
+            Upravit
+          </a>
+        </div>
+      </article>
+
+      ${renderRequestPanel(openPanelId, "Otevřené žádosti", openRequests.length, openContent)}
+    </div>
   `;
 }
     function renderOffers() {
