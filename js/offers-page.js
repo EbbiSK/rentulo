@@ -308,14 +308,15 @@ function getOfferStatus(offer) {
         return null;
       }
 
-      const { data, error } = await supabaseClient
-        .from("reservations")
-        .update({
-          status: newStatus
-        })
-        .eq("id", reservationId)
-        .select()
-        .single();
+      const { data: updatedReservations, error } = await supabaseClient
+  .rpc("change_my_reservation_status", {
+    p_reservation_id: reservationId,
+    p_new_status: newStatus
+  });
+
+const data = Array.isArray(updatedReservations)
+  ? updatedReservations[0] || null
+  : null;
 
       if (error) {
         console.error(error);

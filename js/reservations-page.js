@@ -434,13 +434,10 @@ return (
       }
 
       const { error } = await supabaseClient
-        .from("reservations")
-        .update({
-          status: "cancelled"
-        })
-        .eq("id", reservationId)
-        .eq("renter_id", supabaseUser.id)
-        .in("status", ["pending", "approved"]);
+  .rpc("change_my_reservation_status", {
+    p_reservation_id: reservationId,
+    p_new_status: "cancelled"
+  });
 
       if (error) {
         console.error("Rezervaci se nepodařilo zrušit:", error);
@@ -481,18 +478,14 @@ return (
         return;
       }
 
-      const { data, error } = await supabaseClient
-        .from("reservations")
-        .update({
-          status: "paid",
-          contact_visible_after_payment: true,
-          paid_at: new Date().toISOString(),
-          payment_provider_status: "paid_test"
-        })
-        .eq("id", reservationId)
-        .eq("renter_id", supabaseUser.id)
-        .select()
-        .single();
+      const { data: paidReservations, error } = await supabaseClient
+  .rpc("mark_my_reservation_paid_test", {
+    p_reservation_id: reservationId
+  });
+
+const data = Array.isArray(paidReservations)
+  ? paidReservations[0] || null
+  : null;
 
       if (error) {
         console.error(error);
