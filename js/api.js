@@ -531,11 +531,7 @@ async function apiGetReservations() {
   }
 
   const { data, error } = await supabaseClient
-    .from("reservations")
-    .select("*")
-    .order("created_at", {
-      ascending: false
-    });
+  .rpc("get_my_reservations");
 
   if (error) {
     console.warn("Rezervace se nepodařilo načíst:", error);

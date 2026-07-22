@@ -299,25 +299,29 @@ category: row.category || "Ostatní",
         return false;
       }
 
-      const ownerReservationsResult = await supabaseClient
-        .from("reservations")
-        .select("*")
-        .eq("owner_id", supabaseUser.id);
+      const reservationsResult = await supabaseClient
+  .rpc("get_my_reservations");
 
-      if (ownerReservationsResult.error) {
-        console.error(ownerReservationsResult.error);
-        return false;
-      }
+if (reservationsResult.error) {
+  console.error(reservationsResult.error);
+  return false;
+}
 
-      const renterReservationsResult = await supabaseClient
-        .from("reservations")
-        .select("*")
-        .eq("renter_id", supabaseUser.id);
+const allReservations = Array.isArray(reservationsResult.data)
+  ? reservationsResult.data
+  : [];
 
-      if (renterReservationsResult.error) {
-        console.error(renterReservationsResult.error);
-        return false;
-      }
+const ownerReservationsResult = {
+  data: allReservations.filter(function (reservation) {
+    return reservation.owner_id === supabaseUser.id;
+  })
+};
+
+const renterReservationsResult = {
+  data: allReservations.filter(function (reservation) {
+    return reservation.renter_id === supabaseUser.id;
+  })
+};
 
       supabaseOffers = Array.isArray(offersResult.data)
         ? offersResult.data.map(normalizeSupabaseOffer)

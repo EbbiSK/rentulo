@@ -167,13 +167,14 @@ category: row.category || "Ostatní",
         return [];
       }
 
-      const { data, error } = await supabaseClient
-        .from("reservations")
-        .select("*")
-        .eq("renter_id", supabaseUser.id)
-        .order("created_at", {
-          ascending: false
-        });
+      const { data: reservationsData, error } = await supabaseClient
+  .rpc("get_my_reservations");
+
+const data = Array.isArray(reservationsData)
+  ? reservationsData.filter(function (reservation) {
+      return reservation.renter_id === supabaseUser.id;
+    })
+  : [];
 
       if (error) {
         console.error(error);

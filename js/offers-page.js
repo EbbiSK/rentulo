@@ -197,12 +197,15 @@ category: row.category || "Ostatní",
       }
 
       const reservationsResult = await supabaseClient
-        .from("reservations")
-        .select("*")
-        .eq("owner_id", supabaseUser.id)
-        .order("created_at", {
-          ascending: false
-        });
+  .rpc("get_my_reservations");
+
+if (!reservationsResult.error) {
+  reservationsResult.data = Array.isArray(reservationsResult.data)
+    ? reservationsResult.data.filter(function (reservation) {
+        return reservation.owner_id === supabaseUser.id;
+      })
+    : [];
+}
 
       if (reservationsResult.error) {
         console.error(reservationsResult.error);
