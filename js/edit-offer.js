@@ -330,18 +330,20 @@ async function offerHasOpenReservationInSupabase(offerId) {
   }
 
   const { data, error } = await supabaseClient
-    .from("reservations")
-    .select("id,status")
-    .eq("offer_id", offerId)
-    .in("status", ["pending", "approved", "paid", "picked_up"])
-    .limit(1);
+  .rpc("get_blocking_reservations", {
+    p_offer_id: offerId
+  });
+
+const blockingReservations = Array.isArray(data)
+  ? data.slice(0, 1)
+  : [];
 
   if (error) {
     console.warn("Nepodařilo se ověřit aktivní rezervace nabídky.", error);
     return false;
   }
 
-  return Array.isArray(data) && data.length > 0;
+ return blockingReservations.length > 0;
 }
 
 function editLockPriceFields(hasBlockingReservation) {

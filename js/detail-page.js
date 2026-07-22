@@ -452,14 +452,19 @@ Přesná adresa a telefon zůstanou skryté až do zaplacení.
         "picked_up"
       ];
 
-      const { data, error } = await supabaseClient
-        .from("reservations")
-        .select("id")
-        .eq("offer_id", offerId)
-        .in("status", blockingStatuses)
-        .lt("start_date", endDate)
-        .gt("end_date", startDate)
-        .limit(1);
+      const { data: blockingReservations, error } = await supabaseClient
+  .rpc("get_blocking_reservations", {
+    p_offer_id: offerId
+  });
+
+const data = Array.isArray(blockingReservations)
+  ? blockingReservations.filter(function (reservation) {
+      return (
+        reservation.start_date < endDate &&
+        reservation.end_date > startDate
+      );
+    }).slice(0, 1)
+  : [];
 
       if (error) {
         console.warn("Dostupnost termínu se nepodařilo ověřit.", error);

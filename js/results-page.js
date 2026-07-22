@@ -257,9 +257,7 @@
       ];
 
       const { data, error } = await supabaseClient
-        .from("reservations")
-        .select("offer_id, status")
-        .in("status", blockingStatuses);
+  .rpc("get_blocking_reservations");
 
       if (error) {
         console.warn("Dostupnost nabídek se nepodařilo načíst ze Supabase.");
