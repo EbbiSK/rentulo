@@ -1,4 +1,4 @@
-﻿create or replace function public.prepare_payment_insert()
+create or replace function public.prepare_payment_insert()
 returns trigger
 language plpgsql
 security definer
