@@ -1,4 +1,4 @@
-﻿create or replace function public.get_blocked_offer_ids()
+create or replace function public.get_blocked_offer_ids()
 returns table (
   offer_id uuid
 )
