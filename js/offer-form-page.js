@@ -616,7 +616,7 @@ return {
         city: getInputValue("toolCity"),
         postal_code: getInputValue("toolPostalCode"),
         price_per_day: parseMoneyValue(getInputValue("toolPrice")),
-        deposit: 0,
+
         status: status,
         photo_url: photoUrl || null,
 

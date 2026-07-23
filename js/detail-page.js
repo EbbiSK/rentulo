@@ -756,7 +756,7 @@ const hasGps = offerHasGpsLocation(offer);
         city: getOfferCity(offer),
 
         price_per_day: pricePerDay,
-        deposit: 0,
+
 
         start_date: startDate,
 end_date: endDate,
