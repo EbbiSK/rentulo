@@ -257,7 +257,7 @@
       ];
 
       const { data, error } = await supabaseClient
-  .rpc("get_blocking_reservations");
+      .rpc("get_blocked_offer_ids");
 
       if (error) {
         console.warn("Dostupnost nabídek se nepodařilo načíst ze Supabase.");
