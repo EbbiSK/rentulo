@@ -265,6 +265,13 @@
     .message.success { display: block; color: #006b45; }
     .message.error { display: block; color: #b42318; }
 
+    .profile-note {
+      margin: 14px 0 0 !important;
+      color: #5b6862 !important;
+      font-size: 12px !important;
+      line-height: 1.45 !important;
+    }
+
     .danger-card {
       border-color: #f0c7c2;
       background: #fffafa;
@@ -342,6 +349,52 @@
   Zpět na Můj účet
 </a>
     </div>
+
+    <section class="settings-card">
+      <h2 data-i18n="settings.profileTitle">Osobní údaje</h2>
+      <p data-i18n="settings.profileDescription">Upravte údaje zadané při registraci.</p>
+
+      <form id="profileForm">
+        <div class="settings-grid">
+          <div class="field">
+            <label for="profileFullName" data-i18n="settings.fullName">Celé jméno</label>
+            <input type="text" id="profileFullName" autocomplete="name" maxlength="120" required />
+          </div>
+
+          <div class="field">
+            <label for="profileEmail" data-i18n="settings.email">E-mail</label>
+            <input type="email" id="profileEmail" autocomplete="email" maxlength="254" required />
+          </div>
+
+          <div class="field">
+            <label for="profilePhone" data-i18n="settings.phone">Telefon</label>
+            <input type="tel" id="profilePhone" autocomplete="tel" maxlength="40" required />
+          </div>
+
+          <div class="field">
+            <label for="profileStreet" data-i18n="settings.street">Ulice a číslo</label>
+            <input type="text" id="profileStreet" autocomplete="street-address" maxlength="160" required />
+          </div>
+
+          <div class="field">
+            <label for="profileCity" data-i18n="settings.city">Město</label>
+            <input type="text" id="profileCity" autocomplete="address-level2" maxlength="100" required />
+          </div>
+
+          <div class="field">
+            <label for="profilePostalCode" data-i18n="settings.postalCode">PSČ</label>
+            <input type="text" id="profilePostalCode" autocomplete="postal-code" maxlength="20" required />
+          </div>
+        </div>
+
+        <p class="profile-note" data-i18n="settings.emailChangeNote">Při změně e-mailu může Supabase vyžadovat potvrzení na nové adrese. Do potvrzení se můžete přihlašovat původním e-mailem.</p>
+
+        <div class="actions">
+          <button type="submit" class="primary-button" id="saveProfileButton" data-i18n="settings.saveProfile">Uložit osobní údaje</button>
+          <span class="message" id="profileMessage" role="status" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
 
     <section class="settings-card">
       <h2 data-i18n="settings.generalTitle">Obecné nastavení</h2>
