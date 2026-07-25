@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Přihlášení - Rentulo</title>
-
+  <title>Obnova hesla - Rentulo</title>
   <style>
     * {
       box-sizing: border-box;
@@ -342,107 +340,73 @@
         width: 100%;
       }
     }
+  
+    .status-message {
+      display: none;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+    .status-message.active { display: block; }
+    .status-message.success { background: #e2f3eb; border: 1px solid #c7e8d7; color: #073f2e; }
+    .status-message.error { background: #fff7f0; border: 1px solid #ffd4b5; color: #8a1c12; }
+    .hidden { display: none !important; }
   </style>
 </head>
-
 <body data-navigation-page="prihlaseni">
-
   <header class="header">
     <a href="index.html" class="logo">
-      <div class="logo-icon">
-        <span class="logo-dot"></span>
-      </div>
-
-      <div class="logo-text">
-        <strong>Rentulo</strong>
-        <small data-i18n="brand.subtitle">Půjč si cokoli</small>
-      </div>
+      <div class="logo-icon"><span class="logo-dot"></span></div>
+      <div class="logo-text"><strong>Rentulo</strong><small data-i18n="brand.subtitle">Půjč si cokoli</small></div>
     </a>
-
     <nav class="nav" id="mainNav"></nav>
   </header>
 
   <main class="auth-page">
-
     <section class="auth-card">
-
       <div class="auth-intro">
-        <p class="eyebrow" data-i18n="login.eyebrow">Vítejte zpět</p>
-
-        <h1 data-i18n="login.title">Přihlášení</h1>
-
-        <p data-i18n="login.description">
-          Přihlaste se ke svému účtu. Po přihlášení se otevře stránka Můj účet.
-        </p>
-
+        <p class="eyebrow" data-i18n="passwordRecovery.eyebrow">Bezpečné obnovení</p>
+        <h1 id="recoveryTitle" data-i18n="passwordRecovery.title">Obnova hesla</h1>
+        <p id="recoveryDescription" data-i18n="passwordRecovery.description">Zadejte e-mail použitý při registraci. Pošleme vám odkaz pro nastavení nového hesla.</p>
         <div class="auth-helper-box">
-          <strong data-i18n="login.helperTitle">Účet Rentulo</strong>
-          <span data-i18n="login.helperText">Přihlášení nyní probíhá přes Supabase. Použijte e-mail a heslo z registrace.</span>
+          <strong data-i18n="passwordRecovery.helperTitle">Jak to funguje</strong>
+          <span data-i18n="passwordRecovery.helperText">Z bezpečnostních důvodů vždy zobrazíme stejné potvrzení.</span>
         </div>
       </div>
 
-      <form class="auth-form" id="loginForm" autocomplete="on">
-
-        <div class="auth-error-message" id="loginError"></div>
-
+      <form class="auth-form" id="requestResetForm" novalidate>
+        <div class="status-message" id="requestMessage" role="status" aria-live="polite"></div>
         <div class="form-group full">
-          <label for="loginEmail" data-i18n="login.emailLabel">E-mail</label>
-          <input
-  id="loginEmail"
-  type="email"
-  name="email"
-  autocomplete="username"
-  data-i18n-placeholder="login.emailPlaceholder"
-  placeholder="např. jan@email.cz"
-  required
-/>
+          <label for="recoveryEmail" data-i18n="passwordRecovery.emailLabel">E-mail</label>
+          <input id="recoveryEmail" type="email" autocomplete="email" data-i18n-placeholder="passwordRecovery.emailPlaceholder" placeholder="např. jan@email.cz" required />
         </div>
-
-        <div class="form-group full">
-          <label for="loginPassword" data-i18n="login.passwordLabel">Heslo</label>
-          <input
-  id="loginPassword"
-  type="password"
-  name="password"
-  autocomplete="current-password"
-  data-i18n-placeholder="login.passwordPlaceholder"
-  placeholder="Zadejte heslo"
-  required
-/>
-        </div>
-
-        <p class="auth-note auth-note-right">
-          <a href="obnova-hesla.html" data-i18n="login.forgotPassword">Zapomněli jste heslo?</a>
-        </p>
-
-        <label class="terms-check">
-          <input id="rememberLogin" type="checkbox" />
-          <span data-i18n="login.remember">Zapamatovat přihlášení na tomto zařízení.</span>
-        </label>
-
-        <button type="submit" class="auth-button" id="loginSubmitButton" data-i18n="login.submit">
-          Přihlásit se
-        </button>
-
-        <p class="auth-note">
-          <span data-i18n="login.noAccount">Ještě nemáte účet?</span>
-          <a href="registrace.html" data-i18n="login.createAccount">Vytvořit účet</a>
-        </p>
-
+        <button type="submit" class="auth-button" id="requestResetButton" data-i18n="passwordRecovery.send">Poslat odkaz pro obnovu</button>
+        <p class="auth-note"><a href="prihlaseni.html" data-i18n="passwordRecovery.backToLogin">Zpět na přihlášení</a></p>
       </form>
 
+      <form class="auth-form hidden" id="setPasswordForm" novalidate>
+        <div class="status-message" id="passwordMessage" role="status" aria-live="polite"></div>
+        <div class="form-group full">
+          <label for="newPassword" data-i18n="passwordRecovery.newPassword">Nové heslo</label>
+          <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required />
+        </div>
+        <div class="form-group full">
+          <label for="confirmPassword" data-i18n="passwordRecovery.confirmPassword">Potvrzení nového hesla</label>
+          <input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required />
+        </div>
+        <button type="submit" class="auth-button" id="savePasswordButton" data-i18n="passwordRecovery.save">Uložit nové heslo</button>
+        <p class="auth-note"><a href="prihlaseni.html" data-i18n="passwordRecovery.backToLogin">Zpět na přihlášení</a></p>
+      </form>
     </section>
-
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
-<script src="js/utils.js"></script>
-  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/navigation.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/login-page.js"></script>
-
+  <script src="js/password-recovery-page.js"></script>
 </body>
 </html>
