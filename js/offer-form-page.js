@@ -2,6 +2,15 @@ let offerSaveInProgress = false;
     let offerPhotoDataUrl = "";
     let offerPhotoFile = null;
 
+    function offerTranslate(key, fallback) {
+      if (typeof window.rentuloTranslate === "function") {
+        const translated = window.rentuloTranslate(key);
+        return translated === key ? fallback : translated;
+      }
+
+      return fallback;
+    }
+
     const cityPostalCodes = {
       "praha": "110 00",
       "brno": "602 00",
@@ -86,18 +95,15 @@ let offerSaveInProgress = false;
 
       offerPage.innerHTML = `
         <section class="login-required-box">
-          <p class="eyebrow">Přihlášení je potřeba</p>
+          <p class="eyebrow">${offerTranslate("offer.loginRequiredEyebrow", "Přihlášení je potřeba")}</p>
 
-          <h1>Pro přidání nabídky se nejdříve přihlaste.</h1>
+          <h1>${offerTranslate("offer.loginRequiredTitle", "Pro přidání nabídky se nejdříve přihlaste.")}</h1>
 
-          <p>
-  Věci mohou nabízet pouze přihlášení uživatelé. Po přihlášení
-se můžete vrátit a přidat vlastní nabídku.
-          </p>
+          <p>${offerTranslate("offer.loginRequiredDescription", "Věci mohou nabízet pouze přihlášení uživatelé. Po přihlášení se můžete vrátit a přidat vlastní nabídku.")}</p>
 
           <div class="login-required-actions">
-            <a href="prihlaseni.html">Přihlásit se</a>
-            <a href="registrace.html" class="secondary-action">Vytvořit účet</a>
+            <a href="prihlaseni.html">${offerTranslate("nav.login", "Přihlásit se")}</a>
+            <a href="registrace.html" class="secondary-action">${offerTranslate("offer.createAccount", "Vytvořit účet")}</a>
           </div>
         </section>
       `;
@@ -339,11 +345,11 @@ function getOfferCurrentUserSafe() {
       }
 
       if (!dataUrl) {
-        preview.innerHTML = "Bez fotky";
+        preview.innerHTML = offerTranslate("offer.noPhoto", "Bez fotky");
         return;
       }
 
-preview.innerHTML = `<img src="${dataUrl}" alt="Fotka nabízené věci">`;
+preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt", "Fotka nabízené věci")}">`;
     }
 
     function resizeImageToDataUrl(file, callback) {
@@ -404,7 +410,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="Fotka nabízené věci">`;
           offerPhotoDataUrl = "";
           offerPhotoFile = null;
           renderPhotoPreview("");
-          updatePhotoStatus("Fotka nebyla vybraná.", "");
+          updatePhotoStatus(offerTranslate("offer.photoNotSelected", "Fotka nebyla vybraná."), "");
           return;
         }
 
@@ -413,12 +419,12 @@ preview.innerHTML = `<img src="${dataUrl}" alt="Fotka nabízené věci">`;
           offerPhotoFile = null;
           photoInput.value = "";
           renderPhotoPreview("");
-          updatePhotoStatus("Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP.", "error");
+          updatePhotoStatus(offerTranslate("offer.photoInvalidType", "Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP."), "error");
           return;
         }
 
         offerPhotoFile = file;
-        updatePhotoStatus("Zpracovávám fotku...", "");
+        updatePhotoStatus(offerTranslate("offer.photoProcessing", "Zpracovávám fotku..."), "");
 
         resizeImageToDataUrl(file, function (dataUrl) {
           if (!dataUrl) {
@@ -426,13 +432,13 @@ preview.innerHTML = `<img src="${dataUrl}" alt="Fotka nabízené věci">`;
             offerPhotoFile = null;
             photoInput.value = "";
             renderPhotoPreview("");
-            updatePhotoStatus("Fotku se nepodařilo načíst. Zkuste jiný obrázek.", "error");
+            updatePhotoStatus(offerTranslate("offer.photoLoadFailed", "Fotku se nepodařilo načíst. Zkuste jiný obrázek."), "error");
             return;
           }
 
           offerPhotoDataUrl = dataUrl;
           renderPhotoPreview(offerPhotoDataUrl);
-          updatePhotoStatus("Fotka byla připravená k uložení.", "success");
+          updatePhotoStatus(offerTranslate("offer.photoReady", "Fotka byla připravená k uložení."), "success");
         });
       });
 
@@ -442,7 +448,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="Fotka nabízené věci">`;
           offerPhotoFile = null;
           photoInput.value = "";
           renderPhotoPreview("");
-          updatePhotoStatus("Fotka byla odebraná.", "");
+          updatePhotoStatus(offerTranslate("offer.photoRemoved", "Fotka byla odebraná."), "");
         });
       }
     }
@@ -532,7 +538,7 @@ return {
       }
 
       if (hasError) {
-        showOfferFormMessage("Vyplňte prosím všechna povinná pole. GPS poloha je volitelná.", "error");
+        showOfferFormMessage(offerTranslate("offer.validationRequired", "Vyplňte prosím všechna povinná pole. GPS poloha je volitelná."), "error");
         return false;
       }
 
@@ -567,7 +573,7 @@ return {
       const photoBlob = dataUrlToBlob(offerPhotoDataUrl);
       const fileName = userId + "/" + Date.now() + "-offer.jpg";
 
-      updatePhotoStatus("Nahrávám fotku do Supabase...", "");
+      updatePhotoStatus(offerTranslate("offer.photoUploading", "Nahrávám fotku do Supabase..."), "");
 
       const { error } = await supabaseClient.storage
         .from("offer-photos")
@@ -584,7 +590,7 @@ return {
         .from("offer-photos")
         .getPublicUrl(fileName);
 
-      updatePhotoStatus("Fotka byla nahraná.", "success");
+      updatePhotoStatus(offerTranslate("offer.photoUploaded", "Fotka byla nahraná."), "success");
 
       return data && data.publicUrl ? data.publicUrl : "";
     }
@@ -637,15 +643,15 @@ return {
       if (publishOfferButton) {
         publishOfferButton.disabled = isSaving;
         publishOfferButton.textContent = isSaving && status !== "draft"
-          ? "Ukládám nabídku..."
-          : "Zveřejnit nabídku";
+          ? offerTranslate("offer.savingOffer", "Ukládám nabídku...")
+          : offerTranslate("offer.publish", "Zveřejnit nabídku");
       }
 
       if (saveDraftButton) {
         saveDraftButton.disabled = isSaving;
         saveDraftButton.textContent = isSaving && status === "draft"
-          ? "Ukládám koncept..."
-          : "Uložit jako koncept";
+          ? offerTranslate("offer.savingDraft", "Ukládám koncept...")
+          : offerTranslate("offer.saveDraft", "Uložit jako koncept");
       }
     }
 
@@ -662,7 +668,7 @@ return {
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        showOfferFormMessage("Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js.", "error");
+        showOfferFormMessage(offerTranslate("offer.errorSupabaseMissing", "Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js."), "error");
         return;
       }
 
@@ -677,7 +683,7 @@ return {
         const supabaseUser = await getCurrentSupabaseUser();
 
         if (!supabaseUser) {
-          showOfferFormMessage("Nejste přihlášený v Supabase. Přihlaste se prosím znovu.", "error");
+          showOfferFormMessage(offerTranslate("offer.errorNotAuthenticated", "Nejste přihlášený v Supabase. Přihlaste se prosím znovu."), "error");
           offerSaveInProgress = false;
           setOfferSavingState(false, status);
           return;
@@ -706,16 +712,16 @@ return {
         const message = error && error.message ? error.message : "";
 
         if (message.includes("row-level security")) {
-          showOfferFormMessage("Nabídku se nepodařilo uložit: Supabase odmítl zápis kvůli bezpečnostním pravidlům. Zkuste se odhlásit a znovu přihlásit.", "error");
+          showOfferFormMessage(offerTranslate("offer.errorRls", "Nabídku se nepodařilo uložit: Supabase odmítl zápis kvůli bezpečnostním pravidlům. Zkuste se odhlásit a znovu přihlásit."), "error");
           return;
         }
 
         if (message.includes("column") || message.includes("schema cache")) {
-          showOfferFormMessage("Nabídku se nepodařilo uložit: některý sloupec v tabulce offers chybí. Pošli mi screenshot chyby z konzole.", "error");
+          showOfferFormMessage(offerTranslate("offer.errorSchema", "Nabídku se nepodařilo uložit: některý sloupec v tabulce offers chybí."), "error");
           return;
         }
 
-        showOfferFormMessage("Nabídku se nepodařilo uložit. Zkuste odebrat fotku a uložit znovu.", "error");
+        showOfferFormMessage(offerTranslate("offer.errorSave", "Nabídku se nepodařilo uložit. Zkuste odebrat fotku a uložit znovu."), "error");
       }
     }
 
@@ -749,19 +755,19 @@ return {
       pickupLocationButton.addEventListener("click", function () {
         if (!navigator.geolocation) {
           if (pickupLocationStatus) {
-            pickupLocationStatus.textContent = "Poloha není v tomto prohlížeči dostupná.";
+            pickupLocationStatus.textContent = offerTranslate("offer.locationUnavailable", "Poloha není v tomto prohlížeči dostupná.");
             pickupLocationStatus.className = "pickup-location-status error";
           }
 
-          alert("Poloha není v tomto prohlížeči dostupná.");
+          alert(offerTranslate("offer.locationUnavailable", "Poloha není v tomto prohlížeči dostupná."));
           return;
         }
 
         pickupLocationButton.disabled = true;
-        pickupLocationButton.textContent = "Zjišťuji polohu...";
+        pickupLocationButton.textContent = offerTranslate("offer.locationDetecting", "Zjišťuji polohu...");
 
         if (pickupLocationStatus) {
-          pickupLocationStatus.textContent = "Zjišťuji polohu...";
+          pickupLocationStatus.textContent = offerTranslate("offer.locationDetecting", "Zjišťuji polohu...");
           pickupLocationStatus.className = "pickup-location-status";
         }
 
@@ -771,10 +777,10 @@ return {
             pickupLongitudeInput.value = position.coords.longitude;
 
             pickupLocationButton.disabled = false;
-            pickupLocationButton.textContent = "Poloha byla uložena";
+            pickupLocationButton.textContent = offerTranslate("offer.locationSavedButton", "Poloha byla uložena");
 
             if (pickupLocationStatus) {
-              pickupLocationStatus.textContent = "Poloha byla uložena k nabídce.";
+              pickupLocationStatus.textContent = offerTranslate("offer.locationSaved", "Poloha byla uložena k nabídce.");
               pickupLocationStatus.className = "pickup-location-status success";
             }
           },
@@ -783,14 +789,14 @@ return {
             pickupLongitudeInput.value = "";
 
             pickupLocationButton.disabled = false;
-            pickupLocationButton.textContent = "Použít moji aktuální polohu";
+            pickupLocationButton.textContent = offerTranslate("offer.useLocation", "Použít moji aktuální polohu");
 
             if (pickupLocationStatus) {
-              pickupLocationStatus.textContent = "Polohu se nepodařilo získat. Nabídku můžete uložit i bez GPS.";
+              pickupLocationStatus.textContent = offerTranslate("offer.locationFailed", "Polohu se nepodařilo získat. Nabídku můžete uložit i bez GPS.");
               pickupLocationStatus.className = "pickup-location-status error";
             }
 
-            alert("Polohu se nepodařilo získat. Nabídku můžete uložit i bez GPS polohy.");
+            alert(offerTranslate("offer.locationFailedAlert", "Polohu se nepodařilo získat. Nabídku můžete uložit i bez GPS polohy."));
           },
           {
             enableHighAccuracy: false,
