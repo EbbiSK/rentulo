@@ -732,8 +732,12 @@ const data = Array.isArray(paidReservations)
               <span>${escapeHtml(reservationsTranslate("reservations.payment.totalPaid", "Celkem zaplaceno"))}: ${escapeHtml(totalPrice)} Kč</span>
               <span>${escapeHtml(reservationsTranslate("reservations.payment.rentuloFee", "Provize Rentulo"))}: ${escapeHtml(platformFee)} Kč</span>
               <span>${escapeHtml(reservationsTranslate("reservations.payment.ownerAmount", "Částka pro majitele"))}: ${escapeHtml(ownerPayout)} Kč</span>
-              <span>Stav platby: ${escapeHtml(reservation.paymentProviderStatus || "paid")}</span>
-              <span>Zaplaceno: ${escapeHtml(formatDateTime(reservation.paidAt))}</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.statusLabel", "Stav platby"))}: ${escapeHtml(
+                reservation.paymentProviderStatus === "paid_test"
+                  ? reservationsTranslate("reservations.payment.statusPaidTest", "Testovací platba")
+                  : reservationsTranslate("reservations.payment.statusPaid", "Zaplaceno")
+              )}</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.paidAt", "Zaplaceno"))}: ${escapeHtml(formatDateTime(reservation.paidAt))}</span>
             </div>
           </div>
         `;
