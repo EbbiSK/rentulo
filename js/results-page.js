@@ -2,6 +2,34 @@
     let resultsRatingSummaries = {};
     let resultsReservedOfferIds = new Set();
 
+    function resultsTranslate(key, fallback) {
+      if (typeof window.rentuloTranslate === "function") {
+        const translated = window.rentuloTranslate(key);
+        if (translated && translated !== key) {
+          return translated;
+        }
+      }
+      return fallback || key;
+    }
+
+    function resultsCategoryLabel(category) {
+      const normalized = normalizeText(category || "");
+      const keys = {
+        "dum a zahrada": "category.homeGarden",
+        "dilna a naradi": "category.workshopTools",
+        "sport a volny cas": "category.sportLeisure",
+        "elektronika": "category.electronics",
+        "deti a rodina": "category.childrenFamily",
+        "auto a doprava": "category.autoTransport",
+        "party a akce": "category.partyEvents",
+        "cestovani a kempovani": "category.travelCamping",
+        "stavebni technika": "category.construction",
+        "ostatni": "category.other"
+      };
+      const key = keys[normalized];
+      return key ? resultsTranslate(key, category) : category;
+    }
+
 
 
 
@@ -305,14 +333,14 @@
       const summary = getOwnerRatingSummary(offer);
 
       if (!summary || !summary.ratingCount) {
-        return "Zatím bez hodnocení";
+        return resultsTranslate("results.noRatings", "Zatím bez hodnocení");
       }
 
       return "⭐ " +
         summary.averageRating +
         " / 5 (" +
         summary.ratingCount +
-        " hodnocení)";
+        " " + resultsTranslate("results.ratings", "hodnocení") + ")";
     }
 
     function getOfferDistanceKm(offer) {
@@ -364,13 +392,13 @@
 
     function formatDistance(distanceKm) {
       if (distanceKm === null || Number.isNaN(distanceKm)) {
-        return "Poloha není uložená";
+        return resultsTranslate("results.locationMissing", "Poloha není uložená");
       }
 
       const distanceMeters = Math.round(distanceKm * 1000);
 
       if (distanceMeters < 50) {
-        return "ve vaší blízkosti";
+        return resultsTranslate("results.veryNear", "ve vaší blízkosti");
       }
 
       if (distanceKm < 1) {
@@ -389,7 +417,7 @@ function getOfferCity(offer) {
     }
 
     function getOfferCategory(offer) {
-      return offer.category || offer.kategorie || "Ostatní";
+      return offer.category || offer.kategorie || resultsTranslate("category.other", "Ostatní");
     }
 
 function getOfferPhoto(offer) {
@@ -425,68 +453,23 @@ function getOfferPhoto(offer) {
     }
 
     function getEmptyResultsContent(type) {
-      if (type === "load-error") {
-        return {
-          title: "Nabídky se nepodařilo načíst.",
-          message: "Spojení se Supabase se nepodařilo. Zkontrolujte připojení, js/supabase-config.js a konzoli prohlížeče.",
-          primaryLink: "vysledky.html",
-          primaryText: "Zkusit znovu",
-          secondaryLink: "index.html",
-          secondaryText: "Zpět na úvod"
-        };
-      }
+      const content = {
+        "load-error": ["results.empty.loadErrorTitle", "Nabídky se nepodařilo načíst.", "results.empty.loadErrorMessage", "Spojení se Supabase se nepodařilo. Zkontrolujte připojení, js/supabase-config.js a konzoli prohlížeče.", "vysledky.html", "results.tryAgain", "Zkusit znovu", "index.html", "results.backHome", "Zpět na úvod"],
+        "loading": ["results.empty.loadingTitle", "Načítám nabídky...", "results.empty.loadingMessage", "Chvíli strpení, načítáme nabídky ze Supabase.", "vysledky.html", "results.refresh", "Obnovit", "index.html", "results.backHome", "Zpět na úvod"],
+        "no-offers": ["results.empty.noOffersTitle", "Zatím zde nejsou žádné nabídky.", "results.empty.noOffersMessage", "Na Rentulu zatím nikdo nepřidal žádnou věc k půjčení. Můžete přidat první nabídku a vyzkoušet, jak bude fungovat.", "nabidnout.html", "results.addItem", "Přidat věc", "index.html", "results.backHome", "Zpět na úvod"],
+        "nearby-no-gps": ["results.empty.noGpsTitle", "Žádná nabídka zatím nemá uloženou GPS polohu.", "results.empty.noGpsMessage", "Hledání podle okolí funguje jen u nabídek, které mají uloženou polohu. Nabídky můžete stále procházet běžným hledáním podle názvu, kategorie nebo města.", "vysledky.html", "results.showAll", "Zobrazit všechny nabídky", "nabidnout.html", "results.addGpsListing", "Přidat nabídku s GPS"],
+        "nearby-no-location": ["results.empty.noLocationTitle", "Polohu se nepodařilo načíst.", "results.empty.noLocationMessage", "Bez vaší polohy neumíme nabídky seřadit podle vzdálenosti. Zkuste hledání znovu z úvodní stránky nebo použijte běžné hledání podle města.", "index.html", "results.backHome", "Zpět na úvod", "vysledky.html", "results.showAll", "Zobrazit všechny nabídky"],
+        "no-match": ["results.empty.noMatchTitle", "Nenašli jsme žádnou nabídku.", "results.empty.noMatchMessage", "Pro zadané hledání nebo zvolené filtry nebyla nalezena žádná nabídka. Zkuste změnit název, kategorii, město, cenu nebo dostupnost.", "vysledky.html", "results.clearSearch", "Zrušit hledání", "nabidnout.html", "results.addItem", "Přidat věc"]
+      }[type] || null;
 
-      if (type === "loading") {
-        return {
-          title: "Načítám nabídky...",
-          message: "Chvíli strpení, načítáme nabídky ze Supabase.",
-          primaryLink: "vysledky.html",
-          primaryText: "Obnovit",
-          secondaryLink: "index.html",
-          secondaryText: "Zpět na úvod"
-        };
-      }
-
-      if (type === "no-offers") {
-        return {
-          title: "Zatím zde nejsou žádné nabídky.",
-          message: "Na Rentulu zatím nikdo nepřidal žádnou věc k půjčení. Můžete přidat první nabídku a vyzkoušet, jak bude fungovat.",
-          primaryLink: "nabidnout.html",
-          primaryText: "Přidat věc",
-          secondaryLink: "index.html",
-          secondaryText: "Zpět na úvod"
-        };
-      }
-
-      if (type === "nearby-no-gps") {
-        return {
-          title: "Žádná nabídka zatím nemá uloženou GPS polohu.",
-          message: "Hledání podle okolí funguje jen u nabídek, které mají uloženou polohu. Nabídky můžete stále procházet běžným hledáním podle názvu, kategorie nebo města.",
-          primaryLink: "vysledky.html",
-          primaryText: "Zobrazit všechny nabídky",
-          secondaryLink: "nabidnout.html",
-          secondaryText: "Přidat nabídku s GPS"
-        };
-      }
-
-      if (type === "nearby-no-location") {
-        return {
-          title: "Polohu se nepodařilo načíst.",
-          message: "Bez vaší polohy neumíme nabídky seřadit podle vzdálenosti. Zkuste hledání znovu z úvodní stránky nebo použijte běžné hledání podle města.",
-          primaryLink: "index.html",
-          primaryText: "Zpět na úvod",
-          secondaryLink: "vysledky.html",
-          secondaryText: "Zobrazit všechny nabídky"
-        };
-      }
-
+      const row = content || ["results.empty.noMatchTitle", "Nenašli jsme žádnou nabídku.", "results.empty.noMatchMessage", "Pro zadané hledání nebo zvolené filtry nebyla nalezena žádná nabídka. Zkuste změnit název, kategorii, město, cenu nebo dostupnost.", "vysledky.html", "results.clearSearch", "Zrušit hledání", "nabidnout.html", "results.addItem", "Přidat věc"];
       return {
-        title: "Nenašli jsme žádnou nabídku.",
-        message: "Pro zadané hledání nebo zvolené filtry nebyla nalezena žádná nabídka. Zkuste změnit název, kategorii, město, cenu nebo dostupnost.",
-        primaryLink: "vysledky.html",
-        primaryText: "Zrušit hledání",
-        secondaryLink: "nabidnout.html",
-        secondaryText: "Přidat věc"
+        title: resultsTranslate(row[0], row[1]),
+        message: resultsTranslate(row[2], row[3]),
+        primaryLink: row[4],
+        primaryText: resultsTranslate(row[5], row[6]),
+        secondaryLink: row[7],
+        secondaryText: resultsTranslate(row[8], row[9])
       };
     }
 
@@ -522,7 +505,7 @@ function getOfferPhoto(offer) {
 
       return `
         <div class="result-info-box distance ${missingClass}">
-          <span>Vzdálenost</span>
+          <span>${escapeHtml(resultsTranslate("results.distance", "Vzdálenost"))}</span>
           <strong>${escapeHtml(formatDistance(distanceKm))}</strong>
         </div>
       `;
@@ -532,11 +515,11 @@ function getOfferPhoto(offer) {
       const offerId = getOfferId(offer);
       const name = getOfferName(offer);
       const city = getOfferCity(offer);
-      const category = getOfferCategory(offer);
+      const category = resultsCategoryLabel(getOfferCategory(offer));
       const price = getOfferPrice(offer);
       const availabilityClass = "available";
-      const availabilityText = "Termín ověříme";
-      const availabilityNote = "Nabídku lze rezervovat ve volném termínu. Dostupnost konkrétních dat ověříte v detailu.";
+      const availabilityText = resultsTranslate("results.dateVerified", "Termín ověříme");
+      const availabilityNote = resultsTranslate("results.availabilityNote", "Nabídku lze rezervovat ve volném termínu. Dostupnost konkrétních dat ověříte v detailu.");
 
       return `
         <article class="result-card">
@@ -552,17 +535,17 @@ function getOfferPhoto(offer) {
 
             <div class="result-info">
               <div class="result-info-box">
-                <span>Cena za den</span>
+                <span>${escapeHtml(resultsTranslate("results.pricePerDay", "Cena za den"))}</span>
                 <strong>${escapeHtml(price)} Kč</strong>
               </div>
 
               <div class="result-info-box ${availabilityClass}">
-                <span>Dostupnost</span>
+                <span>${escapeHtml(resultsTranslate("results.availability", "Dostupnost"))}</span>
                 <strong>${escapeHtml(availabilityText)}</strong>
               </div>
 
               <div class="result-info-box">
-                <span>Hodnocení majitele</span>
+                <span>${escapeHtml(resultsTranslate("results.ownerRating", "Hodnocení majitele"))}</span>
                 <strong>${escapeHtml(formatOwnerRating(offer))}</strong>
               </div>
 
@@ -575,7 +558,7 @@ function getOfferPhoto(offer) {
 
             <div class="result-actions">
               <a class="result-button" href="detail.html?id=${encodeURIComponent(offerId)}">
-                Zobrazit detail
+                ${escapeHtml(resultsTranslate("results.viewDetail", "Zobrazit detail"))}
               </a>
             </div>
           </div>
@@ -700,25 +683,25 @@ const HOME_CATEGORY_GROUPS = {
       if (userLatitude === null || userLongitude === null) {
         banner.classList.add("warning");
         nearbyText.textContent =
-          "Polohu se nepodařilo načíst. Zobrazujeme všechny nabídky bez řazení podle vzdálenosti.";
+          resultsTranslate("results.nearbyNoLocation", "Polohu se nepodařilo načíst. Zobrazujeme všechny nabídky bez řazení podle vzdálenosti.");
         return;
       }
 
       if (offersWithGps === 0 && offers.length > 0) {
         banner.classList.add("warning");
         nearbyText.textContent =
-          "Žádná nabídka zatím nemá uloženou GPS polohu. Nabídky proto neumíme seřadit podle vzdálenosti.";
+          resultsTranslate("results.nearbyNoGps", "Žádná nabídka zatím nemá uloženou GPS polohu. Nabídky proto neumíme seřadit podle vzdálenosti.");
         return;
       }
 
       if (offersWithoutGps > 0) {
         nearbyText.textContent =
-          "Nabídky s uloženou polohou řadíme podle vzdálenosti od vás. Nabídky bez GPS polohy zobrazujeme pod nimi.";
+          resultsTranslate("results.nearbyDefault", "Nabídky s uloženou polohou řadíme podle vzdálenosti od vás. Nabídky bez GPS polohy zobrazujeme pod nimi.");
         return;
       }
 
       nearbyText.textContent =
-        "Všechny zobrazené nabídky mají uloženou GPS polohu a jsou seřazené podle vzdálenosti od vás.";
+        resultsTranslate("results.nearbyAllGps", "Všechny zobrazené nabídky mají uloženou GPS polohu a jsou seřazené podle vzdálenosti od vás.");
     }
 
     function setupResultsFromUrl() {
@@ -758,7 +741,7 @@ const HOME_CATEGORY_GROUPS = {
 
       if (isNearbySearchMode()) {
         if (whereInput && !whereInput.value) {
-          whereInput.value = "Moje poloha";
+          whereInput.value = resultsTranslate("results.myLocation", "Moje poloha");
         }
 
         const eyebrow = document.getElementById("resultsEyebrow");
@@ -766,16 +749,15 @@ const HOME_CATEGORY_GROUPS = {
         const description = document.getElementById("resultsDescription");
 
         if (eyebrow) {
-          eyebrow.textContent = "Výsledky podle polohy";
+          eyebrow.textContent = resultsTranslate("results.nearbyEyebrow", "Výsledky podle polohy");
         }
 
         if (title) {
-        title.textContent = "Věci ve vašem okolí";
+        title.textContent = resultsTranslate("results.nearbyPageTitle", "Věci ve vašem okolí");
         }
 
         if (description) {
-          description.textContent =
-            "Nejbližší nabídky s uloženou polohou se zobrazují nahoře.";
+          description.textContent = resultsTranslate("results.nearbyDescription", "Nejbližší nabídky s uloženou polohou se zobrazují nahoře.");
         }
       }
     }
@@ -947,6 +929,7 @@ const HOME_CATEGORY_GROUPS = {
     }
 
     async function initializeResultsPage() {
+      document.title = resultsTranslate("results.documentTitle", "Výsledky vyhledávání - Rentulo");
       renderSharedNavigation("vysledky");
       setupResultsFromUrl();
       setupResultsEvents();
@@ -961,4 +944,10 @@ const HOME_CATEGORY_GROUPS = {
 
     document.addEventListener("DOMContentLoaded", function () {
       initializeResultsPage();
+    });
+
+    document.addEventListener("rentuloLanguageChanged", function () {
+      document.title = resultsTranslate("results.documentTitle", "Výsledky vyhledávání - Rentulo");
+      setupResultsFromUrl();
+      renderResults();
     });

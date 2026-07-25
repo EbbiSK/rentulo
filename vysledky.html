@@ -662,7 +662,7 @@
 
       <div class="logo-text">
         <strong>Rentulo</strong>
-        <small>Půjč si cokoli</small>
+        <small data-i18n="brand.subtitle">Půjč si cokoli</small>
       </div>
     </a>
 
@@ -671,37 +671,37 @@
 
   <main class="results-page">
 
-    <a href="index.html" class="results-back-link">← Zpět na úvod</a>
+    <a href="index.html" class="results-back-link" data-i18n="results.back">← Zpět na úvod</a>
 
     <section class="results-header">
       <div>
-        <p class="eyebrow" id="resultsEyebrow">Výsledky vyhledávání</p>
+        <p class="eyebrow" id="resultsEyebrow" data-i18n="results.eyebrow">Výsledky vyhledávání</p>
 
-        <h1 id="resultsTitle">Dostupné věci k půjčení</h1>
+        <h1 id="resultsTitle" data-i18n="results.title">Dostupné věci k půjčení</h1>
 
-        <p id="resultsDescription">
+        <p id="resultsDescription" data-i18n="results.description">
           Zobrazují se nabídky načtené z databáze Supabase.
         </p>
       </div>
 
       <div class="results-search">
         <div class="search-field">
-          <label>Co hledáte?</label>
-          <input id="results-search-what" type="text" placeholder="např. stan, kočárek nebo vrtačka" />
+          <label data-i18n="results.searchWhatLabel">Co hledáte?</label>
+          <input id="results-search-what" type="text" placeholder="např. stan, kočárek nebo vrtačka" data-i18n-placeholder="results.searchWhatPlaceholder" />
         </div>
 
         <div class="search-field">
-          <label>Kde?</label>
-          <input id="results-search-where" type="text" placeholder="město nebo PSČ" />
+          <label data-i18n="results.searchWhereLabel">Kde?</label>
+          <input id="results-search-where" type="text" placeholder="město nebo PSČ" data-i18n-placeholder="results.searchWherePlaceholder" />
         </div>
 
-        <button id="results-search-button" type="button">Upravit</button>
+        <button id="results-search-button" type="button" data-i18n="results.searchButton">Upravit</button>
       </div>
     </section>
 
     <div class="nearby-results-banner" id="nearbyResultsBanner">
-      <strong>Hledání podle vaší polohy</strong>
-      <span id="nearbyResultsText">
+      <strong data-i18n="results.nearbyTitle">Hledání podle vaší polohy</strong>
+      <span id="nearbyResultsText" data-i18n="results.nearbyDefault">
         Nabídky s uloženou polohou řadíme podle vzdálenosti od vás. Nabídky bez GPS polohy zobrazujeme pod nimi.
       </span>
     </div>
@@ -709,44 +709,44 @@
     <section class="results-layout">
 
       <aside class="filters-card">
-        <h2>Filtry</h2>
+        <h2 data-i18n="results.filtersTitle">Filtry</h2>
 
         <div class="filter-group">
-          <label>Kategorie</label>
+          <label data-i18n="results.categoryLabel">Kategorie</label>
           <select id="categoryFilter">
-          <option value="">Všechny kategorie</option>
-          <option value="Dům a zahrada">Dům a zahrada</option>
-          <option value="Dílna a nářadí">Dílna a nářadí</option>
-          <option value="Sport a volný čas">Sport a volný čas</option>
-          <option value="Elektronika">Elektronika</option>
-          <option value="Děti a rodina">Děti a rodina</option>
-          <option value="Auto a doprava">Auto a doprava</option>
-          <option value="Párty a akce">Párty a akce</option>
-          <option value="Cestování a kempování">Cestování a kempování</option>
-          <option value="Stavební technika">Stavební technika</option>
-          <option value="Ostatní">Ostatní</option>
+          <option value="" data-i18n="results.categoryAll">Všechny kategorie</option>
+          <option value="Dům a zahrada" data-i18n="category.homeGarden">Dům a zahrada</option>
+          <option value="Dílna a nářadí" data-i18n="category.workshopTools">Dílna a nářadí</option>
+          <option value="Sport a volný čas" data-i18n="category.sportLeisure">Sport a volný čas</option>
+          <option value="Elektronika" data-i18n="category.electronics">Elektronika</option>
+          <option value="Děti a rodina" data-i18n="category.childrenFamily">Děti a rodina</option>
+          <option value="Auto a doprava" data-i18n="category.autoTransport">Auto a doprava</option>
+          <option value="Párty a akce" data-i18n="category.partyEvents">Párty a akce</option>
+          <option value="Cestování a kempování" data-i18n="category.travelCamping">Cestování a kempování</option>
+          <option value="Stavební technika" data-i18n="category.construction">Stavební technika</option>
+          <option value="Ostatní" data-i18n="category.other">Ostatní</option>
         </select>
         </div>
 
         <div class="filter-group">
-          <label>Cena za den</label>
+          <label data-i18n="results.priceLabel">Cena za den</label>
           <select id="priceFilter">
-            <option value="">Bez omezení</option>
-            <option value="100">Do 100 Kč</option>
-            <option value="250">Do 250 Kč</option>
-            <option value="500">Do 500 Kč</option>
+            <option value="" data-i18n="results.priceAny">Bez omezení</option>
+            <option value="100" data-i18n="results.price100">Do 100 Kč</option>
+            <option value="250" data-i18n="results.price250">Do 250 Kč</option>
+            <option value="500" data-i18n="results.price500">Do 500 Kč</option>
           </select>
         </div>
 
         <div class="filter-group">
-          <label>Dostupnost termínu</label>
+          <label data-i18n="results.availabilityLabel">Dostupnost termínu</label>
           <select id="availabilityFilter">
-            <option value="">Ověří se v detailu</option>
-            <option value="available">Nabídky s výběrem termínu</option>
+            <option value="" data-i18n="results.availabilityDetail">Ověří se v detailu</option>
+            <option value="available" data-i18n="results.availabilitySelectable">Nabídky s výběrem termínu</option>
           </select>
         </div>
 
-        <div class="filter-note">
+        <div class="filter-note" data-i18n="results.filterNote">
           Konkrétní termín se ověří až po výběru data v detailu. Jiná rezervace blokuje pouze překrývající se dny.
         </div>
       </aside>
@@ -766,6 +766,7 @@
 <script src="js/storage.js"></script>
 <script src="js/reservation-status.js"></script>
 <script src="js/reservations.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/results-page.js"></script>
 
 </body>
