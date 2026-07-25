@@ -1,3 +1,11 @@
+function reservationsTranslate(key, fallback) {
+  if (typeof window.rentuloTranslate === "function") {
+    return window.rentuloTranslate(key);
+  }
+
+  return fallback;
+}
+
   const PLATFORM_FEE_PERCENT = 10;
     let supabaseReservations = [];
     let supabaseReviews = [];
@@ -43,7 +51,7 @@
         <div class="review-lines">
           <span>${escapeHtml(getStars(review.rating))}</span>
           ${review.text ? `<span>${escapeHtml(review.text)}</span>` : ""}
-          <span>Odesláno: ${escapeHtml(formatDateTime(review.created_at))}</span>
+          <span>${escapeHtml(reservationsTranslate("reservations.review.sent", "Odesláno"))}: ${escapeHtml(formatDateTime(review.created_at))}</span>
         </div>
       `;
     }
@@ -101,10 +109,10 @@
         ownerId: row.owner_id,
         renterId: row.renter_id,
 
-        toolName: row.offer_name || "Věc k půjčení",
-offerName: row.offer_name || "Věc k půjčení",
+        toolName: row.offer_name || reservationsTranslate("reservations.fallback.itemForRent", "Věc k půjčení"),
+offerName: row.offer_name || reservationsTranslate("reservations.fallback.itemForRent", "Věc k půjčení"),
 
-category: row.category || "Ostatní",
+category: row.category || reservationsTranslate("reservations.fallback.other", "Ostatní"),
         city: row.city || "",
 
         pricePerDay: Number(row.price_per_day || 0),
@@ -127,7 +135,7 @@ category: row.category || "Ostatní",
         renterEmail: row.renter_email || "",
         renterPhone: row.renter_phone || "",
 
-        ownerName: row.owner_name || "Majitel",
+        ownerName: row.owner_name || reservationsTranslate("reservations.fallback.owner", "Majitel"),
         ownerEmail: row.owner_email || "",
         ownerPhone: row.owner_phone || "",
 
@@ -178,7 +186,7 @@ const data = Array.isArray(reservationsData)
 
       if (error) {
         console.error(error);
-        alert("Rezervace se nepodařilo načíst ze Supabase. Podívejte se prosím do konzole.");
+        alert(reservationsTranslate("reservations.error.load", "Rezervace se nepodařilo načíst ze Supabase. Podívejte se prosím do konzole."));
         return [];
       }
 
@@ -229,7 +237,7 @@ const data = Array.isArray(reservationsData)
         return getReservationToolName(reservation);
       }
 
-      return reservation.toolName || reservation.offerName || "Věc";
+      return reservation.toolName || reservation.offerName || reservationsTranslate("reservations.fallback.item", "Věc");
     }
 
     function getSafeReservationDateFrom(reservation) {
@@ -325,7 +333,7 @@ return (
     }
 
     function getReservationOwnerName(reservation) {
-      return reservation.ownerName || reservation.owner || "Majitel";
+      return reservation.ownerName || reservation.owner || reservationsTranslate("reservations.fallback.owner", "Majitel");
     }
 
     function getPickupAddress(reservation) {
@@ -372,9 +380,9 @@ return (
     function renderEmptyState() {
       document.getElementById("reservationsList").innerHTML = `
         <section class="account-empty-state">
-          <h2>Zatím nemáte žádné rezervace.</h2>
-          <p>Najděte věc ve svém okolí a pošlete první žádost o půjčení.</p>
-          <a href="vysledky.html">Najít věc</a>
+          <h2>${escapeHtml(reservationsTranslate("reservations.empty.title", "Zatím nemáte žádné rezervace."))}</h2>
+          <p>${escapeHtml(reservationsTranslate("reservations.empty.description", "Najděte věc ve svém okolí a pošlete první žádost o půjčení."))}</p>
+          <a href="vysledky.html">${escapeHtml(reservationsTranslate("reservations.findItem", "Najít věc"))}</a>
         </section>
       `;
     }
@@ -382,8 +390,8 @@ return (
     function renderLoadingState() {
       document.getElementById("reservationsList").innerHTML = `
         <section class="account-empty-state">
-          <h2>Načítám rezervace...</h2>
-          <p>Chvíli strpení, načítáme vaše rezervace ze Supabase.</p>
+          <h2>${escapeHtml(reservationsTranslate("reservations.loading.title", "Načítám rezervace..."))}</h2>
+          <p>${escapeHtml(reservationsTranslate("reservations.loading.description", "Chvíli strpení, načítáme vaše rezervace ze Supabase."))}</p>
         </section>
       `;
     }
@@ -392,14 +400,14 @@ return (
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert("Supabase klient není načtený.");
+        alert(reservationsTranslate("reservations.error.supabase", "Supabase klient není načtený."));
         return;
       }
 
       const supabaseUser = await getCurrentSupabaseUser();
 
       if (!supabaseUser) {
-        alert("Pro zrušení rezervace se musíte znovu přihlásit.");
+        alert(reservationsTranslate("reservations.error.loginCancel", "Pro zrušení rezervace se musíte znovu přihlásit."));
         window.location.href = "prihlaseni.html";
         return;
       }
@@ -421,12 +429,12 @@ return (
         normalizedStatus !== RESERVATION_STATUS_PENDING &&
         normalizedStatus !== RESERVATION_STATUS_APPROVED
       ) {
-        alert("Tuto rezervaci už nelze běžně zrušit.");
+        alert(reservationsTranslate("reservations.error.cannotCancel", "Tuto rezervaci už nelze běžně zrušit."));
         return;
       }
 
       const confirmed = confirm(
-        "Opravdu chcete tuto rezervaci zrušit? Termín se znovu uvolní."
+        reservationsTranslate("reservations.confirm.cancel", "Opravdu chcete tuto rezervaci zrušit? Termín se znovu uvolní.")
       );
 
       if (!confirmed) {
@@ -441,11 +449,11 @@ return (
 
       if (error) {
         console.error("Rezervaci se nepodařilo zrušit:", error);
-        alert("Rezervaci se nepodařilo zrušit. Podívejte se prosím do konzole.");
+        alert(reservationsTranslate("reservations.error.cancel", "Rezervaci se nepodařilo zrušit. Podívejte se prosím do konzole."));
         return;
       }
 
-      alert("Rezervace byla zrušena a přesunuta do Historie.");
+      alert(reservationsTranslate("reservations.success.cancelled", "Rezervace byla zrušena a přesunuta do Historie."));
 
       supabaseReservations = await loadMyReservationsFromSupabase();
       supabaseReviews = await loadMyReviewsFromSupabase();
@@ -458,20 +466,20 @@ return (
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert("Supabase klient není načtený.");
+        alert(reservationsTranslate("reservations.error.supabase", "Supabase klient není načtený."));
         return;
       }
 
       const supabaseUser = await getCurrentSupabaseUser();
 
       if (!supabaseUser) {
-        alert("Pro zaplacení se musíte znovu přihlásit.");
+        alert(reservationsTranslate("reservations.error.loginPay", "Pro zaplacení se musíte znovu přihlásit."));
         window.location.href = "prihlaseni.html";
         return;
       }
 
       const confirmPayment = confirm(
-        "Toto je testovací platba. Opravdu chcete označit rezervaci jako zaplacenou?"
+        reservationsTranslate("reservations.confirm.testPayment", "Toto je testovací platba. Opravdu chcete označit rezervaci jako zaplacenou?")
       );
 
       if (!confirmPayment) {
@@ -489,7 +497,7 @@ const data = Array.isArray(paidReservations)
 
       if (error) {
         console.error(error);
-        alert("Platbu se nepodařilo uložit do Supabase. Podívejte se prosím do konzole.");
+        alert(reservationsTranslate("reservations.error.payment", "Platbu se nepodařilo uložit do Supabase. Podívejte se prosím do konzole."));
         return;
       }
 
@@ -520,14 +528,14 @@ const data = Array.isArray(paidReservations)
       const supabaseUser = await getCurrentSupabaseUser();
 
       if (!supabaseUser || !supabaseUser.id) {
-        alert("Pro odeslání hodnocení se musíte přihlásit.");
+        alert(reservationsTranslate("reservations.error.loginReview", "Pro odeslání hodnocení se musíte přihlásit."));
         return;
       }
 
       const existingReview = findRenterReviewForReservation(reservation);
 
       if (existingReview) {
-        alert("Tuto rezervaci jste už hodnotili.");
+        alert(reservationsTranslate("reservations.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
         return;
       }
 
@@ -538,12 +546,12 @@ const data = Array.isArray(paidReservations)
       const text = textElement ? textElement.value.trim() : "";
 
       if (!rating || rating < 1 || rating > 5) {
-        alert("Vyberte počet hvězdiček.");
+        alert(reservationsTranslate("reservations.error.selectStars", "Vyberte počet hvězdiček."));
         return;
       }
 
       if (!text) {
-        alert("Napište krátký komentář k půjčení.");
+        alert(reservationsTranslate("reservations.error.writeComment", "Napište krátký komentář k půjčení."));
         return;
       }
 
@@ -557,14 +565,14 @@ const data = Array.isArray(paidReservations)
       };
 
       if (!reviewToInsert.reviewed_user_id) {
-        alert("Chybí ID majitele pro hodnocení.");
+        alert(reservationsTranslate("reservations.error.ownerId", "Chybí ID majitele pro hodnocení."));
         return;
       }
 
       const reviewSupabaseClient = getSupabaseClient();
 
       if (!reviewSupabaseClient) {
-        alert("Supabase klient není dostupný. Obnovte stránku a zkuste to znovu.");
+        alert(reservationsTranslate("reservations.error.supabaseUnavailable", "Supabase klient není dostupný. Obnovte stránku a zkuste to znovu."));
         return;
       }
 
@@ -576,15 +584,15 @@ const data = Array.isArray(paidReservations)
         console.error("Chyba při ukládání hodnocení:", error);
 
         if (String(error.message || "").includes("duplicate")) {
-          alert("Tuto rezervaci jste už hodnotili.");
+          alert(reservationsTranslate("reservations.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
         } else {
-          alert("Hodnocení se nepodařilo uložit.");
+          alert(reservationsTranslate("reservations.error.reviewSave", "Hodnocení se nepodařilo uložit."));
         }
 
         return;
       }
 
-      alert("Hodnocení bylo uloženo.");
+      alert(reservationsTranslate("reservations.success.reviewSaved", "Hodnocení bylo uloženo."));
       supabaseReservations = await loadMyReservationsFromSupabase();
       supabaseReviews = await loadMyReviewsFromSupabase();
       renderReservations();
@@ -602,7 +610,7 @@ const data = Array.isArray(paidReservations)
         const button = document.getElementById("detail-toggle-" + reservationId);
 
         if (button) {
-          button.textContent = "Skrýt detail";
+          button.textContent = reservationsTranslate("reservations.hideDetail", "Skrýt detail");
         }
       }, 0);
     }
@@ -618,12 +626,12 @@ const data = Array.isArray(paidReservations)
 
       if (isOpen) {
         detail.classList.remove("open");
-        button.textContent = "Detail";
+        button.textContent = reservationsTranslate("reservations.detail", "Detail");
         return;
       }
 
       detail.classList.add("open");
-      button.textContent = "Skrýt detail";
+      button.textContent = reservationsTranslate("reservations.hideDetail", "Skrýt detail");
     }
 
     function renderOwnerReviewForRenterBox(reservation, status) {
@@ -636,7 +644,7 @@ const data = Array.isArray(paidReservations)
       if (ownerReview) {
         return `
           <div class="review-box">
-            <strong>Hodnocení od majitele</strong>
+            <strong>${escapeHtml(reservationsTranslate("reservations.review.fromOwner", "Hodnocení od majitele"))}</strong>
             ${renderSavedReview(ownerReview)}
           </div>
         `;
@@ -644,8 +652,8 @@ const data = Array.isArray(paidReservations)
 
       return `
         <div class="review-box">
-          <strong>Hodnocení od majitele</strong>
-          Majitel vás zatím neohodnotil.
+          <strong>${escapeHtml(reservationsTranslate("reservations.review.fromOwner", "Hodnocení od majitele"))}</strong>
+          ${escapeHtml(reservationsTranslate("reservations.review.notRatedByOwner", "Majitel vás zatím neohodnotil."))}
         </div>
       `;
     }
@@ -661,7 +669,7 @@ const data = Array.isArray(paidReservations)
       if (renterReview) {
         return `
           <div class="review-box">
-            <strong>Hodnocení bylo odesláno</strong>
+            <strong>${escapeHtml(reservationsTranslate("reservations.review.sentTitle", "Hodnocení bylo odesláno"))}</strong>
             ${renderSavedReview(renterReview)}
           </div>
         `;
@@ -672,23 +680,23 @@ const data = Array.isArray(paidReservations)
           <strong>Ohodnotit majitele</strong>
           <div class="review-lines">
             <label>
-              Počet hvězdiček
+              ${escapeHtml(reservationsTranslate("reservations.review.stars", "Počet hvězdiček"))}
               <select id="renter-review-rating-${reservationId}">
-                <option value="5">★★★★★ - výborné</option>
-                <option value="4">★★★★☆ - dobré</option>
-                <option value="3">★★★☆☆ - průměrné</option>
-                <option value="2">★★☆☆☆ - slabé</option>
-                <option value="1">★☆☆☆☆ - špatné</option>
+                <option value="5">★★★★★ - ${escapeHtml(reservationsTranslate("reservations.review.excellent", "výborné"))}</option>
+                <option value="4">★★★★☆ - ${escapeHtml(reservationsTranslate("reservations.review.good", "dobré"))}</option>
+                <option value="3">★★★☆☆ - ${escapeHtml(reservationsTranslate("reservations.review.average", "průměrné"))}</option>
+                <option value="2">★★☆☆☆ - ${escapeHtml(reservationsTranslate("reservations.review.weak", "slabé"))}</option>
+                <option value="1">★☆☆☆☆ - ${escapeHtml(reservationsTranslate("reservations.review.bad", "špatné"))}</option>
               </select>
             </label>
 
             <label>
-              Komentář
-              <textarea id="renter-review-text-${reservationId}" rows="3" placeholder="Jak proběhlo půjčení?"></textarea>
+              ${escapeHtml(reservationsTranslate("reservations.review.comment", "Komentář"))}
+              <textarea id="renter-review-text-${reservationId}" rows="3" placeholder="${escapeHtml(reservationsTranslate("reservations.review.placeholder", "Jak proběhlo půjčení?"))}"></textarea>
             </label>
 
             <button type="button" class="btn-primary small-button" onclick="saveRenterReview('${reservationId}')">
-              Odeslat hodnocení
+              ${escapeHtml(reservationsTranslate("reservations.review.submit", "Odeslat hodnocení"))}
             </button>
           </div>
         </div>
@@ -699,12 +707,12 @@ const data = Array.isArray(paidReservations)
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
         return `
           <div class="payment-box waiting">
-            <strong>Platba přes provozovatele platformy</strong>
-            Kliknutím na tlačítko Zaplatit provedete testovací platbu.
+            <strong>${escapeHtml(reservationsTranslate("reservations.payment.platformTitle", "Platba přes provozovatele platformy"))}</strong>
+            ${escapeHtml(reservationsTranslate("reservations.payment.testInfo", "Kliknutím na tlačítko Zaplatit provedete testovací platbu."))}
             <div class="payment-lines">
-              <span>Celkem zaplatíte: ${escapeHtml(totalPrice)} Kč</span>
-              <span>Provize Rentulo 10 %: ${escapeHtml(platformFee)} Kč</span>
-              <span>Majitel dostane: ${escapeHtml(ownerPayout)} Kč</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.totalToPay", "Celkem zaplatíte"))}: ${escapeHtml(totalPrice)} Kč</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.fee", "Provize Rentulo 10 %"))}: ${escapeHtml(platformFee)} Kč</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.ownerGets", "Majitel dostane"))}: ${escapeHtml(ownerPayout)} Kč</span>
             </div>
           </div>
         `;
@@ -713,17 +721,17 @@ const data = Array.isArray(paidReservations)
       if (getSafeReservationContactVisible(status)) {
         const paymentTitle =
   normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED
-          ? "Platba byla přijata a půjčení je dokončeno"
-          : "Platba přijata přes provozovatele platformy";
+          ? reservationsTranslate("reservations.payment.completed", "Platba byla přijata a půjčení je dokončeno")
+          : reservationsTranslate("reservations.payment.accepted", "Platba přijata přes provozovatele platformy");
 
         return `
           <div class="payment-box paid">
             <strong>${paymentTitle}</strong>
-            Rentulo si ponechá provizi 10 % a majiteli bude vyplaceno 90 % z půjčovného.
+            ${escapeHtml(reservationsTranslate("reservations.payment.feeInfo", "Rentulo si ponechá provizi 10 % a majiteli bude vyplaceno 90 % z půjčovného."))}
             <div class="payment-lines">
-              <span>Celkem zaplaceno: ${escapeHtml(totalPrice)} Kč</span>
-              <span>Provize Rentulo: ${escapeHtml(platformFee)} Kč</span>
-              <span>Částka pro majitele: ${escapeHtml(ownerPayout)} Kč</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.totalPaid", "Celkem zaplaceno"))}: ${escapeHtml(totalPrice)} Kč</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.rentuloFee", "Provize Rentulo"))}: ${escapeHtml(platformFee)} Kč</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.ownerAmount", "Částka pro majitele"))}: ${escapeHtml(ownerPayout)} Kč</span>
               <span>Stav platby: ${escapeHtml(reservation.paymentProviderStatus || "paid")}</span>
               <span>Zaplaceno: ${escapeHtml(formatDateTime(reservation.paidAt))}</span>
             </div>
@@ -738,8 +746,8 @@ const data = Array.isArray(paidReservations)
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING) {
         return `
           <div class="reservation-state-box rejected">
-            <strong>Žádost čeká na potvrzení</strong>
-            Majitel zatím vaši žádost nepotvrdil.
+            <strong>${escapeHtml(reservationsTranslate("reservations.state.pendingTitle", "Žádost čeká na potvrzení"))}</strong>
+            ${escapeHtml(reservationsTranslate("reservations.state.pendingText", "Majitel zatím vaši žádost nepotvrdil."))}
           </div>
         `;
       }
@@ -747,8 +755,8 @@ const data = Array.isArray(paidReservations)
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
         return `
           <div class="reservation-state-box active">
-            <strong>Žádost je potvrzená</strong>
-            Teď můžete dokončit platbu. Po zaplacení se zobrazí telefon a přesná adresa.
+            <strong>${escapeHtml(reservationsTranslate("reservations.state.approvedTitle", "Žádost je potvrzená"))}</strong>
+            ${escapeHtml(reservationsTranslate("reservations.state.approvedText", "Teď můžete dokončit platbu. Po zaplacení se zobrazí telefon a přesná adresa."))}
           </div>
         `;
       }
@@ -756,8 +764,8 @@ const data = Array.isArray(paidReservations)
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PAID) {
         return `
           <div class="reservation-state-box active">
-            <strong>Zaplaceno – domluvte se s majitelem na předání</strong>
-            Kontaktujte majitele a domluvte si přesný čas vyzvednutí.
+            <strong>${escapeHtml(reservationsTranslate("reservations.state.paidTitle", "Zaplaceno – domluvte se s majitelem na předání"))}</strong>
+            ${escapeHtml(reservationsTranslate("reservations.state.paidText", "Kontaktujte majitele a domluvte si přesný čas vyzvednutí."))}
           </div>
         `;
       }
@@ -765,8 +773,8 @@ const data = Array.isArray(paidReservations)
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
         return `
           <div class="reservation-state-box active">
-            <strong>Věc byla označena jako vyzvednutá</strong>
-            Půjčení právě probíhá.
+            <strong>${escapeHtml(reservationsTranslate("reservations.state.pickedTitle", "Věc byla označena jako vyzvednutá"))}</strong>
+            ${escapeHtml(reservationsTranslate("reservations.state.pickedText", "Půjčení právě probíhá."))}
           </div>
         `;
       }
@@ -774,8 +782,8 @@ const data = Array.isArray(paidReservations)
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED) {
         return `
           <div class="reservation-state-box finished">
-            <strong>Vráceno – půjčení je dokončeno</strong>
-            Rezervace byla úspěšně ukončena. Už není potřeba žádná další akce.
+            <strong>${escapeHtml(reservationsTranslate("reservations.state.returnedTitle", "Vráceno – půjčení je dokončeno"))}</strong>
+            ${escapeHtml(reservationsTranslate("reservations.state.returnedText", "Rezervace byla úspěšně ukončena. Už není potřeba žádná další akce."))}
           </div>
         `;
       }
@@ -783,8 +791,8 @@ const data = Array.isArray(paidReservations)
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_REJECTED) {
         return `
           <div class="reservation-state-box rejected">
-            <strong>Žádost byla odmítnuta</strong>
-            Majitel vaši žádost odmítl.
+            <strong>${escapeHtml(reservationsTranslate("reservations.state.rejectedTitle", "Žádost byla odmítnuta"))}</strong>
+            ${escapeHtml(reservationsTranslate("reservations.state.rejectedText", "Majitel vaši žádost odmítl."))}
           </div>
         `;
       }
@@ -795,8 +803,8 @@ const data = Array.isArray(paidReservations)
 ) {
         return `
           <div class="reservation-state-box rejected">
-            <strong>Rezervace byla zrušena</strong>
-            Tato rezervace už nepokračuje.
+            <strong>${escapeHtml(reservationsTranslate("reservations.state.cancelledTitle", "Rezervace byla zrušena"))}</strong>
+            ${escapeHtml(reservationsTranslate("reservations.state.cancelledText", "Tato rezervace už nepokračuje."))}
           </div>
         `;
       }
@@ -812,10 +820,10 @@ const data = Array.isArray(paidReservations)
       if (!getSafeReservationContactVisible(status)) {
         return `
           <div class="contact-box hidden">
-            <strong>Kontaktní údaje jsou skryté</strong>
-            Telefon a přesná adresa se zobrazí až po zaplacení.
+            <strong>${escapeHtml(reservationsTranslate("reservations.contact.hiddenTitle", "Kontaktní údaje jsou skryté"))}</strong>
+            ${escapeHtml(reservationsTranslate("reservations.contact.hiddenText", "Telefon a přesná adresa se zobrazí až po zaplacení."))}
             <div class="contact-lines">
-              <span>Město: ${escapeHtml(city)}</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.contact.city", "Město"))}: ${escapeHtml(city)}</span>
             </div>
           </div>
         `;
@@ -823,12 +831,12 @@ const data = Array.isArray(paidReservations)
 
       const contactTitle =
   normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED
-        ? "Kontaktní údaje k dokončené rezervaci"
-        : "Údaje pro vyzvednutí";
+        ? reservationsTranslate("reservations.contact.completedTitle", "Kontaktní údaje k dokončené rezervaci")
+        : reservationsTranslate("reservations.contact.pickupTitle", "Údaje pro vyzvednutí");
 
       const returnedNote =
   normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED
-        ? "<span>Rezervace je dokončená. Kontaktní údaje zůstávají dostupné, protože půjčení bylo zaplaceno.</span>"
+        ? `<span>${escapeHtml(reservationsTranslate("reservations.contact.completedNote", "Rezervace je dokončená. Kontaktní údaje zůstávají dostupné, protože půjčení bylo zaplaceno."))}</span>`
         : "";
 
       return `
@@ -836,9 +844,9 @@ const data = Array.isArray(paidReservations)
           <strong>${contactTitle}</strong>
           <div class="contact-lines">
             ${returnedNote}
-            <span>Telefon: ${escapeHtml(phone || "Telefon není uložen")}</span>
-            <span>Adresa: ${escapeHtml(address || "Adresa není uložená")}</span>
-            ${reservation.pickupNote ? `<span>Poznámka: ${escapeHtml(reservation.pickupNote)}</span>` : ""}
+            <span>${escapeHtml(reservationsTranslate("reservations.contact.phone", "Telefon"))}: ${escapeHtml(phone || reservationsTranslate("reservations.contact.phoneMissing", "Telefon není uložen"))}</span>
+            <span>${escapeHtml(reservationsTranslate("reservations.contact.address", "Adresa"))}: ${escapeHtml(address || reservationsTranslate("reservations.contact.addressMissing", "Adresa není uložená"))}</span>
+            ${reservation.pickupNote ? `<span>${escapeHtml(reservationsTranslate("reservations.contact.note", "Poznámka"))}: ${escapeHtml(reservation.pickupNote)}</span>` : ""}
           </div>
         </div>
       `;
@@ -858,27 +866,27 @@ const data = Array.isArray(paidReservations)
         <div class="reservation-detail-panel">
           <div class="detail-grid">
             <div class="info-box">
-              <span>Termín</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.detail.term", "Termín"))}</span>
               <strong>${escapeHtml(formatDate(startDate))} – ${escapeHtml(formatDate(endDate))}</strong>
             </div>
 
             <div class="info-box">
-              <span>Celkem k platbě</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.detail.total", "Celkem k platbě"))}</span>
               <strong>${escapeHtml(totalPrice)} Kč</strong>
             </div>
 
             <div class="info-box">
-              <span>Platba</span>
-              <strong>${getSafeReservationContactVisible(status) ? "zaplaceno" : "čeká na platbu"}</strong>
+              <span>${escapeHtml(reservationsTranslate("reservations.detail.payment", "Platba"))}</span>
+              <strong>${escapeHtml(getSafeReservationContactVisible(status) ? reservationsTranslate("reservations.payment.paidLower", "zaplaceno") : reservationsTranslate("reservations.payment.waitingLower", "čeká na platbu"))}</strong>
             </div>
 
             <div class="info-box">
-              <span>Provize 10 %</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.detail.fee", "Provize 10 %"))}</span>
               <strong>${escapeHtml(platformFee)} Kč</strong>
             </div>
 
             <div class="info-box">
-              <span>Majitel dostane</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.detail.ownerGets", "Majitel dostane"))}</span>
               <strong>${escapeHtml(ownerPayout)} Kč</strong>
             </div>
           </div>
@@ -946,12 +954,12 @@ const data = Array.isArray(paidReservations)
       const primaryAction = isPaymentRequired
         ? `
           <button class="reservation-primary-action orange" type="button" onclick="payReservation('${escapeHtml(reservationId)}')">
-            Zaplatit
+            ${escapeHtml(reservationsTranslate("reservations.pay", "Zaplatit"))}
           </button>
         `
         : `
           <button class="reservation-primary-action" id="detail-toggle-${escapeHtml(reservationId)}" type="button" onclick="toggleReservationDetail('${escapeHtml(reservationId)}', this)">
-            Detail
+            ${escapeHtml(reservationsTranslate("reservations.detail", "Detail"))}
           </button>
         `;
 
@@ -960,7 +968,7 @@ const data = Array.isArray(paidReservations)
       if (isPaymentRequired) {
         menuItems += `
           <button type="button" onclick="toggleReservationDetail('${escapeHtml(reservationId)}', document.getElementById('detail-toggle-${escapeHtml(reservationId)}'))">
-            Detail rezervace
+            ${escapeHtml(reservationsTranslate("reservations.detailReservation", "Detail rezervace"))}
           </button>
         `;
       }
@@ -974,7 +982,7 @@ const data = Array.isArray(paidReservations)
       ) {
         menuItems += `
           <button type="button" class="danger-action" onclick="cancelReservation('${escapeHtml(reservationId)}')">
-            Zrušit rezervaci
+            ${escapeHtml(reservationsTranslate("reservations.cancel", "Zrušit rezervaci"))}
           </button>
         `;
       }
@@ -982,7 +990,7 @@ const data = Array.isArray(paidReservations)
       if (isMapUsefulForStatus(status) && pickupAddress) {
         menuItems += `
           <a href="${escapeHtml(getMapUrl(pickupAddress))}" target="_blank" rel="noopener noreferrer">
-            Mapa vyzvednutí
+            ${escapeHtml(reservationsTranslate("reservations.pickupMap", "Mapa vyzvednutí"))}
           </a>
         `;
       }
@@ -990,7 +998,7 @@ const data = Array.isArray(paidReservations)
       if (offerId && !isHistorySection) {
         menuItems += `
           <a href="detail.html?id=${encodeURIComponent(offerId)}">
-            Detail věci
+            ${escapeHtml(reservationsTranslate("reservations.itemDetail", "Detail věci"))}
           </a>
         `;
       }
@@ -998,7 +1006,7 @@ const data = Array.isArray(paidReservations)
       const secondaryMenu = menuItems
         ? `
           <details class="reservation-more-menu">
-            <summary aria-label="Další akce">•••</summary>
+            <summary aria-label="${escapeHtml(reservationsTranslate("reservations.moreActions", "Další akce"))}">•••</summary>
             <div class="reservation-more-menu-panel">
               ${menuItems}
             </div>
@@ -1013,7 +1021,7 @@ const data = Array.isArray(paidReservations)
 
       <div class="simple-reservation-info">
         <strong>${escapeHtml(toolName)}</strong>
-        <span>${escapeHtml(city)} · Majitel: ${escapeHtml(ownerName)}</span>
+        <span>${escapeHtml(city)} · ${escapeHtml(reservationsTranslate("reservations.ownerLabel", "Majitel"))}: ${escapeHtml(ownerName)}</span>
       </div>
     </div>
 
@@ -1056,8 +1064,8 @@ const data = Array.isArray(paidReservations)
 
     function renderReservationSection(title, reservations, emptyText, sectionClass, isHistorySection) {
       const countText = reservations.length === 1
-        ? "1 rezervace"
-        : reservations.length + " rezervací";
+        ? reservationsTranslate("reservations.countOne", "1 rezervace")
+        : reservations.length + " " + reservationsTranslate("reservations.countMany", "rezervací");
 
       const content = reservations.length
         ? renderReservationList(reservations, isHistorySection)
@@ -1099,9 +1107,9 @@ const data = Array.isArray(paidReservations)
 
       document.getElementById("reservationsList").innerHTML =
         renderReservationSection(
-          "Aktivní rezervace",
+          reservationsTranslate("reservations.activeTitle", "Aktivní rezervace"),
           activeReservations,
-          "Nemáte žádné aktivní rezervace. Dokončené, zrušené a odmítnuté záznamy najdete v Historii.",
+          reservationsTranslate("reservations.activeEmpty", "Nemáte žádné aktivní rezervace. Dokončené, zrušené a odmítnuté záznamy najdete v Historii."),
           "active",
           false
         );

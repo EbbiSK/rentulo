@@ -64,42 +64,51 @@ function normalizeReservationStatus(status) {
 
   return statusMap[normalizedStatus] || normalizedStatus;
 }
+
+function reservationStatusTranslate(key, fallback) {
+  if (typeof window.rentuloTranslate === "function") {
+    return window.rentuloTranslate(key);
+  }
+
+  return fallback;
+}
+
 function getReservationStatusText(status) {
   const normalizedStatus = normalizeReservationStatus(status);
 
   if (normalizedStatus === RESERVATION_STATUS_PENDING) {
-    return "Čeká na potvrzení";
+    return reservationStatusTranslate("reservation.status.pending", "Čeká na potvrzení");
   }
 
   if (normalizedStatus === RESERVATION_STATUS_APPROVED) {
-    return "Čeká na platbu";
+    return reservationStatusTranslate("reservation.status.approved", "Čeká na platbu");
   }
 
   if (normalizedStatus === RESERVATION_STATUS_PAID) {
-    return "Zaplaceno";
+    return reservationStatusTranslate("reservation.status.paid", "Zaplaceno");
   }
 
   if (normalizedStatus === RESERVATION_STATUS_PICKED_UP) {
-    return "Vyzvednuto";
+    return reservationStatusTranslate("reservation.status.pickedUp", "Vyzvednuto");
   }
 
   if (normalizedStatus === RESERVATION_STATUS_RETURNED) {
-    return "Vráceno";
+    return reservationStatusTranslate("reservation.status.returned", "Vráceno");
   }
 
   if (normalizedStatus === RESERVATION_STATUS_REJECTED) {
-    return "Odmítnuto";
+    return reservationStatusTranslate("reservation.status.rejected", "Odmítnuto");
   }
 
   if (normalizedStatus === RESERVATION_STATUS_CANCELLED) {
-    return "Zrušeno";
+    return reservationStatusTranslate("reservation.status.cancelled", "Zrušeno");
   }
 
   if (normalizedStatus === RESERVATION_STATUS_COMPLETED) {
-    return "Dokončeno";
+    return reservationStatusTranslate("reservation.status.completed", "Dokončeno");
   }
 
-  return status || "Čeká na potvrzení";
+  return status || reservationStatusTranslate("reservation.status.pending", "Čeká na potvrzení");
 }
 function getReservationStatus(reservation) {
   if (!reservation) {
