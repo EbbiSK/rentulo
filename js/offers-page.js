@@ -1,5 +1,23 @@
     const PLATFORM_FEE_PERCENT = 10;
 
+    function offersTranslate(key, fallback, values) {
+      let text = typeof window.rentuloTranslate === "function"
+        ? window.rentuloTranslate(key)
+        : fallback;
+
+      if (text === key) {
+        text = fallback;
+      }
+
+      if (values && typeof values === "object") {
+        Object.keys(values).forEach(function (name) {
+          text = String(text).replaceAll("{" + name + "}", String(values[name]));
+        });
+      }
+
+      return text;
+    }
+
     
     
 
@@ -47,8 +65,8 @@
 
       if (savedState === "draft") {
         showAccountMessage(
-          "Koncept byl uložen.",
-          "Až budete připraveni, klikněte u nabídky na Zveřejnit."
+          offersTranslate("offers.message.draftTitle", "Koncept byl uložen."),
+          offersTranslate("offers.message.draftText", "Až budete připraveni, klikněte u nabídky na Zveřejnit.")
         );
 
         sessionStorage.removeItem("rentuloOfferSaved");
@@ -57,8 +75,8 @@
 
       if (savedState === "active") {
         showAccountMessage(
-          "Nabídka byla zveřejněna.",
-          "Vaše nabídka je teď viditelná ve výsledcích vyhledávání."
+          offersTranslate("offers.message.publishedTitle", "Nabídka byla zveřejněna."),
+          offersTranslate("offers.message.publishedText", "Vaše nabídka je teď viditelná ve výsledcích vyhledávání.")
         );
 
         sessionStorage.removeItem("rentuloOfferSaved");
@@ -68,8 +86,8 @@
     function renderLoadingState() {
       document.getElementById("offersList").innerHTML = `
         <section class="account-empty-state">
-          <h2>Načítám nabídky...</h2>
-          <p>Chvíli strpení, načítáme vaše nabídky a žádosti ze Supabase.</p>
+          <h2>${offersTranslate("offers.loadingTitle", "Načítám nabídky...")}</h2>
+          <p>${offersTranslate("offers.loadingText", "Chvíli strpení, načítáme vaše nabídky a žádosti ze Supabase.")}</p>
         </section>
       `;
     }
@@ -77,9 +95,9 @@
     function renderEmptyState() {
       document.getElementById("offersList").innerHTML = `
         <section class="account-empty-state">
-          <h2>Zatím nemáte žádné vlastní nabídky.</h2>
-          <p>Přidejte první věc, kterou chcete půjčovat lidem ve svém okolí.</p>
-<a href="nabidnout.html">Přidat nabídku</a>
+          <h2>${offersTranslate("offers.emptyTitle", "Zatím nemáte žádné vlastní nabídky.")}</h2>
+          <p>${offersTranslate("offers.emptyText", "Přidejte první věc, kterou chcete půjčovat lidem ve svém okolí.")}</p>
+<a href="nabidnout.html">${offersTranslate("offers.addListing", "Přidat nabídku")}</a>
         </section>
       `;
     }
@@ -88,8 +106,8 @@
       return {
         id: row.id,
         ownerId: row.owner_id,
-        name: row.name || "Věc k půjčení",
-category: row.category || "Ostatní",
+        name: row.name || offersTranslate("offers.itemFallback", "Věc k půjčení"),
+category: row.category || offersTranslate("offers.categoryFallback", "Ostatní"),
         description: row.description || "",
         city: row.city || row.pickup_city || "-",
         postalCode: row.postal_code || "",
@@ -108,8 +126,8 @@ category: row.category || "Ostatní",
         ownerId: row.owner_id,
         renterId: row.renter_id,
 
-        offerName: row.offer_name || "Věc k půjčení",
-category: row.category || "Ostatní",
+        offerName: row.offer_name || offersTranslate("offers.itemFallback", "Věc k půjčení"),
+category: row.category || offersTranslate("offers.categoryFallback", "Ostatní"),
         city: row.city || "",
 
         pricePerDay: Number(row.price_per_day || 0),
@@ -123,11 +141,11 @@ category: row.category || "Ostatní",
         platformFeeAmount: Number(row.platform_fee_amount || 0),
         ownerPayout: Number(row.owner_payout || 0),
 
-        renterName: row.renter_name || "Zájemce",
+        renterName: row.renter_name || offersTranslate("offers.renterFallback", "Zájemce"),
         renterEmail: row.renter_email || "",
         renterPhone: row.renter_phone || "",
 
-        ownerName: row.owner_name || "Majitel",
+        ownerName: row.owner_name || offersTranslate("offers.ownerFallback", "Majitel"),
 
         status: normalizeReservationStatus(
   row.status || RESERVATION_STATUS_PENDING
@@ -171,7 +189,7 @@ category: row.category || "Ostatní",
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert("Supabase klient není načtený. Zkontrolujte js/supabase-config.js.");
+        alert(offersTranslate("offers.error.supabaseConfig", "Supabase klient není načtený. Zkontrolujte js/supabase-config.js."));
         return;
       }
 
@@ -192,7 +210,7 @@ category: row.category || "Ostatní",
 
       if (offersResult.error) {
         console.error(offersResult.error);
-        alert("Nabídky se nepodařilo načíst ze Supabase. Podívejte se prosím do konzole.");
+        alert(offersTranslate("offers.error.loadListings", "Nabídky se nepodařilo načíst ze Supabase. Podívejte se prosím do konzole."));
         return;
       }
 
@@ -209,7 +227,7 @@ if (!reservationsResult.error) {
 
       if (reservationsResult.error) {
         console.error(reservationsResult.error);
-        alert("Žádosti se nepodařilo načíst ze Supabase. Podívejte se prosím do konzole.");
+        alert(offersTranslate("offers.error.loadRequests", "Žádosti se nepodařilo načíst ze Supabase. Podívejte se prosím do konzole."));
         return;
       }
 
@@ -239,7 +257,7 @@ if (!reservationsResult.error) {
     }
 
 function getOfferCategory(offer) {
-      return offer.category || "Ostatní";
+      return offer.category || offersTranslate("offers.categoryFallback", "Ostatní");
     }
 
     function getOfferCity(offer) {
@@ -248,22 +266,22 @@ function getOfferCategory(offer) {
 
 function getOfferStatus(offer) {
       if (offer.status === "draft") {
-        return "Koncept";
+        return offersTranslate("offers.status.draft", "Koncept");
       }
 
       if (offer.status === "active") {
-        return "Aktivní";
+        return offersTranslate("offers.status.active", "Aktivní");
       }
 
       if (offer.status === "hidden") {
-        return "Skryté";
+        return offersTranslate("offers.status.hidden", "Skryté");
       }
 
       if (offer.status === "deleted") {
-        return "Smazané";
+        return offersTranslate("offers.status.deleted", "Smazané");
       }
 
-      return offer.status || "Aktivní";
+      return offer.status || offersTranslate("offers.status.active", "Aktivní");
     }
 
     function isOfferDraft(offer) {
@@ -304,7 +322,7 @@ function getOfferStatus(offer) {
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert("Supabase klient není načtený.");
+        alert(offersTranslate("offers.error.supabaseMissing", "Supabase klient není načtený."));
         return null;
       }
 
@@ -320,7 +338,7 @@ const data = Array.isArray(updatedReservations)
 
       if (error) {
         console.error(error);
-        alert("Stav rezervace se nepodařilo uložit do Supabase. Podívejte se prosím do konzole.");
+        alert(offersTranslate("offers.error.saveStatus", "Stav rezervace se nepodařilo uložit do Supabase. Podívejte se prosím do konzole."));
         return null;
       }
 
@@ -365,7 +383,7 @@ const data = Array.isArray(updatedReservations)
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert("Supabase klient není načtený.");
+        alert(offersTranslate("offers.error.supabaseMissing", "Supabase klient není načtený."));
         return;
       }
 
@@ -378,11 +396,11 @@ const data = Array.isArray(updatedReservations)
 
       if (error) {
         console.error(error);
-        alert("Nabídku se nepodařilo zveřejnit.");
+        alert(offersTranslate("offers.error.publish", "Nabídku se nepodařilo zveřejnit."));
         return;
       }
 
-      showAccountMessage("Koncept byl zveřejněn.", "Nabídka je teď aktivní a viditelná ve výsledcích.");
+      showAccountMessage(offersTranslate("offers.message.draftPublishedTitle", "Koncept byl zveřejněn."), offersTranslate("offers.message.draftPublishedText", "Nabídka je teď aktivní a viditelná ve výsledcích."));
       await initializeOwnerOffersPage();
     }
 
@@ -392,11 +410,11 @@ const data = Array.isArray(updatedReservations)
       });
 
       if (blockingReservations.length > 0) {
-        alert("Tuto nabídku nelze smazat, protože k ní existuje otevřená rezervace.");
+        alert(offersTranslate("offers.error.deleteBlocked", "Tuto nabídku nelze smazat, protože k ní existuje otevřená rezervace."));
         return;
       }
 
-      const reallyDelete = confirm("Opravdu chcete tuto nabídku smazat?");
+      const reallyDelete = confirm(offersTranslate("offers.confirmDelete", "Opravdu chcete tuto nabídku smazat?"));
 
       if (!reallyDelete) {
         return;
@@ -411,7 +429,7 @@ const data = Array.isArray(updatedReservations)
 
       if (error) {
         console.error(error);
-        alert("Nabídku se nepodařilo smazat.");
+        alert(offersTranslate("offers.error.delete", "Nabídku se nepodařilo smazat."));
         return;
       }
 
@@ -450,7 +468,7 @@ const data = Array.isArray(updatedReservations)
       }
 
       if (offerManageButton) {
-        offerManageButton.textContent = "Skrýt";
+        offerManageButton.textContent = offersTranslate("offers.hide", "Skrýt");
       }
 
       if (panelType === "history") {
@@ -462,7 +480,7 @@ const data = Array.isArray(updatedReservations)
         }
 
         if (historyButton) {
-          historyButton.textContent = "Skrýt historii";
+          historyButton.textContent = offersTranslate("offers.hideHistory", "Skrýt historii");
         }
 
         return;
@@ -476,38 +494,38 @@ const data = Array.isArray(updatedReservations)
       }
 
       if (openButton) {
-        openButton.textContent = "Skrýt žádosti";
+        openButton.textContent = offersTranslate("offers.hideRequests", "Skrýt žádosti");
         openButton.classList.remove("important");
       }
     }
 
     function renderRequestNote(status) {
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING) {
-        return `<p class="request-note">Nová žádost čeká na vaše potvrzení nebo odmítnutí.</p>`;
+        return `<p class="request-note">${offersTranslate("offers.note.pending", "Nová žádost čeká na vaše potvrzení nebo odmítnutí.")}</p>`;
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
-        return `<p class="request-note">Žádost byla potvrzena. Čeká se na platbu zákazníka.</p>`;
+        return `<p class="request-note">${offersTranslate("offers.note.approved", "Žádost byla potvrzena. Čeká se na platbu zákazníka.")}</p>`;
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PAID) {
-        return `<p class="request-note success">Rezervace je zaplacena. Po předání věci ji označte jako vyzvednutou.</p>`;
+        return `<p class="request-note success">${offersTranslate("offers.note.paid", "Rezervace je zaplacena. Po předání věci ji označte jako vyzvednutou.")}</p>`;
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
-return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po vrácení dokončete půjčení.</p>`;
+return `<p class="request-note success">${offersTranslate("offers.note.pickedUp", "Věc byla označena jako vyzvednutá. Po vrácení dokončete půjčení.")}</p>`;
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED) {
-        return `<p class="request-note success">Vráceno – půjčení je dokončeno. Už není potřeba žádná další akce.</p>`;
+        return `<p class="request-note success">${offersTranslate("offers.note.returned", "Vráceno – půjčení je dokončeno. Už není potřeba žádná další akce.")}</p>`;
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_REJECTED) {
-        return `<p class="request-note">Žádost byla odmítnuta. Nabídka už touto žádostí není blokovaná.</p>`;
+        return `<p class="request-note">${offersTranslate("offers.note.rejected", "Žádost byla odmítnuta. Nabídka už touto žádostí není blokovaná.")}</p>`;
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_CANCELLED) {
-        return `<p class="request-note">Rezervace byla zrušena. Nabídka už touto žádostí není blokovaná.</p>`;
+        return `<p class="request-note">${offersTranslate("offers.note.cancelled", "Rezervace byla zrušena. Nabídka už touto žádostí není blokovaná.")}</p>`;
       }
 
       return "";
@@ -540,18 +558,18 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING) {
         actions.push(`
-          <button class="small-button" type="button" onclick="approveReservation('${escapeHtml(reservationId)}')">Potvrdit</button>
+          <button class="small-button" type="button" onclick="approveReservation('${escapeHtml(reservationId)}')">${offersTranslate("offers.action.approve", "Potvrdit")}</button>
         `);
 
         actions.push(`
-          <button class="small-button light" type="button" onclick="rejectReservation('${escapeHtml(reservationId)}')">Odmítnout</button>
+          <button class="small-button light" type="button" onclick="rejectReservation('${escapeHtml(reservationId)}')">${offersTranslate("offers.action.reject", "Odmítnout")}</button>
         `);
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PAID) {
         actions.push(`
           <button class="small-button orange" type="button" onclick="markReservationPickedUp('${escapeHtml(reservationId)}')">
-            Označit jako vyzvednuto
+            ${offersTranslate("offers.action.pickedUp", "Označit jako vyzvednuto")}
           </button>
         `);
       }
@@ -559,7 +577,7 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
         actions.push(`
           <button class="small-button" type="button" onclick="markReservationReturned('${escapeHtml(reservationId)}')">
-            Označit jako vráceno
+            ${offersTranslate("offers.action.returned", "Označit jako vráceno")}
           </button>
         `);
       }
@@ -571,33 +589,33 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
       if (!canShowContact(reservation.status)) {
         return `
           <div class="request-contact-box locked">
-            <strong>Kontakt zatím skrytý</strong>
-            Kontakt na zájemce se zobrazí až po zaplacení rezervace.
+            <strong>${offersTranslate("offers.contact.hiddenTitle", "Kontakt zatím skrytý")}</strong>
+            ${offersTranslate("offers.contact.hiddenText", "Kontakt na zájemce se zobrazí až po zaplacení rezervace.")}
           </div>
         `;
       }
 
-      const renterName = reservation.renterName || "Zájemce";
-      const renterEmail = reservation.renterEmail || "E-mail není uložen";
-      const renterPhone = reservation.renterPhone || "Telefon není uložen";
+      const renterName = reservation.renterName || offersTranslate("offers.renterFallback", "Zájemce");
+      const renterEmail = reservation.renterEmail || offersTranslate("offers.emailMissing", "E-mail není uložen");
+      const renterPhone = reservation.renterPhone || offersTranslate("offers.phoneMissing", "Telefon není uložen");
 
       const contactTitle =
   normalizeReservationStatus(reservation.status) === RESERVATION_STATUS_RETURNED
-        ? "Kontakt na zákazníka k dokončené rezervaci"
-        : "Kontakt na zájemce";
+        ? offersTranslate("offers.contact.completedTitle", "Kontakt na zákazníka k dokončené rezervaci")
+        : offersTranslate("offers.contact.renterTitle", "Kontakt na zájemce");
 
       const returnedNote =
   normalizeReservationStatus(reservation.status) === RESERVATION_STATUS_RETURNED
-        ? "Rezervace je dokončená, kontakt zůstává dostupný pro případné zpětné dohledání. "
+        ? offersTranslate("offers.contact.completedNote", "Rezervace je dokončená, kontakt zůstává dostupný pro případné zpětné dohledání. ")
         : "";
 
       return `
         <div class="request-contact-box">
           <strong>${contactTitle}</strong>
           ${escapeHtml(returnedNote)}
-          Jméno: ${escapeHtml(renterName)}<br>
-          E-mail: ${escapeHtml(renterEmail)}<br>
-          Telefon: ${escapeHtml(renterPhone)}
+          ${offersTranslate("offers.contact.name", "Jméno")}: ${escapeHtml(renterName)}<br>
+          ${offersTranslate("offers.contact.email", "E-mail")}: ${escapeHtml(renterEmail)}<br>
+          ${offersTranslate("offers.contact.phone", "Telefon")}: ${escapeHtml(renterPhone)}
         </div>
       `;
     }
@@ -615,15 +633,15 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
       if (existingReview) {
         return `
           <div class="request-contact-box">
-            <strong>Hodnocení zákazníka bylo odesláno</strong>
+            <strong>${offersTranslate("offers.review.sentTitle", "Hodnocení zákazníka bylo odesláno")}</strong>
             <div style="margin-top: 6px; color: #006b45; font-size: 15px;">
               ${escapeHtml(getStars(existingReview.rating))}
             </div>
             <div style="margin-top: 6px;">
-              ${escapeHtml(existingReview.text || "Bez komentáře")}
+              ${escapeHtml(existingReview.text || offersTranslate("offers.review.noComment", "Bez komentáře"))}
             </div>
             <div style="margin-top: 6px; color: #5b6862; font-size: 12px;">
-              Odesláno: ${escapeHtml(formatDate(existingReview.createdAt))}
+              ${offersTranslate("offers.review.sentAt", "Odesláno")}: ${escapeHtml(formatDate(existingReview.createdAt))}
             </div>
           </div>
         `;
@@ -631,36 +649,36 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
 
       return `
         <div class="request-contact-box">
-          <strong>Ohodnotit zákazníka</strong>
+          <strong>${offersTranslate("offers.review.title", "Ohodnotit zákazníka")}</strong>
           <div style="margin-top: 10px;">
             <label>
-              Počet hvězdiček
+              ${offersTranslate("offers.review.rating", "Počet hvězdiček")}
               <select
   id="owner-review-rating-${escapeHtml(reservationId)}"
   class="owner-review-select"
 >
-                <option value="5">★★★★★ - výborné</option>
-                <option value="4">★★★★☆ - dobré</option>
-                <option value="3">★★★☆☆ - průměrné</option>
-                <option value="2">★★☆☆☆ - slabé</option>
-                <option value="1">★☆☆☆☆ - špatné</option>
+                <option value="5">★★★★★ - ${offersTranslate("offers.review.excellent", "výborné")}</option>
+                <option value="4">★★★★☆ - ${offersTranslate("offers.review.good", "dobré")}</option>
+                <option value="3">★★★☆☆ - ${offersTranslate("offers.review.average", "průměrné")}</option>
+                <option value="2">★★☆☆☆ - ${offersTranslate("offers.review.weak", "slabé")}</option>
+                <option value="1">★☆☆☆☆ - ${offersTranslate("offers.review.bad", "špatné")}</option>
               </select>
             </label>
           </div>
 
           <div style="margin-top: 10px;">
             <label>
-              Komentář
+              ${offersTranslate("offers.review.comment", "Komentář")}
               <textarea
   id="owner-review-text-${escapeHtml(reservationId)}"
   class="owner-review-textarea"
   rows="3"
-  placeholder="Jak proběhlo půjčení?"
+  placeholder="${offersTranslate("offers.review.placeholder", "Jak proběhlo půjčení?")}"
 ></textarea>
           </div>
 
           <button class="small-button" type="button" onclick="saveOwnerReviewForRenter('${escapeHtml(reservationId)}')">
-            Odeslat hodnocení
+            ${offersTranslate("offers.review.submit", "Odeslat hodnocení")}
           </button>
         </div>
       `;
@@ -672,7 +690,7 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
       });
 
       if (!reservation) {
-        alert("Rezervace nebyla nalezena.");
+        alert(offersTranslate("offers.error.reservationNotFound", "Rezervace nebyla nalezena."));
         return;
       }
 
@@ -680,21 +698,21 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
   normalizeReservationStatus(reservation.status) !==
   RESERVATION_STATUS_RETURNED
 ) {
-        alert("Zákazníka můžete ohodnotit až po dokončení půjčení.");
+        alert(offersTranslate("offers.error.reviewTooEarly", "Zákazníka můžete ohodnotit až po dokončení půjčení."));
         return;
       }
 
       const existingReview = findOwnerReviewForRenter(reservation);
 
       if (existingReview) {
-        alert("Tuto rezervaci jste už hodnotili.");
+        alert(offersTranslate("offers.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
         return;
       }
 
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert("Supabase klient není načtený.");
+        alert(offersTranslate("offers.error.supabaseMissing", "Supabase klient není načtený."));
         return;
       }
 
@@ -712,7 +730,7 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
       const text = textElement ? textElement.value.trim() : "";
 
       if (!reservation.renterId) {
-        alert("Chybí ID zákazníka pro hodnocení.");
+        alert(offersTranslate("offers.error.renterIdMissing", "Chybí ID zákazníka pro hodnocení."));
         return;
       }
 
@@ -733,15 +751,15 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
         console.error("Chyba při ukládání hodnocení:", error);
 
         if (String(error.message || "").toLowerCase().includes("duplicate")) {
-          alert("Tuto rezervaci jste už hodnotili.");
+          alert(offersTranslate("offers.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
         } else {
-          alert("Hodnocení se nepodařilo uložit.");
+          alert(offersTranslate("offers.error.reviewSave", "Hodnocení se nepodařilo uložit."));
         }
 
         return;
       }
 
-      alert("Hodnocení bylo uloženo.");
+      alert(offersTranslate("offers.review.saved", "Hodnocení bylo uloženo."));
       await loadOwnerData();
       renderOffers();
 
@@ -771,23 +789,23 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
         <div class="request-detail-inner">
           <div class="request-money">
             <div class="money-cell">
-              Cena pro zákazníka
+              ${offersTranslate("offers.detail.customerPrice", "Cena pro zákazníka")}
               <strong>${escapeHtml(price)} Kč</strong>
             </div>
 
             <div class="money-cell">
-              Provize Rentulo
+              ${offersTranslate("offers.detail.fee", "Provize Rentulo")}
               <strong>${escapeHtml(platformFee)} Kč</strong>
             </div>
 
             <div class="money-cell">
-              Vy dostanete
+              ${offersTranslate("offers.detail.ownerReceives", "Vy dostanete")}
               <strong>${escapeHtml(ownerPayout)} Kč</strong>
             </div>
           </div>
 
           <div class="request-actions">
-            <a class="small-button light" href="moje-nabidky.html?open=actions">Zpět na žádosti</a>
+            <a class="small-button light" href="moje-nabidky.html?open=actions">${offersTranslate("offers.detail.backToRequests", "Zpět na žádosti")}</a>
           </div>
 
           ${renderReservationContactBlock(reservation)}
@@ -803,10 +821,10 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
       const status = reservation.status;
       const statusText = getStatusText(status);
 
-      const renterName = reservation.renterName || "Zájemce";
+      const renterName = reservation.renterName || offersTranslate("offers.renterFallback", "Zájemce");
       const renterEmail = canShowContact(status)
-        ? reservation.renterEmail || "E-mail není uložen"
-        : "Kontakt se zobrazí po zaplacení";
+        ? reservation.renterEmail || offersTranslate("offers.emailMissing", "E-mail není uložen")
+        : offersTranslate("offers.contact.afterPayment", "Kontakt se zobrazí po zaplacení");
 
       const startDate = reservation.startDate;
       const endDate = reservation.endDate;
@@ -836,7 +854,7 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
             <div class="row-actions">
               ${actionButtons}
               <button class="history-toggle-button" type="button" onclick="toggleRequestDetail('${escapeHtml(reservationId)}', this)">
-                Detail
+                ${offersTranslate("offers.detail.show", "Detail")}
               </button>
             </div>
           </div>
@@ -852,10 +870,10 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
       const status = reservation.status;
       const statusText = getStatusText(status);
 
-      const renterName = reservation.renterName || "Zájemce";
+      const renterName = reservation.renterName || offersTranslate("offers.renterFallback", "Zájemce");
       const renterEmail = canShowContact(status)
-        ? reservation.renterEmail || "E-mail není uložen"
-        : "Kontakt se zobrazí po zaplacení";
+        ? reservation.renterEmail || offersTranslate("offers.emailMissing", "E-mail není uložen")
+        : offersTranslate("offers.contact.afterPayment", "Kontakt se zobrazí po zaplacení");
 
       const startDate = reservation.startDate;
       const endDate = reservation.endDate;
@@ -884,7 +902,7 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
 
             <div class="row-actions">
               <button class="history-toggle-button" type="button" onclick="toggleHistoryRequest('${escapeHtml(reservationId)}', this)">
-                Detail
+                ${offersTranslate("offers.detail.show", "Detail")}
               </button>
             </div>
           </div>
@@ -907,12 +925,12 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
 
       if (isOpen) {
         detail.classList.remove("open");
-        button.textContent = "Detail";
+        button.textContent = offersTranslate("offers.detail.show", "Detail");
         return;
       }
 
       detail.classList.add("open");
-      button.textContent = "Skrýt";
+      button.textContent = offersTranslate("offers.hide", "Skrýt");
     }
 
     function toggleHistoryRequest(reservationId, button) {
@@ -926,12 +944,12 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
 
       if (isOpen) {
         detail.classList.remove("open");
-        button.textContent = "Detail";
+        button.textContent = offersTranslate("offers.detail.show", "Detail");
         return;
       }
 
       detail.classList.add("open");
-      button.textContent = "Skrýt";
+      button.textContent = offersTranslate("offers.hide", "Skrýt");
     }
 
     function toggleRequestPanel(panelId, button) {
@@ -971,16 +989,18 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
 
       if (isOpen) {
         detail.classList.remove("open");
-        button.textContent = "Spravovat";
+        button.textContent = offersTranslate("offers.manage", "Spravovat");
         return;
       }
 
       detail.classList.add("open");
-      button.textContent = "Skrýt";
+      button.textContent = offersTranslate("offers.hide", "Skrýt");
     }
 
     function renderRequestPanel(panelId, title, count, content) {
-      const countText = count === 1 ? "1 žádost" : count + " žádostí";
+      const countText = count === 1
+        ? offersTranslate("offers.requestCountOne", "1 žádost")
+        : offersTranslate("offers.requestCountMany", "{count} žádostí", { count: count });
 
       return `
         <section class="request-panel" id="${escapeHtml(panelId)}">
@@ -1024,7 +1044,7 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
       }
 
       if (openButton) {
-        openButton.textContent = "Skrýt žádosti";
+        openButton.textContent = offersTranslate("offers.hideRequests", "Skrýt žádosti");
         openButton.classList.remove("important");
       }
 
@@ -1055,36 +1075,36 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
       const offerDetailId = "offer-detail-" + offerId;
 
       const openRequestsButtonText = openRequests.length
-        ? "Zobrazit žádosti (" + openRequests.length + ")"
-        : "Otevřené žádosti (0)";
+        ? offersTranslate("offers.showRequestsCount", "Zobrazit žádosti ({count})", { count: openRequests.length })
+        : offersTranslate("offers.openRequestsZero", "Otevřené žádosti (0)");
 
       const openContent = openRequests.length
         ? openRequests.map(renderRequest).join("")
-        : `<p class="request-empty-note">U této nabídky teď není žádná otevřená žádost.</p>`;
+        : `<p class="request-empty-note">${offersTranslate("offers.noOpenRequests", "U této nabídky teď není žádná otevřená žádost.")}</p>`;
 
-      let requestStateHtml = `<span class="offer-request-state quiet">Bez otevřených žádostí</span>`;
+      let requestStateHtml = `<span class="offer-request-state quiet">${offersTranslate("offers.noOpenRequestsShort", "Bez otevřených žádostí")}</span>`;
 
       if (isDraft) {
-        requestStateHtml = `<span class="offer-request-state draft">Koncept není zveřejněný</span>`;
+        requestStateHtml = `<span class="offer-request-state draft">${offersTranslate("offers.draftNotPublished", "Koncept není zveřejněný")}</span>`;
       } else if (ownerActionRequests.length) {
         requestStateHtml = `
           <span class="offer-request-state urgent">
-            ${escapeHtml(ownerActionRequests.length)} ${ownerActionRequests.length === 1 ? "žádost čeká" : "žádosti čekají"} na vyřízení
+            ${escapeHtml(ownerActionRequests.length)} ${ownerActionRequests.length === 1 ? offersTranslate("offers.waitingOne", "žádost čeká") : offersTranslate("offers.waitingMany", "žádosti čekají")} ${offersTranslate("offers.forAction", "na vyřízení")}
           </span>
         `;
       } else if (openRequests.length) {
         requestStateHtml = `
           <span class="offer-request-state active">
-            ${escapeHtml(openRequests.length)} ${openRequests.length === 1 ? "otevřená žádost" : "otevřené žádosti"}
+            ${escapeHtml(openRequests.length)} ${openRequests.length === 1 ? offersTranslate("offers.openOne", "otevřená žádost") : offersTranslate("offers.openMany", "otevřené žádosti")}
           </span>
         `;
       }
 
       const primaryActionHtml = isDraft
-        ? `<button class="offer-primary-button orange" type="button" onclick="publishOffer('${escapeHtml(offerId)}')">Zveřejnit nabídku</button>`
+        ? `<button class="offer-primary-button orange" type="button" onclick="publishOffer('${escapeHtml(offerId)}')">${offersTranslate("offers.publish", "Zveřejnit nabídku")}</button>`
         : openRequests.length
-          ? `<button class="offer-primary-button ${ownerActionRequests.length ? "urgent" : ""}" type="button" onclick="openOfferRequests('${escapeHtml(offerId)}')">${ownerActionRequests.length ? "Vyřídit žádosti" : "Zobrazit žádosti"}</button>`
-          : `<button class="offer-primary-button secondary" type="button" onclick="toggleOfferDetail('${escapeHtml(offerDetailId)}', this)">Přehled nabídky</button>`;
+          ? `<button class="offer-primary-button ${ownerActionRequests.length ? "urgent" : ""}" type="button" onclick="openOfferRequests('${escapeHtml(offerId)}')">${ownerActionRequests.length ? offersTranslate("offers.handleRequests", "Vyřídit žádosti") : offersTranslate("offers.showRequests", "Zobrazit žádosti")}</button>`
+          : `<button class="offer-primary-button secondary" type="button" onclick="toggleOfferDetail('${escapeHtml(offerDetailId)}', this)">${offersTranslate("offers.overview", "Přehled nabídky")}</button>`;
 
       const detailHtml = isDraft
         ? ""
@@ -1092,15 +1112,15 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
           <div class="offer-detail" id="${escapeHtml(offerDetailId)}">
             <div class="offer-detail-grid">
               <div class="mini-stat">
-                <span>Místo</span>
+                <span>${offersTranslate("offers.place", "Místo")}</span>
                 <strong>${escapeHtml(offerCity)}</strong>
               </div>
               <div class="mini-stat">
-                <span>Kategorie</span>
+                <span>${offersTranslate("offers.category", "Kategorie")}</span>
                 <strong>${escapeHtml(offerCategory)}</strong>
               </div>
               <div class="mini-stat">
-                <span>Otevřené žádosti</span>
+                <span>${offersTranslate("offers.openRequests", "Otevřené žádosti")}</span>
                 <strong>${escapeHtml(openRequests.length)}</strong>
               </div>
             </div>
@@ -1112,12 +1132,12 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
                 id="open-toggle-${escapeHtml(offerId)}"
                 onclick="toggleRequestPanel('${escapeHtml(openPanelId)}', this)"
                 data-closed-text="${escapeHtml(openRequestsButtonText)}"
-                data-open-text="Skrýt žádosti"
+                data-open-text="${escapeHtml(offersTranslate("offers.hideRequests", "Skrýt žádosti"))}"
                 data-important="${ownerActionRequests.length ? "true" : "false"}"
               >${escapeHtml(openRequestsButtonText)}</button>
             </div>
 
-            ${renderRequestPanel(openPanelId, "Otevřené žádosti", openRequests.length, openContent)}
+            ${renderRequestPanel(openPanelId, offersTranslate("offers.openRequests", "Otevřené žádosti"), openRequests.length, openContent)}
           </div>
         `;
 
@@ -1133,7 +1153,7 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
                 </div>
                 <p class="offer-card-meta">${escapeHtml(offerCity)} · ${escapeHtml(offerCategory)}</p>
                 <div class="offer-card-summary">
-                  <strong>${escapeHtml(offerPrice)} Kč / den</strong>
+                  <strong>${escapeHtml(offerPrice)} ${offersTranslate("offers.currencyPerDay", "Kč / den")}</strong>
                   ${requestStateHtml}
                 </div>
               </div>
@@ -1143,12 +1163,12 @@ return `<p class="request-note success">Věc byla označena jako vyzvednutá. Po
               ${primaryActionHtml}
 
               <details class="offer-more-menu">
-                <summary aria-label="Další akce nabídky">•••</summary>
+                <summary aria-label="${escapeHtml(offersTranslate("offers.moreActions", "Další akce nabídky"))}">•••</summary>
                 <div class="offer-more-menu-panel">
-                  <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">Upravit nabídku</a>
-                  ${isDraft ? "" : `<a href="detail.html?id=${encodeURIComponent(offerId)}">Veřejný detail</a>`}
-                  ${isDraft ? "" : `<button type="button" onclick="toggleOfferOverviewFromMenu('${escapeHtml(offerId)}', this.closest('details'))">Přehled a historie</button>`}
-                  <button class="danger" type="button" onclick="deleteOffer('${escapeHtml(offerId)}')">Smazat nabídku</button>
+                  <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.edit", "Upravit nabídku")}</a>
+                  ${isDraft ? "" : `<a href="detail.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.publicDetail", "Veřejný detail")}</a>`}
+                  ${isDraft ? "" : `<button type="button" onclick="toggleOfferOverviewFromMenu('${escapeHtml(offerId)}', this.closest('details'))">${offersTranslate("offers.overviewHistory", "Přehled a historie")}</button>`}
+                  <button class="danger" type="button" onclick="deleteOffer('${escapeHtml(offerId)}')">${offersTranslate("offers.delete", "Smazat nabídku")}</button>
                 </div>
               </details>
             </div>
@@ -1170,12 +1190,12 @@ function renderSimpleOffer(offer, requests) {
 
   const requestText =
     openRequests.length === 1
-      ? "1 žádost"
-      : openRequests.length + " žádostí";
+      ? offersTranslate("offers.requestCountOne", "1 žádost")
+      : offersTranslate("offers.requestCountMany", "{count} žádostí", { count: openRequests.length });
 
   const openContent = openRequests.length
     ? openRequests.map(renderRequest).join("")
-    : `<p class="request-empty-note">U této nabídky teď není žádná otevřená žádost.</p>`;
+    : `<p class="request-empty-note">${offersTranslate("offers.noOpenRequests", "U této nabídky teď není žádná otevřená žádost.")}</p>`;
 
   return `
     <div class="simple-offer-record">
@@ -1190,7 +1210,7 @@ function renderSimpleOffer(offer, requests) {
         </div>
 
         <div class="simple-offer-value">
-          ${escapeHtml(offerPrice)} Kč / den
+          ${escapeHtml(offerPrice)} ${offersTranslate("offers.currencyPerDay", "Kč / den")}
         </div>
 
         <div class="simple-offer-value">
@@ -1209,20 +1229,20 @@ function renderSimpleOffer(offer, requests) {
                   class="offer-primary-button urgent"
                   onclick="openOfferRequests('${escapeHtml(offerId)}')"
                 >
-                  Vyřídit žádosti
+                  ${offersTranslate("offers.handleRequests", "Vyřídit žádosti")}
                 </button>`
               : `<a href="detail.html?id=${encodeURIComponent(offerId)}">
-                  Detail
+                  ${offersTranslate("offers.detail.show", "Detail")}
                 </a>`
           }
 
           <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">
-            Upravit
+            ${offersTranslate("offers.editShort", "Upravit")}
           </a>
         </div>
       </article>
 
-      ${renderRequestPanel(openPanelId, "Otevřené žádosti", openRequests.length, openContent)}
+      ${renderRequestPanel(openPanelId, offersTranslate("offers.openRequests", "Otevřené žádosti"), openRequests.length, openContent)}
     </div>
   `;
 }
@@ -1292,7 +1312,7 @@ return [
         }
 
         if (offerManageButton) {
-          offerManageButton.textContent = "Skrýt";
+          offerManageButton.textContent = offersTranslate("offers.hide", "Skrýt");
         }
 
         const openPanel = document.getElementById("open-panel-" + offerId);
@@ -1303,7 +1323,7 @@ return [
         }
 
         if (openButton) {
-          openButton.textContent = "Skrýt žádosti";
+          openButton.textContent = offersTranslate("offers.hideRequests", "Skrýt žádosti");
           openButton.classList.remove("important");
         }
 
