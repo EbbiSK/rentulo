@@ -10,17 +10,23 @@
       "nav.account": "Můj účet",
       "nav.login": "Přihlásit se",
       "nav.logout": "Odhlásit se",
-"account.eyebrow": "Můj účet",
-"account.greeting": "Dobrý den",
-"account.description":
-  "Vyberte akci. Důležité rezervace a žádosti se zvýrazní automaticky.",
+      "nav.register": "Registrovat se",
+
+      "account.eyebrow": "Můj účet",
+      "account.greeting": "Dobrý den",
+      "account.description":
+        "Vyberte akci. Důležité rezervace a žádosti se zvýrazní automaticky.",
+      "account.actionsTitle": "Co chcete udělat?",
+      "account.actionsHint": "Vyberte jednu z hlavních částí účtu",
+
       "settings.pageTitle": "Nastavení",
       "settings.pageDescription":
         "Spravujte jazyk, upozornění a zabezpečení svého účtu.",
       "settings.back": "Zpět na Můj účet",
 
       "settings.generalTitle": "Obecné nastavení",
-      "settings.generalDescription": "Změny se uloží do vašeho profilu.",
+      "settings.generalDescription":
+        "Změny se uloží do vašeho profilu.",
       "settings.language": "Jazyk aplikace",
       "settings.emailTitle": "E-mailová upozornění",
       "settings.emailDescription":
@@ -36,7 +42,8 @@
       "settings.newPassword": "Nové heslo",
       "settings.confirmPassword": "Potvrzení nového hesla",
       "settings.changePassword": "Změnit heslo",
-      "settings.passwordChanged": "Heslo bylo úspěšně změněno.",
+      "settings.passwordChanged":
+        "Heslo bylo úspěšně změněno.",
 
       "settings.cancelAccountTitle": "Zrušení účtu",
       "settings.cancelAccountDescription":
@@ -50,10 +57,15 @@
       "nav.account": "My account",
       "nav.login": "Sign in",
       "nav.logout": "Sign out",
-"account.eyebrow": "My account",
-"account.greeting": "Good day",
-"account.description":
-  "Choose an action. Important reservations and requests are highlighted automatically.",
+      "nav.register": "Register",
+
+      "account.eyebrow": "My account",
+      "account.greeting": "Good day",
+      "account.description":
+        "Choose an action. Important reservations and requests are highlighted automatically.",
+      "account.actionsTitle": "What would you like to do?",
+      "account.actionsHint": "Choose one of the main account sections",
+
       "settings.pageTitle": "Settings",
       "settings.pageDescription":
         "Manage the language, notifications and security of your account.",
@@ -92,10 +104,16 @@
       "nav.account": "Mein Konto",
       "nav.login": "Anmelden",
       "nav.logout": "Abmelden",
-"account.eyebrow": "Mein Konto",
-"account.greeting": "Guten Tag",
-"account.description":
-  "Wählen Sie eine Aktion. Wichtige Reservierungen und Anfragen werden automatisch hervorgehoben.",
+      "nav.register": "Registrieren",
+
+      "account.eyebrow": "Mein Konto",
+      "account.greeting": "Guten Tag",
+      "account.description":
+        "Wählen Sie eine Aktion. Wichtige Reservierungen und Anfragen werden automatisch hervorgehoben.",
+      "account.actionsTitle": "Was möchten Sie tun?",
+      "account.actionsHint":
+        "Wählen Sie einen der Hauptbereiche Ihres Kontos",
+
       "settings.pageTitle": "Einstellungen",
       "settings.pageDescription":
         "Verwalten Sie Sprache, Benachrichtigungen und Sicherheit Ihres Kontos.",
@@ -163,6 +181,7 @@
       .querySelectorAll("[data-i18n]")
       .forEach(function (element) {
         const key = element.dataset.i18n;
+
         element.textContent = translate(
           key,
           selectedLanguage
@@ -216,7 +235,8 @@
   window.applyRentuloTranslations =
     applyRentuloTranslations;
 
-  window.rentuloTranslate = translate;
+  window.rentuloTranslate =
+    translate;
 
   document.addEventListener(
     "DOMContentLoaded",
