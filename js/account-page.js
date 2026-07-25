@@ -34,6 +34,26 @@
       return String(email || "").trim().toLowerCase();
     }
 
+    function accountTranslate(key, fallback, replacements) {
+      let text = typeof window.rentuloTranslate === "function"
+        ? window.rentuloTranslate(key)
+        : fallback;
+
+      Object.keys(replacements || {}).forEach(function (name) {
+        text = text.replaceAll("{" + name + "}", String(replacements[name]));
+      });
+
+      return text;
+    }
+
+    function accountCountText(count, singularKey, pluralKey, singularFallback, pluralFallback) {
+      return accountTranslate(
+        count === 1 ? singularKey : pluralKey,
+        count === 1 ? singularFallback : pluralFallback,
+        { count: count }
+      );
+    }
+
     function normalizeStatus(status) {
   return normalizeReservationStatus(status);
 }
@@ -76,7 +96,9 @@
         return getUserName(user);
       }
 
-      return user && (user.fullName || user.name || user.email) ? (user.fullName || user.name || user.email) : "Uživatel";
+      return user && (user.fullName || user.name || user.email)
+        ? (user.fullName || user.name || user.email)
+        : accountTranslate("account.userFallback", "Uživatel");
     }
 
     function getUserEmailSafe(user) {
@@ -132,22 +154,30 @@ const profileAvatar = document.getElementById("profileAvatar");
       }
 
       if (profileEmail) {
-        profileEmail.textContent = email || "E-mail není uložen";
+        profileEmail.textContent = email || accountTranslate(
+          "account.emailMissing",
+          "E-mail není uložen"
+        );
       }
 if (profileRating) {
-  profileRating.textContent = "Hodnocení: zatím bez hodnocení";
+        profileRating.textContent = accountTranslate(
+          "account.ratingNone",
+          "Hodnocení: zatím bez hodnocení"
+        );
 
-  const ratingSummary = await loadCurrentUserRating(user);
+        const ratingSummary = await loadCurrentUserRating(user);
 
-  if (ratingSummary && ratingSummary.rating_count) {
-    profileRating.textContent =
-      "Hodnocení: ⭐ " +
-      ratingSummary.average_rating +
-      " / 5 (" +
-      ratingSummary.rating_count +
-      " hodnocení)";
-  }
-}
+        if (ratingSummary && ratingSummary.rating_count) {
+          profileRating.textContent = accountTranslate(
+            "account.ratingValue",
+            "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
+            {
+              average: ratingSummary.average_rating,
+              count: ratingSummary.rating_count
+            }
+          );
+        }
+      }
       if (profileAvatar) {
         profileAvatar.textContent = name.charAt(0).toUpperCase();
       }
@@ -181,8 +211,8 @@ if (profileRating) {
         id: row.id,
         ownerId: row.owner_id,
         ownerEmail: "",
-       name: row.name || "Věc k půjčení",
-category: row.category || "Ostatní",
+       name: row.name || accountTranslate("account.itemFallback", "Věc k půjčení"),
+category: row.category || accountTranslate("account.categoryFallback", "Ostatní"),
         city: row.city || "",
         price: Number(row.price_per_day || 0),
         status: row.status || "active",
@@ -202,10 +232,10 @@ category: row.category || "Ostatní",
         ownerId: row.owner_id,
         renterId: row.renter_id,
 
-        offerName: row.offer_name || "Věc k půjčení",
-        toolName: row.offer_name || "Věc k půjčení",
+        offerName: row.offer_name || accountTranslate("account.itemFallback", "Věc k půjčení"),
+        toolName: row.offer_name || accountTranslate("account.itemFallback", "Věc k půjčení"),
 
-category: row.category || "Ostatní",
+category: row.category || accountTranslate("account.categoryFallback", "Ostatní"),
         city: row.city || "",
 
         pricePerDay: Number(row.price_per_day || 0),
@@ -228,7 +258,7 @@ category: row.category || "Ostatní",
         renterEmail: row.renter_email || "",
         renterPhone: row.renter_phone || "",
 
-        ownerName: row.owner_name || "Majitel",
+        ownerName: row.owner_name || accountTranslate("account.ownerFallback", "Majitel"),
 
         status: normalizeStatus(row.status || STATUS_PENDING),
         statusText: getStatusText(row.status || STATUS_PENDING),
@@ -407,18 +437,29 @@ if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
 
       if (waitingPaymentCount > 0) {
         reservationsCard.classList.add("account-action-alert");
-        reservationsText.textContent = waitingPaymentCount === 1
-          ? "1 rezervace čeká na platbu"
-          : waitingPaymentCount + " rezervace čekají na platbu";
+        reservationsText.textContent = accountCountText(
+          waitingPaymentCount,
+          "account.dynamic.waitingPaymentOne",
+          "account.dynamic.waitingPaymentMany",
+          "1 rezervace čeká na platbu",
+          "{count} rezervace čekají na platbu"
+        );
       } else {
         reservationsCard.classList.remove("account-action-alert");
 
         if (activeReservations.length > 0) {
-          reservationsText.textContent = activeReservations.length === 1
-            ? "Máte 1 aktivní rezervaci"
-            : "Máte " + activeReservations.length + " aktivních rezervací";
+          reservationsText.textContent = accountCountText(
+            activeReservations.length,
+            "account.dynamic.activeReservationOne",
+            "account.dynamic.activeReservationMany",
+            "Máte 1 aktivní rezervaci",
+            "Máte {count} aktivních rezervací"
+          );
         } else {
-          reservationsText.textContent = "Co si chci půjčit";
+          reservationsText.textContent = accountTranslate(
+            "account.reservationsDefault",
+            "Co si chci půjčit"
+          );
         }
       }
 
@@ -426,33 +467,59 @@ if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
         offersCard.classList.add("account-action-alert");
 
         if (pendingRequestsCount > 0) {
-          offersText.textContent = pendingRequestsCount === 1
-            ? "Máte 1 novou žádost k potvrzení"
-            : "Máte " + pendingRequestsCount + " nové žádosti k potvrzení";
+          offersText.textContent = accountCountText(
+            pendingRequestsCount,
+            "account.dynamic.pendingRequestOne",
+            "account.dynamic.pendingRequestMany",
+            "Máte 1 novou žádost k potvrzení",
+            "Máte {count} nové žádosti k potvrzení"
+          );
         } else if (paidRequestsCount > 0) {
-          offersText.textContent = paidRequestsCount === 1
-            ? "1 rezervace je zaplacená, označte vyzvednutí"
-            : paidRequestsCount + " rezervace jsou zaplacené, označte vyzvednutí";
+          offersText.textContent = accountCountText(
+            paidRequestsCount,
+            "account.dynamic.paidRequestOne",
+            "account.dynamic.paidRequestMany",
+            "1 rezervace je zaplacená, označte vyzvednutí",
+            "{count} rezervace jsou zaplacené, označte vyzvednutí"
+          );
         } else if (pickedUpRequestsCount > 0) {
-          offersText.textContent = pickedUpRequestsCount === 1
-            ? "1 půjčení probíhá, po vrácení ho uzavřete"
-            : pickedUpRequestsCount + " půjčení probíhají, po vrácení je uzavřete";
+          offersText.textContent = accountCountText(
+            pickedUpRequestsCount,
+            "account.dynamic.pickedUpOne",
+            "account.dynamic.pickedUpMany",
+            "1 půjčení probíhá, po vrácení ho uzavřete",
+            "{count} půjčení probíhají, po vrácení je uzavřete"
+          );
         } else {
-          offersText.textContent = "Máte otevřené žádosti k vyřízení";
+          offersText.textContent = accountTranslate(
+            "account.dynamic.openRequests",
+            "Máte otevřené žádosti k vyřízení"
+          );
         }
       } else {
         offersCard.classList.remove("account-action-alert");
 
         if (incomingOpenRequests.length > 0) {
-          offersText.textContent = incomingOpenRequests.length === 1
-            ? "Máte 1 otevřenou žádost u svých nabídek"
-            : "Máte " + incomingOpenRequests.length + " otevřených žádostí u svých nabídek";
+          offersText.textContent = accountCountText(
+            incomingOpenRequests.length,
+            "account.dynamic.incomingRequestOne",
+            "account.dynamic.incomingRequestMany",
+            "Máte 1 otevřenou žádost u svých nabídek",
+            "Máte {count} otevřených žádostí u svých nabídek"
+          );
         } else if (myOffers.length > 0) {
-          offersText.textContent = myOffers.length === 1
-            ? "Máte 1 vlastní nabídku"
-            : "Máte " + myOffers.length + " vlastní nabídky";
+          offersText.textContent = accountCountText(
+            myOffers.length,
+            "account.dynamic.myOfferOne",
+            "account.dynamic.myOfferMany",
+            "Máte 1 vlastní nabídku",
+            "Máte {count} vlastní nabídky"
+          );
         } else {
-          offersText.textContent = "Co nabízím a žádosti od lidí";
+          offersText.textContent = accountTranslate(
+            "account.offersDefault",
+            "Co nabízím a žádosti od lidí"
+          );
         }
       }
 
@@ -463,46 +530,66 @@ if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
 
         if (waitingPaymentCount > 0) {
           messageParts.push(
-            "<strong>" +
-            waitingPaymentCount +
-            "</strong> " +
-            (waitingPaymentCount === 1 ? "rezervace čeká" : "rezervace čekají") +
-            " na platbu"
+            "<strong>" + waitingPaymentCount + "</strong> " +
+            accountCountText(
+              waitingPaymentCount,
+              "account.alert.waitingPaymentOne",
+              "account.alert.waitingPaymentMany",
+              "rezervace čeká na platbu",
+              "rezervace čekají na platbu"
+            )
           );
         }
 
         if (pendingRequestsCount > 0) {
           messageParts.push(
-            "<strong>" +
-            pendingRequestsCount +
-            "</strong> " +
-            (pendingRequestsCount === 1 ? "nová žádost čeká" : "nové žádosti čekají") +
-            " na potvrzení"
+            "<strong>" + pendingRequestsCount + "</strong> " +
+            accountCountText(
+              pendingRequestsCount,
+              "account.alert.pendingOne",
+              "account.alert.pendingMany",
+              "nová žádost čeká na potvrzení",
+              "nové žádosti čekají na potvrzení"
+            )
           );
         }
 
         if (paidRequestsCount > 0) {
           messageParts.push(
-            "<strong>" +
-            paidRequestsCount +
-            "</strong> " +
-            (paidRequestsCount === 1 ? "zaplacená rezervace čeká" : "zaplacené rezervace čekají") +
-            " na označení vyzvednutí"
+            "<strong>" + paidRequestsCount + "</strong> " +
+            accountCountText(
+              paidRequestsCount,
+              "account.alert.paidOne",
+              "account.alert.paidMany",
+              "zaplacená rezervace čeká na označení vyzvednutí",
+              "zaplacené rezervace čekají na označení vyzvednutí"
+            )
           );
         }
 
         if (pickedUpRequestsCount > 0) {
           messageParts.push(
-            "<strong>" +
-            pickedUpRequestsCount +
-            "</strong> " +
-            (pickedUpRequestsCount === 1 ? "půjčení čeká" : "půjčení čekají") +
-            " na označení vrácení"
+            "<strong>" + pickedUpRequestsCount + "</strong> " +
+            accountCountText(
+              pickedUpRequestsCount,
+              "account.alert.pickedUpOne",
+              "account.alert.pickedUpMany",
+              "půjčení čeká na označení vrácení",
+              "půjčení čekají na označení vrácení"
+            )
           );
         }
 
         alertSummary.style.display = "block";
-        alertSummary.innerHTML = "Máte nové věci k vyřízení: " + messageParts.join(" a ") + ".";
+        alertSummary.innerHTML = accountTranslate(
+          "account.alert.summary",
+          "Máte nové věci k vyřízení: {items}.",
+          {
+            items: messageParts.join(
+              accountTranslate("account.alert.join", " a ")
+            )
+          }
+        );
       } else {
         alertSummary.style.display = "none";
         alertSummary.innerHTML = "";
@@ -531,6 +618,10 @@ if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
 
       updateAccountActionBadgesFromSupabase();
     }
+
+    document.addEventListener("rentuloLanguageChanged", function () {
+      updateAccountActionBadgesFromSupabase();
+    });
 
     document.addEventListener("DOMContentLoaded", function () {
       initializeAccountPage();
