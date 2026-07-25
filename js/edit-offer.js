@@ -3,6 +3,15 @@ let editCurrentOffer = null;
 let editHasBlockingReservation = false;
 let editSaveInProgress = false;
 
+function editT(key, fallback) {
+  if (typeof window.rentuloTranslate === "function") {
+    const translated = window.rentuloTranslate(key);
+    return translated === key ? fallback : translated;
+  }
+
+  return fallback;
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   protectEditOfferPage();
   initializeEditOfferPage();
@@ -111,11 +120,11 @@ function renderEditPhotoPreview(photoValue) {
   }
 
   if (!photoValue) {
-    preview.innerHTML = "Bez fotky";
+    preview.textContent = editT("editOffer.noPhoto", "Bez fotky");
     return;
   }
 
-  preview.innerHTML = `<img src="${photoValue}" alt="Fotka nabízené věci">`;
+  preview.innerHTML = `<img src="${photoValue}" alt="${editT("editOffer.photoTitle", "Fotka věci")}">`;
 }
 
 function updateEditPhotoStatus(message, type) {
@@ -181,28 +190,28 @@ function setupEditOfferPhotoUpload() {
       const file = photoInput.files && photoInput.files[0];
 
       if (!file) {
-        updateEditPhotoStatus("Fotka nebyla vybraná.", "");
+        updateEditPhotoStatus(editT("editOffer.photoNotSelected", "Fotka nebyla vybraná."), "");
         return;
       }
 
       if (!file.type || !file.type.startsWith("image/")) {
         photoInput.value = "";
-        updateEditPhotoStatus("Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP.", "error");
+        updateEditPhotoStatus(editT("editOffer.invalidPhoto", "Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP."), "error");
         return;
       }
 
-      updateEditPhotoStatus("Zpracovávám fotku...", "");
+      updateEditPhotoStatus(editT("editOffer.processingPhoto", "Zpracovávám fotku..."), "");
 
       resizeEditImageToDataUrl(file, function (dataUrl) {
         if (!dataUrl) {
           photoInput.value = "";
-          updateEditPhotoStatus("Fotku se nepodařilo načíst. Zkuste jiný obrázek.", "error");
+          updateEditPhotoStatus(editT("editOffer.photoLoadFailed", "Fotku se nepodařilo načíst. Zkuste jiný obrázek."), "error");
           return;
         }
 
         editOfferPhotoDataUrl = dataUrl;
         renderEditPhotoPreview(editOfferPhotoDataUrl);
-        updateEditPhotoStatus("Nová fotka je připravená k uložení.", "success");
+        updateEditPhotoStatus(editT("editOffer.photoReady", "Nová fotka je připravená k uložení."), "success");
       });
     });
   }
@@ -216,7 +225,7 @@ function setupEditOfferPhotoUpload() {
       }
 
       renderEditPhotoPreview("");
-      updateEditPhotoStatus("Fotka bude po uložení odstraněná.", "");
+      updateEditPhotoStatus(editT("editOffer.photoWillBeRemoved", "Fotka bude po uložení odstraněná."), "");
     });
   }
 }
@@ -238,17 +247,12 @@ function protectEditOfferPage() {
 
   editPage.innerHTML = `
     <section class="login-required-box">
-      <p class="eyebrow">Přihlášení je potřeba</p>
-
-      <h1>Pro úpravu nabídky se nejdříve přihlaste.</h1>
-
-      <p>
-        Nabídky mohou upravovat pouze přihlášení uživatelé.
-      </p>
-
+      <p class="eyebrow">${editT("editOffer.loginRequired", "Přihlášení je potřeba")}</p>
+      <h1>${editT("editOffer.loginTitle", "Pro úpravu nabídky se nejdříve přihlaste.")}</h1>
+      <p>${editT("editOffer.loginDescription", "Nabídky mohou upravovat pouze přihlášení uživatelé.")}</p>
       <div class="login-required-actions">
-        <a href="prihlaseni.html">Přihlásit se</a>
-        <a href="registrace.html" class="secondary-action">Vytvořit účet</a>
+        <a href="prihlaseni.html">${editT("editOffer.signIn", "Přihlásit se")}</a>
+        <a href="registrace.html" class="secondary-action">${editT("editOffer.createAccount", "Vytvořit účet")}</a>
       </div>
     </section>
   `;
@@ -263,16 +267,11 @@ function showEditOfferNotFound() {
 
   editPage.innerHTML = `
     <section class="login-required-box">
-      <p class="eyebrow">Nabídka nenalezena</p>
-
-      <h1>Tuto nabídku se nepodařilo najít.</h1>
-
-      <p>
-        Nabídka mohla být smazána nebo odkaz není správný.
-      </p>
-
+      <p class="eyebrow">${editT("editOffer.notFoundEyebrow", "Nabídka nenalezena")}</p>
+      <h1>${editT("editOffer.notFoundTitle", "Tuto nabídku se nepodařilo najít.")}</h1>
+      <p>${editT("editOffer.notFoundDescription", "Nabídka mohla být smazána nebo odkaz není správný.")}</p>
       <div class="login-required-actions">
-        <a href="moje-nabidky.html">Zpět na moje nabídky</a>
+        <a href="moje-nabidky.html">${editT("editOffer.backToListings", "Zpět na moje nabídky")}</a>
       </div>
     </section>
   `;
@@ -287,16 +286,11 @@ function showEditOfferForbidden() {
 
   editPage.innerHTML = `
     <section class="login-required-box">
-      <p class="eyebrow">Nemáte oprávnění</p>
-
-      <h1>Tuto nabídku nemůžete upravovat.</h1>
-
-      <p>
-        Upravovat můžete pouze nabídky, které jste sami vytvořili.
-      </p>
-
+      <p class="eyebrow">${editT("editOffer.forbiddenEyebrow", "Nemáte oprávnění")}</p>
+      <h1>${editT("editOffer.forbiddenTitle", "Tuto nabídku nemůžete upravovat.")}</h1>
+      <p>${editT("editOffer.forbiddenDescription", "Upravovat můžete pouze nabídky, které jste sami vytvořili.")}</p>
       <div class="login-required-actions">
-        <a href="moje-nabidky.html">Zpět na moje nabídky</a>
+        <a href="moje-nabidky.html">${editT("editOffer.backToListings", "Zpět na moje nabídky")}</a>
       </div>
     </section>
   `;
@@ -306,7 +300,7 @@ async function loadOfferFromSupabase(offerId) {
   const supabaseClient = getEditSupabaseClient();
 
   if (!supabaseClient) {
-    throw new Error("Supabase klient není načtený.");
+    throw new Error(editT("editOffer.supabaseMissing", "Supabase klient není načtený."));
   }
 
   const { data, error } = await supabaseClient
@@ -339,7 +333,7 @@ const blockingReservations = Array.isArray(data)
   : [];
 
   if (error) {
-    console.warn("Nepodařilo se ověřit aktivní rezervace nabídky.", error);
+    console.warn(editT("editOffer.reservationCheckFailed", "Nepodařilo se ověřit aktivní rezervace nabídky."), error);
     return false;
   }
 
@@ -371,7 +365,7 @@ function editLockPriceFields(hasBlockingReservation) {
   const notice = document.createElement("p");
   notice.className = "edit-price-lock-notice";
   notice.textContent =
-    "Cena je zamčená, protože nabídka má aktivní rezervaci.";
+    editT("editOffer.priceLocked", "Cena je zamčená, protože nabídka má aktivní rezervaci.");
 
   priceInput.insertAdjacentElement("afterend", notice);
 }
@@ -394,12 +388,12 @@ function fillEditForm(offer) {
 
     !descriptionInput
   ) {
-    editShowMessage("Formulář pro úpravu nabídky se nepodařilo načíst.");
+    editShowMessage(editT("editOffer.formLoadFailed", "Formulář pro úpravu nabídky se nepodařilo načíst."));
     return;
   }
 
   nameInput.value = offer.name || "";
-  categorySelect.value = offer.category || "Vyberte kategorii";
+  categorySelect.value = offer.category || "";
   cityInput.value = offer.city || "";
   postalInput.value = offer.postal_code || "";
   priceInput.value = editValueOrEmpty(offer.price_per_day);
@@ -410,12 +404,12 @@ function fillEditForm(offer) {
   renderEditPhotoPreview(editOfferPhotoDataUrl);
 
   if (editOfferPhotoDataUrl) {
-    updateEditPhotoStatus("Aktuální fotka je uložená. Můžete ji změnit nebo odebrat.", "success");
+    updateEditPhotoStatus(editT("editOffer.currentPhoto", "Aktuální fotka je uložená. Můžete ji změnit nebo odebrat."), "success");
   } else {
-    updateEditPhotoStatus("Tato nabídka zatím nemá fotku.", "");
+    updateEditPhotoStatus(editT("editOffer.noCurrentPhoto", "Tato nabídka zatím nemá fotku."), "");
   }
 
-  document.title = "Upravit nabídku - " + (offer.name || "Nabídka");
+  document.title = editT("editOffer.title", "Upravit nabídku") + " - " + (offer.name || editT("editOffer.offerFallback", "Nabídka"));
 }
 
 function dataUrlToBlob(dataUrl) {
@@ -450,7 +444,7 @@ async function uploadEditedOfferPhoto(supabaseClient, userId) {
   const photoBlob = dataUrlToBlob(editOfferPhotoDataUrl);
   const fileName = userId + "/" + Date.now() + "-offer.jpg";
 
-  updateEditPhotoStatus("Nahrávám fotku do Supabase...", "");
+  updateEditPhotoStatus(editT("editOffer.uploadingPhoto", "Nahrávám fotku do Supabase..."), "");
 
   const { error } = await supabaseClient.storage
     .from("offer-photos")
@@ -467,7 +461,7 @@ async function uploadEditedOfferPhoto(supabaseClient, userId) {
     .from("offer-photos")
     .getPublicUrl(fileName);
 
-  updateEditPhotoStatus("Fotka byla nahraná.", "success");
+  updateEditPhotoStatus(editT("editOffer.photoUploaded", "Fotka byla nahraná."), "success");
 
   return data && data.publicUrl ? data.publicUrl : null;
 }
@@ -480,7 +474,9 @@ function setEditSavingState(isSaving) {
   }
 
   saveButton.disabled = isSaving;
-  saveButton.textContent = isSaving ? "Ukládám změny..." : "Uložit změny";
+  saveButton.textContent = isSaving
+    ? editT("editOffer.saving", "Ukládám změny...")
+    : editT("editOffer.save", "Uložit změny");
 }
 
 async function initializeEditOfferPage() {
@@ -498,7 +494,7 @@ async function initializeEditOfferPage() {
   const supabaseClient = getEditSupabaseClient();
 
   if (!supabaseClient) {
-    editShowMessage("Supabase klient není načtený.");
+    editShowMessage(editT("editOffer.supabaseMissing", "Supabase klient není načtený."));
     return;
   }
 
@@ -550,7 +546,7 @@ function setupEditOfferSave() {
     editClearErrors();
 
     if (!editCurrentOffer) {
-      editShowMessage("Nabídku se nepodařilo načíst.");
+      editShowMessage(editT("editOffer.offerLoadFailed", "Nabídku se nepodařilo načíst."));
       return;
     }
 
@@ -558,12 +554,12 @@ function setupEditOfferSave() {
     const supabaseUser = await getEditSupabaseUser();
 
     if (!supabaseClient || !supabaseUser) {
-      editShowMessage("Nejste přihlášený v Supabase. Přihlaste se prosím znovu.");
+      editShowMessage(editT("editOffer.sessionMissing", "Nejste přihlášený v Supabase. Přihlaste se prosím znovu."));
       return;
     }
 
     if (String(editCurrentOffer.owner_id) !== String(supabaseUser.id)) {
-      editShowMessage("Tuto nabídku nemůžete upravovat.");
+      editShowMessage(editT("editOffer.cannotEdit", "Tuto nabídku nemůžete upravovat."));
       return;
     }
 
@@ -584,7 +580,7 @@ function setupEditOfferSave() {
 
       !descriptionInput
     ) {
-      editShowMessage("Formulář pro úpravu nabídky se nepodařilo načíst.");
+      editShowMessage(editT("editOffer.formLoadFailed", "Formulář pro úpravu nabídky se nepodařilo načíst."));
       return;
     }
 
@@ -625,7 +621,7 @@ function setupEditOfferSave() {
     }
 
     if (hasError) {
-      editShowMessage("Vyplňte prosím všechna pole. Cena musí být číslo větší než 0.");
+      editShowMessage(editT("editOffer.validation", "Vyplňte prosím všechna pole. Cena musí být číslo větší než 0."));
       return;
     }
 
@@ -660,9 +656,9 @@ function setupEditOfferSave() {
       }
 
       if (editHasBlockingReservation) {
-        editShowMessage("Změny byly uloženy. Cena zůstala stejná, protože nabídka má aktivní rezervaci.", "success");
+        editShowMessage(editT("editOffer.savedPriceLocked", "Změny byly uloženy. Cena zůstala stejná, protože nabídka má aktivní rezervaci."), "success");
       } else {
-        editShowMessage("Změny byly uloženy.", "success");
+        editShowMessage(editT("editOffer.saved", "Změny byly uloženy."), "success");
       }
 
       setTimeout(function () {
@@ -672,7 +668,7 @@ function setupEditOfferSave() {
       console.error(error);
       editSaveInProgress = false;
       setEditSavingState(false);
-      editShowMessage("Změny se nepodařilo uložit. Zkontrolujte konzoli nebo Supabase pravidla.");
+      editShowMessage(editT("editOffer.saveFailed", "Změny se nepodařilo uložit. Zkontrolujte konzoli nebo Supabase pravidla."));
     }
   });
 }
