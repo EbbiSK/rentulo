@@ -75,7 +75,10 @@
 
       setMessage(
         message,
-        "Nastavení se nepodařilo načíst.",
+        translate(
+          "settings.loadError",
+          "Nastavení se nepodařilo načíst."
+        ),
         "error"
       );
 
@@ -150,7 +153,10 @@
 
       setMessage(
         message,
-        "Nastavení se nepodařilo uložit.",
+        translate(
+          "settings.saveError",
+          "Nastavení se nepodařilo uložit."
+        ),
         "error"
       );
 
@@ -197,7 +203,10 @@
     if (password.length < 8) {
       setMessage(
         message,
-        "Heslo musí mít alespoň 8 znaků.",
+        translate(
+          "settings.passwordTooShort",
+          "Heslo musí mít alespoň 8 znaků."
+        ),
         "error"
       );
 
@@ -207,7 +216,10 @@
     if (password !== confirmation) {
       setMessage(
         message,
-        "Zadaná hesla se neshodují.",
+        translate(
+          "settings.passwordMismatch",
+          "Zadaná hesla se neshodují."
+        ),
         "error"
       );
 
@@ -231,7 +243,10 @@
 
       setMessage(
         message,
-        "Heslo se nepodařilo změnit: " + error.message,
+        translate(
+          "settings.passwordChangeError",
+          "Heslo se nepodařilo změnit:"
+        ) + " " + error.message,
         "error"
       );
 
