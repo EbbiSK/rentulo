@@ -121,7 +121,10 @@ const profileRating = document.getElementById("profileRating");
 const profileAvatar = document.getElementById("profileAvatar");
 
       if (greeting) {
-        greeting.textContent = "Dobrý den";
+        greeting.textContent =
+  typeof window.rentuloTranslate === "function"
+    ? window.rentuloTranslate("account.greeting")
+    : "Dobrý den";
       }
 
       if (profileName) {
