@@ -127,6 +127,26 @@ function renderEditPhotoPreview(photoValue) {
   preview.innerHTML = `<img src="${photoValue}" alt="${editT("editOffer.photoTitle", "Fotka věci")}">`;
 }
 
+function updateEditPhotoFileName(file) {
+  const fileName = document.getElementById("editPhotoFileName");
+
+  if (!fileName) {
+    return;
+  }
+
+  if (file && file.name) {
+    fileName.textContent = file.name;
+    fileName.removeAttribute("data-i18n");
+    return;
+  }
+
+  fileName.setAttribute("data-i18n", "editOffer.noFileChosen");
+  fileName.textContent = editT(
+    "editOffer.noFileChosen",
+    "Nebyl vybrán žádný soubor"
+  );
+}
+
 function updateEditPhotoStatus(message, type) {
   const status = document.querySelector("#editPhotoStatus");
 
@@ -186,8 +206,10 @@ function setupEditOfferPhotoUpload() {
   const removePhotoButton = document.querySelector("#removeEditPhotoButton");
 
   if (photoInput) {
+    updateEditPhotoFileName(null);
     photoInput.addEventListener("change", function () {
       const file = photoInput.files && photoInput.files[0];
+      updateEditPhotoFileName(file);
 
       if (!file) {
         updateEditPhotoStatus(editT("editOffer.photoNotSelected", "Fotka nebyla vybraná."), "");
@@ -196,6 +218,7 @@ function setupEditOfferPhotoUpload() {
 
       if (!file.type || !file.type.startsWith("image/")) {
         photoInput.value = "";
+        updateEditPhotoFileName(null);
         updateEditPhotoStatus(editT("editOffer.invalidPhoto", "Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP."), "error");
         return;
       }
@@ -205,6 +228,7 @@ function setupEditOfferPhotoUpload() {
       resizeEditImageToDataUrl(file, function (dataUrl) {
         if (!dataUrl) {
           photoInput.value = "";
+        updateEditPhotoFileName(null);
           updateEditPhotoStatus(editT("editOffer.photoLoadFailed", "Fotku se nepodařilo načíst. Zkuste jiný obrázek."), "error");
           return;
         }
@@ -222,6 +246,7 @@ function setupEditOfferPhotoUpload() {
 
       if (photoInput) {
         photoInput.value = "";
+        updateEditPhotoFileName(null);
       }
 
       renderEditPhotoPreview("");

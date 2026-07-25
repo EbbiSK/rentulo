@@ -311,15 +311,54 @@
       align-items: start;
     }
 
-    .photo-upload-actions input[type="file"] {
+    .photo-file-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .photo-file-control {
+      display: flex;
+      align-items: center;
+      gap: 9px;
       width: 100%;
-      padding: 8px 9px;
+      min-height: 38px;
+      padding: 6px 8px;
       border: 1px solid #d8d0c5;
       border-radius: 10px;
       background: white;
+    }
+
+    .photo-file-button {
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: #eee8de;
       color: #073f2e;
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .photo-file-name {
+      min-width: 0;
+      color: #40514a;
+      font-size: 12px;
       font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .photo-file-input:focus + .photo-file-control {
+      border-color: #006b45;
+      box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
     }
 
     .photo-remove-button {
@@ -402,8 +441,7 @@
 
     .form-group input:focus,
     .form-group select:focus,
-    .form-group textarea:focus,
-    .photo-upload-actions input[type="file"]:focus {
+    .form-group textarea:focus {
       outline: none;
       border-color: #006b45;
       box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
@@ -709,7 +747,11 @@
               </div>
 
               <div class="photo-upload-actions">
-                <input id="edit-photo" type="file" accept="image/*" />
+                <input class="photo-file-input" id="edit-photo" type="file" accept="image/*" />
+                <label class="photo-file-control" for="edit-photo">
+                  <span class="photo-file-button" data-i18n="editOffer.choosePhoto">Vybrat fotku</span>
+                  <span class="photo-file-name" id="editPhotoFileName" data-i18n="editOffer.noFileChosen">Nebyl vybrán žádný soubor</span>
+                </label>
 
                 <button type="button" class="photo-remove-button" id="removeEditPhotoButton" data-i18n="editOffer.removePhoto">
                   Odebrat fotku
