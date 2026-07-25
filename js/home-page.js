@@ -1,48 +1,56 @@
 document.addEventListener("DOMContentLoaded", function () {
-      renderSharedNavigation("");
-      setupHomeSearch();
-      setupCategorySearch();
-      setupNearbySearch();
-    });
+  renderSharedNavigation("");
+  setupHomeSearch();
+  setupCategorySearch();
+  setupNearbySearch();
+});
 
-    function goToResults(what, where) {
-      const searchParams = new URLSearchParams();
+function homeTranslate(key) {
+  if (typeof window.rentuloTranslate === "function") {
+    return window.rentuloTranslate(key);
+  }
 
-      if (what) {
-        searchParams.set("co", what);
-      }
+  return key;
+}
 
-      if (where) {
-        searchParams.set("kde", where);
-      }
+function goToResults(what, where) {
+  const searchParams = new URLSearchParams();
 
-      const queryString = searchParams.toString();
+  if (what) {
+    searchParams.set("co", what);
+  }
 
-      window.location.href = queryString
-        ? "vysledky.html?" + queryString
-        : "vysledky.html";
-    }
+  if (where) {
+    searchParams.set("kde", where);
+  }
 
-    function setupHomeSearch() {
-      const form = document.getElementById("homeSearchForm");
-      const whatInput = document.getElementById("home-search-what");
-      const whereInput = document.getElementById("home-search-where");
+  const queryString = searchParams.toString();
 
-      if (!form) {
-        return;
-      }
+  window.location.href = queryString
+    ? "vysledky.html?" + queryString
+    : "vysledky.html";
+}
 
-      form.addEventListener("submit", function (event) {
-        event.preventDefault();
+function setupHomeSearch() {
+  const form = document.getElementById("homeSearchForm");
+  const whatInput = document.getElementById("home-search-what");
+  const whereInput = document.getElementById("home-search-where");
 
-        const what = whatInput ? whatInput.value.trim() : "";
-        const where = whereInput ? whereInput.value.trim() : "";
+  if (!form) {
+    return;
+  }
 
-        goToResults(what, where);
-      });
-    }
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
 
-    function setupCategorySearch() {
+    const what = whatInput ? whatInput.value.trim() : "";
+    const where = whereInput ? whereInput.value.trim() : "";
+
+    goToResults(what, where);
+  });
+}
+
+function setupCategorySearch() {
   const categoryButtons = document.querySelectorAll(".home-point-button");
 
   categoryButtons.forEach(function (button) {
@@ -53,64 +61,66 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 }
 
-    function setupNearbySearch() {
-      const nearbyCard = document.getElementById("nearbyCard");
-      const nearbyStatus = document.getElementById("nearbyCardStatus");
+function setupNearbySearch() {
+  const nearbyCard = document.getElementById("nearbyCard");
+  const nearbyStatus = document.getElementById("nearbyCardStatus");
 
-      if (!nearbyCard) {
-        return;
+  if (!nearbyCard) {
+    return;
+  }
+
+  nearbyCard.addEventListener("click", function () {
+    if (!navigator.geolocation) {
+      const unavailable = homeTranslate("home.locationUnavailable");
+
+      if (nearbyStatus) {
+        nearbyStatus.textContent = unavailable;
       }
 
-      nearbyCard.addEventListener("click", function () {
-        if (!navigator.geolocation) {
-          if (nearbyStatus) {
-            nearbyStatus.textContent = "Poloha není v tomto prohlížeči dostupná.";
-          }
+      alert(homeTranslate("home.locationUnavailableHelp"));
+      return;
+    }
 
-          alert("Poloha není v tomto prohlížeči dostupná. Zadejte prosím město nebo PSČ.");
-          return;
-        }
+    nearbyCard.disabled = true;
 
-        nearbyCard.disabled = true;
+    if (nearbyStatus) {
+      nearbyStatus.textContent = homeTranslate("home.locationLoading");
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        localStorage.setItem(
+          "rentuloUserLocation",
+          JSON.stringify({
+            latitude: latitude,
+            longitude: longitude,
+            savedAt: new Date().toISOString()
+          })
+        );
+
+        window.location.href =
+          "vysledky.html?okoli=1&lat=" +
+          encodeURIComponent(latitude) +
+          "&lng=" +
+          encodeURIComponent(longitude);
+      },
+      function () {
+        nearbyCard.disabled = false;
 
         if (nearbyStatus) {
-          nearbyStatus.textContent = "Zjišťuji vaši polohu...";
+          nearbyStatus.textContent = homeTranslate("home.locationDenied");
         }
 
-        navigator.geolocation.getCurrentPosition(
-          function (position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-
-            localStorage.setItem(
-              "rentuloUserLocation",
-              JSON.stringify({
-                latitude: latitude,
-                longitude: longitude,
-                savedAt: new Date().toISOString()
-              })
-            );
-
-            window.location.href =
-              "vysledky.html?okoli=1&lat=" +
-              encodeURIComponent(latitude) +
-              "&lng=" +
-              encodeURIComponent(longitude);
-          },
-          function () {
-            nearbyCard.disabled = false;
-
-            if (nearbyStatus) {
-              nearbyStatus.textContent = "Poloha nebyla povolena.";
-            }
-
-            alert("Poloha nebyla povolena. Zadejte prosím město nebo PSČ.");
-          },
-          {
-            enableHighAccuracy: false,
-            timeout: 8000,
-            maximumAge: 300000
-          }
-        );
-      });
-    }
+        alert(homeTranslate("home.locationDeniedHelp"));
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 8000,
+        maximumAge: 300000
+      }
+    );
+  });
+}

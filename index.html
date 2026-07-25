@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Rentulo - půjčovna věcí</title>
+  <title data-i18n="home.documentTitle">Rentulo - půjčovna věcí</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%2300784f%22/><path d=%22M18 34l9 9 19-23%22 fill=%22none%22 stroke=%22white%22 stroke-width=%227%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
   <style>
     * {
@@ -411,7 +411,7 @@
 
       <div class="logo-text">
         <strong>Rentulo</strong>
-        <small>Půjč si cokoli</small>
+        <small data-i18n="brand.subtitle">Půjč si cokoli</small>
       </div>
     </a>
 
@@ -424,33 +424,35 @@
 
   <div class="home-content">
 
-    <h1>Půjč si cokoli ve svém okolí.</h1>
+    <h1 data-i18n="home.title">Půjč si cokoli ve svém okolí.</h1>
 
-    <p class="home-text">
+    <p class="home-text" data-i18n="home.description">
       Najdi věci, které právě potřebuješ, přímo od lidí ve svém okolí.
       Nebo nabídni vlastní věci a vydělávej, když je zrovna nepoužíváš.
     </p>
 
     <form class="search-box" id="homeSearchForm">
       <div class="search-field">
-        <label for="home-search-what">Co hledáš?</label>
+        <label for="home-search-what" data-i18n="home.searchWhatLabel">Co hledáš?</label>
         <input
           id="home-search-what"
           type="text"
           placeholder="např. vysavač, gril nebo reproduktor"
+          data-i18n-placeholder="home.searchWhatPlaceholder"
         />
       </div>
 
       <div class="search-field">
-        <label for="home-search-where">Kde?</label>
+        <label for="home-search-where" data-i18n="home.searchWhereLabel">Kde?</label>
         <input
           id="home-search-where"
           type="text"
           placeholder="město nebo PSČ"
+          data-i18n-placeholder="home.searchWherePlaceholder"
         />
       </div>
 
-      <button type="submit" class="search-button">
+      <button type="submit" class="search-button" data-i18n="home.searchButton">
         Procházet nabídky
       </button>
     </form>
@@ -463,7 +465,7 @@
   data-search="domácnost"
 >
   <strong>🏠</strong>
-  <span>Domácnost</span>
+  <span data-i18n="home.category.household">Domácnost</span>
 </button>
 
       <button
@@ -472,7 +474,7 @@
         data-search="zahrada"
       >
         <strong>🌿</strong>
-        <span>Zahrada</span>
+        <span data-i18n="home.category.garden">Zahrada</span>
       </button>
 
       <button
@@ -481,7 +483,7 @@
         data-search="stavba"
       >
         <strong>🏗️</strong>
-        <span>Stavba</span>
+        <span data-i18n="home.category.construction">Stavba</span>
       </button>
 
       <button
@@ -490,7 +492,7 @@
         data-search="hobby"
       >
         <strong>🎯</strong>
-        <span>Hobby</span>
+        <span data-i18n="home.category.hobby">Hobby</span>
       </button>
 
       <button
@@ -499,7 +501,7 @@
         data-search="párty"
       >
         <strong>🎉</strong>
-        <span>Párty</span>
+        <span data-i18n="home.category.party">Párty</span>
       </button>
 
       <button
@@ -508,7 +510,7 @@
         data-search="ostatní"
       >
         <strong>📦</strong>
-        <span>Ostatní</span>
+        <span data-i18n="home.category.other">Ostatní</span>
       </button>
 
     </div>
@@ -516,22 +518,22 @@
     <div class="home-mini-info">
 
       <div class="mini-info-box">
-        <strong>1. Najdeš věc</strong>
-        <span>
+        <strong data-i18n="home.step1Title">1. Najdeš věc</strong>
+        <span data-i18n="home.step1Text">
           Vyhledáš nabídku podle názvu, kategorie nebo lokality.
         </span>
       </div>
 
       <div class="mini-info-box">
-        <strong>2. Pošleš žádost</strong>
-        <span>
+        <strong data-i18n="home.step2Title">2. Pošleš žádost</strong>
+        <span data-i18n="home.step2Text">
           Majitel žádost potvrdí a společně domluvíte podrobnosti.
         </span>
       </div>
 
       <div class="mini-info-box">
-        <strong>3. Převezmeš a vrátíš</strong>
-        <span>
+        <strong data-i18n="home.step3Title">3. Převezmeš a vrátíš</strong>
+        <span data-i18n="home.step3Text">
           Věc si převezmeš, použiješ a po skončení rezervace vrátíš.
         </span>
       </div>
@@ -545,15 +547,15 @@
     id="nearbyCard"
     type="button"
   >
-    <span>Nabídky ve tvém okolí</span>
+    <span data-i18n="home.nearbyEyebrow">Nabídky ve tvém okolí</span>
 
-    <strong>Najít věci podle mojí polohy</strong>
+    <strong data-i18n="home.nearbyTitle">Najít věci podle mojí polohy</strong>
 
-    <p>
+    <p data-i18n="home.nearbyText">
       Povol polohu a Rentulo ti ukáže dostupné nabídky od lidí ve tvém okolí.
     </p>
 
-    <small id="nearbyCardStatus">
+    <small id="nearbyCardStatus" data-i18n="home.nearbyAction">
       Klikni pro hledání v okolí
     </small>
   </button>
@@ -566,6 +568,7 @@
 <script src="js/utils.js"></script>
 <script src="js/api.js"></script>
 <script src="js/navigation.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/home-page.js"></script>
 
 </body>
