@@ -10,7 +10,10 @@
       "nav.account": "Můj účet",
       "nav.login": "Přihlásit se",
       "nav.logout": "Odhlásit se",
-
+"account.eyebrow": "Můj účet",
+"account.greeting": "Dobrý den",
+"account.description":
+  "Vyberte akci. Důležité rezervace a žádosti se zvýrazní automaticky.",
       "settings.pageTitle": "Nastavení",
       "settings.pageDescription":
         "Spravujte jazyk, upozornění a zabezpečení svého účtu.",
@@ -47,7 +50,10 @@
       "nav.account": "My account",
       "nav.login": "Sign in",
       "nav.logout": "Sign out",
-
+"account.eyebrow": "My account",
+"account.greeting": "Good day",
+"account.description":
+  "Choose an action. Important reservations and requests are highlighted automatically.",
       "settings.pageTitle": "Settings",
       "settings.pageDescription":
         "Manage the language, notifications and security of your account.",
@@ -86,7 +92,10 @@
       "nav.account": "Mein Konto",
       "nav.login": "Anmelden",
       "nav.logout": "Abmelden",
-
+"account.eyebrow": "Mein Konto",
+"account.greeting": "Guten Tag",
+"account.description":
+  "Wählen Sie eine Aktion. Wichtige Reservierungen und Anfragen werden automatisch hervorgehoben.",
       "settings.pageTitle": "Einstellungen",
       "settings.pageDescription":
         "Verwalten Sie Sprache, Benachrichtigungen und Sicherheit Ihres Kontos.",
