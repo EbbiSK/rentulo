@@ -338,7 +338,250 @@
     .account-action-button.light:hover { background: #e3dace; }
     .account-action-button.orange { background: #ff6500; color: white; }
     .account-action-button.orange:hover { background: #e85d00; }
+.account-settings-details {
+  grid-column: span 1;
+}
 
+.account-settings-details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.account-settings-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.account-settings-details[open] {
+  grid-column: 1 / -1;
+}
+
+.account-settings-details[open] > summary {
+  display: none;
+}
+
+.account-settings-panel {
+  padding: 20px;
+  border: 1px solid #eadfd1;
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+}
+
+.account-settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.account-settings-header h2 {
+  margin: 0 0 5px;
+  color: #073f2e;
+  font-size: 21px;
+}
+
+.account-settings-header p {
+  margin: 0;
+  color: #4d5b55;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.account-settings-close {
+  border: 0;
+  background: #eee8de;
+  color: #073f2e;
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.account-settings-close:hover {
+  background: #e3dace;
+}
+
+.account-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.account-setting-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.account-setting-field label,
+.account-setting-title {
+  color: #073f2e;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.account-setting-field select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #d8cec2;
+  border-radius: 11px;
+  background: white;
+  color: #073f2e;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  outline: none;
+}
+
+.account-setting-field select:focus {
+  border-color: #006b45;
+  box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
+}
+
+.account-setting-switch-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #d8cec2;
+  border-radius: 11px;
+}
+
+.account-setting-switch-copy {
+  min-width: 0;
+}
+
+.account-setting-switch-copy strong {
+  display: block;
+  color: #073f2e;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.account-setting-switch-copy small {
+  display: block;
+  margin-top: 3px;
+  color: #4d5b55;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.account-switch {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 48px;
+  height: 28px;
+}
+
+.account-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.account-switch-slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #cfc8be;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.account-switch-slider::before {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  top: 3px;
+  left: 3px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  transition: transform 0.18s ease;
+}
+
+.account-switch input:checked + .account-switch-slider {
+  background: #006b45;
+}
+
+.account-switch input:checked + .account-switch-slider::before {
+  transform: translateX(20px);
+}
+
+.account-settings-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.account-settings-save {
+  border: 0;
+  border-radius: 11px;
+  background: #006b45;
+  color: white;
+  padding: 11px 18px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.account-settings-save:hover {
+  background: #00563a;
+}
+
+.account-settings-save:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.account-settings-message {
+  display: none;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.account-settings-message.success {
+  display: block;
+  color: #006b45;
+}
+
+.account-settings-message.error {
+  display: block;
+  color: #b42318;
+}
+
+@media (max-width: 700px) {
+  .account-settings-details,
+  .account-settings-details[open] {
+    grid-column: 1 / -1;
+  }
+
+  .account-settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-settings-header {
+    flex-direction: column;
+  }
+
+  .account-settings-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .account-settings-save {
+    width: 100%;
+  }
+}
     .account-card-badge {
       display: inline-flex;
       align-items: center;
@@ -549,9 +792,26 @@
             Zobrazit historii
           </span>
         </a>
+<a href="nastaveni.html" class="account-action-row">
+  <div class="account-action-icon" aria-hidden="true">⚙</div>
+
+  <div class="account-action-main">
+    <strong class="account-action-title">Nastavení</strong>
+  </div>
+
+  <span class="account-action-description">
+    Jazyk aplikace, upozornění a zabezpečení účtu.
+  </span>
+
+  <span class="account-type-pill">Účet</span>
+
+  <span class="account-action-button light">
+    Otevřít nastavení
+  </span>
+</a>
       </div>
     </section>
-
+    
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
