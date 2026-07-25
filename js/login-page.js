@@ -1,3 +1,11 @@
+function loginTranslate(key, fallback) {
+  if (typeof window.rentuloTranslate === "function") {
+    return window.rentuloTranslate(key);
+  }
+
+  return fallback || key;
+}
+
 function loginNormalizeEmail(email) {
       return String(email || "").trim().toLowerCase();
     }
@@ -82,7 +90,7 @@ function loginNormalizeEmail(email) {
         .maybeSingle();
 
       if (error) {
-        console.warn("Profil se nepodařilo načíst.");
+        console.warn(loginTranslate("login.console.profileLoad", "Profil se nepodařilo načíst."));
         return null;
       }
 
@@ -97,7 +105,7 @@ function loginNormalizeEmail(email) {
         metadata.full_name ||
         metadata.fullName ||
         user.email ||
-        "Uživatel";
+        loginTranslate("login.userFallback", "Uživatel");
 
       const phone =
         (profile && profile.phone) ||
@@ -146,7 +154,7 @@ function loginNormalizeEmail(email) {
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        showLoginError("Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js.");
+        showLoginError(loginTranslate("login.error.supabase", "Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js."));
         return;
       }
 
@@ -171,13 +179,13 @@ function loginNormalizeEmail(email) {
       }
 
       if (hasError) {
-        showLoginError("Vyplňte prosím e-mail i heslo.");
+        showLoginError(loginTranslate("login.error.required", "Vyplňte prosím e-mail i heslo."));
         return;
       }
 
       if (submitButton) {
         submitButton.disabled = true;
-        submitButton.textContent = "Přihlašuji...";
+        submitButton.textContent = loginTranslate("login.submitting", "Přihlašuji...");
       }
 
       try {
@@ -192,21 +200,21 @@ function loginNormalizeEmail(email) {
           if (message.includes("invalid login credentials")) {
             markLoginError(emailInput);
             markLoginError(passwordInput);
-            showLoginError("E-mail nebo heslo není správné.");
+            showLoginError(loginTranslate("login.error.invalidCredentials", "E-mail nebo heslo není správné."));
             return;
           }
 
           if (message.includes("email not confirmed")) {
-            showLoginError("E-mail ještě není potvrzený. Zkontrolujte prosím e-mailovou schránku.");
+            showLoginError(loginTranslate("login.error.emailNotConfirmed", "E-mail ještě není potvrzený. Zkontrolujte prosím e-mailovou schránku."));
             return;
           }
 
-          showLoginError("Přihlášení se nepodařilo: " + error.message);
+          showLoginError(loginTranslate("login.error.genericPrefix", "Přihlášení se nepodařilo: ") + error.message);
           return;
         }
 
         if (!data || !data.user) {
-          showLoginError("Přihlášení se nepodařilo. Uživatel nebyl načten.");
+          showLoginError(loginTranslate("login.error.userMissing", "Přihlášení se nepodařilo. Uživatel nebyl načten."));
           return;
         }
 
@@ -218,17 +226,23 @@ function loginNormalizeEmail(email) {
 
         window.location.href = "index.html";
       } catch (error) {
-        console.error("Přihlášení se nepodařilo.");
-        showLoginError("Přihlášení se nepodařilo. Zkontrolujte připojení a zkuste to znovu.");
+        console.error(loginTranslate("login.console.failed", "Přihlášení se nepodařilo."));
+        showLoginError(loginTranslate("login.error.connection", "Přihlášení se nepodařilo. Zkontrolujte připojení a zkuste to znovu."));
       } finally {
         if (submitButton) {
           submitButton.disabled = false;
-          submitButton.textContent = "Přihlásit se";
+          submitButton.textContent = loginTranslate("login.submit", "Přihlásit se");
         }
       }
     }
 
     document.addEventListener("DOMContentLoaded", function () {
+      document.title = loginTranslate("login.documentTitle", "Přihlášení - Rentulo");
+
+      if (typeof window.applyRentuloTranslations === "function") {
+        window.applyRentuloTranslations();
+      }
+
       renderSharedNavigation("");
 
       const loginForm = document.getElementById("loginForm");
