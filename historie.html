@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Historie - Rentulo</title>
+  <title data-i18n="history.pageTitle">Historie - Rentulo</title>
 
   <link rel="stylesheet" href="css/account-pages.css" />
   <link rel="stylesheet" href="css/history.css" />
@@ -30,10 +30,10 @@
 
   <main class="account-page">
 
-    <a href="muj-ucet.html" class="back-link">← Zpět do účtu</a>
+    <a href="muj-ucet.html" class="back-link" data-i18n="history.back">← Zpět do účtu</a>
 
     <section class="account-page-header">
-      <h1>Historie</h1>
+      <h1 data-i18n="history.heading">Historie</h1>
     </section>
 
     <div class="history-switch">
@@ -41,6 +41,7 @@
         type="button"
         class="history-switch-button active"
         data-history-view="rentals"
+      data-i18n="history.rentalsTab"
       >
         Historie mých rezervací
       </button>
@@ -49,6 +50,7 @@
         type="button"
         class="history-switch-button"
         data-history-view="offers"
+      data-i18n="history.offersTab"
       >
         Historie mých nabídek
       </button>
@@ -75,6 +77,7 @@
   <script src="js/supabase-config.js"></script>
 <script src="js/utils.js"></script>
   <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/reservation-status.js"></script>
   <script src="js/history-page.js"></script>
