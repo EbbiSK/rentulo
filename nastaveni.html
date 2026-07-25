@@ -326,21 +326,38 @@
 
   <main class="settings-page">
     <div class="settings-heading">
-      <div>
-        <h1>Nastavení</h1>
-        <p>Spravujte jazyk, upozornění a zabezpečení svého účtu.</p>
-      </div>
+    <div>
+  <h1 data-i18n="settings.pageTitle">Nastavení</h1>
 
-      <a href="muj-ucet.html" class="back-link">Zpět na Můj účet</a>
+  <p data-i18n="settings.pageDescription">
+    Spravujte jazyk, upozornění a zabezpečení svého účtu.
+  </p>
+</div>
+
+      <a
+  href="muj-ucet.html"
+  class="back-link"
+  data-i18n="settings.back"
+>
+  Zpět na Můj účet
+</a>
     </div>
 
     <section class="settings-card">
-      <h2>Obecné nastavení</h2>
-      <p>Změny se uloží do vašeho profilu.</p>
+      <h2 data-i18n="settings.generalTitle">Obecné nastavení</h2>
+
+<p data-i18n="settings.generalDescription">
+  Změny se uloží do vašeho profilu.
+</p>
 
       <div class="settings-grid">
         <div class="field">
-          <label for="preferredLanguage">Jazyk aplikace</label>
+          <label
+  for="preferredLanguage"
+  data-i18n="settings.language"
+>
+  Jazyk aplikace
+</label>
           <select id="preferredLanguage">
             <option value="cs">Čeština</option>
             <option value="en">English</option>
@@ -349,11 +366,20 @@
         </div>
 
         <div class="field">
-          <span class="field-title">E-mailová upozornění</span>
+          <span
+  class="field-title"
+  data-i18n="settings.emailTitle"
+>
+  E-mailová upozornění
+</span>
           <div class="switch-row">
             <div class="switch-copy">
-              <strong>Důležitá upozornění o rezervacích</strong>
-              <small>Systémové a bezpečnostní e-maily zůstanou vždy aktivní.</small>
+              <strong data-i18n="settings.emailDescription">
+  Důležitá upozornění o rezervacích
+</strong>
+              <small data-i18n="settings.systemEmails">
+  Systémové a bezpečnostní e-maily zůstanou vždy aktivní.
+</small>
             </div>
 
             <label class="switch">
@@ -365,32 +391,37 @@
       </div>
 
       <div class="actions">
-        <button type="button" class="primary-button" id="saveSettingsButton">
-          Uložit nastavení
-        </button>
+        <button
+  type="button"
+  class="primary-button"
+  id="saveSettingsButton"
+  data-i18n="settings.save"
+>
+  Uložit nastavení
+</button>
         <span class="message" id="settingsMessage" role="status" aria-live="polite"></span>
       </div>
     </section>
 
     <section class="settings-card">
-      <h2>Změna hesla</h2>
-      <p>Nové heslo musí mít alespoň 8 znaků.</p>
+      <h2 data-i18n="settings.passwordTitle">Změna hesla</h2>
+      <p data-i18n="settings.passwordDescription">Nové heslo musí mít alespoň 8 znaků.</p>
 
       <form id="passwordForm">
         <div class="settings-grid">
           <div class="field">
-            <label for="newPassword">Nové heslo</label>
+            <label for="newPassword" data-i18n="settings.newPassword">Nové heslo</label>
             <input type="password" id="newPassword" autocomplete="new-password" minlength="8" />
           </div>
 
           <div class="field">
-            <label for="confirmPassword">Potvrzení nového hesla</label>
+            <label for="confirmPassword" data-i18n="settings.confirmPassword">Potvrzení nového hesla</label>
             <input type="password" id="confirmPassword" autocomplete="new-password" minlength="8" />
           </div>
         </div>
 
         <div class="actions">
-          <button type="submit" class="primary-button" id="changePasswordButton">
+          <button type="submit" class="primary-button" id="changePasswordButton" data-i18n="settings.changePassword">
             Změnit heslo
           </button>
           <span class="message" id="passwordMessage" role="status" aria-live="polite"></span>
@@ -399,8 +430,8 @@
     </section>
 
     <section class="settings-card danger-card">
-      <h2>Zrušení účtu</h2>
-      <p class="danger-note">
+      <h2 data-i18n="settings.cancelAccountTitle">Zrušení účtu</h2>
+      <p class="danger-note" data-i18n="settings.cancelAccountDescription">
         Bezpečný proces zrušení účtu doplníme po kontrole aktivních rezervací,
         plateb a zákonných povinností. Účet se nyní nedá odstranit omylem.
       </p>
@@ -412,6 +443,7 @@
   <script src="js/utils.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/settings-page.js"></script>
 </body>
 </html>

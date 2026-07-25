@@ -11,6 +11,14 @@
     return null;
   }
 
+  function translate(key, fallback) {
+    if (typeof window.rentuloTranslate === "function") {
+      return window.rentuloTranslate(key);
+    }
+
+    return fallback;
+  }
+
   function setMessage(element, text, type) {
     if (!element) {
       return;
@@ -34,10 +42,27 @@
     return data.user;
   }
 
+  function applyLanguage(language) {
+    if (typeof window.setRentuloLanguage === "function") {
+      window.setRentuloLanguage(language);
+    } else {
+      localStorage.setItem("rentuloLanguage", language);
+    }
+
+    if (typeof renderSharedNavigation === "function") {
+      renderSharedNavigation("muj-ucet");
+    }
+  }
+
   async function loadSettings(client, user) {
-    const languageSelect = document.getElementById("preferredLanguage");
-    const emailCheckbox = document.getElementById("emailNotifications");
-    const message = document.getElementById("settingsMessage");
+    const languageSelect =
+      document.getElementById("preferredLanguage");
+
+    const emailCheckbox =
+      document.getElementById("emailNotifications");
+
+    const message =
+      document.getElementById("settingsMessage");
 
     const { data, error } = await client
       .from("profiles")
@@ -47,7 +72,13 @@
 
     if (error) {
       console.error(error);
-      setMessage(message, "Nastavení se nepodařilo načíst.", "error");
+
+      setMessage(
+        message,
+        "Nastavení se nepodařilo načíst.",
+        "error"
+      );
+
       return;
     }
 
@@ -69,14 +100,21 @@
       emailCheckbox.checked = emailNotifications;
     }
 
-    localStorage.setItem("rentuloLanguage", language);
+    applyLanguage(language);
   }
 
   async function saveSettings(client, user) {
-    const languageSelect = document.getElementById("preferredLanguage");
-    const emailCheckbox = document.getElementById("emailNotifications");
-    const saveButton = document.getElementById("saveSettingsButton");
-    const message = document.getElementById("settingsMessage");
+    const languageSelect =
+      document.getElementById("preferredLanguage");
+
+    const emailCheckbox =
+      document.getElementById("emailNotifications");
+
+    const saveButton =
+      document.getElementById("saveSettingsButton");
+
+    const message =
+      document.getElementById("settingsMessage");
 
     const preferredLanguage =
       languageSelect
@@ -109,22 +147,24 @@
 
     if (error) {
       console.error(error);
+
       setMessage(
         message,
         "Nastavení se nepodařilo uložit.",
         "error"
       );
+
       return;
     }
 
-    localStorage.setItem(
-      "rentuloLanguage",
-      preferredLanguage
-    );
+    applyLanguage(preferredLanguage);
 
     setMessage(
       message,
-      "Nastavení bylo uloženo.",
+      translate(
+        "settings.saved",
+        "Nastavení bylo uloženo."
+      ),
       "success"
     );
   }
@@ -160,6 +200,7 @@
         "Heslo musí mít alespoň 8 znaků.",
         "error"
       );
+
       return;
     }
 
@@ -169,6 +210,7 @@
         "Zadaná hesla se neshodují.",
         "error"
       );
+
       return;
     }
 
@@ -176,10 +218,9 @@
       button.disabled = true;
     }
 
-    const { error } =
-      await client.auth.updateUser({
-        password: password
-      });
+    const { error } = await client.auth.updateUser({
+      password: password
+    });
 
     if (button) {
       button.disabled = false;
@@ -197,12 +238,20 @@
       return;
     }
 
-    newPassword.value = "";
-    confirmPassword.value = "";
+    if (newPassword) {
+      newPassword.value = "";
+    }
+
+    if (confirmPassword) {
+      confirmPassword.value = "";
+    }
 
     setMessage(
       message,
-      "Heslo bylo úspěšně změněno.",
+      translate(
+        "settings.passwordChanged",
+        "Heslo bylo úspěšně změněno."
+      ),
       "success"
     );
   }
@@ -215,18 +264,11 @@
       return;
     }
 
-    const user =
-      await getAuthenticatedUser(client);
+    const user = await getAuthenticatedUser(client);
 
     if (!user) {
       window.location.href = "prihlaseni.html";
       return;
-    }
-
-    if (
-      typeof renderSharedNavigation === "function"
-    ) {
-      renderSharedNavigation("muj-ucet");
     }
 
     await loadSettings(client, user);
@@ -238,12 +280,9 @@
       document.getElementById("passwordForm");
 
     if (saveButton) {
-      saveButton.addEventListener(
-        "click",
-        function () {
-          saveSettings(client, user);
-        }
-      );
+      saveButton.addEventListener("click", function () {
+        saveSettings(client, user);
+      });
     }
 
     if (passwordForm) {
