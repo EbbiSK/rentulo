@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>VĂ˝sledky vyhledĂˇvĂˇnĂ­ - Rentulo</title>
+  <title>Výsledky vyhledávání - Rentulo</title>
 
   <style>
     * {
@@ -53,7 +53,7 @@
     }
 
     .logo-icon::before {
-      content: "âś“";
+      content: "✓";
     }
 
     .logo-dot {
@@ -356,7 +356,7 @@
     }
 
     .result-image-icon::before {
-      content: "âŚ";
+      content: "⌁";
     }
 
     .result-image span {
@@ -662,7 +662,7 @@
 
       <div class="logo-text">
         <strong>Rentulo</strong>
-        <small>PĹŻjÄŤ si cokoli</small>
+        <small>Půjč si cokoli</small>
       </div>
     </a>
 
@@ -671,28 +671,28 @@
 
   <main class="results-page">
 
-    <a href="index.html" class="results-back-link">â† ZpÄ›t na Ăşvod</a>
+    <a href="index.html" class="results-back-link">← Zpět na úvod</a>
 
     <section class="results-header">
       <div>
-        <p class="eyebrow" id="resultsEyebrow">VĂ˝sledky vyhledĂˇvĂˇnĂ­</p>
+        <p class="eyebrow" id="resultsEyebrow">Výsledky vyhledávání</p>
 
-        <h1 id="resultsTitle">DostupnĂ© vÄ›ci k pĹŻjÄŤenĂ­</h1>
+        <h1 id="resultsTitle">Dostupné věci k půjčení</h1>
 
         <p id="resultsDescription">
-          ZobrazujĂ­ se nabĂ­dky naÄŤtenĂ© z databĂˇze Supabase.
+          Zobrazují se nabídky načtené z databáze Supabase.
         </p>
       </div>
 
       <div class="results-search">
         <div class="search-field">
-          <label>Co hledĂˇte?</label>
-          <input id="results-search-what" type="text" placeholder="napĹ™. stan, koÄŤĂˇrek nebo vrtaÄŤka" />
+          <label>Co hledáte?</label>
+          <input id="results-search-what" type="text" placeholder="např. stan, kočárek nebo vrtačka" />
         </div>
 
         <div class="search-field">
           <label>Kde?</label>
-          <input id="results-search-where" type="text" placeholder="mÄ›sto nebo PSÄŚ" />
+          <input id="results-search-where" type="text" placeholder="město nebo PSČ" />
         </div>
 
         <button id="results-search-button" type="button">Upravit</button>
@@ -700,9 +700,9 @@
     </section>
 
     <div class="nearby-results-banner" id="nearbyResultsBanner">
-      <strong>HledĂˇnĂ­ podle vaĹˇĂ­ polohy</strong>
+      <strong>Hledání podle vaší polohy</strong>
       <span id="nearbyResultsText">
-        NabĂ­dky s uloĹľenou polohou Ĺ™adĂ­me podle vzdĂˇlenosti od vĂˇs. NabĂ­dky bez GPS polohy zobrazujeme pod nimi.
+        Nabídky s uloženou polohou řadíme podle vzdálenosti od vás. Nabídky bez GPS polohy zobrazujeme pod nimi.
       </span>
     </div>
 
@@ -714,40 +714,40 @@
         <div class="filter-group">
           <label>Kategorie</label>
           <select id="categoryFilter">
-          <option value="">VĹˇechny kategorie</option>
-          <option value="DĹŻm a zahrada">DĹŻm a zahrada</option>
-          <option value="DĂ­lna a nĂˇĹ™adĂ­">DĂ­lna a nĂˇĹ™adĂ­</option>
-          <option value="Sport a volnĂ˝ ÄŤas">Sport a volnĂ˝ ÄŤas</option>
+          <option value="">Všechny kategorie</option>
+          <option value="Dům a zahrada">Dům a zahrada</option>
+          <option value="Dílna a nářadí">Dílna a nářadí</option>
+          <option value="Sport a volný čas">Sport a volný čas</option>
           <option value="Elektronika">Elektronika</option>
-          <option value="DÄ›ti a rodina">DÄ›ti a rodina</option>
+          <option value="Děti a rodina">Děti a rodina</option>
           <option value="Auto a doprava">Auto a doprava</option>
-          <option value="PĂˇrty a akce">PĂˇrty a akce</option>
-          <option value="CestovĂˇnĂ­ a kempovĂˇnĂ­">CestovĂˇnĂ­ a kempovĂˇnĂ­</option>
-          <option value="StavebnĂ­ technika">StavebnĂ­ technika</option>
-          <option value="OstatnĂ­">OstatnĂ­</option>
+          <option value="Párty a akce">Párty a akce</option>
+          <option value="Cestování a kempování">Cestování a kempování</option>
+          <option value="Stavební technika">Stavební technika</option>
+          <option value="Ostatní">Ostatní</option>
         </select>
         </div>
 
         <div class="filter-group">
           <label>Cena za den</label>
           <select id="priceFilter">
-            <option value="">Bez omezenĂ­</option>
-            <option value="100">Do 100 KÄŤ</option>
-            <option value="250">Do 250 KÄŤ</option>
-            <option value="500">Do 500 KÄŤ</option>
+            <option value="">Bez omezení</option>
+            <option value="100">Do 100 Kč</option>
+            <option value="250">Do 250 Kč</option>
+            <option value="500">Do 500 Kč</option>
           </select>
         </div>
 
         <div class="filter-group">
-          <label>Dostupnost termĂ­nu</label>
+          <label>Dostupnost termínu</label>
           <select id="availabilityFilter">
-            <option value="">OvÄ›Ĺ™Ă­ se v detailu</option>
-            <option value="available">NabĂ­dky s vĂ˝bÄ›rem termĂ­nu</option>
+            <option value="">Ověří se v detailu</option>
+            <option value="available">Nabídky s výběrem termínu</option>
           </select>
         </div>
 
         <div class="filter-note">
-          KonkrĂ©tnĂ­ termĂ­n se ovÄ›Ĺ™Ă­ aĹľ po vĂ˝bÄ›ru data v detailu. JinĂˇ rezervace blokuje pouze pĹ™ekrĂ˝vajĂ­cĂ­ se dny.
+          Konkrétní termín se ověří až po výběru data v detailu. Jiná rezervace blokuje pouze překrývající se dny.
         </div>
       </aside>
 
@@ -762,8 +762,7 @@
 <script src="js/utils.js"></script>
 <script src="js/offer-utils.js"></script>
 <script src="js/api.js"></script>
-<script src="js/i18n.js"></script>
-  <script src="js/navigation.js"></script>
+<script src="js/navigation.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/reservation-status.js"></script>
 <script src="js/reservations.js"></script>
