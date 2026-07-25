@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
@@ -19,8 +19,10 @@
   <link rel="stylesheet" href="css/responsive.css" />
 </head>
 
-<body data-navigation-page="muj-ucet">
-
+<body
+  data-navigation-page="muj-ucet"
+  data-i18n-document-title="accountCreated.documentTitle"
+>
   <header class="header">
     <a href="index.html" class="logo">
       <div class="logo-icon">
@@ -29,7 +31,7 @@
 
       <div class="logo-text">
         <strong>Rentulo</strong>
-        <small>Půjč si cokoli</small>
+        <small data-i18n="brand.subtitle">Půjč si cokoli</small>
       </div>
     </a>
 
@@ -37,53 +39,54 @@
   </header>
 
   <main class="confirmation-page">
-
     <section class="confirmation-card">
-
       <div class="success-icon">✓</div>
 
-      <p class="eyebrow">Registrace dokončena</p>
+      <p class="eyebrow" data-i18n="accountCreated.eyebrow">
+        Registrace dokončena
+      </p>
 
-      <h1>Účet byl vytvořen.</h1>
+      <h1 data-i18n="accountCreated.title">Účet byl vytvořen.</h1>
 
-      <p class="confirmation-text">
+      <p class="confirmation-text" data-i18n="accountCreated.description">
         Nyní můžete hledat věci k půjčení nebo nabídnout vlastní věci ostatním.
       </p>
 
       <div class="reservation-summary">
-        <h2>Co můžete udělat dál?</h2>
+        <h2 data-i18n="accountCreated.nextTitle">Co můžete udělat dál?</h2>
 
         <div class="summary-row">
-  <span>Najít věci</span>
-  <strong>Vyhledat dostupné nabídky</strong>
-</div>
-
-<div class="summary-row">
-  <span>Nabídnout věc</span>
-  <strong>Přidat vlastní nabídku</strong>
-</div>
+          <span data-i18n="accountCreated.findLabel">Najít věci</span>
+          <strong data-i18n="accountCreated.findDescription">Vyhledat dostupné nabídky</strong>
+        </div>
 
         <div class="summary-row">
-          <span>Můj účet</span>
-          <strong>Spravovat rezervace a nabídky</strong>
+          <span data-i18n="accountCreated.listLabel">Nabídnout věc</span>
+          <strong data-i18n="accountCreated.listDescription">Přidat vlastní nabídku</strong>
+        </div>
+
+        <div class="summary-row">
+          <span data-i18n="accountCreated.accountLabel">Můj účet</span>
+          <strong data-i18n="accountCreated.accountDescription">Spravovat rezervace a nabídky</strong>
         </div>
       </div>
 
       <div class="confirmation-actions">
-        <a href="index.html" class="btn-home">Pokračovat na úvod</a>
-        <a href="muj-ucet.html" class="btn-light">Zobrazit můj účet</a>
+        <a href="index.html" class="btn-home" data-i18n="accountCreated.homeButton">
+          Pokračovat na úvod
+        </a>
+        <a href="muj-ucet.html" class="btn-light" data-i18n="accountCreated.accountButton">
+          Zobrazit můj účet
+        </a>
       </div>
-
     </section>
-
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
-<script src="js/utils.js"></script>
+  <script src="js/utils.js"></script>
   <script src="js/api.js"></script>
   <script src="js/navigation.js"></script>
-
-
+  <script src="js/i18n.js"></script>
 </body>
 </html>

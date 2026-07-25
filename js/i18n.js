@@ -4,6 +4,19 @@
 
   const translations = {
     cs: {
+      'accountCreated.documentTitle': 'Účet byl vytvořen - Rentulo',
+      'accountCreated.eyebrow': 'Registrace dokončena',
+      'accountCreated.title': 'Účet byl vytvořen.',
+      'accountCreated.description': 'Nyní můžete hledat věci k půjčení nebo nabídnout vlastní věci ostatním.',
+      'accountCreated.nextTitle': 'Co můžete udělat dál?',
+      'accountCreated.findLabel': 'Najít věci',
+      'accountCreated.findDescription': 'Vyhledat dostupné nabídky',
+      'accountCreated.listLabel': 'Nabídnout věc',
+      'accountCreated.listDescription': 'Přidat vlastní nabídku',
+      'accountCreated.accountLabel': 'Můj účet',
+      'accountCreated.accountDescription': 'Spravovat rezervace a nabídky',
+      'accountCreated.homeButton': 'Pokračovat na úvod',
+      'accountCreated.accountButton': 'Zobrazit můj účet',
       'registration.documentTitle': 'Registrace - Rentulo',
       'registration.eyebrow': 'Nový účet',
       'registration.title': 'Registrace',
@@ -661,6 +674,19 @@
     },
 
     en: {
+      'accountCreated.documentTitle': 'Account created - Rentulo',
+      'accountCreated.eyebrow': 'Registration completed',
+      'accountCreated.title': 'Your account has been created.',
+      'accountCreated.description': 'You can now find items to rent or list your own items for other people.',
+      'accountCreated.nextTitle': 'What can you do next?',
+      'accountCreated.findLabel': 'Find items',
+      'accountCreated.findDescription': 'Browse available listings',
+      'accountCreated.listLabel': 'List an item',
+      'accountCreated.listDescription': 'Add your own listing',
+      'accountCreated.accountLabel': 'My account',
+      'accountCreated.accountDescription': 'Manage reservations and listings',
+      'accountCreated.homeButton': 'Continue to home',
+      'accountCreated.accountButton': 'View my account',
       'registration.documentTitle': 'Register - Rentulo',
       'registration.eyebrow': 'New account',
       'registration.title': 'Create an account',
@@ -1318,6 +1344,19 @@
     },
 
     de: {
+      'accountCreated.documentTitle': 'Konto erstellt - Rentulo',
+      'accountCreated.eyebrow': 'Registrierung abgeschlossen',
+      'accountCreated.title': 'Ihr Konto wurde erstellt.',
+      'accountCreated.description': 'Sie können jetzt Mietartikel suchen oder eigene Artikel für andere anbieten.',
+      'accountCreated.nextTitle': 'Was können Sie als Nächstes tun?',
+      'accountCreated.findLabel': 'Artikel finden',
+      'accountCreated.findDescription': 'Verfügbare Angebote durchsuchen',
+      'accountCreated.listLabel': 'Artikel anbieten',
+      'accountCreated.listDescription': 'Eigenes Angebot hinzufügen',
+      'accountCreated.accountLabel': 'Mein Konto',
+      'accountCreated.accountDescription': 'Reservierungen und Angebote verwalten',
+      'accountCreated.homeButton': 'Zur Startseite',
+      'accountCreated.accountButton': 'Mein Konto anzeigen',
       'registration.documentTitle': 'Registrierung - Rentulo',
       'registration.eyebrow': 'Neues Konto',
       'registration.title': 'Konto erstellen',
@@ -2006,6 +2045,18 @@
     );
 
     document.documentElement.lang = selectedLanguage;
+
+    const documentTitleKey =
+      document.body && document.body.dataset
+        ? document.body.dataset.i18nDocumentTitle
+        : "";
+
+    if (documentTitleKey) {
+      document.title = translate(
+        documentTitleKey,
+        selectedLanguage
+      );
+    }
 
     document
       .querySelectorAll("[data-i18n]")
