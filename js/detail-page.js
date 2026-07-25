@@ -910,8 +910,8 @@ total_price: totalPrice,
         if (!activeStartDate || !activeEndDate || days <= 0) {
           if (bookingDateHelp) {
             bookingDateHelp.textContent = !activeStartDate || !activeEndDate
-              ? "${detailTranslate("detail.dateHelp")}"
-              : "Datum vrácení musí být později než datum půjčení.";
+              ? detailTranslate("detail.dateHelp")
+              : detailTranslate("detail.endAfterStart");
           }
           setRentButtonState("invalid");
           return;
