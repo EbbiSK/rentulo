@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Registrace - Rentulo</title>
+  <title data-i18n="registration.documentTitle">Registrace - Rentulo</title>
 
   <style>
     * {
@@ -398,7 +398,7 @@
 
       <div class="logo-text">
         <strong>Rentulo</strong>
-        <small>Půjč si cokoli</small>
+        <small data-i18n="brand.subtitle">Půjč si cokoli</small>
       </div>
     </a>
 
@@ -410,18 +410,18 @@
     <section class="auth-card">
 
       <div class="auth-intro">
-        <p class="eyebrow">Nový účet</p>
+        <p class="eyebrow" data-i18n="registration.eyebrow">Nový účet</p>
 
-        <h1>Registrace</h1>
+        <h1 data-i18n="registration.title">Registrace</h1>
 
-        <p>
+        <p data-i18n="registration.description">
   Vytvořte si jeden účet. Se stejným účtem si můžete věci půjčovat
   i nabízet vlastní věci ostatním.
 </p>
 
         <div class="auth-helper-box">
-          <strong>Účet Rentulo</strong>
-          Registrace se nyní ukládá do Supabase. Telefon a přesná adresa se druhé straně zobrazí až po zaplacení rezervace.
+          <strong data-i18n="registration.helperTitle">Účet Rentulo</strong>
+          <span data-i18n="registration.helperText">Registrace se nyní ukládá do Supabase. Telefon a přesná adresa se druhé straně zobrazí až po zaplacení rezervace.</span>
         </div>
       </div>
 
@@ -431,55 +431,55 @@
           <div class="auth-error-message" id="registrationError"></div>
 
           <div class="form-group">
-            <label for="fullName">Jméno a příjmení</label>
-            <input type="text" id="fullName" placeholder="např. Jan Novák" required />
+            <label for="fullName" data-i18n="registration.fullNameLabel">Jméno a příjmení</label>
+            <input type="text" id="fullName" data-i18n-placeholder="registration.fullNamePlaceholder" placeholder="např. Jan Novák" required />
           </div>
 
           <div class="form-group">
-            <label for="email">E-mail</label>
+            <label for="email" data-i18n="registration.emailLabel">E-mail</label>
             <input
   type="email"
   id="email"
   name="registration-email"
   autocomplete="off"
-  placeholder="např. jan@novak.cz"
+  data-i18n-placeholder="registration.emailPlaceholder" placeholder="např. jan@novak.cz"
   required
 >
           </div>
 
           <div class="form-group">
-            <label for="phone">Telefon</label>
-            <input type="tel" id="phone" placeholder="např. +420 777 123 456" required />
-            <p class="registration-note">
+            <label for="phone" data-i18n="registration.phoneLabel">Telefon</label>
+            <input type="tel" id="phone" data-i18n-placeholder="registration.phonePlaceholder" placeholder="např. +420 777 123 456" required />
+            <p class="registration-note" data-i18n="registration.phoneNote">
               Telefon se zobrazí až po zaplacení rezervace.
             </p>
           </div>
 
           <div class="form-group">
-            <label for="password">Heslo</label>
+            <label for="password" data-i18n="registration.passwordLabel">Heslo</label>
             <input
   type="password"
   id="password"
   name="registration-password"
   autocomplete="new-password"
-  placeholder="Zadejte heslo"
+  data-i18n-placeholder="registration.passwordPlaceholder" placeholder="Zadejte heslo"
   required
 >
           </div>
 
           <div class="form-group full">
-            <label for="street">Ulice a číslo popisné</label>
-            <input type="text" id="street" placeholder="např. Dlouhá 12" required />
+            <label for="street" data-i18n="registration.streetLabel">Ulice a číslo popisné</label>
+            <input type="text" id="street" data-i18n-placeholder="registration.streetPlaceholder" placeholder="např. Dlouhá 12" required />
           </div>
 
           <div class="form-group">
-            <label for="city">Město</label>
-            <input type="text" id="city" list="citySuggestions" placeholder="např. Praha" required />
+            <label for="city" data-i18n="registration.cityLabel">Město</label>
+            <input type="text" id="city" list="citySuggestions" data-i18n-placeholder="registration.cityPlaceholder" placeholder="např. Praha" required />
           </div>
 
           <div class="form-group">
-            <label for="postalCode">PSČ</label>
-            <input type="text" id="postalCode" placeholder="např. 110 00" required />
+            <label for="postalCode" data-i18n="registration.postalCodeLabel">PSČ</label>
+            <input type="text" id="postalCode" data-i18n-placeholder="registration.postalCodePlaceholder" placeholder="např. 110 00" required />
           </div>
 
           <datalist id="citySuggestions"></datalist>
@@ -488,34 +488,34 @@
             <label class="terms-check">
               <input type="checkbox" id="termsBusiness" />
               <span>
-                Souhlasím s
-                <a href="obchodni-podminky.html" target="_blank">obchodními podmínkami</a>.
+                <span data-i18n="registration.termsBusinessPrefix">Souhlasím s</span>
+                <a href="obchodni-podminky.html" target="_blank" data-i18n="registration.termsBusinessLink">obchodními podmínkami</a>.
               </span>
             </label>
 
             <label class="terms-check">
               <input type="checkbox" id="termsPrivacy" />
               <span>
-                Souhlasím se
-                <a href="ochrana-osobnich-udaju.html" target="_blank">zpracováním osobních údajů</a>.
+                <span data-i18n="registration.termsPrivacyPrefix">Souhlasím se</span>
+                <a href="ochrana-osobnich-udaju.html" target="_blank" data-i18n="registration.termsPrivacyLink">zpracováním osobních údajů</a>.
               </span>
             </label>
 
             <label class="terms-check">
               <input type="checkbox" id="termsIdentity" />
               <span>
-                Beru na vědomí, že při osobním předání věci může druhá strana přiměřeně ověřit moji totožnost.
+                <span data-i18n="registration.identityConsent">Beru na vědomí, že při osobním předání věci může druhá strana přiměřeně ověřit moji totožnost.</span>
               </span>
             </label>
           </div>
 
-          <button type="submit" class="auth-button" id="registrationSubmitButton">
+          <button type="submit" class="auth-button" id="registrationSubmitButton" data-i18n="registration.submit">
             Vytvořit účet
           </button>
 
           <p class="auth-note">
-            Už máte účet?
-            <a href="prihlaseni.html">Přihlaste se</a>
+            <span data-i18n="registration.haveAccount">Už máte účet?</span>
+            <a href="prihlaseni.html" data-i18n="registration.signIn">Přihlaste se</a>
           </p>
 
         </div>
@@ -531,6 +531,7 @@
   <script src="js/api.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/registration-page.js"></script>
 </body>
 </html>

@@ -69,6 +69,14 @@
       "sokolov": "356 01"
     };
 
+    function registrationT(key, fallback) {
+      if (typeof window.rentuloTranslate === "function") {
+        return window.rentuloTranslate(key);
+      }
+
+      return fallback || key;
+    }
+
     function registrationNormalizeEmail(email) {
       return String(email || "").trim().toLowerCase();
     }
@@ -155,7 +163,7 @@
         localStorage.setItem("rentuloUser", JSON.stringify(user));
 localStorage.setItem("rentuloLoggedIn", "true");
       } catch (error) {
-        console.warn("Nepodařilo se uložit aktuálního uživatele do localStorage.", error);
+        console.warn(registrationT("registration.console.saveUserFailed", "Nepodařilo se uložit aktuálního uživatele do localStorage."), error);
       }
     }
 
@@ -232,7 +240,7 @@ localStorage.setItem("rentuloLoggedIn", "true");
       const supabaseClient = registrationGetSupabaseClient();
 
       if (!supabaseClient) {
-        registrationShowError("Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js.");
+        registrationShowError(registrationT("registration.error.supabase", "Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js."));
         return;
       }
 
@@ -284,13 +292,13 @@ localStorage.setItem("rentuloLoggedIn", "true");
       }
 
       if (hasError) {
-        registrationShowError("Vyplňte prosím všechna pole a potvrďte všechny souhlasy.");
+        registrationShowError(registrationT("registration.error.required", "Vyplňte prosím všechna pole a potvrďte všechny souhlasy."));
         return;
       }
 
       if (passwordInput.value.length < 6) {
         registrationMarkError(passwordInput);
-        registrationShowError("Heslo musí mít alespoň 6 znaků.");
+        registrationShowError(registrationT("registration.error.passwordLength", "Heslo musí mít alespoň 6 znaků."));
         return;
       }
 
@@ -304,7 +312,7 @@ localStorage.setItem("rentuloLoggedIn", "true");
 
       if (submitButton) {
         submitButton.disabled = true;
-        submitButton.textContent = "Vytvářím účet...";
+        submitButton.textContent = registrationT("registration.submitting", "Vytvářím účet...");
       }
 
       try {
@@ -331,11 +339,11 @@ localStorage.setItem("rentuloLoggedIn", "true");
 
           if (message.toLowerCase().includes("already registered") || message.toLowerCase().includes("already exists")) {
             registrationMarkError(emailInput);
-            registrationShowError("Uživatel s tímto e-mailem už existuje. Zkuste se přihlásit.");
+            registrationShowError(registrationT("registration.error.exists", "Uživatel s tímto e-mailem už existuje. Zkuste se přihlásit."));
             return;
           }
 
-          registrationShowError("Registrace se nepodařila: " + message);
+          registrationShowError(registrationT("registration.error.genericPrefix", "Registrace se nepodařila: ") + message);
           return;
         }
 
@@ -390,11 +398,11 @@ if (profileError) {
         window.location.href = "ucet-vytvoren.html";
       } catch (error) {
         console.error(error);
-        registrationShowError("Registrace se nepodařila. Zkontrolujte připojení a zkuste to znovu.");
+        registrationShowError(registrationT("registration.error.connection", "Registrace se nepodařila. Zkontrolujte připojení a zkuste to znovu."));
       } finally {
         if (submitButton) {
           submitButton.disabled = false;
-          submitButton.textContent = "Vytvořit účet";
+          submitButton.textContent = registrationT("registration.submit", "Vytvořit účet");
         }
       }
     }
