@@ -1,6 +1,42 @@
     const PLATFORM_FEE_PERCENT = 10;
     let currentOffer = null;
 
+    function detailTranslate(key, replacements) {
+      let text = typeof window.rentuloTranslate === "function"
+        ? window.rentuloTranslate(key)
+        : key;
+
+      Object.keys(replacements || {}).forEach(function (name) {
+        text = text.replaceAll("{" + name + "}", String(replacements[name]));
+      });
+
+      return text;
+    }
+
+    function detailCategoryLabel(category) {
+      const value = String(category || "").trim();
+      const categories = {
+        "Dům a zahrada": "detail.category.homeGarden",
+        "Dílna a nářadí": "detail.category.workshopTools",
+        "Sport a volný čas": "detail.category.sportLeisure",
+        "Elektronika": "detail.category.electronics",
+        "Děti a rodina": "detail.category.childrenFamily",
+        "Auto a doprava": "detail.category.autoTransport",
+        "Párty a akce": "detail.category.partyEvents",
+        "Cestování a kempování": "detail.category.travelCamping",
+        "Stavební technika": "detail.category.construction",
+        "Ostatní": "detail.category.other"
+      };
+      return categories[value] ? detailTranslate(categories[value]) : (value || detailTranslate("detail.category.other"));
+    }
+
+    function detailStatusLabel(status) {
+      const value = String(status || "").trim().toLowerCase();
+      if (value === "active" || value === "aktivní") return detailTranslate("detail.status.active");
+      if (value === "draft" || value === "koncept") return detailTranslate("detail.status.draft");
+      return status || detailTranslate("detail.status.active");
+    }
+
   
 
  
@@ -192,7 +228,7 @@ owner_id: row.owner_id,
     }
 
 function getOfferCategory(offer) {
-      return offer.category || offer.kategorie || "Ostatní";
+      return offer.category || offer.kategorie || detailTranslate("detail.category.other");
     }
 
     function getOfferCity(offer) {
@@ -200,7 +236,7 @@ function getOfferCategory(offer) {
     }
 
     function getOfferStatus(offer) {
-      return offer.status || "Aktivní";
+      return offer.status || "active";
     }
 
     function getOfferPhoto(offer) {
@@ -250,7 +286,7 @@ function renderDetailImage(offer) {
     }
 
     function getPickupGpsText() {
-      return "GPS poloha se z bezpečnostních důvodů veřejně nezobrazuje. Slouží jen pro řazení ve výsledcích.";
+      return detailTranslate("detail.gps.private");
     }
 
     function setupBackLink() {
@@ -281,8 +317,8 @@ function renderDetailImage(offer) {
     function renderLoading() {
       document.getElementById("detailContent").innerHTML = `
         <div class="message-card">
-          <strong>Načítám detail nabídky...</strong><br>
-          Chvíli strpení, načítáme nabídku ze Supabase.
+          <strong>${detailTranslate("detail.loadingTitle")}</strong><br>
+          ${detailTranslate("detail.loadingText")}
         </div>
       `;
     }
@@ -290,10 +326,10 @@ function renderDetailImage(offer) {
     function renderNotFound() {
       document.getElementById("detailContent").innerHTML = `
         <div class="message-card warning">
-          <strong>Věc nebyla nalezena.</strong><br>
-          Tato nabídka neexistuje, není aktivní nebo už byla odstraněna.
+          <strong>${detailTranslate("detail.notFoundTitle")}</strong><br>
+          ${detailTranslate("detail.notFoundText")}
           <br>
-          <a href="vysledky.html" class="primary-button">Zpět na nabídky</a>
+          <a href="vysledky.html" class="primary-button">${detailTranslate("detail.backToListings")}</a>
         </div>
       `;
     }
@@ -313,22 +349,22 @@ function renderDetailImage(offer) {
       return `
         <aside class="sidebar">
           <div class="price">${escapeHtml(price)}</div>
-          <div class="price-small">Kč / den</div>
+          <div class="price-small">${detailTranslate("detail.currencyPerDay")}</div>
 
           <div class="info-list">
             <div class="info-row">
-              <span>Majitel</span>
+              <span>${detailTranslate("detail.owner")}</span>
               <span>${escapeHtml(ownerPublicName)}</span>
             </div>
 
             <div class="info-row">
-              <span>Lokalita</span>
+              <span>${detailTranslate("detail.location")}</span>
               <span>${escapeHtml(ownerPublicCity || "-")}</span>
             </div>
 
             <div class="info-row">
-              <span>Dostupnost</span>
-              <span>Není dostupné</span>
+              <span>${detailTranslate("detail.availability")}</span>
+              <span>${detailTranslate("detail.unavailable")}</span>
             </div>
           </div>
 
@@ -338,11 +374,11 @@ function renderDetailImage(offer) {
           </div>
 
           <button class="primary-button disabled" type="button" disabled>
-            Momentálně nelze rezervovat
+            ${detailTranslate("detail.cannotReserve")}
           </button>
 
           <div class="note">
-            Rezervaci půjde odeslat až ve chvíli, kdy bude nabídka aktivní a nebude mít otevřenou rezervaci.
+            ${detailTranslate("detail.cannotReserveNote")}
           </div>
         </aside>
       `;
@@ -352,87 +388,86 @@ function renderDetailImage(offer) {
       return `
         <aside class="sidebar">
           <div class="price">${escapeHtml(price)}</div>
-          <div class="price-small">Kč / den</div>
+          <div class="price-small">${detailTranslate("detail.currencyPerDay")}</div>
 
           <div class="info-list">
             <div class="info-row">
-              <span>Majitel</span>
+              <span>${detailTranslate("detail.owner")}</span>
               <span>${escapeHtml(ownerPublicName)}</span>
             </div>
 
             <div class="info-row">
-              <span>Lokalita</span>
+              <span>${detailTranslate("detail.location")}</span>
               <span>${escapeHtml(ownerPublicCity || getOfferCity(offer) || "-")}</span>
             </div>
 
             <div class="info-row">
-              <span>Majitel dostane</span>
+              <span>${detailTranslate("detail.ownerReceives")}</span>
               <span>${escapeHtml(ownerGetsPerDay)} Kč / den</span>
             </div>
 
             <div class="info-row">
-              <span>Provize platformy</span>
+              <span>${detailTranslate("detail.platformFee")}</span>
               <span>${escapeHtml(platformFeePerDay)} Kč / den</span>
             </div>
           </div>
 
           <div class="availability-box available">
-            <strong>Věc je dostupná</strong>
-            Můžete vybrat termín a odeslat žádost o půjčení. Žádost se uloží do Supabase a bude čekat na potvrzení majitelem.
+            <strong>${detailTranslate("detail.availableTitle")}</strong>
+            ${detailTranslate("detail.availableText")}
           </div>
 
           <div class="privacy-box">
-            <strong>Kontaktní údaje jsou zatím skryté</strong>
-            Telefon a přesná adresa vyzvednutí se zobrazí až po zaplacení rezervace.
+            <strong>${detailTranslate("detail.contactsHiddenTitle")}</strong>
+            ${detailTranslate("detail.contactsHiddenText")}
           </div>
 
           <div class="booking-box">
-            <h2>Vyberte termín půjčení</h2>
+            <h2>${detailTranslate("detail.chooseDates")}</h2>
 
             <div class="form-group">
-              <label for="startDate">Datum půjčení</label>
+              <label for="startDate">${detailTranslate("detail.startDate")}</label>
               <input type="date" id="startDate">
             </div>
 
             <div class="form-group">
-              <label for="endDate">Datum vrácení</label>
+              <label for="endDate">${detailTranslate("detail.endDate")}</label>
               <input type="date" id="endDate">
             </div>
 
             <div class="date-help" id="bookingDateHelp">
-              Vyberte datum půjčení a potom datum vrácení. Datum vrácení musí být později než datum půjčení.
+              ${detailTranslate("detail.dateHelp")}
             </div>
 
             <div class="calculation">
               <div class="calc-row">
-                <span>Počet dní</span>
+                <span>${detailTranslate("detail.days")}</span>
                 <strong id="calcDays">-</strong>
               </div>
 
               <div class="calc-row">
-                <span>Cena za den</span>
+                <span>${detailTranslate("detail.pricePerDay")}</span>
                 <strong>${escapeHtml(price)} Kč</strong>
               </div>
 
               <div class="calc-row">
-                <span>Provize platformy</span>
+                <span>${detailTranslate("detail.platformFee")}</span>
                 <strong>${PLATFORM_FEE_PERCENT} %</strong>
               </div>
 
               <div class="calc-row calc-total">
-                <span>Celkem</span>
+                <span>${detailTranslate("detail.total")}</span>
                 <strong id="calcTotal">-</strong>
               </div>
             </div>
 
             <button class="primary-button disabled" id="rentButton" type="button" disabled>
-              Vyberte termín
+              ${detailTranslate("detail.selectDates")}
             </button>
           </div>
 
           <div class="note">
-            Po odeslání bude žádost čekat na potvrzení majitelem.
-Přesná adresa a telefon zůstanou skryté až do zaplacení.
+            ${detailTranslate("detail.requestNote")}
           </div>
         </aside>
       `;
@@ -484,13 +519,13 @@ const data = Array.isArray(blockingReservations)
 
       const currentUser = await apiGetCurrentUser();
 
-      const ownerPublicName = "Majitel";
+      const ownerPublicName = detailTranslate("detail.ownerDefault");
       const ownerPublicCity = getOfferCity(offer);
 
       const offerName = getOfferName(offer);
-      const offerCategory = getOfferCategory(offer);
+      const offerCategory = detailCategoryLabel(getOfferCategory(offer));
       const offerCity = getOfferCity(offer);
-      const offerStatus = getOfferStatus(offer);
+      const offerStatus = detailStatusLabel(getOfferStatus(offer));
 
       const price = getOfferPrice(offer);
       const platformFeePerDay = Math.round(price * PLATFORM_FEE_PERCENT / 100);
@@ -506,12 +541,12 @@ const hasGps = offerHasGpsLocation(offer);
       const availabilityBadgeClass = isActive ? "available" : "unavailable";
       const statusBadgeClass = isActive ? "" : "draft";
 
-      let availabilityText = "Dostupné";
-      let availabilityPanelText = "Tato věc je momentálně dostupná. Rezervaci uložíme do systému a majitel ji následně potvrdí.";
+      let availabilityText = detailTranslate("detail.available");
+      let availabilityPanelText = detailTranslate("detail.availabilityPanelActive");
 
       if (!isActive) {
-        availabilityText = "Není aktivní";
-        availabilityPanelText = "Tato nabídka zatím není aktivní. Rezervaci nelze odeslat.";
+        availabilityText = detailTranslate("detail.inactive");
+        availabilityPanelText = detailTranslate("detail.availabilityPanelInactive");
       }
 
       let sidebarContent = "";
@@ -519,26 +554,26 @@ const hasGps = offerHasGpsLocation(offer);
       if (!currentUser) {
   sidebarContent = renderSidebarMessage(
     "",
-    "Pro odeslání žádosti se musíte přihlásit.",
-    "Po přihlášení si budete moci vybrat datum půjčení a odeslat žádost majiteli.",
+    detailTranslate("detail.loginRequiredTitle"),
+    detailTranslate("detail.loginRequiredText"),
     "prihlaseni.html",
-    "Přihlásit se"
+    detailTranslate("nav.login")
   );
 } else if (isOwner) {
   sidebarContent = renderSidebarMessage(
     "",
-    "Tato věc patří vám.",
-    "Vlastní věc si nemůžete rezervovat. Svoji nabídku můžete spravovat v části Moje nabídky.",
+    detailTranslate("detail.ownItemTitle"),
+    detailTranslate("detail.ownItemText"),
     "moje-nabidky.html",
-    "Moje nabídky"
+    detailTranslate("account.myListingsTitle")
   );
 } else if (!isActive) {
         sidebarContent = renderUnavailableSidebar(
           price,
           ownerPublicName,
           ownerPublicCity,
-          "Nabídka není aktivní",
-          "Tato nabídka je uložená jako koncept nebo není zveřejněná."
+          detailTranslate("detail.inactiveTitle"),
+          detailTranslate("detail.inactiveText")
         );
       } else {
         sidebarContent = renderBookingSidebar(
@@ -558,17 +593,17 @@ const hasGps = offerHasGpsLocation(offer);
 
             <div class="detail-content">
               <div class="category-line">
-                ${escapeHtml(offerCategory)} · <strong>${escapeHtml(ownerPublicCity || offerCity || "Bez města")}</strong>
+                ${escapeHtml(offerCategory)} · <strong>${escapeHtml(ownerPublicCity || offerCity || detailTranslate("detail.noCity"))}</strong>
               </div>
 
               <h1>${escapeHtml(offerName)}</h1>
 
               <div class="badges">
-                <span class="badge">Ověřený majitel</span>
-                <span class="badge" id="ownerRatingBadge">Hodnocení majitele: načítám...</span>
+                <span class="badge">${detailTranslate("detail.verifiedOwner")}</span>
+                <span class="badge" id="ownerRatingBadge">${detailTranslate("detail.ratingLoading")}</span>
                 <span class="badge ${statusBadgeClass}">${escapeHtml(offerStatus)}</span>
                 <span class="badge ${availabilityBadgeClass}">${escapeHtml(availabilityText)}</span>
-                <span class="badge">Provize platformy ${PLATFORM_FEE_PERCENT} %</span>
+                <span class="badge">${detailTranslate("detail.platformFeePercent", { percent: PLATFORM_FEE_PERCENT })}</span>
               </div>
 
               <div class="availability-panel ${availabilityBadgeClass}">
@@ -577,61 +612,59 @@ const hasGps = offerHasGpsLocation(offer);
               </div>
 
               <div class="description">
-                ${escapeHtml(offer.description || "Bez popisu.")}
+                ${escapeHtml(offer.description || detailTranslate("detail.noDescription"))}
               </div>
 
               <div class="info-grid">
                 <div class="section">
-                  <h2>Co je součástí půjčení</h2>
+                  <h2>${detailTranslate("detail.includedTitle")}</h2>
 
                   <ul>
                     <li>✓ ${escapeHtml(offerName)}</li>
-                    <li>✓ Domluva s majitelem</li>
-                    <li>✓ Předání dle dohody</li>
-                    <li>✓ Vrácení ve stejném stavu</li>
+                    <li>✓ ${detailTranslate("detail.includedAgreement")}</li>
+                    <li>✓ ${detailTranslate("detail.includedHandover")}</li>
+                    <li>✓ ${detailTranslate("detail.includedReturn")}</li>
                   </ul>
                 </div>
 
                 <div class="section">
-                  <h2>Podmínky půjčení</h2>
+                  <h2>${detailTranslate("detail.termsTitle")}</h2>
 
                   <p>
-                    Věc vraťte čistou a ve stejném stavu.
-
-                    Přesné místo vyzvednutí se zobrazí až po zaplacení.
+                    ${detailTranslate("detail.termsText")}
                   </p>
                 </div>
 
                 <div class="section">
-                  <h2>Místo vyzvednutí</h2>
+                  <h2>${detailTranslate("detail.pickupTitle")}</h2>
 
                   <p>
-                    Z bezpečnostních důvodů se přesná adresa a telefon zobrazí až po zaplacení rezervace.
+                    ${detailTranslate("detail.pickupPrivacy")}
                   </p>
 
                   <div class="pickup-preview">
                     <div class="pickup-preview-row">
-                      <span>Město</span>
+                      <span>${detailTranslate("detail.city")}</span>
                       <span>${escapeHtml(ownerPublicCity || offerCity || "-")}</span>
                     </div>
 
                     <div class="pickup-preview-row">
-                      <span>Adresa</span>
-                      <span>Skrytá do zaplacení</span>
+                      <span>${detailTranslate("detail.address")}</span>
+                      <span>${detailTranslate("detail.hiddenUntilPaidAddress")}</span>
                     </div>
 
                     <div class="pickup-preview-row">
-                      <span>Telefon</span>
-                      <span>Skrytý do zaplacení</span>
+                      <span>${detailTranslate("detail.phone")}</span>
+                      <span>${detailTranslate("detail.hiddenUntilPaidPhone")}</span>
                     </div>
                   </div>
                 </div>
 
                 <div class="section">
-                  <h2>Poloha v okolí</h2>
+                  <h2>${detailTranslate("detail.nearbyTitle")}</h2>
 
                   <p>
-                    GPS poloha slouží pouze k řazení nabídek podle vzdálenosti ve výsledcích hledání.
+                    ${detailTranslate("detail.nearbyText")}
                   </p>
 
                   <div class="gps-note ${hasGps ? "" : "missing"}">
@@ -663,14 +696,14 @@ const hasGps = offerHasGpsLocation(offer);
       }
 
       if (!ownerId) {
-        ratingBadge.textContent = "Hodnocení majitele: zatím bez hodnocení";
+        ratingBadge.textContent = detailTranslate("detail.ratingNone");
         return;
       }
 
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        ratingBadge.textContent = "Hodnocení majitele: nedostupné";
+        ratingBadge.textContent = detailTranslate("detail.ratingUnavailable");
         return;
       }
 
@@ -682,21 +715,21 @@ const hasGps = offerHasGpsLocation(offer);
 
       if (error) {
         console.warn("Hodnocení majitele se nepodařilo načíst.", error);
-        ratingBadge.textContent = "Hodnocení majitele: nedostupné";
+        ratingBadge.textContent = detailTranslate("detail.ratingUnavailable");
         return;
       }
 
       if (!data || !data.rating_count) {
-        ratingBadge.textContent = "Hodnocení majitele: zatím bez hodnocení";
+        ratingBadge.textContent = detailTranslate("detail.ratingNone");
         return;
       }
 
       ratingBadge.textContent =
-        "Hodnocení majitele: ⭐ " +
+        detailTranslate("detail.ratingPrefix") + " ⭐ " +
         data.average_rating +
         " / 5 (" +
         data.rating_count +
-        " hodnocení)";
+        " " + detailTranslate("detail.ratingsCount") + ")";
     }
 
 
@@ -705,14 +738,14 @@ const hasGps = offerHasGpsLocation(offer);
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert("Supabase klient není načtený. Zkontrolujte js/supabase-config.js.");
+        alert(detailTranslate("detail.error.supabase"));
         return;
       }
 
       const supabaseUser = await getCurrentSupabaseUser();
 
       if (!supabaseUser) {
-        alert("Pro odeslání žádosti se musíte znovu přihlásit.");
+        alert(detailTranslate("detail.error.loginAgain"));
         window.location.href = "prihlaseni.html";
         return;
       }
@@ -720,7 +753,7 @@ const hasGps = offerHasGpsLocation(offer);
       const currentUser = await apiGetCurrentUser();
 
       if (!currentUser) {
-        alert("Pro odeslání žádosti se musíte přihlásit.");
+        alert(detailTranslate("detail.error.login"));
         window.location.href = "prihlaseni.html";
         return;
       }
@@ -728,12 +761,12 @@ const hasGps = offerHasGpsLocation(offer);
       const ownerId = String(offer.ownerId || offer.owner_id || "");
 
       if (!ownerId) {
-        alert("Rezervaci se nepodařilo odeslat. U nabídky chybí majitel.");
+        alert(detailTranslate("detail.error.ownerMissing"));
         return;
       }
 
       if (String(supabaseUser.id) === ownerId) {
-        alert("Vlastní věc si nemůžete rezervovat.");
+        alert(detailTranslate("detail.error.ownItem"));
         renderDetail(offer);
         return;
       }
@@ -789,16 +822,16 @@ total_price: totalPrice,
         const errorMessage = String(error.message || "");
 
         if (errorMessage.includes("Reservation dates overlap")) {
-          alert("Vybraný termín už mezitím obsadila jiná rezervace. Zvolte prosím jiný termín.");
+          alert(detailTranslate("detail.error.overlap"));
           return;
         }
 
         if (errorMessage.includes("row-level security")) {
-          alert("Rezervaci se nepodařilo uložit kvůli bezpečnostním pravidlům. Zkuste se odhlásit a znovu přihlásit.");
+          alert(detailTranslate("detail.error.rls"));
           return;
         }
 
-        alert("Rezervaci se nepodařilo uložit do Supabase. Podívejte se prosím do konzole.");
+        alert(detailTranslate("detail.error.save"));
         return;
       }
 
@@ -834,7 +867,7 @@ total_price: totalPrice,
         if (state === "available") {
           rentButton.disabled = false;
           rentButton.classList.remove("disabled");
-          rentButton.textContent = "Požádat o půjčení";
+          rentButton.textContent = detailTranslate("detail.requestRental");
           return;
         }
 
@@ -842,11 +875,11 @@ total_price: totalPrice,
         rentButton.classList.add("disabled");
 
         if (state === "checking") {
-          rentButton.textContent = "Ověřuji termín...";
+          rentButton.textContent = detailTranslate("detail.checkingDates");
         } else if (state === "conflict") {
-          rentButton.textContent = "Termín je obsazený";
+          rentButton.textContent = detailTranslate("detail.dateConflictButton");
         } else {
-          rentButton.textContent = "Vyberte termín";
+          rentButton.textContent = detailTranslate("detail.selectDates");
         }
       }
 
@@ -871,13 +904,13 @@ total_price: totalPrice,
         const days = getDaysBetween(activeStartDate, activeEndDate);
         const total = days * getOfferPrice(offer);
 
-        calcDays.textContent = days > 0 ? days + (days === 1 ? " den" : " dní") : "-";
+        calcDays.textContent = days > 0 ? detailTranslate(days === 1 ? "detail.oneDay" : "detail.manyDays", { days: days }) : "-";
         calcTotal.textContent = days > 0 ? total + " Kč" : "-";
 
         if (!activeStartDate || !activeEndDate || days <= 0) {
           if (bookingDateHelp) {
             bookingDateHelp.textContent = !activeStartDate || !activeEndDate
-              ? "Vyberte datum půjčení a potom datum vrácení. Datum vrácení musí být později než datum půjčení."
+              ? "${detailTranslate("detail.dateHelp")}"
               : "Datum vrácení musí být později než datum půjčení.";
           }
           setRentButtonState("invalid");
@@ -886,7 +919,7 @@ total_price: totalPrice,
 
         setRentButtonState("checking");
         if (bookingDateHelp) {
-          bookingDateHelp.textContent = "Ověřuji dostupnost vybraného termínu...";
+          bookingDateHelp.textContent = detailTranslate("detail.checkingAvailability");
         }
 
         try {
@@ -903,14 +936,14 @@ total_price: totalPrice,
           if (hasConflict) {
             setRentButtonState("conflict");
             if (bookingDateHelp) {
-              bookingDateHelp.textContent = "Vybraný termín je už obsazený. Zvolte prosím jiné datum.";
+              bookingDateHelp.textContent = detailTranslate("detail.dateConflictText");
             }
             return;
           }
 
           setRentButtonState("available");
           if (bookingDateHelp) {
-            bookingDateHelp.textContent = "Termín je volný. Po kliknutí odešlete žádost majiteli.";
+            bookingDateHelp.textContent = detailTranslate("detail.dateAvailableText");
           }
         } catch (error) {
           if (checkVersion !== availabilityCheckVersion) {
@@ -919,7 +952,7 @@ total_price: totalPrice,
 
           setRentButtonState("invalid");
           if (bookingDateHelp) {
-            bookingDateHelp.textContent = "Dostupnost termínu se nepodařilo ověřit. Obnovte stránku a zkuste to znovu.";
+            bookingDateHelp.textContent = detailTranslate("detail.error.availabilityReload");
           }
         }
       }
@@ -940,35 +973,36 @@ total_price: totalPrice,
         const total = days * getOfferPrice(offer);
 
         if (!startDate || !endDate || days <= 0) {
-          alert("Prosím vyberte platný termín půjčení.");
+          alert(detailTranslate("detail.error.validDates"));
           updateCalculation();
           return;
         }
 
         rentButton.disabled = true;
         rentButton.classList.add("disabled");
-        rentButton.textContent = "Ověřuji termín...";
+        rentButton.textContent = detailTranslate("detail.checkingDates");
 
         try {
           const hasConflict = await hasReservationDateConflict(offer.id, startDate, endDate);
 
           if (hasConflict) {
-            alert("Vybraný termín je už obsazený. Zvolte prosím jiné datum.");
+            alert(detailTranslate("detail.error.dateConflict"));
             updateCalculation();
             return;
           }
         } catch (error) {
-          alert("Dostupnost termínu se nepodařilo ověřit. Zkuste to prosím znovu.");
+          alert(detailTranslate("detail.error.availability"));
           updateCalculation();
           return;
         }
 
-        rentButton.textContent = "Odesílám žádost...";
+        rentButton.textContent = detailTranslate("detail.sendingRequest");
         createSupabaseReservation(offer, startDate, endDate, days, total);
       });
     }
 
     async function initializeDetailPage() {
+      document.title = detailTranslate("detail.documentTitle");
       renderSharedNavigation("");
       setupBackLink();
       renderLoading();
