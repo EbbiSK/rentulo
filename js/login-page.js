@@ -225,7 +225,20 @@ function loginNormalizeEmail(email) {
         loginSaveCurrentUser(currentUser);
         saveRememberLogin(rememberInput.checked);
 
-        window.location.href = "index.html";
+        const allowedReturnPages = new Set([
+          "edit-nabidka.html",
+          "historie.html",
+          "moje-nabidky.html",
+          "moje-rezervace.html",
+          "muj-ucet.html",
+          "nabidnout.html",
+          "nastaveni.html"
+        ]);
+        const returnTo = new URLSearchParams(window.location.search).get("returnTo") || "";
+        const returnPath = returnTo.split(/[?#]/, 1)[0];
+        const targetPage = allowedReturnPages.has(returnPath) ? returnTo : "index.html";
+
+        window.location.href = targetPage;
       } catch (error) {
         console.error(loginTranslate("login.console.failed", "Přihlášení se nepodařilo."), error);
         showLoginError(loginTranslate("login.error.connection", "Přihlášení se nepodařilo. Zkontrolujte připojení a zkuste to znovu."));
