@@ -393,17 +393,20 @@
   }
 
   async function initializeSettingsPage() {
-    const client = getSupabaseClient();
-
-    if (!client) {
-      window.location.href = "prihlaseni.html";
+    if (!window.rentuloAuthGuard) {
+      window.location.replace("prihlaseni.html?returnTo=nastaveni.html");
       return;
     }
 
-    const user = await getAuthenticatedUser(client);
+    const user = await window.rentuloAuthGuard.requireUser();
 
     if (!user) {
-      window.location.href = "prihlaseni.html";
+      return;
+    }
+
+    const client = getSupabaseClient();
+
+    if (!client) {
       return;
     }
 
