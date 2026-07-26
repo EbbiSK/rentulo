@@ -259,8 +259,8 @@
         message,
         translate(
           "settings.profileSaveError",
-          "Osobní údaje se nepodařilo uložit."
-        ) + (error && error.message ? " " + error.message : ""),
+          "Osobní údaje se nepodařilo uložit. Zkuste to prosím znovu."
+        ),
         "error"
       );
     } finally {
@@ -367,8 +367,8 @@
         message,
         translate(
           "settings.passwordChangeError",
-          "Heslo se nepodařilo změnit:"
-        ) + " " + error.message,
+          "Heslo se nepodařilo změnit. Zkuste to prosím znovu."
+        ),
         "error"
       );
       return;
