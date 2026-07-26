@@ -3,6 +3,13 @@ let editCurrentOffer = null;
 let editHasBlockingReservation = false;
 let editSaveInProgress = false;
 
+const EDIT_OFFER_PHOTO_MAX_BYTES = 10 * 1024 * 1024;
+const EDIT_OFFER_PHOTO_ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp"
+];
+
 function editT(key, fallback) {
   if (typeof window.rentuloTranslate === "function") {
     const translated = window.rentuloTranslate(key);
@@ -221,10 +228,17 @@ function setupEditOfferPhotoUpload() {
         return;
       }
 
-      if (!file.type || !file.type.startsWith("image/")) {
+      if (!EDIT_OFFER_PHOTO_ALLOWED_TYPES.includes(file.type)) {
         photoInput.value = "";
         updateEditPhotoFileName(null);
         updateEditPhotoStatus(editT("editOffer.invalidPhoto", "Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP."), "error");
+        return;
+      }
+
+      if (file.size > EDIT_OFFER_PHOTO_MAX_BYTES) {
+        photoInput.value = "";
+        updateEditPhotoFileName(null);
+        updateEditPhotoStatus(editT("editOffer.photoTooLarge", "Fotka je příliš velká. Maximální velikost je 10 MB."), "error");
         return;
       }
 
