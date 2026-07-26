@@ -1339,6 +1339,12 @@ return [
     }
 
     async function initializeOwnerOffersPage() {
+      const verifiedUser = await window.rentuloAuthGuard.requireUser();
+
+      if (!verifiedUser) {
+        return;
+      }
+
       renderSharedNavigation("muj-ucet");
       renderLoadingState();
 
