@@ -11,18 +11,49 @@ function navLoadJson(key, fallback) {
   }
 }
 
+let navVerifiedUser = null;
+let navAuthPromise = null;
+let navAuthListenerRegistered = false;
+
 function navIsLoggedIn() {
-  return localStorage.getItem("rentuloLoggedIn") === "true";
+  return Boolean(navVerifiedUser);
 }
 
 function navGetCurrentUser() {
-  const rentuloUser = navLoadJson("rentuloUser", null);
+  return navVerifiedUser;
+}
 
-  if (!navIsLoggedIn()) {
+async function navResolveSupabaseUser() {
+  const supabaseClient = navGetSupabaseClient();
+
+  if (!supabaseClient || !supabaseClient.auth) {
+    navVerifiedUser = null;
     return null;
   }
 
-  return rentuloUser || null;
+  try {
+    const { data, error } = await supabaseClient.auth.getUser();
+    navVerifiedUser =
+      !error && data && data.user
+        ? data.user
+        : null;
+  } catch (error) {
+    console.warn(
+      "Stav přihlášení pro navigaci se nepodařilo ověřit.",
+      error
+    );
+    navVerifiedUser = null;
+  }
+
+  return navVerifiedUser;
+}
+
+function navGetVerifiedUser() {
+  if (!navAuthPromise) {
+    navAuthPromise = navResolveSupabaseUser();
+  }
+
+  return navAuthPromise;
 }
 
 function navGetSupabaseClient() {
@@ -752,15 +783,47 @@ function renderSharedNavigation(
   }
 }
 
-function initializeSharedNavigation() {
+async function initializeSharedNavigation() {
   const page =
     document.body.dataset.navigationPage;
 
-  if (page) {
-    renderSharedNavigation(page);
+  if (!page) {
+    return;
+  }
 
-    navLoadNotificationCountFromSupabase(
-      page
+  await navGetVerifiedUser();
+  renderSharedNavigation(page);
+  navLoadNotificationCountFromSupabase(page);
+
+  const supabaseClient = navGetSupabaseClient();
+
+  if (
+    !navAuthListenerRegistered &&
+    supabaseClient &&
+    supabaseClient.auth &&
+    typeof supabaseClient.auth.onAuthStateChange ===
+      "function"
+  ) {
+    navAuthListenerRegistered = true;
+
+    supabaseClient.auth.onAuthStateChange(
+      function (_event, session) {
+        navVerifiedUser =
+          session && session.user
+            ? session.user
+            : null;
+        navAuthPromise = Promise.resolve(
+          navVerifiedUser
+        );
+        window.rentuloAccountNotificationCount = 0;
+        renderSharedNavigation(page);
+
+        if (navVerifiedUser) {
+          navLoadNotificationCountFromSupabase(
+            page
+          );
+        }
+      }
     );
   }
 }
