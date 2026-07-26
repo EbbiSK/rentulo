@@ -76,6 +76,102 @@ function navTranslate(key, fallback) {
   return fallback;
 }
 
+function navGetLanguage() {
+  if (typeof window.getRentuloLanguage === "function") {
+    return window.getRentuloLanguage();
+  }
+
+  return localStorage.getItem("rentuloLanguage") || "cs";
+}
+
+function navLanguageControl() {
+  const language = navGetLanguage();
+  const label = navTranslate("nav.language", "Jazyk");
+
+  return `
+    <label class="nav-language-control" title="${label}">
+      <span class="nav-language-label">${label}</span>
+      <select id="sharedLanguageSelect" aria-label="${label}">
+        <option value="cs"${language === "cs" ? " selected" : ""}>CZ</option>
+        <option value="en"${language === "en" ? " selected" : ""}>EN</option>
+        <option value="de"${language === "de" ? " selected" : ""}>DE</option>
+      </select>
+    </label>
+  `;
+}
+
+function navEnsureLanguageStyles() {
+  if (document.getElementById("rentuloLanguageStyles")) {
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "rentuloLanguageStyles";
+  style.textContent = `
+    .nav-language-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .nav-language-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .nav-language-control select {
+      min-width: 58px;
+      height: 36px;
+      padding: 0 24px 0 10px;
+      border: 1px solid rgba(7, 63, 46, 0.22);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.78);
+      color: #073f2e;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .nav-language-control select:focus {
+      outline: 2px solid rgba(0, 107, 69, 0.2);
+      outline-offset: 2px;
+    }
+    @media (max-width: 760px) {
+      .nav-language-control select {
+        height: 34px;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+async function navSavePreferredLanguage(language) {
+  const client = navGetSupabaseClient();
+  const user = navGetCurrentUser();
+
+  if (!client || !user || !user.id) {
+    return;
+  }
+
+  const { error } = await client
+    .from("profiles")
+    .update({
+      preferred_language: language,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", user.id);
+
+  if (error) {
+    console.warn("Jazyk se nepodařilo uložit do profilu.", error);
+  }
+}
+
 function navNormalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
 }
@@ -583,6 +679,7 @@ function renderSharedNavigation(
   activePage
 ) {
   renderSharedBranding();
+  navEnsureLanguageStyles();
 
   const nav =
     document.getElementById("mainNav") ||
@@ -727,6 +824,8 @@ function renderSharedNavigation(
       >
         ${logoutText}
       </a>
+
+      ${navLanguageControl()}
     `;
   } else {
     nav.innerHTML = `
@@ -764,6 +863,8 @@ function renderSharedNavigation(
       >
         ${registerText}
       </a>
+
+      ${navLanguageControl()}
     `;
   }
 
@@ -780,6 +881,22 @@ function renderSharedNavigation(
         navLogoutUser();
       }
     );
+  }
+
+  const languageSelect = document.getElementById("sharedLanguageSelect");
+
+  if (languageSelect) {
+    languageSelect.addEventListener("change", function () {
+      const language = languageSelect.value;
+
+      if (typeof window.setRentuloLanguage === "function") {
+        window.setRentuloLanguage(language);
+      } else {
+        localStorage.setItem("rentuloLanguage", language);
+      }
+
+      navSavePreferredLanguage(language);
+    });
   }
 }
 

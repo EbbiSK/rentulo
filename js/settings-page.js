@@ -512,5 +512,14 @@
     }
   }
 
+  document.addEventListener("rentuloLanguageChanged", function (event) {
+    const languageSelect = document.getElementById("preferredLanguage");
+    const language = event && event.detail ? event.detail.language : "";
+
+    if (languageSelect && language) {
+      languageSelect.value = language;
+    }
+  });
+
   document.addEventListener("DOMContentLoaded", initializeSettingsPage);
 })();
