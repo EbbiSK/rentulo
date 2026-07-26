@@ -599,10 +599,14 @@ if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
     }
 
     async function initializeAccountPage() {
-      const user = getCurrentUserSafe();
+      if (!window.rentuloAuthGuard) {
+        window.location.replace("prihlaseni.html");
+        return;
+      }
+
+      const user = await window.rentuloAuthGuard.requireUser();
 
       if (!user) {
-        window.location.href = "prihlaseni.html";
         return;
       }
 
