@@ -154,7 +154,7 @@ function loginNormalizeEmail(email) {
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        showLoginError(loginTranslate("login.error.supabase", "Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js."));
+        showLoginError(loginTranslate("login.error.supabase", "Přihlášení momentálně není dostupné. Zkuste to prosím později."));
         return;
       }
 
@@ -209,7 +209,8 @@ function loginNormalizeEmail(email) {
             return;
           }
 
-          showLoginError(loginTranslate("login.error.genericPrefix", "Přihlášení se nepodařilo: ") + error.message);
+          console.error(loginTranslate("login.console.failed", "Přihlášení se nepodařilo."), error);
+          showLoginError(loginTranslate("login.error.generic", "Přihlášení se nepodařilo. Zkuste to prosím znovu."));
           return;
         }
 
@@ -226,7 +227,7 @@ function loginNormalizeEmail(email) {
 
         window.location.href = "index.html";
       } catch (error) {
-        console.error(loginTranslate("login.console.failed", "Přihlášení se nepodařilo."));
+        console.error(loginTranslate("login.console.failed", "Přihlášení se nepodařilo."), error);
         showLoginError(loginTranslate("login.error.connection", "Přihlášení se nepodařilo. Zkontrolujte připojení a zkuste to znovu."));
       } finally {
         if (submitButton) {
