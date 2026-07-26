@@ -695,7 +695,7 @@ const data = Array.isArray(paidReservations)
               <textarea id="renter-review-text-${reservationId}" rows="3" placeholder="${escapeHtml(reservationsTranslate("reservations.review.placeholder", "Jak proběhlo půjčení?"))}"></textarea>
             </label>
 
-            <button type="button" class="btn-primary small-button" onclick="saveRenterReview('${reservationId}')">
+            <button type="button" class="btn-primary small-button" data-reservations-action="save-review" data-reservation-id="${escapeHtml(reservationId)}">
               ${escapeHtml(reservationsTranslate("reservations.review.submit", "Odeslat hodnocení"))}
             </button>
           </div>
@@ -957,12 +957,12 @@ const data = Array.isArray(paidReservations)
 
       const primaryAction = isPaymentRequired
         ? `
-          <button class="reservation-primary-action orange" type="button" onclick="payReservation('${escapeHtml(reservationId)}')">
+          <button class="reservation-primary-action orange" type="button" data-reservations-action="pay" data-reservation-id="${escapeHtml(reservationId)}">
             ${escapeHtml(reservationsTranslate("reservations.pay", "Zaplatit"))}
           </button>
         `
         : `
-          <button class="reservation-primary-action" id="detail-toggle-${escapeHtml(reservationId)}" type="button" onclick="toggleReservationDetail('${escapeHtml(reservationId)}', this)">
+          <button class="reservation-primary-action" id="detail-toggle-${escapeHtml(reservationId)}" type="button" data-reservations-action="toggle-detail" data-reservation-id="${escapeHtml(reservationId)}">
             ${escapeHtml(reservationsTranslate("reservations.detail", "Detail"))}
           </button>
         `;
@@ -971,7 +971,7 @@ const data = Array.isArray(paidReservations)
 
       if (isPaymentRequired) {
         menuItems += `
-          <button type="button" onclick="toggleReservationDetail('${escapeHtml(reservationId)}', document.getElementById('detail-toggle-${escapeHtml(reservationId)}'))">
+          <button type="button" data-reservations-action="toggle-detail" data-reservation-id="${escapeHtml(reservationId)}" data-use-primary-toggle="true">
             ${escapeHtml(reservationsTranslate("reservations.detailReservation", "Detail rezervace"))}
           </button>
         `;
@@ -985,7 +985,7 @@ const data = Array.isArray(paidReservations)
         )
       ) {
         menuItems += `
-          <button type="button" class="danger-action" onclick="cancelReservation('${escapeHtml(reservationId)}')">
+          <button type="button" class="danger-action" data-reservations-action="cancel" data-reservation-id="${escapeHtml(reservationId)}">
             ${escapeHtml(reservationsTranslate("reservations.cancel", "Zrušit rezervaci"))}
           </button>
         `;
@@ -1142,6 +1142,46 @@ const data = Array.isArray(paidReservations)
       renderSharedNavigation("muj-ucet");
       renderReservations();
     }
+
+    function handleReservationsActionClick(event) {
+      const actionButton = event.target.closest("[data-reservations-action]");
+
+      if (!actionButton) {
+        return;
+      }
+
+      const action = actionButton.dataset.reservationsAction;
+      const reservationId = actionButton.dataset.reservationId;
+
+      if (!reservationId) {
+        return;
+      }
+
+      if (action === "save-review") {
+        saveRenterReview(reservationId);
+        return;
+      }
+
+      if (action === "pay") {
+        payReservation(reservationId);
+        return;
+      }
+
+      if (action === "cancel") {
+        cancelReservation(reservationId);
+        return;
+      }
+
+      if (action === "toggle-detail") {
+        const toggleButton = actionButton.dataset.usePrimaryToggle === "true"
+          ? document.getElementById("detail-toggle-" + reservationId)
+          : actionButton;
+
+        toggleReservationDetail(reservationId, toggleButton);
+      }
+    }
+
+    document.addEventListener("click", handleReservationsActionClick);
 
     document.addEventListener("DOMContentLoaded", function () {
       initializeReservationsPage();
