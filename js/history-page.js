@@ -390,11 +390,13 @@ document.addEventListener("rentuloLanguageChanged", function () {
 });
 
 document.addEventListener("DOMContentLoaded", async function () {
-  historyCurrentUser = await apiGetCurrentUser();
-  if (!historyCurrentUser) {
-    window.location.href = "prihlaseni.html";
+  if (!window.rentuloAuthGuard) {
+    console.error("Rentulo auth guard není dostupný.");
     return;
   }
+
+  historyCurrentUser = await window.rentuloAuthGuard.requireUser();
+  if (!historyCurrentUser) return;
 
   historyReservations = await apiGetReservations();
   historyReviews = await historyLoadReviews();
