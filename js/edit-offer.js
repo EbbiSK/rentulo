@@ -12,9 +12,14 @@ function editT(key, fallback) {
   return fallback;
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  protectEditOfferPage();
-  initializeEditOfferPage();
+document.addEventListener("DOMContentLoaded", async function () {
+  const supabaseUser = await window.rentuloAuthGuard.requireUser();
+
+  if (!supabaseUser) {
+    return;
+  }
+
+  initializeEditOfferPage(supabaseUser);
 });
 
 function getEditSupabaseClient() {
@@ -504,11 +509,7 @@ function setEditSavingState(isSaving) {
     : editT("editOffer.save", "Uložit změny");
 }
 
-async function initializeEditOfferPage() {
-  if (!navIsLoggedIn()) {
-    return;
-  }
-
+async function initializeEditOfferPage(supabaseUser) {
   const offerId = getEditToolId();
 
   if (!offerId) {
@@ -524,13 +525,6 @@ async function initializeEditOfferPage() {
   }
 
   try {
-    const supabaseUser = await getEditSupabaseUser();
-
-    if (!supabaseUser) {
-      showEditOfferForbidden();
-      return;
-    }
-
     const offer = await loadOfferFromSupabase(offerId);
 
     if (!offer) {
