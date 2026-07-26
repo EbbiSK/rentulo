@@ -825,14 +825,14 @@ return {
       }
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-      renderSharedNavigation("nabidnout");
+    document.addEventListener("DOMContentLoaded", async function () {
+      const authenticatedUser = await window.rentuloAuthGuard.requireUser();
 
-      if (!navIsLoggedIn()) {
-        showOfferLoginRequired();
+      if (!authenticatedUser) {
         return;
       }
 
+      renderSharedNavigation("nabidnout");
       setupCitySuggestions();
       setupPostalCodeAutocomplete();
       fillProfileAddressAsDefault();
