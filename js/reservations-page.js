@@ -1120,6 +1120,12 @@ const data = Array.isArray(paidReservations)
     }
 
     async function initializeReservationsPage() {
+      const verifiedUser = await window.rentuloAuthGuard.requireUser();
+
+      if (!verifiedUser) {
+        return;
+      }
+
       renderSharedNavigation("muj-ucet");
       renderLoadingState();
 
