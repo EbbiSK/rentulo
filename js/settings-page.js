@@ -54,6 +54,40 @@
     return data.user;
   }
 
+  function syncLocalUser(user, profile) {
+    if (!user || !user.id || typeof saveCurrentUser !== "function") {
+      return;
+    }
+
+    const metadata = user.user_metadata || {};
+    const currentLocalUser =
+      typeof getCurrentUser === "function" ? getCurrentUser() : null;
+    const fullName =
+      (profile && profile.full_name) ||
+      metadata.full_name ||
+      metadata.fullName ||
+      user.email ||
+      translate("settings.userFallback", "Uživatel");
+
+    saveCurrentUser({
+      ...(currentLocalUser || {}),
+      id: user.id,
+      fullName: fullName,
+      name: fullName,
+      email: user.email || "",
+      phone: (profile && profile.phone) || metadata.phone || "",
+      street: (profile && profile.street) || metadata.street || "",
+      city: (profile && profile.city) || metadata.city || "",
+      postalCode:
+        (profile && profile.postal_code) ||
+        metadata.postal_code ||
+        metadata.postalCode ||
+        "",
+      source: "supabase",
+      updatedAt: new Date().toISOString()
+    });
+  }
+
   function applyLanguage(language) {
     if (typeof window.setRentuloLanguage === "function") {
       window.setRentuloLanguage(language);
@@ -115,14 +149,35 @@
       return;
     }
 
-    setProfileFields(data, user);
+    let profile = data || null;
+    const authEmail = normalizeEmail(user && user.email);
+    const profileEmail = normalizeEmail(profile && profile.email);
 
-    const language = data && data.preferred_language
-      ? data.preferred_language
+    if (authEmail && authEmail !== profileEmail) {
+      const { error: emailSyncError } = await client
+        .from("profiles")
+        .update({
+          email: authEmail,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", user.id);
+
+      if (emailSyncError) {
+        console.error("Potvrzený e-mail se nepodařilo synchronizovat.", emailSyncError);
+      } else {
+        profile = { ...(profile || {}), email: authEmail };
+      }
+    }
+
+    syncLocalUser(user, profile);
+    setProfileFields(profile, user);
+
+    const language = profile && profile.preferred_language
+      ? profile.preferred_language
       : "cs";
 
-    const emailNotifications = data
-      ? data.email_notifications !== false
+    const emailNotifications = profile
+      ? profile.email_notifications !== false
       : true;
 
     if (languageSelect) {
@@ -239,6 +294,26 @@
       if (profileError) {
         throw profileError;
       }
+
+      const effectiveEmail = emailConfirmationRequired ? currentEmail : email;
+      syncLocalUser(
+        {
+          ...user,
+          email: effectiveEmail,
+          user_metadata: {
+            ...(user.user_metadata || {}),
+            full_name: fullName,
+            phone: phone,
+            street: street,
+            city: city,
+            postal_code: postalCode
+          }
+        },
+        {
+          ...profileUpdate,
+          email: effectiveEmail
+        }
+      );
 
       setMessage(
         message,
