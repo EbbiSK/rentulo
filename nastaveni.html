@@ -265,6 +265,35 @@
     .message.success { display: block; color: #006b45; }
     .message.error { display: block; color: #b42318; }
 
+    .password-tools {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .show-password {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #4d5b55;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .show-password input {
+      width: 17px;
+      height: 17px;
+      accent-color: #006b45;
+    }
+
+    .button-label-loading { display: none; }
+    .primary-button.is-loading .button-label-default { display: none; }
+    .primary-button.is-loading .button-label-loading { display: inline; }
+
     .profile-note {
       margin: 14px 0 0 !important;
       color: #5b6862 !important;
@@ -307,6 +336,11 @@
 
       .actions {
         align-items: stretch;
+        flex-direction: column;
+      }
+
+      .password-tools {
+        align-items: flex-start;
         flex-direction: column;
       }
 
@@ -368,7 +402,7 @@
 
           <div class="field">
             <label for="profilePhone" data-i18n="settings.phone">Telefon</label>
-            <input type="tel" id="profilePhone" autocomplete="tel" maxlength="40" required />
+            <input type="tel" id="profilePhone" autocomplete="tel" inputmode="tel" maxlength="40" required />
           </div>
 
           <div class="field">
@@ -383,14 +417,17 @@
 
           <div class="field">
             <label for="profilePostalCode" data-i18n="settings.postalCode">PSČ</label>
-            <input type="text" id="profilePostalCode" autocomplete="postal-code" maxlength="20" required />
+            <input type="text" id="profilePostalCode" autocomplete="postal-code" inputmode="text" maxlength="20" required />
           </div>
         </div>
 
         <p class="profile-note" data-i18n="settings.emailChangeNote">Při změně e-mailu může Supabase vyžadovat potvrzení na nové adrese. Do potvrzení se můžete přihlašovat původním e-mailem.</p>
 
         <div class="actions">
-          <button type="submit" class="primary-button" id="saveProfileButton" data-i18n="settings.saveProfile">Uložit osobní údaje</button>
+          <button type="submit" class="primary-button" id="saveProfileButton">
+            <span class="button-label-default" data-i18n="settings.saveProfile">Uložit osobní údaje</span>
+            <span class="button-label-loading" data-i18n="settings.saving">Ukládám…</span>
+          </button>
           <span class="message" id="profileMessage" role="status" aria-live="polite"></span>
         </div>
       </form>
@@ -448,9 +485,9 @@
   type="button"
   class="primary-button"
   id="saveSettingsButton"
-  data-i18n="settings.save"
 >
-  Uložit nastavení
+  <span class="button-label-default" data-i18n="settings.save">Uložit nastavení</span>
+  <span class="button-label-loading" data-i18n="settings.saving">Ukládám…</span>
 </button>
         <span class="message" id="settingsMessage" role="status" aria-live="polite"></span>
       </div>
@@ -473,22 +510,23 @@
           </div>
         </div>
 
+        <div class="password-tools">
+          <label class="show-password" for="showPasswords">
+            <input type="checkbox" id="showPasswords" />
+            <span data-i18n="settings.showPassword">Zobrazit heslo</span>
+          </label>
+        </div>
+
         <div class="actions">
-          <button type="submit" class="primary-button" id="changePasswordButton" data-i18n="settings.changePassword">
-            Změnit heslo
+          <button type="submit" class="primary-button" id="changePasswordButton">
+            <span class="button-label-default" data-i18n="settings.changePassword">Změnit heslo</span>
+            <span class="button-label-loading" data-i18n="settings.changingPassword">Měním heslo…</span>
           </button>
           <span class="message" id="passwordMessage" role="status" aria-live="polite"></span>
         </div>
       </form>
     </section>
 
-    <section class="settings-card danger-card">
-      <h2 data-i18n="settings.cancelAccountTitle">Zrušení účtu</h2>
-      <p class="danger-note" data-i18n="settings.cancelAccountDescription">
-        Bezpečný proces zrušení účtu doplníme po kontrole aktivních rezervací,
-        plateb a zákonných povinností. Účet se nyní nedá odstranit omylem.
-      </p>
-    </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

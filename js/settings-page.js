@@ -32,6 +32,16 @@
     }
   }
 
+  function setButtonLoading(button, isLoading) {
+    if (!button) {
+      return;
+    }
+
+    button.disabled = Boolean(isLoading);
+    button.classList.toggle("is-loading", Boolean(isLoading));
+    button.setAttribute("aria-busy", isLoading ? "true" : "false");
+  }
+
   function normalizeText(value) {
     return String(value || "").trim();
   }
@@ -228,9 +238,7 @@
       return;
     }
 
-    if (button) {
-      button.disabled = true;
-    }
+    setButtonLoading(button, true);
 
     try {
       const currentEmail = normalizeEmail(user.email);
@@ -339,9 +347,7 @@
         "error"
       );
     } finally {
-      if (button) {
-        button.disabled = false;
-      }
+      setButtonLoading(button, false);
     }
   }
 
@@ -356,39 +362,38 @@
 
     setMessage(message, "", "");
 
-    if (saveButton) {
-      saveButton.disabled = true;
-    }
+    setButtonLoading(saveButton, true);
 
-    const { error } = await client
-      .from("profiles")
-      .update({
-        preferred_language: preferredLanguage,
-        email_notifications: emailNotifications,
-        updated_at: new Date().toISOString()
-      })
-      .eq("id", user.id);
+    try {
+      const { error } = await client
+        .from("profiles")
+        .update({
+          preferred_language: preferredLanguage,
+          email_notifications: emailNotifications,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", user.id);
 
-    if (saveButton) {
-      saveButton.disabled = false;
-    }
+      if (error) {
+        throw error;
+      }
 
-    if (error) {
+      applyLanguage(preferredLanguage);
+      setMessage(
+        message,
+        translate("settings.saved", "Nastavení bylo uloženo."),
+        "success"
+      );
+    } catch (error) {
       console.error(error);
       setMessage(
         message,
         translate("settings.saveError", "Nastavení se nepodařilo uložit."),
         "error"
       );
-      return;
+    } finally {
+      setButtonLoading(saveButton, false);
     }
-
-    applyLanguage(preferredLanguage);
-    setMessage(
-      message,
-      translate("settings.saved", "Nastavení bylo uloženo."),
-      "success"
-    );
   }
 
   async function changePassword(client) {
@@ -426,17 +431,43 @@
       return;
     }
 
-    if (button) {
-      button.disabled = true;
-    }
+    setButtonLoading(button, true);
 
-    const { error } = await client.auth.updateUser({ password: password });
+    try {
+      const { error } = await client.auth.updateUser({ password: password });
 
-    if (button) {
-      button.disabled = false;
-    }
+      if (error) {
+        throw error;
+      }
 
-    if (error) {
+      if (newPassword) {
+        newPassword.value = "";
+      }
+
+      if (confirmPassword) {
+        confirmPassword.value = "";
+      }
+
+      const showPasswords = document.getElementById("showPasswords");
+      if (showPasswords) {
+        showPasswords.checked = false;
+      }
+      if (newPassword) {
+        newPassword.type = "password";
+      }
+      if (confirmPassword) {
+        confirmPassword.type = "password";
+      }
+
+      setMessage(
+        message,
+        translate(
+          "settings.passwordChanged",
+          "Heslo bylo úspěšně změněno."
+        ),
+        "success"
+      );
+    } catch (error) {
       console.error(error);
       setMessage(
         message,
@@ -446,25 +477,31 @@
         ),
         "error"
       );
+    } finally {
+      setButtonLoading(button, false);
+    }
+  }
+
+  function initializePasswordVisibility() {
+    const checkbox = document.getElementById("showPasswords");
+    const newPassword = document.getElementById("newPassword");
+    const confirmPassword = document.getElementById("confirmPassword");
+
+    if (!checkbox) {
       return;
     }
 
-    if (newPassword) {
-      newPassword.value = "";
-    }
+    checkbox.addEventListener("change", function () {
+      const inputType = checkbox.checked ? "text" : "password";
 
-    if (confirmPassword) {
-      confirmPassword.value = "";
-    }
+      if (newPassword) {
+        newPassword.type = inputType;
+      }
 
-    setMessage(
-      message,
-      translate(
-        "settings.passwordChanged",
-        "Heslo bylo úspěšně změněno."
-      ),
-      "success"
-    );
+      if (confirmPassword) {
+        confirmPassword.type = inputType;
+      }
+    });
   }
 
   async function initializeSettingsPage() {
@@ -486,6 +523,7 @@
     }
 
     await loadPageData(client, user);
+    initializePasswordVisibility();
 
     const profileForm = document.getElementById("profileForm");
     const saveButton = document.getElementById("saveSettingsButton");
