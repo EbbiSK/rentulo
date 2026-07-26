@@ -182,6 +182,18 @@
     syncLocalUser(user, profile);
     setProfileFields(profile, user);
 
+    const pendingEmail = normalizeEmail(user && user.new_email);
+    if (pendingEmail && pendingEmail !== authEmail) {
+      setMessage(
+        profileMessage,
+        translate(
+          "settings.emailConfirmationPending",
+          "Změna e-mailu na " + pendingEmail + " čeká na potvrzení. Do potvrzení zůstává aktivní původní e-mail."
+        ).replace("{email}", pendingEmail),
+        "success"
+      );
+    }
+
     const language = profile && profile.preferred_language
       ? profile.preferred_language
       : "cs";
@@ -260,11 +272,17 @@
           throw authError;
         }
 
-        emailConfirmationRequired = !(
-          authData &&
-          authData.user &&
-          normalizeEmail(authData.user.email) === email
+        const returnedUser = authData && authData.user ? authData.user : null;
+        const returnedEmail = normalizeEmail(returnedUser && returnedUser.email);
+        const pendingEmail = normalizeEmail(returnedUser && returnedUser.new_email);
+
+        emailConfirmationRequired = Boolean(
+          pendingEmail && pendingEmail === email && returnedEmail !== email
         );
+
+        if (!emailConfirmationRequired && returnedEmail !== email) {
+          emailConfirmationRequired = true;
+        }
       } else {
         const { error: metadataError } = await client.auth.updateUser({
           data: {
