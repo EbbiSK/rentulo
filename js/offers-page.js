@@ -558,17 +558,17 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING) {
         actions.push(`
-          <button class="small-button" type="button" onclick="approveReservation('${escapeHtml(reservationId)}')">${offersTranslate("offers.action.approve", "Potvrdit")}</button>
+          <button class="small-button" type="button" data-offers-action="approve-reservation" data-reservation-id="${escapeHtml(reservationId)}">${offersTranslate("offers.action.approve", "Potvrdit")}</button>
         `);
 
         actions.push(`
-          <button class="small-button light" type="button" onclick="rejectReservation('${escapeHtml(reservationId)}')">${offersTranslate("offers.action.reject", "Odmítnout")}</button>
+          <button class="small-button light" type="button" data-offers-action="reject-reservation" data-reservation-id="${escapeHtml(reservationId)}">${offersTranslate("offers.action.reject", "Odmítnout")}</button>
         `);
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PAID) {
         actions.push(`
-          <button class="small-button orange" type="button" onclick="markReservationPickedUp('${escapeHtml(reservationId)}')">
+          <button class="small-button orange" type="button" data-offers-action="mark-picked-up" data-reservation-id="${escapeHtml(reservationId)}">
             ${offersTranslate("offers.action.pickedUp", "Označit jako vyzvednuto")}
           </button>
         `);
@@ -576,7 +576,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
         actions.push(`
-          <button class="small-button" type="button" onclick="markReservationReturned('${escapeHtml(reservationId)}')">
+          <button class="small-button" type="button" data-offers-action="mark-returned" data-reservation-id="${escapeHtml(reservationId)}">
             ${offersTranslate("offers.action.returned", "Označit jako vráceno")}
           </button>
         `);
@@ -677,7 +677,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
 ></textarea>
           </div>
 
-          <button class="small-button" type="button" onclick="saveOwnerReviewForRenter('${escapeHtml(reservationId)}')">
+          <button class="small-button" type="button" data-offers-action="save-owner-review" data-reservation-id="${escapeHtml(reservationId)}">
             ${offersTranslate("offers.review.submit", "Odeslat hodnocení")}
           </button>
         </div>
@@ -853,7 +853,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
 
             <div class="row-actions">
               ${actionButtons}
-              <button class="history-toggle-button" type="button" onclick="toggleRequestDetail('${escapeHtml(reservationId)}', this)">
+              <button class="history-toggle-button" type="button" data-offers-action="toggle-request-detail" data-reservation-id="${escapeHtml(reservationId)}">
                 ${offersTranslate("offers.detail.show", "Detail")}
               </button>
             </div>
@@ -901,7 +901,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
             </div>
 
             <div class="row-actions">
-              <button class="history-toggle-button" type="button" onclick="toggleHistoryRequest('${escapeHtml(reservationId)}', this)">
+              <button class="history-toggle-button" type="button" data-offers-action="toggle-history-request" data-reservation-id="${escapeHtml(reservationId)}">
                 ${offersTranslate("offers.detail.show", "Detail")}
               </button>
             </div>
@@ -1101,10 +1101,10 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       }
 
       const primaryActionHtml = isDraft
-        ? `<button class="offer-primary-button orange" type="button" onclick="publishOffer('${escapeHtml(offerId)}')">${offersTranslate("offers.publish", "Zveřejnit nabídku")}</button>`
+        ? `<button class="offer-primary-button orange" type="button" data-offers-action="publish-offer" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.publish", "Zveřejnit nabídku")}</button>`
         : openRequests.length
-          ? `<button class="offer-primary-button ${ownerActionRequests.length ? "urgent" : ""}" type="button" onclick="openOfferRequests('${escapeHtml(offerId)}')">${ownerActionRequests.length ? offersTranslate("offers.handleRequests", "Vyřídit žádosti") : offersTranslate("offers.showRequests", "Zobrazit žádosti")}</button>`
-          : `<button class="offer-primary-button secondary" type="button" onclick="toggleOfferDetail('${escapeHtml(offerDetailId)}', this)">${offersTranslate("offers.overview", "Přehled nabídky")}</button>`;
+          ? `<button class="offer-primary-button ${ownerActionRequests.length ? "urgent" : ""}" type="button" data-offers-action="open-offer-requests" data-offer-id="${escapeHtml(offerId)}">${ownerActionRequests.length ? offersTranslate("offers.handleRequests", "Vyřídit žádosti") : offersTranslate("offers.showRequests", "Zobrazit žádosti")}</button>`
+          : `<button class="offer-primary-button secondary" type="button" data-offers-action="toggle-offer-detail" data-detail-id="${escapeHtml(offerDetailId)}">${offersTranslate("offers.overview", "Přehled nabídky")}</button>`;
 
       const detailHtml = isDraft
         ? ""
@@ -1130,7 +1130,8 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
                 class="request-toggle-button ${ownerActionRequests.length ? "important" : ""}"
                 type="button"
                 id="open-toggle-${escapeHtml(offerId)}"
-                onclick="toggleRequestPanel('${escapeHtml(openPanelId)}', this)"
+                data-offers-action="toggle-request-panel"
+                data-panel-id="${escapeHtml(openPanelId)}"
                 data-closed-text="${escapeHtml(openRequestsButtonText)}"
                 data-open-text="${escapeHtml(offersTranslate("offers.hideRequests", "Skrýt žádosti"))}"
                 data-important="${ownerActionRequests.length ? "true" : "false"}"
@@ -1167,8 +1168,8 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
                 <div class="offer-more-menu-panel">
                   <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.edit", "Upravit nabídku")}</a>
                   ${isDraft ? "" : `<a href="detail.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.publicDetail", "Veřejný detail")}</a>`}
-                  ${isDraft ? "" : `<button type="button" onclick="toggleOfferOverviewFromMenu('${escapeHtml(offerId)}', this.closest('details'))">${offersTranslate("offers.overviewHistory", "Přehled a historie")}</button>`}
-                  <button class="danger" type="button" onclick="deleteOffer('${escapeHtml(offerId)}')">${offersTranslate("offers.delete", "Smazat nabídku")}</button>
+                  ${isDraft ? "" : `<button type="button" data-offers-action="toggle-offer-overview" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.overviewHistory", "Přehled a historie")}</button>`}
+                  <button class="danger" type="button" data-offers-action="delete-offer" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.delete", "Smazat nabídku")}</button>
                 </div>
               </details>
             </div>
@@ -1227,7 +1228,8 @@ function renderSimpleOffer(offer, requests) {
               ? `<button
                   type="button"
                   class="offer-primary-button urgent"
-                  onclick="openOfferRequests('${escapeHtml(offerId)}')"
+                  data-offers-action="open-offer-requests"
+                  data-offer-id="${escapeHtml(offerId)}"
                 >
                   ${offersTranslate("offers.handleRequests", "Vyřídit žádosti")}
                 </button>`
@@ -1338,6 +1340,64 @@ return [
       }, 0);
     }
 
+    async function handleOffersActionClick(event) {
+      const actionButton = event.target.closest("[data-offers-action]");
+
+      if (!actionButton) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const action = actionButton.dataset.offersAction;
+      const reservationId = actionButton.dataset.reservationId || "";
+      const offerId = actionButton.dataset.offerId || "";
+
+      switch (action) {
+        case "approve-reservation":
+          await approveReservation(reservationId);
+          break;
+        case "reject-reservation":
+          await rejectReservation(reservationId);
+          break;
+        case "mark-picked-up":
+          await markReservationPickedUp(reservationId);
+          break;
+        case "mark-returned":
+          await markReservationReturned(reservationId);
+          break;
+        case "save-owner-review":
+          await saveOwnerReviewForRenter(reservationId);
+          break;
+        case "toggle-request-detail":
+          toggleRequestDetail(reservationId, actionButton);
+          break;
+        case "toggle-history-request":
+          toggleHistoryRequest(reservationId, actionButton);
+          break;
+        case "publish-offer":
+          await publishOffer(offerId);
+          break;
+        case "open-offer-requests":
+          openOfferRequests(offerId);
+          break;
+        case "toggle-offer-detail":
+          toggleOfferDetail(actionButton.dataset.detailId || "", actionButton);
+          break;
+        case "toggle-request-panel":
+          toggleRequestPanel(actionButton.dataset.panelId || "", actionButton);
+          break;
+        case "toggle-offer-overview":
+          toggleOfferOverviewFromMenu(offerId, actionButton.closest("details"));
+          break;
+        case "delete-offer":
+          await deleteOffer(offerId);
+          break;
+        default:
+          break;
+      }
+    }
+
     async function initializeOwnerOffersPage() {
       const verifiedUser = await window.rentuloAuthGuard.requireUser();
 
@@ -1354,6 +1414,8 @@ return [
       renderOffers();
       showAccountMessageFromStorage();
     }
+
+    document.addEventListener("click", handleOffersActionClick);
 
     document.addEventListener("DOMContentLoaded", function () {
       initializeOwnerOffersPage();
