@@ -2,6 +2,13 @@ let offerSaveInProgress = false;
     let offerPhotoDataUrl = "";
     let offerPhotoFile = null;
 
+    const OFFER_PHOTO_MAX_BYTES = 10 * 1024 * 1024;
+    const OFFER_PHOTO_ALLOWED_TYPES = [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ];
+
     function offerTranslate(key, fallback) {
       if (typeof window.rentuloTranslate === "function") {
         const translated = window.rentuloTranslate(key);
@@ -414,12 +421,21 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           return;
         }
 
-        if (!file.type || !file.type.startsWith("image/")) {
+        if (!OFFER_PHOTO_ALLOWED_TYPES.includes(file.type)) {
           offerPhotoDataUrl = "";
           offerPhotoFile = null;
           photoInput.value = "";
           renderPhotoPreview("");
           updatePhotoStatus(offerTranslate("offer.photoInvalidType", "Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP."), "error");
+          return;
+        }
+
+        if (file.size > OFFER_PHOTO_MAX_BYTES) {
+          offerPhotoDataUrl = "";
+          offerPhotoFile = null;
+          photoInput.value = "";
+          renderPhotoPreview("");
+          updatePhotoStatus(offerTranslate("offer.photoTooLarge", "Fotka je příliš velká. Maximální velikost je 10 MB."), "error");
           return;
         }
 
