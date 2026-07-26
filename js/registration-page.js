@@ -343,7 +343,16 @@ localStorage.setItem("rentuloLoggedIn", "true");
             return;
           }
 
-          registrationShowError(registrationT("registration.error.genericPrefix", "Registrace se nepodařila: ") + message);
+          console.error(
+            registrationT("registration.console.failed", "Registrace se nepodařila."),
+            error
+          );
+          registrationShowError(
+            registrationT(
+              "registration.error.generic",
+              "Registrace se nepodařila. Zkuste to prosím znovu."
+            )
+          );
           return;
         }
 
