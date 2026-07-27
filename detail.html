@@ -14,8 +14,8 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f6f3ee;
-      color: #073f2e;
+      background: #f4f6f7;
+      color: #123f32;
     }
 
     a {
@@ -24,14 +24,14 @@
     }
 
     .container {
-      max-width: 1240px;
+      max-width: 1320px;
       margin: 0 auto;
       padding: 0 20px;
     }
 
     header {
-      padding: 6px 0;
-      background: #f6f3ee;
+      padding: 12px 0;
+      background: #f4f6f7;
     }
 
     .header-inner {
@@ -44,33 +44,20 @@
     .logo {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
     }
 
     .logo-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: #006b45;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 21px;
-      font-weight: 800;
-    }
-
-    .logo-icon::before {
-      content: "✓";
-    }
-
-    .logo-dot {
-      display: none;
+      width: 40px;
+      height: 40px;
+      display: block;
+      object-fit: contain;
+      flex: 0 0 auto;
     }
 
     .logo-title {
       margin: 0;
-      font-size: 19px;
+      font-size: 22px;
       line-height: 1;
       color: #073f2e;
       font-weight: 900;
@@ -102,9 +89,9 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: #006b45;
-      color: white !important;
-      padding: 9px 18px;
+      background: #7ed957;
+      color: #173a22 !important;
+      padding: 10px 20px;
       border-radius: 999px;
       font-weight: 800;
       cursor: pointer;
@@ -119,7 +106,7 @@
       margin-bottom: 8px;
       font-size: 14px;
       font-weight: 800;
-      color: #006b45;
+      color: #4f9b35;
     }
 
     .back-link:hover {
@@ -128,8 +115,8 @@
 
     .detail-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 300px;
-      gap: 12px;
+      grid-template-columns: minmax(0, 1fr) 270px;
+      gap: 16px;
       align-items: start;
     }
 
@@ -137,9 +124,9 @@
     .sidebar,
     .message-card {
       background: white;
-      border: 1px solid #eadfd1;
+      border: 1px solid #dfe5e8;
       border-radius: 16px;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      box-shadow: 0 10px 26px rgba(18, 63, 50, 0.06);
       overflow: hidden;
     }
 
@@ -148,18 +135,18 @@
     }
 
     .image-box {
-      height: 190px;
-      background: #ece6dc;
+      height: 170px;
+      background: #eef1f3;
       position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
-      border-bottom: 1px solid #eadfd1;
+      border-bottom: 1px solid #dfe5e8;
     }
 
     .image-box.has-photo {
-      background: #073f2e;
+      background: #123f32;
     }
 
     .image-box img {
@@ -173,7 +160,7 @@
       width: 54px;
       height: 54px;
       border-radius: 15px;
-      background: #073f2e;
+      background: #123f32;
       color: white;
       display: flex;
       justify-content: center;
@@ -206,7 +193,7 @@
     }
 
     .detail-content {
-      padding: 12px;
+      padding: 16px;
     }
 
     .category-line {
@@ -217,12 +204,12 @@
     }
 
     .category-line strong {
-      color: #ff6500;
+      color: #ff6a00;
     }
 
     h1 {
       margin: 0 0 6px;
-      font-size: 27px;
+      font-size: 30px;
       line-height: 1.05;
       color: #073f2e;
     }
@@ -237,7 +224,7 @@
     .badge {
       display: inline-flex;
       align-items: center;
-      background: #eee8de;
+      background: #f1f4f5;
       border-radius: 999px;
       padding: 5px 9px;
       font-size: 12px;
@@ -247,17 +234,17 @@
     }
 
     .badge.available {
-      background: #e2f3eb;
-      color: #006b45;
+      background: #f0faea;
+      color: #4f9b35;
     }
 
     .badge.unavailable {
-      background: #fff0e6;
-      color: #df5b00;
+      background: #fff1e8;
+      color: #d95f00;
     }
 
     .badge.draft {
-      background: #fff7f0;
+      background: #fff7f2;
       color: #5b3a22;
     }
 
@@ -279,13 +266,13 @@
     }
 
     .availability-panel.available {
-      background: #e2f3eb;
+      background: #f0faea;
       border: 1px solid #c7e8d7;
       color: #073f2e;
     }
 
     .availability-panel.unavailable {
-      background: #fff7f0;
+      background: #fff7f2;
       border: 1px solid #ffe0c8;
       color: #5b3a22;
     }
@@ -297,22 +284,22 @@
     }
 
     .availability-panel.available strong {
-      color: #006b45;
+      color: #4f9b35;
     }
 
     .availability-panel.unavailable strong {
-      color: #df5b00;
+      color: #d95f00;
     }
 
     .info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 9px;
+      gap: 8px;
     }
 
     .section {
-      background: #fffdf8;
-      border: 1px solid #eee8de;
+      background: #ffffff;
+      border: 1px solid #dfe5e8;
       border-radius: 13px;
       padding: 10px;
     }
@@ -351,7 +338,7 @@
     .pickup-preview-row {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 16px;
       border-bottom: 1px solid #eee8de;
       padding-bottom: 7px;
     }
@@ -375,7 +362,7 @@
       margin-top: 9px;
       padding: 8px 9px;
       border-radius: 11px;
-      background: #e2f3eb;
+      background: #f0faea;
       border: 1px solid #c7e8d7;
       color: #073f2e;
       font-size: 12px;
@@ -384,21 +371,22 @@
     }
 
     .gps-note.missing {
-      background: #fff7f0;
+      background: #fff7f2;
       border-color: #ffe0c8;
       color: #5b3a22;
     }
 
     .sidebar {
-      padding: 12px;
+      padding: 16px;
       position: sticky;
-      top: 10px;
+      top: 12px;
+      align-self: start;
     }
 
     .price {
       font-size: 31px;
       font-weight: 900;
-      color: #006b45;
+      color: #4f9b35;
       line-height: 1;
       margin-bottom: 1px;
     }
@@ -414,16 +402,16 @@
       display: grid;
       gap: 0;
       margin-bottom: 10px;
-      border: 1px solid #eee8de;
+      border: 1px solid #dfe5e8;
       border-radius: 11px;
       overflow: hidden;
-      background: #fffdf8;
+      background: #ffffff;
     }
 
     .info-row {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 16px;
       border-bottom: 1px solid #eee8de;
       padding: 8px 9px;
       font-size: 13px;
@@ -446,7 +434,7 @@
     }
 
     .privacy-box {
-      background: #fff7f0;
+      background: #fff7f2;
       border: 1px solid #ffe0c8;
       border-radius: 12px;
       padding: 9px;
@@ -460,7 +448,7 @@
     .privacy-box strong {
       display: block;
       margin-bottom: 3px;
-      color: #df5b00;
+      color: #d95f00;
       font-size: 13px;
     }
 
@@ -474,13 +462,13 @@
     }
 
     .availability-box.available {
-      background: #e2f3eb;
+      background: #f0faea;
       border: 1px solid #c7e8d7;
       color: #073f2e;
     }
 
     .availability-box.unavailable {
-      background: #fff7f0;
+      background: #fff7f2;
       border: 1px solid #ffe0c8;
       color: #5b3a22;
     }
@@ -492,17 +480,17 @@
     }
 
     .availability-box.available strong {
-      color: #006b45;
+      color: #4f9b35;
     }
 
     .availability-box.unavailable strong {
-      color: #df5b00;
+      color: #d95f00;
     }
 
     .booking-box {
       margin-top: 9px;
-      background: #f8f5f0;
-      border: 1px solid #e9e1d6;
+      background: #f7f9fa;
+      border: 1px solid #dfe5e8;
       border-radius: 13px;
       padding: 10px;
     }
@@ -528,7 +516,7 @@
     .form-group input {
       width: 100%;
       height: 36px;
-      border: 1px solid #d8d0c5;
+      border: 1px solid #d5dde1;
       border-radius: 10px;
       background: white;
       padding: 0 10px;
@@ -539,8 +527,8 @@
 
     .form-group input:focus {
       outline: none;
-      border-color: #006b45;
-      box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
+      border-color: #4f9b35;
+      box-shadow: 0 0 0 3px rgba(126, 217, 87, 0.20);
     }
 
     .date-help {
@@ -564,7 +552,7 @@
     .calc-row {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 16px;
       font-size: 13px;
       border-bottom: 1px solid #eee8de;
       padding: 7px 9px;
@@ -585,7 +573,7 @@
     }
 
     .calc-total {
-      background: #fffdf8;
+      background: #ffffff;
       font-size: 14px;
       font-weight: 900;
     }
@@ -594,8 +582,8 @@
       width: 100%;
       border: none;
       border-radius: 9px;
-      background: #006b45;
-      color: white;
+      background: #7ed957;
+      color: #173a22;
       font-size: 13px;
       font-weight: 900;
       padding: 9px 12px;
@@ -605,7 +593,7 @@
     }
 
     .primary-button:hover {
-      background: #00563a;
+      background: #68c547;
     }
 
     .primary-button.disabled,
@@ -630,11 +618,11 @@
     }
 
     .message-card strong {
-      color: #006b45;
+      color: #4f9b35;
     }
 
     .message-card.warning strong {
-      color: #df5b00;
+      color: #d95f00;
     }
 
     .message-card .primary-button {
@@ -652,7 +640,7 @@
 
       nav {
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 16px;
       }
 
       .detail-layout {
@@ -682,7 +670,7 @@
       }
 
       .detail-content {
-        padding: 12px;
+        padding: 16px;
       }
     }
 
@@ -701,10 +689,8 @@
       }
 
       .logo-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 11px;
-        font-size: 22px;
+        width: 38px;
+        height: 38px;
       }
 
       .logo-title {
@@ -781,13 +767,11 @@
   <header>
     <div class="container header-inner">
       <a href="index.html" class="logo">
-        <div class="logo-icon">
-          <span class="logo-dot"></span>
-        </div>
+        <img class="logo-icon" src="assets/rentulo-logo-mark.png" alt="" aria-hidden="true" />
 
         <div>
           <p class="logo-title">Rentulo</p>
-          <p class="logo-subtitle" data-i18n="brand.subtitle">Půjč si cokoli</p>
+          
         </div>
       </a>
 

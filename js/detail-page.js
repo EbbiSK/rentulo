@@ -601,9 +601,6 @@ const hasGps = offerHasGpsLocation(offer);
               <div class="badges">
                 <span class="badge">${detailTranslate("detail.verifiedOwner")}</span>
                 <span class="badge" id="ownerRatingBadge">${detailTranslate("detail.ratingLoading")}</span>
-                <span class="badge ${statusBadgeClass}">${escapeHtml(offerStatus)}</span>
-                <span class="badge ${availabilityBadgeClass}">${escapeHtml(availabilityText)}</span>
-                <span class="badge">${detailTranslate("detail.platformFeePercent", { percent: PLATFORM_FEE_PERCENT })}</span>
               </div>
 
               <div class="availability-panel ${availabilityBadgeClass}">
@@ -611,9 +608,9 @@ const hasGps = offerHasGpsLocation(offer);
                 ${escapeHtml(availabilityPanelText)}
               </div>
 
-              <div class="description">
-                ${escapeHtml(offer.description || detailTranslate("detail.noDescription"))}
-              </div>
+              ${offer.description && offer.description.trim() ? `
+                <div class="description">${escapeHtml(offer.description)}</div>
+              ` : ""}
 
               <div class="info-grid">
                 <div class="section">
