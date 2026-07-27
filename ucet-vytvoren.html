@@ -52,6 +52,14 @@
         Nyní můžete hledat věci k půjčení nebo nabídnout vlastní věci ostatním.
       </p>
 
+      <p
+        class="confirmation-text"
+        data-i18n="accountCreated.redirectNotice"
+        aria-live="polite"
+      >
+        Za chvíli budete přesměrováni na úvodní stránku.
+      </p>
+
       <div class="reservation-summary">
         <h2 data-i18n="accountCreated.nextTitle">Co můžete udělat dál?</h2>
 
@@ -88,5 +96,10 @@
   <script src="js/api.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/navigation.js"></script>
+  <script>
+    window.setTimeout(function () {
+      window.location.href = "index.html";
+    }, 3000);
+  </script>
 </body>
 </html>
