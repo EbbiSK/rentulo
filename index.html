@@ -126,191 +126,178 @@
 
     .home-content,
     .home-side-card {
-      background: white;
-      border: 1px solid #e1e6e8;
-      border-radius: 18px;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
-    }
-
-    .home-content {
-      padding: 24px;
-    }
-
-    .home-content h1 {
-      max-width: 780px;
-      margin: 0 0 10px;
-      color: #173f35;
-      font-size: 42px;
-      line-height: 1.04;
-      letter-spacing: -0.04em;
-    }
-
-    .home-text {
-      max-width: 820px;
-      margin: 0 0 18px;
-      color: #4b5f57;
-      font-size: 17px;
-      line-height: 1.42;
-      font-weight: 700;
-    }
-
-    .search-box {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 10px;
-      align-items: end;
-      padding: 13px;
-      border-radius: 16px;
-      background: #fafbfb;
-      border: 1px solid #e1e6e8;
-      margin-bottom: 14px;
-    }
-
-    .search-field {
-      display: grid;
-      gap: 5px;
-    }
-
-    .search-field label {
-      color: #173e33;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .search-field input {
-      width: 100%;
-      height: 44px;
-      border: 1px solid #d7dee1;
-      border-radius: 11px;
-      background: white;
-      padding: 0 13px;
-      font-size: 15px;
-      color: #173f35;
-      font-weight: 700;
-    }
-
-    .search-field input:focus {
-      outline: none;
-      border-color: #7ED957;
-      box-shadow: 0 0 0 3px rgba(126, 217, 87, 0.22);
-    }
-
-    .search-button {
-      min-height: 44px;
-      border: none;
-      border-radius: 11px;
-      background: #7ED957;
-      color: #173A22;
-      padding: 0 20px;
-      font-size: 15px;
-      font-weight: 900;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .search-button:hover {
-      background: #68C547;
-    }
-
-    .home-points {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .home-point-button {
-      display: grid;
-      grid-template-columns: 40px 1fr;
-      gap: 10px;
-      align-items: center;
-      min-height: 58px;
-      border: 1px solid #e5eaec;
-      border-radius: 15px;
-      background: #f7f9f9;
-      color: #173f35;
-      padding: 10px 12px;
-      cursor: pointer;
-      text-align: left;
-    }
-
-    .home-point-button:hover {
-      background: #edf1f2;
-    }
-
-    .home-point-button strong {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: white;
-      border: 1px solid #e1e6e8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 19px;
-      line-height: 1;
-    }
-
-    .home-point-button span {
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    .home-side-card {
       width: 100%;
       border: 1px solid #CBEAB8;
       background: #F0FAEA;
       color: #173f35;
-      padding: 24px 22px;
+      padding: 20px;
       text-align: left;
-      cursor: pointer;
     }
 
-    .home-side-card:hover {
-      border-color: #7ED957;
-      box-shadow: 0 10px 28px rgba(126, 217, 87, 0.18);
+    .featured-header {
+      margin-bottom: 14px;
     }
 
-    .home-side-card:disabled {
-      cursor: wait;
-      opacity: 0.78;
-    }
-
-    .home-side-card span {
+    .featured-eyebrow {
       display: inline-flex;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       padding: 6px 11px;
       border-radius: 999px;
       background: white;
       border: 1px solid #CBEAB8;
-      color: #7ED957;
+      color: #68C547;
       font-size: 13px;
       font-weight: 900;
     }
 
-    .home-side-card strong {
-      display: block;
-      margin-bottom: 12px;
+    .featured-header h2 {
+      margin: 0 0 5px;
       color: #173f35;
-      font-size: 27px;
+      font-size: 25px;
       line-height: 1.1;
-      font-weight: 900;
     }
 
-    .home-side-card p {
-      margin: 0 0 18px;
+    .featured-header p {
+      margin: 0;
       color: #4b5f57;
-      font-size: 16px;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .featured-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .featured-offer {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      min-height: 78px;
+      padding: 8px;
+      border: 1px solid #dce8d5;
+      border-radius: 13px;
+      background: white;
+      color: #173f35;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .featured-offer:hover {
+      transform: translateY(-1px);
+      border-color: #7ED957;
+      box-shadow: 0 7px 18px rgba(23, 63, 53, 0.08);
+    }
+
+    .featured-photo {
+      width: 64px;
+      height: 62px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #f4f6f7;
+      border: 1px solid #e1e6e8;
+    }
+
+    .featured-photo-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 62px;
+      border-radius: 10px;
+      background: #f4f6f7;
+      border: 1px solid #e1e6e8;
+      font-size: 22px;
+    }
+
+    .featured-details {
+      min-width: 0;
+    }
+
+    .featured-name {
+      display: block;
+      overflow: hidden;
+      margin-bottom: 3px;
+      color: #173f35;
+      font-size: 14px;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .featured-meta,
+    .featured-rating {
+      display: block;
+      color: #5f706a;
+      font-size: 12px;
+      line-height: 1.3;
+      font-weight: 700;
+    }
+
+    .featured-rating {
+      margin-top: 3px;
+      color: #173f35;
+    }
+
+    .featured-loading,
+    .featured-empty {
+      padding: 18px 10px;
+      border: 1px dashed #c8d8c0;
+      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.66);
+      color: #5f706a;
+      text-align: center;
+      font-size: 13px;
       line-height: 1.4;
       font-weight: 700;
     }
 
-    .home-side-card small {
-      display: block;
-      padding-top: 16px;
+    .featured-footer {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
       border-top: 1px solid #CBEAB8;
-      color: #7ED957;
-      font-size: 14px;
+    }
+
+    .featured-all-link,
+    .nearby-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      border-radius: 10px;
+      font-size: 13px;
       font-weight: 900;
+      cursor: pointer;
+    }
+
+    .featured-all-link {
+      background: #7ED957;
+      color: #173A22;
+    }
+
+    .featured-all-link:hover {
+      background: #68C547;
+    }
+
+    .nearby-link {
+      border: 1px solid #bfdcae;
+      background: white;
+      color: #315c45;
+    }
+
+    .nearby-link:hover {
+      border-color: #7ED957;
+      background: #f8fff4;
+    }
+
+    .nearby-link:disabled {
+      cursor: wait;
+      opacity: 0.68;
     }
 
     .home-mini-info {
@@ -361,8 +348,8 @@
         grid-template-columns: 1fr 1fr auto;
       }
 
-      .home-side-card strong {
-        font-size: 24px;
+      .featured-header h2 {
+        font-size: 23px;
       }
     }
 
@@ -546,23 +533,24 @@
 
   </div>
 
-  <button
-    class="home-side-card nearby-card"
-    id="nearbyCard"
-    type="button"
-  >
-    <span data-i18n="home.nearbyEyebrow">Nabídky ve tvém okolí</span>
+  <aside class="home-side-card" aria-labelledby="featuredOffersTitle">
+    <div class="featured-header">
+      <span class="featured-eyebrow" data-i18n="home.featuredEyebrow">Doporučené nabídky</span>
+      <h2 id="featuredOffersTitle" data-i18n="home.featuredTitle">Nejlépe hodnocené nabídky</h2>
+      <p data-i18n="home.featuredText">Oblíbené věci od spolehlivých uživatelů Rentulo.</p>
+    </div>
 
-    <strong data-i18n="home.nearbyTitle">Najít věci podle mojí polohy</strong>
+    <div class="featured-list" id="featuredOffersList" aria-live="polite">
+      <div class="featured-loading" data-i18n="home.featuredLoading">Načítám doporučené nabídky...</div>
+    </div>
 
-    <p data-i18n="home.nearbyText">
-      Povol polohu a Rentulo ti ukáže dostupné nabídky od lidí ve tvém okolí.
-    </p>
-
-    <small id="nearbyCardStatus" data-i18n="home.nearbyAction">
-      Klikni pro hledání v okolí
-    </small>
-  </button>
+    <div class="featured-footer">
+      <a class="featured-all-link" href="vysledky.html" data-i18n="home.featuredAll">Zobrazit všechny nabídky</a>
+      <button class="nearby-link" id="nearbyCard" type="button">
+        <span id="nearbyCardStatus" data-i18n="home.nearbyTitle">Najít věci podle mojí polohy</span>
+      </button>
+    </div>
+  </aside>
 
 </section>
 
