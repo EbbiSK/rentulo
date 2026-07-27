@@ -544,7 +544,10 @@ const hasGps = offerHasGpsLocation(offer);
       let availabilityText = detailTranslate("detail.available");
       let availabilityPanelText = detailTranslate("detail.availabilityPanelActive");
 
-      if (!isActive) {
+      if (isOwner && isActive) {
+        availabilityText = detailTranslate("detail.ownerOfferActiveTitle");
+        availabilityPanelText = detailTranslate("detail.ownerOfferActiveText");
+      } else if (!isActive) {
         availabilityText = detailTranslate("detail.inactive");
         availabilityPanelText = detailTranslate("detail.availabilityPanelInactive");
       }
