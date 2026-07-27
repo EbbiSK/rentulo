@@ -126,8 +126,138 @@
 
     .home-content,
     .home-side-card {
+      background: white;
+      border: 1px solid #e1e6e8;
+      border-radius: 18px;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+    }
+
+    .home-content {
+      padding: 24px;
+    }
+
+    .home-content h1 {
+      max-width: 780px;
+      margin: 0 0 10px;
+      color: #173f35;
+      font-size: 42px;
+      line-height: 1.04;
+      letter-spacing: -0.04em;
+    }
+
+    .home-text {
+      max-width: 820px;
+      margin: 0 0 18px;
+      color: #4b5f57;
+      font-size: 17px;
+      line-height: 1.42;
+      font-weight: 700;
+    }
+
+    .search-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+      padding: 13px;
+      border-radius: 16px;
+      background: #fafbfb;
+      border: 1px solid #e1e6e8;
+      margin-bottom: 14px;
+    }
+
+    .search-field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .search-field label {
+      color: #173e33;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .search-field input {
       width: 100%;
-      border: 1px solid #CBEAB8;
+      height: 44px;
+      border: 1px solid #d7dee1;
+      border-radius: 11px;
+      background: white;
+      padding: 0 13px;
+      font-size: 15px;
+      color: #173f35;
+      font-weight: 700;
+    }
+
+    .search-field input:focus {
+      outline: none;
+      border-color: #7ED957;
+      box-shadow: 0 0 0 3px rgba(126, 217, 87, 0.22);
+    }
+
+    .search-button {
+      min-height: 44px;
+      border: none;
+      border-radius: 11px;
+      background: #7ED957;
+      color: #173A22;
+      padding: 0 20px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .search-button:hover {
+      background: #68C547;
+    }
+
+    .home-points {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .home-point-button {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 10px;
+      align-items: center;
+      min-height: 58px;
+      border: 1px solid #e5eaec;
+      border-radius: 15px;
+      background: #f7f9f9;
+      color: #173f35;
+      padding: 10px 12px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .home-point-button:hover {
+      background: #edf1f2;
+    }
+
+    .home-point-button strong {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: white;
+      border: 1px solid #e1e6e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .home-point-button span {
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .home-side-card {
+      width: 100%;
+      border-color: #CBEAB8;
       background: #F0FAEA;
       color: #173f35;
       padding: 20px;
