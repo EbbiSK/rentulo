@@ -92,22 +92,72 @@
     }
 
     function getUserNameSafe(user) {
-      if (typeof getUserName === "function") {
-        return getUserName(user);
+      if (!user) {
+        return accountTranslate("account.userFallback", "Uživatel");
       }
 
-      return user && (user.fullName || user.name || user.email)
-        ? (user.fullName || user.name || user.email)
-        : accountTranslate("account.userFallback", "Uživatel");
+      const metadata = user.user_metadata || {};
+      const profileName =
+        user.fullName ||
+        user.full_name ||
+        user.name ||
+        user.jmeno ||
+        metadata.full_name ||
+        metadata.name ||
+        "";
+
+      if (profileName) {
+        return profileName;
+      }
+
+      if (typeof getUserName === "function") {
+        const fallbackName = getUserName(user);
+        const fallbackEmail = getUserEmailSafe(user);
+
+        if (fallbackName && fallbackName !== fallbackEmail) {
+          return fallbackName;
+        }
+      }
+
+      return accountTranslate("account.userFallback", "Uživatel");
     }
 
     function getUserEmailSafe(user) {
+      if (!user) {
+        return "";
+      }
+
       if (typeof getUserEmail === "function") {
         return getUserEmail(user);
       }
 
-      return user && user.email ? user.email : "";
+      return user.email || user.userEmail || user.mail || "";
     }
+
+    async function loadCurrentUserProfile(user) {
+      if (!user || !user.id) {
+        return null;
+      }
+
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        return null;
+      }
+
+      const { data, error } = await supabaseClient
+        .from("profiles")
+        .select("full_name, email")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) {
+        return null;
+      }
+
+      return data || null;
+    }
+
 async function loadCurrentUserRating(user) {
   if (!user || !user.id) {
     return null;
@@ -133,8 +183,13 @@ async function loadCurrentUserRating(user) {
   return data;
 }
     async function updateProfileBox(user) {
-      const name = getUserNameSafe(user);
-      const email = getUserEmailSafe(user);
+      const profile = await loadCurrentUserProfile(user);
+      const name =
+        (profile && profile.full_name) ||
+        getUserNameSafe(user);
+      const email =
+        (profile && profile.email) ||
+        getUserEmailSafe(user);
 
       const greeting = document.getElementById("accountGreeting");
 const profileName = document.getElementById("profileName");
