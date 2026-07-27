@@ -14,8 +14,8 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f6f3ee;
-      color: #073f2e;
+      background: #f4f6f7;
+      color: #173f35;
     }
 
     a {
@@ -26,86 +26,97 @@
     .header {
       max-width: 1240px;
       margin: 0 auto;
-      padding: 6px 20px;
+      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 16px;
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 10px;
     }
 
     .logo-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: #006b45;
-      color: white;
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 21px;
-      font-weight: 800;
     }
 
-    .logo-icon::before {
-      content: "✓";
-    }
-
-    .logo-dot {
-      display: none;
+    .logo-icon img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
     .logo-text strong {
       display: block;
-      font-size: 19px;
+      font-size: 21px;
       line-height: 1;
-      color: #073f2e;
+      color: #173f35;
     }
 
     .logo-text small {
       display: block;
       margin-top: 2px;
       font-size: 12px;
-      color: #4d5b55;
+      color: #66736e;
     }
 
     .nav {
       display: flex;
       align-items: center;
-      gap: 16px;
-      font-size: 14px;
+      gap: 18px;
+      font-size: 15px;
     }
 
     .nav .active-link {
       font-weight: 800;
     }
 
+    .nav a {
+      font-weight: 500;
+    }
+
+    .nav-notification-badge {
+      background: #FF6A00 !important;
+      color: #173f35 !important;
+    }
+
+    .nav-account-link:hover .nav-notification-badge {
+      background: #E85F00 !important;
+    }
+
     .btn-register,
     .logout-link {
-      background: #006b45;
-      color: white !important;
-      padding: 9px 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #7ED957;
+      color: #173A22 !important;
+      padding: 10px 20px;
       border-radius: 999px;
-      font-weight: 800;
+      font-weight: 900;
       cursor: pointer;
     }
 
     .results-page {
       max-width: 1240px;
       margin: 0 auto;
-      padding: 8px 20px 24px;
+      padding: 16px 20px 34px;
     }
 
     .results-back-link {
       display: inline-flex;
       align-items: center;
       margin-bottom: 8px;
-      color: #006b45;
+      color: #4f9f35;
       font-size: 14px;
       font-weight: 800;
       text-decoration: none;
@@ -117,7 +128,7 @@
 
     .results-header {
       display: grid;
-      grid-template-columns: 1fr 500px;
+      grid-template-columns: minmax(0, 1fr) 520px;
       gap: 12px;
       align-items: end;
       margin-bottom: 11px;
@@ -126,15 +137,15 @@
     .eyebrow {
       margin: 0 0 3px;
       font-size: 13px;
-      color: #4d5b55;
+      color: #66736e;
       font-weight: 900;
     }
 
     .results-header h1 {
       margin: 0 0 4px;
-      font-size: 28px;
+      font-size: 30px;
       line-height: 1.05;
-      color: #073f2e;
+      color: #173f35;
     }
 
     .results-header p {
@@ -151,10 +162,10 @@
       gap: 8px;
       align-items: end;
       padding: 9px;
-      border-radius: 14px;
+      border-radius: 16px;
       background: white;
-      border: 1px solid #eadfd1;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      border: 1px solid #e1e6e8;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
     }
 
     .search-field {
@@ -171,28 +182,28 @@
     .search-field input {
       width: 100%;
       height: 36px;
-      border: 1px solid #d8d0c5;
+      border: 1px solid #d8e0e2;
       border-radius: 9px;
       background: white;
       padding: 0 10px;
       font-size: 13px;
-      color: #073f2e;
+      color: #173f35;
       font-weight: 700;
     }
 
     .search-field input:focus,
     .filter-group select:focus {
       outline: none;
-      border-color: #006b45;
-      box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
+      border-color: #4f9f35;
+      box-shadow: 0 0 0 3px rgba(126, 217, 87, 0.20);
     }
 
     #results-search-button {
       min-height: 36px;
       border: none;
       border-radius: 9px;
-      background: #006b45;
-      color: white;
+      background: #7ED957;
+      color: #173A22;
       padding: 0 12px;
       font-size: 13px;
       font-weight: 900;
@@ -201,7 +212,7 @@
     }
 
     #results-search-button:hover {
-      background: #00563a;
+      background: #68C547;
     }
 
     .nearby-results-banner {
@@ -209,9 +220,9 @@
       margin-bottom: 10px;
       padding: 9px 11px;
       border-radius: 12px;
-      background: #e2f3eb;
-      border: 1px solid #c4e6d4;
-      color: #073f2e;
+      background: #f0faea;
+      border: 1px solid #cfeabf;
+      color: #173f35;
       font-size: 13px;
       line-height: 1.3;
       font-weight: 800;
@@ -222,9 +233,9 @@
     }
 
     .nearby-results-banner.warning {
-      background: #fff7f0;
+      background: #fff4eb;
       border-color: #ffe0c8;
-      color: #5b3a22;
+      color: #7a421f;
     }
 
     .nearby-results-banner strong {
@@ -242,12 +253,12 @@
     }
 
     .nearby-results-banner.warning span {
-      color: #5b3a22;
+      color: #7a421f;
     }
 
     .results-layout {
       display: grid;
-      grid-template-columns: 200px 1fr;
+      grid-template-columns: 220px 1fr;
       gap: 12px;
       align-items: start;
     }
@@ -256,15 +267,15 @@
       position: sticky;
       top: 10px;
       background: white;
-      border: 1px solid #eadfd1;
+      border: 1px solid #e1e6e8;
       border-radius: 16px;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
-      padding: 11px;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+      padding: 14px;
     }
 
     .filters-card h2 {
       margin: 0 0 9px;
-      color: #073f2e;
+      color: #173f35;
       font-size: 16px;
     }
 
@@ -283,12 +294,12 @@
     .filter-group select {
       width: 100%;
       height: 36px;
-      border: 1px solid #d8d0c5;
+      border: 1px solid #d8e0e2;
       border-radius: 9px;
       background: white;
       padding: 0 9px;
       font-size: 13px;
-      color: #073f2e;
+      color: #173f35;
       font-weight: 700;
     }
 
@@ -296,9 +307,9 @@
       margin-top: 8px;
       padding: 8px 9px;
       border-radius: 11px;
-      background: #fffdf8;
-      border: 1px solid #eee8de;
-      color: #5b6862;
+      background: #fafbfb;
+      border: 1px solid #e1e6e8;
+      color: #5f6d67;
       font-size: 12px;
       line-height: 1.35;
       font-weight: 700;
@@ -315,24 +326,24 @@
       gap: 10px;
       align-items: start;
       padding: 9px;
-      border-radius: 14px;
+      border-radius: 16px;
       background: #ffffff;
-      border: 1px solid #eadfd1;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      border: 1px solid #e1e6e8;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
     }
 
     .result-image {
       width: 70px;
       height: 70px;
       border-radius: 10px;
-      background: #ece6dc;
+      background: #f1f3f4;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
       flex-shrink: 0;
       overflow: hidden;
-      border: 1px solid #e3dace;
+      border: 1px solid #dfe5e7;
     }
 
     .result-image img {
@@ -346,7 +357,7 @@
       width: 40px;
       height: 40px;
       border-radius: 11px;
-      background: #073f2e;
+      background: #173f35;
       color: white;
       display: flex;
       align-items: center;
@@ -384,14 +395,14 @@
 
     .result-title {
       margin: 0 0 3px;
-      color: #073f2e;
+      color: #173f35;
       font-size: 18px;
       line-height: 1.1;
     }
 
     .result-meta {
       margin: 0;
-      color: #4d5b55;
+      color: #66736e;
       font-size: 12px;
       font-weight: 800;
     }
@@ -407,14 +418,14 @@
       min-height: 40px;
       padding: 6px 7px;
       border-radius: 10px;
-      background: #f8f5f0;
-      border: 1px solid #eee8de;
+      background: #f7f9f9;
+      border: 1px solid #e1e6e8;
     }
 
     .result-info-box span {
       display: block;
       margin-bottom: 1px;
-      color: #5b6862;
+      color: #5f6d67;
       font-size: 11px;
       font-weight: 800;
       line-height: 1.15;
@@ -422,25 +433,25 @@
 
     .result-info-box strong {
       display: block;
-      color: #073f2e;
+      color: #173f35;
       font-size: 13px;
       line-height: 1.15;
     }
 
     .result-info-box.available strong {
-      color: #006b45;
+      color: #4f9f35;
     }
 
     .result-info-box.unavailable strong {
-      color: #df5b00;
+      color: #d96b22;
     }
 
     .result-info-box.distance strong {
-      color: #006b45;
+      color: #4f9f35;
     }
 
     .result-info-box.distance.missing strong {
-      color: #7a6a58;
+      color: #7a8580;
     }
 
     .availability-note {
@@ -453,14 +464,14 @@
     }
 
     .availability-note.available {
-      background: #e2f3eb;
-      color: #073f2e;
+      background: #f0faea;
+      color: #173f35;
     }
 
     .availability-note.unavailable {
-      background: #fff7f0;
-      color: #5b3a22;
-      border: 1px solid #ffe0c8;
+      background: #fff4eb;
+      color: #7a421f;
+      border: 1px solid #ffd8ba;
     }
 
     .result-actions {
@@ -477,8 +488,8 @@
       border: none;
       border-radius: 9px;
       padding: 8px 12px;
-      background: #006b45;
-      color: white;
+      background: #7ED957;
+      color: #173A22;
       font-size: 13px;
       font-weight: 900;
       cursor: pointer;
@@ -487,35 +498,35 @@
     }
 
     .result-button:hover {
-      background: #00563a;
+      background: #68C547;
     }
 
     .result-button.light {
-      background: #eee8de;
-      color: #073f2e;
+      background: #eef1f2;
+      color: #173f35;
     }
 
     .result-button.light:hover {
-      background: #e3dace;
+      background: #dfe5e7;
     }
 
     .empty-results {
       background: #ffffff;
-      border: 1px solid #eadfd1;
+      border: 1px solid #e1e6e8;
       border-radius: 16px;
       padding: 15px;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
     }
 
     .empty-results h2 {
       margin: 0 0 6px;
-      color: #073f2e;
+      color: #173f35;
       font-size: 20px;
     }
 
     .empty-results p {
       margin: 0;
-      color: #4d5b55;
+      color: #66736e;
       font-size: 14px;
       line-height: 1.4;
       font-weight: 700;
@@ -543,16 +554,16 @@
     }
 
     .empty-results-button:hover {
-      background: #00563a;
+      background: #68C547;
     }
 
     .empty-results-button.light {
-      background: #eee8de;
-      color: #073f2e;
+      background: #eef1f2;
+      color: #173f35;
     }
 
     .empty-results-button.light:hover {
-      background: #e3dace;
+      background: #dfe5e7;
     }
 
     @media (max-width: 980px) {
@@ -657,12 +668,11 @@
   <header class="header">
     <a href="index.html" class="logo">
       <div class="logo-icon">
-        <span class="logo-dot"></span>
+        <img src="assets/rentulo-logo-mark.png" alt="" aria-hidden="true" />
       </div>
 
       <div class="logo-text">
         <strong>Rentulo</strong>
-        <small data-i18n="brand.subtitle">Půjč si cokoli</small>
       </div>
     </a>
 
@@ -695,7 +705,7 @@
           <input id="results-search-where" type="text" placeholder="město nebo PSČ" data-i18n-placeholder="results.searchWherePlaceholder" />
         </div>
 
-        <button id="results-search-button" type="button" data-i18n="results.searchButton">Upravit</button>
+        <button id="results-search-button" type="button" data-i18n="results.searchButton">Vyhledat</button>
       </div>
     </section>
 
@@ -741,13 +751,13 @@
         <div class="filter-group">
           <label data-i18n="results.availabilityLabel">Dostupnost termínu</label>
           <select id="availabilityFilter">
-            <option value="" data-i18n="results.availabilityDetail">Ověří se v detailu</option>
+            <option value="" data-i18n="results.availabilityDetail">Dostupnost ověříme</option>
             <option value="available" data-i18n="results.availabilitySelectable">Nabídky s výběrem termínu</option>
           </select>
         </div>
 
         <div class="filter-note" data-i18n="results.filterNote">
-          Konkrétní termín se ověří až po výběru data v detailu. Jiná rezervace blokuje pouze překrývající se dny.
+          Konkrétní termín ověříte po výběru data v detailu. Obsazené jsou pouze překrývající se dny.
         </div>
       </aside>
 
