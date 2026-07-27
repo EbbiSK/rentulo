@@ -710,7 +710,7 @@ async function apiCreateNotification(notificationData) {
   typeof rentuloSupabase !== "undefined" ? rentuloSupabase : null;
 
   if (!supabaseClient) {
-    throw new Error("Supabase klient není dostupný.");
+    throw new Error("Služba je dočasně nedostupná. Obnovte stránku.");
   }
 
   const now = apiNow();

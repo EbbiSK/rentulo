@@ -684,7 +684,7 @@ return {
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        showOfferFormMessage(offerTranslate("offer.errorSupabaseMissing", "Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js."), "error");
+        showOfferFormMessage(offerTranslate("offer.errorSupabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu."), "error");
         return;
       }
 
@@ -699,7 +699,7 @@ return {
         const supabaseUser = await getCurrentSupabaseUser();
 
         if (!supabaseUser) {
-          showOfferFormMessage(offerTranslate("offer.errorNotAuthenticated", "Nejste přihlášený v Supabase. Přihlaste se prosím znovu."), "error");
+          showOfferFormMessage(offerTranslate("offer.errorNotAuthenticated", "Vaše přihlášení vypršelo. Přihlaste se prosím znovu."), "error");
           offerSaveInProgress = false;
           setOfferSavingState(false, status);
           return;
@@ -728,12 +728,12 @@ return {
         const message = error && error.message ? error.message : "";
 
         if (message.includes("row-level security")) {
-          showOfferFormMessage(offerTranslate("offer.errorRls", "Nabídku se nepodařilo uložit: Supabase odmítl zápis kvůli bezpečnostním pravidlům. Zkuste se odhlásit a znovu přihlásit."), "error");
+          showOfferFormMessage(offerTranslate("offer.errorRls", "Nabídku se nepodařilo uložit. Odhlaste se, znovu se přihlaste a opakujte akci."), "error");
           return;
         }
 
         if (message.includes("column") || message.includes("schema cache")) {
-          showOfferFormMessage(offerTranslate("offer.errorSchema", "Nabídku se nepodařilo uložit: některý sloupec v tabulce offers chybí."), "error");
+          showOfferFormMessage(offerTranslate("offer.errorSchema", "Nabídku se nyní nepodařilo uložit. Zkuste to prosím později."), "error");
           return;
         }
 

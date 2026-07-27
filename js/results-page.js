@@ -454,7 +454,7 @@ function getOfferPhoto(offer) {
 
     function getEmptyResultsContent(type) {
       const content = {
-        "load-error": ["results.empty.loadErrorTitle", "Nabídky se nepodařilo načíst.", "results.empty.loadErrorMessage", "Spojení se Supabase se nepodařilo. Zkontrolujte připojení, js/supabase-config.js a konzoli prohlížeče.", "vysledky.html", "results.tryAgain", "Zkusit znovu", "index.html", "results.backHome", "Zpět na úvod"],
+        "load-error": ["results.empty.loadErrorTitle", "Nabídky se nepodařilo načíst.", "results.empty.loadErrorMessage", "Zkontrolujte připojení k internetu a zkuste stránku obnovit.", "vysledky.html", "results.tryAgain", "Zkusit znovu", "index.html", "results.backHome", "Zpět na úvod"],
         "loading": ["results.empty.loadingTitle", "Načítám nabídky...", "results.empty.loadingMessage", "Chvíli strpení, načítáme nabídky ze Supabase.", "vysledky.html", "results.refresh", "Obnovit", "index.html", "results.backHome", "Zpět na úvod"],
         "no-offers": ["results.empty.noOffersTitle", "Zatím zde nejsou žádné nabídky.", "results.empty.noOffersMessage", "Na Rentulu zatím nikdo nepřidal žádnou věc k půjčení. Můžete přidat první nabídku a vyzkoušet, jak bude fungovat.", "nabidnout.html", "results.addItem", "Přidat věc", "index.html", "results.backHome", "Zpět na úvod"],
         "nearby-no-gps": ["results.empty.noGpsTitle", "Žádná nabídka zatím nemá uloženou GPS polohu.", "results.empty.noGpsMessage", "Hledání podle okolí funguje jen u nabídek, které mají uloženou polohu. Nabídky můžete stále procházet běžným hledáním podle názvu, kategorie nebo města.", "vysledky.html", "results.showAll", "Zobrazit všechny nabídky", "nabidnout.html", "results.addGpsListing", "Přidat nabídku s GPS"],

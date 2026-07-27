@@ -189,7 +189,7 @@ category: row.category || offersTranslate("offers.categoryFallback", "Ostatní")
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert(offersTranslate("offers.error.supabaseConfig", "Supabase klient není načtený. Zkontrolujte js/supabase-config.js."));
+        alert(offersTranslate("offers.error.supabaseConfig", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu."));
         return;
       }
 
@@ -210,7 +210,7 @@ category: row.category || offersTranslate("offers.categoryFallback", "Ostatní")
 
       if (offersResult.error) {
         console.error(offersResult.error);
-        alert(offersTranslate("offers.error.loadListings", "Nabídky se nepodařilo načíst ze Supabase. Podívejte se prosím do konzole."));
+        alert(offersTranslate("offers.error.loadListings", "Nabídky se nepodařilo načíst. Obnovte stránku a zkuste to znovu."));
         return;
       }
 
@@ -227,7 +227,7 @@ if (!reservationsResult.error) {
 
       if (reservationsResult.error) {
         console.error(reservationsResult.error);
-        alert(offersTranslate("offers.error.loadRequests", "Žádosti se nepodařilo načíst ze Supabase. Podívejte se prosím do konzole."));
+        alert(offersTranslate("offers.error.loadRequests", "Žádosti se nepodařilo načíst. Obnovte stránku a zkuste to znovu."));
         return;
       }
 
@@ -322,7 +322,7 @@ function getOfferStatus(offer) {
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert(offersTranslate("offers.error.supabaseMissing", "Supabase klient není načtený."));
+        alert(offersTranslate("offers.error.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku."));
         return null;
       }
 
@@ -338,7 +338,7 @@ const data = Array.isArray(updatedReservations)
 
       if (error) {
         console.error(error);
-        alert(offersTranslate("offers.error.saveStatus", "Stav rezervace se nepodařilo uložit do Supabase. Podívejte se prosím do konzole."));
+        alert(offersTranslate("offers.error.saveStatus", "Stav rezervace se nepodařilo uložit. Zkuste to prosím znovu."));
         return null;
       }
 
@@ -383,7 +383,7 @@ const data = Array.isArray(updatedReservations)
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert(offersTranslate("offers.error.supabaseMissing", "Supabase klient není načtený."));
+        alert(offersTranslate("offers.error.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku."));
         return;
       }
 
@@ -712,7 +712,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert(offersTranslate("offers.error.supabaseMissing", "Supabase klient není načtený."));
+        alert(offersTranslate("offers.error.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku."));
         return;
       }
 

@@ -186,7 +186,7 @@ const data = Array.isArray(reservationsData)
 
       if (error) {
         console.error(error);
-        alert(reservationsTranslate("reservations.error.load", "Rezervace se nepodařilo načíst ze Supabase. Podívejte se prosím do konzole."));
+        alert(reservationsTranslate("reservations.error.load", "Rezervace se nepodařilo načíst. Obnovte stránku a zkuste to znovu."));
         return [];
       }
 
@@ -400,7 +400,7 @@ return (
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert(reservationsTranslate("reservations.error.supabase", "Supabase klient není načtený."));
+        alert(reservationsTranslate("reservations.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku."));
         return;
       }
 
@@ -449,7 +449,7 @@ return (
 
       if (error) {
         console.error("Rezervaci se nepodařilo zrušit:", error);
-        alert(reservationsTranslate("reservations.error.cancel", "Rezervaci se nepodařilo zrušit. Podívejte se prosím do konzole."));
+        alert(reservationsTranslate("reservations.error.cancel", "Rezervaci se nepodařilo zrušit. Zkuste to prosím znovu."));
         return;
       }
 
@@ -466,7 +466,7 @@ return (
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert(reservationsTranslate("reservations.error.supabase", "Supabase klient není načtený."));
+        alert(reservationsTranslate("reservations.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku."));
         return;
       }
 
@@ -497,7 +497,7 @@ const data = Array.isArray(paidReservations)
 
       if (error) {
         console.error(error);
-        alert(reservationsTranslate("reservations.error.payment", "Platbu se nepodařilo uložit do Supabase. Podívejte se prosím do konzole."));
+        alert(reservationsTranslate("reservations.error.payment", "Platbu se nepodařilo dokončit. Zkuste to prosím znovu."));
         return;
       }
 
@@ -572,7 +572,7 @@ const data = Array.isArray(paidReservations)
       const reviewSupabaseClient = getSupabaseClient();
 
       if (!reviewSupabaseClient) {
-        alert(reservationsTranslate("reservations.error.supabaseUnavailable", "Supabase klient není dostupný. Obnovte stránku a zkuste to znovu."));
+        alert(reservationsTranslate("reservations.error.supabaseUnavailable", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu."));
         return;
       }
 

@@ -344,7 +344,7 @@ async function loadOfferFromSupabase(offerId) {
   const supabaseClient = getEditSupabaseClient();
 
   if (!supabaseClient) {
-    throw new Error(editT("editOffer.supabaseMissing", "Supabase klient není načtený."));
+    throw new Error(editT("editOffer.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku."));
   }
 
   const { data, error } = await supabaseClient
@@ -534,7 +534,7 @@ async function initializeEditOfferPage(supabaseUser) {
   const supabaseClient = getEditSupabaseClient();
 
   if (!supabaseClient) {
-    editShowMessage(editT("editOffer.supabaseMissing", "Supabase klient není načtený."));
+    editShowMessage(editT("editOffer.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku."));
     return;
   }
 
@@ -587,7 +587,7 @@ function setupEditOfferSave() {
     const supabaseUser = await getEditSupabaseUser();
 
     if (!supabaseClient || !supabaseUser) {
-      editShowMessage(editT("editOffer.sessionMissing", "Nejste přihlášený v Supabase. Přihlaste se prosím znovu."));
+      editShowMessage(editT("editOffer.sessionMissing", "Vaše přihlášení vypršelo. Přihlaste se prosím znovu."));
       return;
     }
 
@@ -701,7 +701,7 @@ function setupEditOfferSave() {
       console.error(error);
       editSaveInProgress = false;
       setEditSavingState(false);
-      editShowMessage(editT("editOffer.saveFailed", "Změny se nepodařilo uložit. Zkontrolujte konzoli nebo Supabase pravidla."));
+      editShowMessage(editT("editOffer.saveFailed", "Změny se nepodařilo uložit. Zkuste to prosím znovu."));
     }
   });
 }

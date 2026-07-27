@@ -240,7 +240,7 @@ localStorage.setItem("rentuloLoggedIn", "true");
       const supabaseClient = registrationGetSupabaseClient();
 
       if (!supabaseClient) {
-        registrationShowError(registrationT("registration.error.supabase", "Chyba: Supabase klient není načtený. Zkontrolujte js/supabase-config.js."));
+        registrationShowError(registrationT("registration.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu."));
         return;
       }
 

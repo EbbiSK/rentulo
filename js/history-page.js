@@ -332,7 +332,7 @@ async function historySaveReview(reservationId, role) {
 
   const client = typeof getSupabaseClient === "function" ? getSupabaseClient() : null;
   if (!client) {
-    alert(historyT("history.error.supabase", "Supabase klient není dostupný."));
+    alert(historyT("history.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku."));
     return;
   }
 
