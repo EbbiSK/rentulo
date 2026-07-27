@@ -121,7 +121,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) 320px;
       gap: 16px;
-      align-items: stretch;
+      align-items: start;
     }
 
     .home-content,
@@ -262,6 +262,7 @@
       color: #173f35;
       padding: 16px;
       text-align: left;
+      align-self: start;
     }
 
     .featured-header {
@@ -665,7 +666,7 @@
 
   <aside class="home-side-card" aria-labelledby="featuredOffersTitle">
     <div class="featured-header">
-      <span class="featured-eyebrow" data-i18n="home.featuredEyebrow">Doporučené nabídky</span>
+      <span class="featured-eyebrow" data-i18n="home.featuredEyebrow">Doporučené</span>
       <h2 id="featuredOffersTitle" data-i18n="home.featuredTitle">Nejlépe hodnocené nabídky</h2>
       <p data-i18n="home.featuredText">Oblíbené věci od spolehlivých uživatelů Rentulo.</p>
     </div>
@@ -677,7 +678,7 @@
     <div class="featured-footer">
       <a class="featured-all-link" href="vysledky.html" data-i18n="home.featuredAll">Všechny nabídky</a>
       <button class="nearby-link" id="nearbyCard" type="button">
-        <span id="nearbyCardStatus" data-i18n="home.nearbyTitle">Najít věci podle mojí polohy</span>
+        <span id="nearbyCardStatus" data-i18n="home.nearbyTitle">Najít nabídky v okolí</span>
       </button>
     </div>
   </aside>

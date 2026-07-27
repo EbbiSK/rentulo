@@ -312,7 +312,7 @@ function renderFeaturedOffers() {
     } else {
       const placeholder = document.createElement("div");
       placeholder.className = "featured-photo-placeholder";
-      placeholder.textContent = "📦";
+      placeholder.textContent = "📷";
       card.appendChild(placeholder);
     }
 
@@ -349,9 +349,10 @@ function renderFeaturedOffers() {
         localeByLanguage[currentLanguage] || "cs-CZ",
         { minimumFractionDigits: 1, maximumFractionDigits: 1 }
       );
-      rating.textContent =
-        "★ " + ratingValue +
-        " (" + offer.ratingCount + ")";
+      const ratingCountLabel = offer.ratingCount === 1
+        ? homeTranslate("home.featuredRatingOne", "1 hodnocení")
+        : offer.ratingCount + " " + homeTranslate("home.featuredRatingMany", "hodnocení");
+      rating.textContent = "★ " + ratingValue + " · " + ratingCountLabel;
     } else {
       rating.textContent = homeTranslate("home.featuredNoRating", "Zatím bez hodnocení");
     }
