@@ -382,7 +382,6 @@ return (
         <section class="account-empty-state">
           <h2>${escapeHtml(reservationsTranslate("reservations.empty.title", "Zatím nemáte žádné rezervace."))}</h2>
           <p>${escapeHtml(reservationsTranslate("reservations.empty.description", "Najděte věc ve svém okolí a pošlete první žádost o půjčení."))}</p>
-          <a href="vysledky.html">${escapeHtml(reservationsTranslate("reservations.findItem", "Najít věc"))}</a>
         </section>
       `;
     }
