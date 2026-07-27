@@ -14,8 +14,8 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f6f3ee;
-      color: #073f2e;
+      background: #f4f6f7;
+      color: #173f35;
     }
 
     a {
@@ -30,59 +30,54 @@
     .header {
       max-width: 1240px;
       margin: 0 auto;
-      padding: 6px 20px;
+      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 16px;
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 10px;
     }
 
     .logo-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: #006b45;
-      color: white;
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 21px;
-      font-weight: 800;
     }
 
-    .logo-icon::before {
-      content: "✓";
-    }
-
-    .logo-dot {
-      display: none;
+    .logo-icon img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
     .logo-text strong {
       display: block;
-      font-size: 19px;
+      font-size: 21px;
       line-height: 1;
-      color: #073f2e;
+      color: #173f35;
     }
 
     .logo-text small {
       display: block;
       margin-top: 2px;
       font-size: 12px;
-      color: #4d5b55;
+      color: #66736e;
     }
 
     .nav {
       display: flex;
       align-items: center;
-      gap: 16px;
-      font-size: 14px;
+      gap: 18px;
+      font-size: 15px;
     }
 
     .nav .active-link {
@@ -91,9 +86,9 @@
 
     .btn-register,
     .logout-link {
-      background: #006b45;
-      color: white !important;
-      padding: 9px 18px;
+      background: #7ED957;
+      color: #173A22 !important;
+      padding: 10px 20px;
       border-radius: 999px;
       font-weight: 800;
       cursor: pointer;
@@ -102,43 +97,43 @@
     .account-page {
       max-width: 1240px;
       margin: 0 auto;
-      padding: 8px 20px 24px;
+      padding: 10px 20px 24px;
     }
 
     .account-top {
       display: grid;
-      grid-template-columns: 1fr 290px;
-      gap: 14px;
+      grid-template-columns: 1fr 300px;
+      gap: 16px;
       align-items: stretch;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .account-welcome,
     .account-profile-card {
       background: white;
-      border: 1px solid #eadfd1;
+      border: 1px solid #e1e6e8;
       border-radius: 16px;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
-      padding: 14px;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+      padding: 16px;
     }
 
     .eyebrow {
       margin: 0 0 4px;
-      color: #4d5b55;
+      color: #66736e;
       font-size: 13px;
       font-weight: 900;
     }
 
     h1 {
       margin: 0 0 5px;
-      color: #073f2e;
-      font-size: 28px;
+      color: #173f35;
+      font-size: 30px;
       line-height: 1.05;
     }
 
     .account-welcome p {
       margin: 0;
-      color: #334c43;
+      color: #4b5f57;
       font-size: 14px;
       line-height: 1.35;
     }
@@ -154,7 +149,7 @@
       width: 52px;
       height: 52px;
       border-radius: 14px;
-      background: #006b45;
+      background: #FF6A00;
       color: white;
       display: flex;
       align-items: center;
@@ -174,7 +169,7 @@
     .profile-info span {
       display: block;
       margin-top: 2px;
-      color: #006b45;
+      color: #4f9f2f;
       font-size: 12px;
       font-weight: 900;
     }
@@ -182,7 +177,7 @@
     .profile-info small {
       display: block;
       margin-top: 2px;
-      color: #4d5b55;
+      color: #66736e;
       font-size: 12px;
       line-height: 1.25;
       word-break: break-word;
@@ -199,7 +194,7 @@
       font-size: 14px;
       font-weight: 800;
       line-height: 1.4;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
     }
 
     .account-alert-summary strong {
@@ -211,10 +206,6 @@
     }
 
     .account-table-title {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
       margin-bottom: 12px;
     }
 
@@ -252,17 +243,17 @@
       align-items: center;
       min-height: 138px;
       padding: 17px;
-      border: 1px solid #eadfd1;
+      border: 1px solid #e1e6e8;
       border-radius: 18px;
       background: white;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
       transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
     }
 
     .account-action-row:hover {
       transform: translateY(-2px);
-      border-color: #d7c8b7;
-      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.06);
+      border-color: #cfd8dc;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.06);
     }
 
     .account-action-icon {
@@ -270,8 +261,8 @@
       width: 52px;
       height: 52px;
       border-radius: 15px;
-      background: #f4efe7;
-      color: #006b45;
+      background: #f7f9f9;
+      color: #4f9f2f;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -297,7 +288,7 @@
 
     .account-action-description {
       grid-area: description;
-      color: #4d5b55;
+      color: #66736e;
       font-size: 13px;
       font-weight: 700;
       line-height: 1.35;
@@ -308,8 +299,8 @@
       display: inline-flex;
       width: fit-content;
       border-radius: 999px;
-      background: #f4efe7;
-      color: #334c43;
+      background: #f7f9f9;
+      color: #4b5f57;
       padding: 5px 9px;
       font-size: 12px;
       font-weight: 900;
@@ -324,8 +315,8 @@
       width: fit-content;
       align-self: center;
       border-radius: 11px;
-      background: #006b45;
-      color: white;
+      background: #7ED957;
+      color: #173A22;
       padding: 10px 14px;
       font-size: 13px;
       font-weight: 900;
@@ -333,11 +324,11 @@
       transition: background 0.18s ease;
     }
 
-    .account-action-button:hover { background: #00563a; }
-    .account-action-button.light { background: #eee8de; color: #073f2e; }
-    .account-action-button.light:hover { background: #e3dace; }
-    .account-action-button.orange { background: #ff6500; color: white; }
-    .account-action-button.orange:hover { background: #e85d00; }
+    .account-action-button:hover { background: #6BCB47; }
+    .account-action-button.light { background: #f1f3f2; color: #173f35; }
+    .account-action-button.light:hover { background: #e7ebea; }
+    .account-action-button.orange { background: #FF6A00; color: white; }
+    .account-action-button.orange:hover { background: #E85F00; }
 .account-settings-details {
   grid-column: span 1;
 }
@@ -361,10 +352,10 @@
 
 .account-settings-panel {
   padding: 20px;
-  border: 1px solid #eadfd1;
+  border: 1px solid #e1e6e8;
   border-radius: 18px;
   background: white;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
 }
 
 .account-settings-header {
@@ -383,7 +374,7 @@
 
 .account-settings-header p {
   margin: 0;
-  color: #4d5b55;
+  color: #66736e;
   font-size: 13px;
   font-weight: 700;
   line-height: 1.4;
@@ -391,8 +382,8 @@
 
 .account-settings-close {
   border: 0;
-  background: #eee8de;
-  color: #073f2e;
+  background: #f1f3f2;
+  color: #173f35;
   border-radius: 10px;
   padding: 9px 13px;
   font-size: 13px;
@@ -401,7 +392,7 @@
 }
 
 .account-settings-close:hover {
-  background: #e3dace;
+  background: #e7ebea;
 }
 
 .account-settings-grid {
@@ -438,7 +429,7 @@
 }
 
 .account-setting-field select:focus {
-  border-color: #006b45;
+  border-color: #4f9f2f;
   box-shadow: 0 0 0 3px rgba(0, 107, 69, 0.12);
 }
 
@@ -467,7 +458,7 @@
 .account-setting-switch-copy small {
   display: block;
   margin-top: 3px;
-  color: #4d5b55;
+  color: #66736e;
   font-size: 12px;
   line-height: 1.35;
 }
@@ -509,7 +500,7 @@
 }
 
 .account-switch input:checked + .account-switch-slider {
-  background: #006b45;
+  background: #7ED957;
 }
 
 .account-switch input:checked + .account-switch-slider::before {
@@ -526,8 +517,8 @@
 .account-settings-save {
   border: 0;
   border-radius: 11px;
-  background: #006b45;
-  color: white;
+  background: #7ED957;
+  color: #173A22;
   padding: 11px 18px;
   font-size: 14px;
   font-weight: 900;
@@ -535,7 +526,7 @@
 }
 
 .account-settings-save:hover {
-  background: #00563a;
+  background: #6BCB47;
 }
 
 .account-settings-save:disabled {
@@ -551,7 +542,7 @@
 
 .account-settings-message.success {
   display: block;
-  color: #006b45;
+  color: #4f9f2f;
 }
 
 .account-settings-message.error {
@@ -591,7 +582,7 @@
       padding: 0 7px;
       border-radius: 999px;
       background: #e2f3eb;
-      color: #006b45;
+      color: #4f9f2f;
       font-size: 12px;
       line-height: 24px;
       font-weight: 900;
@@ -600,7 +591,7 @@
     }
 
     .account-card-badge.hidden { display: none; }
-    .account-card-badge.alert { background: #ff6500; color: white; }
+    .account-card-badge.alert { background: #FF6A00; color: white; }
 
     .account-action-alert {
       background: #fff8f2 !important;
@@ -611,8 +602,8 @@
     .account-action-alert .account-action-icon { background: #fff0e6; color: #df5b00; }
     .account-action-alert .account-action-description { color: #df5b00; font-weight: 900; }
     .account-action-alert .account-type-pill { background: #fff0e6; color: #df5b00; }
-    .account-action-alert .account-action-button { background: #ff6500; color: white; }
-    .account-action-alert .account-action-button:hover { background: #e85d00; }
+    .account-action-alert .account-action-button { background: #FF6A00; color: white; }
+    .account-action-alert .account-action-button:hover { background: #E85F00; }
 
     @media (max-width: 900px) {
       .header {
@@ -688,7 +679,7 @@
   <header class="header">
     <a href="index.html" class="logo">
       <div class="logo-icon">
-        <span class="logo-dot"></span>
+        <img src="assets/rentulo-logo-mark.png" alt="" width="40" height="40" aria-hidden="true" />
       </div>
 
       <div class="logo-text">
@@ -743,9 +734,6 @@
   Co chcete udělat?
 </h2>
 
-<p data-i18n="account.actionsHint">
-  Vyberte jednu z hlavních částí účtu
-</p>
       </div>
 
       <div class="account-actions-grid">
