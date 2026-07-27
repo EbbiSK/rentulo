@@ -97,7 +97,6 @@
         <section class="account-empty-state">
           <h2>${offersTranslate("offers.emptyTitle", "Zatím nemáte žádné vlastní nabídky.")}</h2>
           <p>${offersTranslate("offers.emptyText", "Přidejte první věc, kterou chcete půjčovat lidem ve svém okolí.")}</p>
-<a href="nabidnout.html">${offersTranslate("offers.addListing", "Přidat nabídku")}</a>
         </section>
       `;
     }
