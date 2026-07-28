@@ -1,3 +1,13 @@
 node_modules/
 supabase/.temp/
 supabase/.branches/
+
+# Local environment and secret files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*
+secrets*
+.vercel/
