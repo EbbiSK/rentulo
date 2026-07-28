@@ -171,9 +171,10 @@ h1 {
 }
 
 .history-record .simple-reservation-row {
-  min-height: 50px !important;
+  min-height: 44px !important;
+  padding: 3px 12px !important;
+  gap: 12px !important;
   margin: 0 !important;
-  padding: 4px 12px !important;
   border: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
