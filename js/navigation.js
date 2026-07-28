@@ -694,12 +694,15 @@ function renderSharedNavigation(
   const currentUser =
     navGetCurrentUser();
 
-  const notificationCount =
-    Number(
-      window
-        .rentuloAccountNotificationCount
-    ) ||
-    navGetNotificationCount();
+  const storedNotificationCount = Number(
+    window.rentuloAccountNotificationCount
+  );
+
+  const notificationCount = Number.isFinite(
+    storedNotificationCount
+  )
+    ? storedNotificationCount
+    : navGetNotificationCount();
 
   const accountBadge =
     notificationCount > 0
