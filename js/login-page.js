@@ -226,6 +226,7 @@ function loginNormalizeEmail(email) {
         saveRememberLogin(rememberInput.checked);
 
         const allowedReturnPages = new Set([
+          "detail.html",
           "edit-nabidka.html",
           "historie.html",
           "moje-nabidky.html",
