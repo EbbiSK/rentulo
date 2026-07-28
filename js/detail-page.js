@@ -16,18 +16,25 @@
     function detailCategoryLabel(category) {
       const value = String(category || "").trim();
       const categories = {
-        "Dům a zahrada": "detail.category.homeGarden",
-        "Dílna a nářadí": "detail.category.workshopTools",
-        "Sport a volný čas": "detail.category.sportLeisure",
-        "Elektronika": "detail.category.electronics",
-        "Děti a rodina": "detail.category.childrenFamily",
-        "Auto a doprava": "detail.category.autoTransport",
-        "Párty a akce": "detail.category.partyEvents",
-        "Cestování a kempování": "detail.category.travelCamping",
-        "Stavební technika": "detail.category.construction",
-        "Ostatní": "detail.category.other"
+        "Domácnost": "home.category.household",
+        "Zahrada": "home.category.garden",
+        "Stavba": "home.category.construction",
+        "Hobby": "home.category.hobby",
+        "Párty": "home.category.party",
+        "Ostatní": "home.category.other",
+        "Dům a zahrada": "home.category.household",
+        "Dílna a nářadí": "home.category.construction",
+        "Stavební technika": "home.category.construction",
+        "Sport a volný čas": "home.category.hobby",
+        "Elektronika": "home.category.hobby",
+        "Děti a rodina": "home.category.hobby",
+        "Cestování a kempování": "home.category.hobby",
+        "Párty a akce": "home.category.party",
+        "Auto a doprava": "home.category.other"
       };
-      return categories[value] ? detailTranslate(categories[value]) : (value || detailTranslate("detail.category.other"));
+      return categories[value]
+        ? detailTranslate(categories[value])
+        : (value || detailTranslate("home.category.other"));
     }
 
     function detailStatusLabel(status) {

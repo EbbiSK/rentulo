@@ -416,8 +416,25 @@ function getOfferCity(offer) {
       return offer.city || offer.mesto || offer.location || "-";
     }
 
+    function normalizeOfferCategory(category) {
+      const value = String(category || "").trim();
+      const legacyMap = {
+        "Dům a zahrada": "Domácnost",
+        "Dílna a nářadí": "Stavba",
+        "Stavební technika": "Stavba",
+        "Sport a volný čas": "Hobby",
+        "Elektronika": "Hobby",
+        "Děti a rodina": "Hobby",
+        "Cestování a kempování": "Hobby",
+        "Párty a akce": "Párty",
+        "Auto a doprava": "Ostatní"
+      };
+
+      return legacyMap[value] || value || resultsTranslate("home.category.other", "Ostatní");
+    }
+
     function getOfferCategory(offer) {
-      return offer.category || offer.kategorie || resultsTranslate("category.other", "Ostatní");
+      return normalizeOfferCategory(offer.category || offer.kategorie);
     }
 
 function getOfferPhoto(offer) {

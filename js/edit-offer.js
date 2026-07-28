@@ -414,6 +414,23 @@ function editLockPriceFields(hasBlockingReservation) {
   priceInput.insertAdjacentElement("afterend", notice);
 }
 
+function normalizeEditOfferCategory(category) {
+  const value = String(category || "").trim();
+  const legacyMap = {
+    "Dům a zahrada": "Domácnost",
+    "Dílna a nářadí": "Stavba",
+    "Stavební technika": "Stavba",
+    "Sport a volný čas": "Hobby",
+    "Elektronika": "Hobby",
+    "Děti a rodina": "Hobby",
+    "Cestování a kempování": "Hobby",
+    "Párty a akce": "Párty",
+    "Auto a doprava": "Ostatní"
+  };
+
+  return legacyMap[value] || value;
+}
+
 function fillEditForm(offer) {
   const nameInput = document.querySelector("#edit-name");
   const categorySelect = document.querySelector("#edit-category");
@@ -437,7 +454,7 @@ function fillEditForm(offer) {
   }
 
   nameInput.value = offer.name || "";
-  categorySelect.value = offer.category || "";
+  categorySelect.value = normalizeEditOfferCategory(offer.category);
   cityInput.value = offer.city || "";
   postalInput.value = offer.postal_code || "";
   priceInput.value = editValueOrEmpty(offer.price_per_day);
