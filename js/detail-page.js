@@ -559,7 +559,9 @@ const hasGps = offerHasGpsLocation(offer);
     "",
     detailTranslate("detail.loginRequiredTitle"),
     detailTranslate("detail.loginRequiredText"),
-    "prihlaseni.html",
+    `prihlaseni.html?returnTo=${encodeURIComponent(
+  window.location.pathname.split("/").pop() + window.location.search
+)}`,
     detailTranslate("nav.login")
   );
 } else if (isOwner) {
@@ -746,7 +748,10 @@ const hasGps = offerHasGpsLocation(offer);
 
       if (!supabaseUser) {
         alert(detailTranslate("detail.error.loginAgain"));
-        window.location.href = "prihlaseni.html";
+        window.location.href =
+  `prihlaseni.html?returnTo=${encodeURIComponent(
+    window.location.pathname.split("/").pop() + window.location.search
+  )}`;
         return;
       }
 
@@ -754,7 +759,10 @@ const hasGps = offerHasGpsLocation(offer);
 
       if (!currentUser) {
         alert(detailTranslate("detail.error.login"));
-        window.location.href = "prihlaseni.html";
+       window.location.href =
+  `prihlaseni.html?returnTo=${encodeURIComponent(
+    window.location.pathname.split("/").pop() + window.location.search
+  )}`;
         return;
       }
 
