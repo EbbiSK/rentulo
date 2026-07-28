@@ -1141,14 +1141,32 @@ const data = Array.isArray(paidReservations)
       renderSharedNavigation("muj-ucet");
       renderReservations();
     }
+function closeReservationMoreMenus(exceptMenu = null) {
+  document
+    .querySelectorAll(".reservation-more-menu[open]")
+    .forEach(function (menu) {
+      if (menu !== exceptMenu) {
+        menu.removeAttribute("open");
+      }
+    });
+}
 
+function handleReservationMenuOutsideClick(event) {
+  const clickedMenu = event.target.closest(".reservation-more-menu");
+
+  closeReservationMoreMenus(clickedMenu);
+}
     function handleReservationsActionClick(event) {
       const actionButton = event.target.closest("[data-reservations-action]");
 
       if (!actionButton) {
         return;
       }
+const actionMenu = actionButton.closest(".reservation-more-menu");
 
+if (actionMenu) {
+  actionMenu.removeAttribute("open");
+}
       const action = actionButton.dataset.reservationsAction;
       const reservationId = actionButton.dataset.reservationId;
 
@@ -1181,7 +1199,7 @@ const data = Array.isArray(paidReservations)
     }
 
     document.addEventListener("click", handleReservationsActionClick);
-
+document.addEventListener("click", handleReservationMenuOutsideClick);
     document.addEventListener("DOMContentLoaded", function () {
       initializeReservationsPage();
     });
