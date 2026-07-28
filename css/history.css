@@ -200,6 +200,11 @@ h1 {
   background: #e2dbd1;
 }
 
+.history-detail-button:focus-visible {
+  outline: 2px solid rgba(126, 217, 87, 0.45);
+  outline-offset: 2px;
+}
+
 .history-primary-button {
   align-self: flex-start;
   background: #7ed957;
