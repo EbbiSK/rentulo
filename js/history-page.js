@@ -391,7 +391,7 @@ document.addEventListener("rentuloLanguageChanged", function () {
 
 document.addEventListener("DOMContentLoaded", async function () {
   if (!window.rentuloAuthGuard) {
-    console.error("Rentulo auth guard není dostupný.");
+    window.location.replace("prihlaseni.html?returnTo=historie.html");
     return;
   }
 
