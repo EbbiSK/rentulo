@@ -720,7 +720,7 @@ function setupEditOfferSave() {
     let newlyUploadedPhotoPath = "";
 
     try {
-      const previousPhotoUrl = getOfferPhoto(editCurrentOffer);
+      const previousPhotoUrl = getEditOfferPhoto(editCurrentOffer);
       const uploadedPhoto = await uploadEditedOfferPhoto(supabaseClient, supabaseUser.id);
       newlyUploadedPhotoPath = uploadedPhoto.isNew ? uploadedPhoto.path : "";
 
