@@ -597,9 +597,23 @@ return {
       });
     }
 
+    async function removeOfferPhotoFromStorage(supabaseClient, photoPath) {
+      if (!photoPath) {
+        return;
+      }
+
+      const { error } = await supabaseClient.storage
+        .from("offer-photos")
+        .remove([photoPath]);
+
+      if (error) {
+        console.error("Nepoužitou fotku se nepodařilo odstranit ze Storage.", error);
+      }
+    }
+
     async function uploadOfferPhoto(supabaseClient, userId) {
       if (!offerPhotoDataUrl) {
-        return "";
+        return { url: "", path: "" };
       }
 
       const photoBlob = dataUrlToBlob(offerPhotoDataUrl);
@@ -624,7 +638,10 @@ return {
 
       updatePhotoStatus(offerTranslate("offer.photoUploaded", "Fotka byla nahraná."), "success");
 
-      return data && data.publicUrl ? data.publicUrl : "";
+      return {
+        url: data && data.publicUrl ? data.publicUrl : "",
+        path: fileName
+      };
     }
 
     function createSupabaseOfferObject(status, supabaseUser, photoUrl) {
@@ -711,6 +728,8 @@ return {
       offerSaveInProgress = true;
       setOfferSavingState(true, status);
 
+      let uploadedPhotoPath = "";
+
       try {
         const supabaseUser = await getCurrentSupabaseUser();
 
@@ -721,8 +740,9 @@ return {
           return;
         }
 
-        const photoUrl = await uploadOfferPhoto(supabaseClient, supabaseUser.id);
-        const supabaseOffer = createSupabaseOfferObject(status, supabaseUser, photoUrl);
+        const uploadedPhoto = await uploadOfferPhoto(supabaseClient, supabaseUser.id);
+        uploadedPhotoPath = uploadedPhoto.path;
+        const supabaseOffer = createSupabaseOfferObject(status, supabaseUser, uploadedPhoto.url);
 
         const { data, error } = await supabaseClient
           .from("offers")
@@ -737,6 +757,10 @@ return {
         sessionStorage.setItem("rentuloOfferSaved", status);
         window.location.href = "moje-nabidky.html";
       } catch (error) {
+        if (uploadedPhotoPath) {
+          await removeOfferPhotoFromStorage(supabaseClient, uploadedPhotoPath);
+        }
+
         console.error("Nabídku se nepodařilo uložit.", error);
         offerSaveInProgress = false;
         setOfferSavingState(false, status);

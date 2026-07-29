@@ -493,13 +493,48 @@ function dataUrlToBlob(dataUrl) {
   });
 }
 
+function getOwnedOfferPhotoPath(photoUrl, userId) {
+  if (!photoUrl || !userId) {
+    return "";
+  }
+
+  try {
+    const parsedUrl = new URL(photoUrl, window.location.origin);
+    const marker = "/storage/v1/object/public/offer-photos/";
+    const markerIndex = parsedUrl.pathname.indexOf(marker);
+
+    if (markerIndex === -1) {
+      return "";
+    }
+
+    const photoPath = decodeURIComponent(parsedUrl.pathname.slice(markerIndex + marker.length));
+    return photoPath.startsWith(userId + "/") ? photoPath : "";
+  } catch (error) {
+    return "";
+  }
+}
+
+async function removeEditedOfferPhotoFromStorage(supabaseClient, photoPath) {
+  if (!photoPath) {
+    return;
+  }
+
+  const { error } = await supabaseClient.storage
+    .from("offer-photos")
+    .remove([photoPath]);
+
+  if (error) {
+    console.error("Starou fotku se nepodařilo odstranit ze Storage.", error);
+  }
+}
+
 async function uploadEditedOfferPhoto(supabaseClient, userId) {
   if (!editOfferPhotoDataUrl) {
-    return null;
+    return { url: null, path: "", isNew: false };
   }
 
   if (!editOfferPhotoDataUrl.startsWith("data:")) {
-    return editOfferPhotoDataUrl;
+    return { url: editOfferPhotoDataUrl, path: "", isNew: false };
   }
 
   const photoBlob = dataUrlToBlob(editOfferPhotoDataUrl);
@@ -524,7 +559,11 @@ async function uploadEditedOfferPhoto(supabaseClient, userId) {
 
   updateEditPhotoStatus(editT("editOffer.photoUploaded", "Fotka byla nahraná."), "success");
 
-  return data && data.publicUrl ? data.publicUrl : null;
+  return {
+    url: data && data.publicUrl ? data.publicUrl : null,
+    path: fileName,
+    isNew: true
+  };
 }
 
 function setEditSavingState(isSaving) {
@@ -678,8 +717,12 @@ function setupEditOfferSave() {
     editSaveInProgress = true;
     setEditSavingState(true);
 
+    let newlyUploadedPhotoPath = "";
+
     try {
-      const photoUrl = await uploadEditedOfferPhoto(supabaseClient, supabaseUser.id);
+      const previousPhotoUrl = getOfferPhoto(editCurrentOffer);
+      const uploadedPhoto = await uploadEditedOfferPhoto(supabaseClient, supabaseUser.id);
+      newlyUploadedPhotoPath = uploadedPhoto.isNew ? uploadedPhoto.path : "";
 
       const updatePayload = {
         name: nameInput.value.trim(),
@@ -687,7 +730,7 @@ function setupEditOfferSave() {
         city: cityInput.value.trim(),
         postal_code: postalInput.value.trim(),
         description: descriptionInput.value.trim(),
-        photo_url: photoUrl
+        photo_url: uploadedPhoto.url
       };
 
       if (!editHasBlockingReservation) {
@@ -705,6 +748,15 @@ function setupEditOfferSave() {
         throw error;
       }
 
+      const photoChanged = previousPhotoUrl && previousPhotoUrl !== uploadedPhoto.url;
+      const previousPhotoPath = photoChanged
+        ? getOwnedOfferPhotoPath(previousPhotoUrl, supabaseUser.id)
+        : "";
+
+      if (previousPhotoPath) {
+        await removeEditedOfferPhotoFromStorage(supabaseClient, previousPhotoPath);
+      }
+
       if (editHasBlockingReservation) {
         editShowMessage(editT("editOffer.savedPriceLocked", "Změny byly uloženy. Cena zůstala stejná, protože nabídka má aktivní rezervaci."), "success");
       } else {
@@ -715,6 +767,10 @@ function setupEditOfferSave() {
         window.location.href = "moje-nabidky.html";
       }, 900);
     } catch (error) {
+      if (newlyUploadedPhotoPath) {
+        await removeEditedOfferPhotoFromStorage(supabaseClient, newlyUploadedPhotoPath);
+      }
+
       console.error(error);
       editSaveInProgress = false;
       setEditSavingState(false);
