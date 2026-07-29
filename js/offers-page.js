@@ -203,6 +203,7 @@ category: row.category || offersTranslate("offers.categoryFallback", "Ostatní")
         .from("offers")
         .select("*")
         .eq("owner_id", supabaseUser.id)
+        .neq("status", "deleted")
         .order("created_at", {
           ascending: false
         });
@@ -435,7 +436,9 @@ const data = Array.isArray(updatedReservations)
 
       const { error } = await supabaseClient
         .from("offers")
-        .delete()
+        .update({
+          status: "deleted"
+        })
         .eq("id", offerId);
 
       if (error) {
