@@ -3,14 +3,16 @@ document.addEventListener("DOMContentLoaded", function () {
   setupHomeSearch();
   setupCategorySearch();
   setupNearbySearch();
-  loadFeaturedOffers();
+  loadHomeMapOffers();
 });
 
 document.addEventListener("rentuloLanguageChanged", function () {
-  renderFeaturedOffers();
+  renderHomeOffersMap();
 });
 
-let homeFeaturedOffers = [];
+let homeMap = null;
+let homeMapLayer = null;
+let homeMapOffers = [];
 
 function homeTranslate(key, fallback) {
   if (typeof window.rentuloTranslate === "function") {
@@ -36,10 +38,7 @@ function goToResults(what, where) {
   }
 
   const queryString = searchParams.toString();
-
-  window.location.href = queryString
-    ? "vysledky.html?" + queryString
-    : "vysledky.html";
+  window.location.href = queryString ? "vysledky.html?" + queryString : "vysledky.html";
 }
 
 function setupHomeSearch() {
@@ -47,27 +46,21 @@ function setupHomeSearch() {
   const whatInput = document.getElementById("home-search-what");
   const whereInput = document.getElementById("home-search-where");
 
-  if (!form) {
-    return;
-  }
+  if (!form) return;
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
-
-    const what = whatInput ? whatInput.value.trim() : "";
-    const where = whereInput ? whereInput.value.trim() : "";
-
-    goToResults(what, where);
+    goToResults(
+      whatInput ? whatInput.value.trim() : "",
+      whereInput ? whereInput.value.trim() : ""
+    );
   });
 }
 
 function setupCategorySearch() {
-  const categoryButtons = document.querySelectorAll(".home-point-button");
-
-  categoryButtons.forEach(function (button) {
+  document.querySelectorAll(".home-point-button").forEach(function (button) {
     button.addEventListener("click", function () {
-      const searchValue = button.dataset.search || "";
-      goToResults(searchValue, "");
+      goToResults(button.dataset.search || "", "");
     });
   });
 }
@@ -76,139 +69,110 @@ function setupNearbySearch() {
   const nearbyCard = document.getElementById("nearbyCard");
   const nearbyStatus = document.getElementById("nearbyCardStatus");
 
-  if (!nearbyCard) {
-    return;
-  }
+  if (!nearbyCard) return;
 
   nearbyCard.addEventListener("click", function () {
     if (!navigator.geolocation) {
-      const unavailable = homeTranslate(
-        "home.locationUnavailable",
-        "Poloha není v tomto prohlížeči dostupná."
-      );
-
       if (nearbyStatus) {
-        nearbyStatus.textContent = unavailable;
+        nearbyStatus.textContent = homeTranslate("home.locationUnavailable", "Poloha není v tomto prohlížeči dostupná.");
       }
-
-      alert(homeTranslate(
-        "home.locationUnavailableHelp",
-        "Zadejte město nebo PSČ ručně."
-      ));
+      alert(homeTranslate("home.locationUnavailableHelp", "Zadejte město nebo PSČ ručně."));
       return;
     }
 
     nearbyCard.disabled = true;
-
-    if (nearbyStatus) {
-      nearbyStatus.textContent = homeTranslate(
-        "home.locationLoading",
-        "Zjišťuji vaši polohu..."
-      );
-    }
+    if (nearbyStatus) nearbyStatus.textContent = homeTranslate("home.locationLoading", "Zjišťuji vaši polohu...");
 
     navigator.geolocation.getCurrentPosition(
       function (position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
 
-        localStorage.setItem(
-          "rentuloUserLocation",
-          JSON.stringify({
-            latitude: latitude,
-            longitude: longitude,
-            savedAt: new Date().toISOString()
-          })
-        );
+        localStorage.setItem("rentuloUserLocation", JSON.stringify({
+          latitude: latitude,
+          longitude: longitude,
+          savedAt: new Date().toISOString()
+        }));
 
-        window.location.href =
-          "vysledky.html?okoli=1&lat=" +
-          encodeURIComponent(latitude) +
-          "&lng=" +
-          encodeURIComponent(longitude);
+        window.location.href = "vysledky.html?okoli=1&lat=" + encodeURIComponent(latitude) + "&lng=" + encodeURIComponent(longitude);
       },
       function () {
         nearbyCard.disabled = false;
-
-        if (nearbyStatus) {
-          nearbyStatus.textContent = homeTranslate(
-            "home.locationDenied",
-            "Polohu se nepodařilo načíst."
-          );
-        }
-
-        alert(homeTranslate(
-          "home.locationDeniedHelp",
-          "Povolte přístup k poloze nebo zadejte město ručně."
-        ));
+        if (nearbyStatus) nearbyStatus.textContent = homeTranslate("home.locationDenied", "Polohu se nepodařilo načíst.");
+        alert(homeTranslate("home.locationDeniedHelp", "Povolte přístup k poloze nebo zadejte město ručně."));
       },
-      {
-        enableHighAccuracy: false,
-        timeout: 8000,
-        maximumAge: 300000
-      }
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
     );
   });
 }
 
-function getFeaturedOwnerId(offer) {
-  return String(offer.owner_id || offer.ownerId || "");
+function getStoredUserLocation() {
+  try {
+    const stored = JSON.parse(localStorage.getItem("rentuloUserLocation") || "null");
+    if (!stored || !Number.isFinite(Number(stored.latitude)) || !Number.isFinite(Number(stored.longitude))) return null;
+    return { latitude: Number(stored.latitude), longitude: Number(stored.longitude) };
+  } catch (error) {
+    return null;
+  }
 }
 
-function getFeaturedTimestamp(offer) {
-  const timestamp = Date.parse(offer.created_at || offer.createdAt || "");
-  return Number.isNaN(timestamp) ? 0 : timestamp;
+function distanceInKm(firstLat, firstLng, secondLat, secondLng) {
+  const toRadians = function (value) { return value * Math.PI / 180; };
+  const earthRadius = 6371;
+  const latitudeDistance = toRadians(secondLat - firstLat);
+  const longitudeDistance = toRadians(secondLng - firstLng);
+  const calculation = Math.sin(latitudeDistance / 2) ** 2 +
+    Math.cos(toRadians(firstLat)) * Math.cos(toRadians(secondLat)) *
+    Math.sin(longitudeDistance / 2) ** 2;
+
+  return earthRadius * 2 * Math.atan2(Math.sqrt(calculation), Math.sqrt(1 - calculation));
 }
 
-function getFeaturedScore(offer) {
-  const averageRating = Number(offer.averageRating || 0);
-  const ratingCount = Number(offer.ratingCount || 0);
+function compareMapOffers(first, second, userLocation) {
+  const ratingDifference = Number(second.averageRating || 0) - Number(first.averageRating || 0);
+  if (ratingDifference !== 0) return ratingDifference;
 
-  if (!ratingCount || !averageRating) {
-    return 0;
+  const countDifference = Number(second.ratingCount || 0) - Number(first.ratingCount || 0);
+  if (countDifference !== 0) return countDifference;
+
+  if (userLocation) {
+    const firstDistance = distanceInKm(userLocation.latitude, userLocation.longitude, first.map_latitude, first.map_longitude);
+    const secondDistance = distanceInKm(userLocation.latitude, userLocation.longitude, second.map_latitude, second.map_longitude);
+    if (firstDistance !== secondDistance) return firstDistance - secondDistance;
   }
 
-  const confidence = Math.min(ratingCount, 10) / 10;
-  return averageRating * (0.75 + confidence * 0.25);
+  return Date.parse(second.created_at || "") - Date.parse(first.created_at || "");
 }
 
-async function loadFeaturedOffers() {
-  const list = document.getElementById("featuredOffersList");
-  const supabaseClient = typeof getSupabaseClient === "function"
-    ? getSupabaseClient()
-    : null;
+async function loadHomeMapOffers() {
+  const status = document.getElementById("homeMapStatus");
+  const supabaseClient = typeof getSupabaseClient === "function" ? getSupabaseClient() : null;
 
-  if (!list || !supabaseClient) {
-    renderFeaturedOffersError();
+  if (!supabaseClient || typeof window.L === "undefined") {
+    showHomeMapError();
     return;
   }
 
-  const { data: offers, error: offersError } = await supabaseClient
-    .from("public_offers")
-    .select("id, owner_id, name, city, price_per_day, photo_url, status, created_at")
-    .eq("status", "active")
-    .order("created_at", { ascending: false })
-    .limit(40);
+  const { data: offers, error: offersError } = await supabaseClient.rpc("get_public_map_offers");
 
   if (offersError || !Array.isArray(offers)) {
-    console.error("Doporučené nabídky se nepodařilo načíst.");
-    renderFeaturedOffersError();
+    console.error("Mapa nabídek se nepodařila načíst.", offersError || "");
+    showHomeMapError();
     return;
   }
 
-  const ownerIds = Array.from(new Set(
-    offers.map(getFeaturedOwnerId).filter(Boolean)
-  ));
+  const ownerIds = Array.from(new Set(offers.map(function (offer) {
+    return String(offer.owner_id || "");
+  }).filter(Boolean)));
 
-  let ratingsByOwner = {};
-
+  const ratingsByOwner = {};
   if (ownerIds.length) {
-    const { data: ratings, error: ratingsError } = await supabaseClient
+    const { data: ratings } = await supabaseClient
       .from("user_rating_summary")
       .select("user_id, average_rating, rating_count")
       .in("user_id", ownerIds);
 
-    if (!ratingsError && Array.isArray(ratings)) {
+    if (Array.isArray(ratings)) {
       ratings.forEach(function (rating) {
         ratingsByOwner[String(rating.user_id)] = {
           averageRating: Number(rating.average_rating || 0),
@@ -218,152 +182,151 @@ async function loadFeaturedOffers() {
     }
   }
 
-  homeFeaturedOffers = offers
-    .map(function (offer) {
-      const rating = ratingsByOwner[getFeaturedOwnerId(offer)] || {};
-
-      return {
-        ...offer,
-        averageRating: Number(rating.averageRating || 0),
-        ratingCount: Number(rating.ratingCount || 0)
-      };
-    })
-    .sort(function (first, second) {
-      const scoreDifference = getFeaturedScore(second) - getFeaturedScore(first);
-
-      if (scoreDifference !== 0) {
-        return scoreDifference;
-      }
-
-      const ratingDifference = second.averageRating - first.averageRating;
-
-      if (ratingDifference !== 0) {
-        return ratingDifference;
-      }
-
-      const countDifference = second.ratingCount - first.ratingCount;
-
-      if (countDifference !== 0) {
-        return countDifference;
-      }
-
-      return getFeaturedTimestamp(second) - getFeaturedTimestamp(first);
-    })
-    .slice(0, 3);
-
-  renderFeaturedOffers();
-}
-
-function renderFeaturedOffersError() {
-  const list = document.getElementById("featuredOffersList");
-
-  if (!list) {
-    return;
-  }
-
-  list.textContent = "";
-
-  const message = document.createElement("div");
-  message.className = "featured-empty";
-  message.textContent = homeTranslate(
-    "home.featuredUnavailable",
-    "Doporučené nabídky teď nelze načíst."
-  );
-
-  list.appendChild(message);
-}
-
-function renderFeaturedOffers() {
-  const list = document.getElementById("featuredOffersList");
-
-  if (!list) {
-    return;
-  }
-
-  list.textContent = "";
-
-  if (!homeFeaturedOffers.length) {
-    const message = document.createElement("div");
-    message.className = "featured-empty";
-    message.textContent = homeTranslate(
-      "home.featuredEmpty",
-      "Zatím nejsou k dispozici žádné doporučené nabídky."
-    );
-    list.appendChild(message);
-    return;
-  }
-
-  homeFeaturedOffers.forEach(function (offer) {
-    const card = document.createElement("button");
-    card.type = "button";
-    card.className = "featured-offer";
-    card.setAttribute(
-      "aria-label",
-      homeTranslate("home.featuredOpen", "Otevřít nabídku") + ": " + (offer.name || "")
-    );
-
-    if (offer.photo_url) {
-      const image = document.createElement("img");
-      image.className = "featured-photo";
-      image.src = offer.photo_url;
-      image.alt = "";
-      image.loading = "lazy";
-      card.appendChild(image);
-    } else {
-      const placeholder = document.createElement("div");
-      placeholder.className = "featured-photo-placeholder";
-      placeholder.textContent = "📷";
-      card.appendChild(placeholder);
-    }
-
-    const details = document.createElement("div");
-    details.className = "featured-details";
-
-    const name = document.createElement("strong");
-    name.className = "featured-name";
-    name.textContent = offer.name || homeTranslate("home.featuredUnnamed", "Nabídka");
-    details.appendChild(name);
-
-    const meta = document.createElement("span");
-    meta.className = "featured-meta";
-    const city = offer.city || homeTranslate("home.featuredUnknownCity", "Město neuvedeno");
-    const currentLanguage = typeof window.getRentuloLanguage === "function"
-      ? window.getRentuloLanguage()
-      : "cs";
-    const localeByLanguage = {
-      cs: "cs-CZ",
-      en: "en-GB",
-      de: "de-DE"
+  homeMapOffers = offers.map(function (offer) {
+    const rating = ratingsByOwner[String(offer.owner_id || "")] || {};
+    return {
+      ...offer,
+      map_latitude: Number(offer.map_latitude),
+      map_longitude: Number(offer.map_longitude),
+      averageRating: Number(rating.averageRating || 0),
+      ratingCount: Number(rating.ratingCount || 0)
     };
-    const price = Number(offer.price_per_day || 0).toLocaleString(
-      localeByLanguage[currentLanguage] || "cs-CZ"
-    );
-    meta.textContent = city + " · " + price + " Kč / " + homeTranslate("home.featuredDay", "den");
-    details.appendChild(meta);
+  }).filter(function (offer) {
+    return Number.isFinite(offer.map_latitude) && Number.isFinite(offer.map_longitude);
+  });
 
-    const rating = document.createElement("span");
-    rating.className = "featured-rating";
+  if (status) status.hidden = true;
+  renderHomeOffersMap();
+}
 
-    if (offer.ratingCount > 0) {
-      const ratingValue = offer.averageRating.toLocaleString(
-        localeByLanguage[currentLanguage] || "cs-CZ",
-        { minimumFractionDigits: 1, maximumFractionDigits: 1 }
-      );
-      const ratingCountLabel = offer.ratingCount === 1
-        ? homeTranslate("home.featuredRatingOne", "1 hodnocení")
-        : offer.ratingCount + " " + homeTranslate("home.featuredRatingMany", "hodnocení");
-      rating.textContent = "★ " + ratingValue + " · " + ratingCountLabel;
-    } else {
-      rating.textContent = homeTranslate("home.featuredNoRating", "Zatím bez hodnocení");
+function initializeHomeMap() {
+  if (homeMap || typeof window.L === "undefined") return;
+
+  homeMap = window.L.map("homeOffersMap", {
+    zoomControl: true,
+    scrollWheelZoom: false,
+    attributionControl: true
+  }).setView([49.8, 15.5], 6);
+
+  window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    attribution: "&copy; OpenStreetMap"
+  }).addTo(homeMap);
+
+  homeMapLayer = window.L.layerGroup().addTo(homeMap);
+}
+
+function createMapMarkerIcon(count) {
+  return window.L.divIcon({
+    className: "",
+    html: '<div class="home-map-marker"><span>' + String(count) + '</span></div>',
+    iconSize: [34, 34],
+    iconAnchor: [17, 32],
+    popupAnchor: [0, -30]
+  });
+}
+
+function formatMapPrice(value) {
+  const language = typeof window.getRentuloLanguage === "function" ? window.getRentuloLanguage() : "cs";
+  const locale = language === "de" ? "de-DE" : language === "en" ? "en-GB" : "cs-CZ";
+  return Number(value || 0).toLocaleString(locale) + " Kč / " + homeTranslate("home.featuredDay", "den");
+}
+
+function buildMapPopup(group) {
+  const best = group[0];
+  const wrapper = document.createElement("div");
+  wrapper.className = "home-map-popup";
+
+  const name = document.createElement("strong");
+  name.className = "home-map-popup-name";
+  name.textContent = best.name || homeTranslate("home.featuredUnnamed", "Nabídka");
+  wrapper.appendChild(name);
+
+  const meta = document.createElement("span");
+  meta.className = "home-map-popup-meta";
+  meta.textContent = (best.city || homeTranslate("home.featuredUnknownCity", "Město neuvedeno")) + " · " + formatMapPrice(best.price_per_day);
+  wrapper.appendChild(meta);
+
+  const rating = document.createElement("span");
+  rating.className = "home-map-popup-rating";
+  rating.textContent = best.ratingCount > 0
+    ? "★ " + best.averageRating.toFixed(1) + " · " + best.ratingCount + " " + homeTranslate("home.featuredRatingMany", "hodnocení")
+    : homeTranslate("home.featuredNoRating", "Zatím bez hodnocení");
+  wrapper.appendChild(rating);
+
+  if (group.length > 1) {
+    const more = document.createElement("span");
+    more.className = "home-map-popup-more";
+    more.textContent = homeTranslate("home.mapMoreOffers", "Další nabídky v tomto okolí") + ": " + (group.length - 1);
+    wrapper.appendChild(more);
+  }
+
+  const link = document.createElement("a");
+  link.className = "home-map-popup-link";
+  link.href = "detail.html?id=" + encodeURIComponent(best.id);
+  link.textContent = homeTranslate("home.mapOpenDetail", "Zobrazit detail");
+  wrapper.appendChild(link);
+
+  return wrapper;
+}
+
+function renderHomeOffersMap() {
+  const status = document.getElementById("homeMapStatus");
+  initializeHomeMap();
+
+  if (!homeMap || !homeMapLayer) return;
+  homeMapLayer.clearLayers();
+
+  if (!homeMapOffers.length) {
+    if (status) {
+      status.hidden = false;
+      status.textContent = homeTranslate("home.mapEmpty", "Na mapě zatím nejsou žádné nabídky s uloženou přibližnou polohou.");
     }
+    return;
+  }
 
-    details.appendChild(rating);
-    card.appendChild(details);
+  if (status) status.hidden = true;
 
-    card.addEventListener("click", function () {
-      window.location.href = "detail.html?id=" + encodeURIComponent(offer.id);
+  const userLocation = getStoredUserLocation();
+  const groups = new Map();
+
+  homeMapOffers.forEach(function (offer) {
+    const key = offer.map_latitude.toFixed(2) + ":" + offer.map_longitude.toFixed(2);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(offer);
+  });
+
+  const bounds = [];
+  groups.forEach(function (group) {
+    group.sort(function (first, second) {
+      return compareMapOffers(first, second, userLocation);
     });
 
-    list.appendChild(card);
+    const best = group[0];
+    const marker = window.L.marker(
+      [best.map_latitude, best.map_longitude],
+      { icon: createMapMarkerIcon(group.length) }
+    ).addTo(homeMapLayer);
+
+    marker.bindPopup(buildMapPopup(group));
+    marker.on("mouseover", function () { marker.openPopup(); });
+    bounds.push([best.map_latitude, best.map_longitude]);
   });
+
+  if (userLocation) {
+    homeMap.setView([userLocation.latitude, userLocation.longitude], 9);
+  } else if (bounds.length === 1) {
+    homeMap.setView(bounds[0], 11);
+  } else if (bounds.length > 1) {
+    homeMap.fitBounds(bounds, { padding: [24, 24], maxZoom: 11 });
+  }
+
+  window.setTimeout(function () { homeMap.invalidateSize(); }, 50);
+}
+
+function showHomeMapError() {
+  const status = document.getElementById("homeMapStatus");
+  if (!status) return;
+  status.hidden = false;
+  status.textContent = homeTranslate("home.mapUnavailable", "Mapu se teď nepodařilo načíst. Nabídky zůstávají dostupné ve výsledcích hledání.");
 }

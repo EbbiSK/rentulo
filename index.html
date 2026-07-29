@@ -6,6 +6,7 @@
 
   <title data-i18n="home.documentTitle">Rentulo - půjčovna věcí</title>
 <link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     * {
       box-sizing: border-box;
@@ -520,6 +521,136 @@
         width: 100%;
       }
     }
+  
+
+    .home-map-card {
+      min-height: 420px;
+      padding: 14px;
+    }
+
+    .home-map-header {
+      margin-bottom: 10px;
+    }
+
+    .home-map-shell {
+      position: relative;
+      min-height: 300px;
+      overflow: hidden;
+      border: 1px solid #cfe1c5;
+      border-radius: 15px;
+      background: #eef3ef;
+    }
+
+    .home-offers-map {
+      width: 100%;
+      height: 300px;
+      z-index: 1;
+    }
+
+    .home-map-status {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(240, 250, 234, 0.94);
+      color: #4b5f57;
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.4;
+      font-weight: 800;
+    }
+
+    .home-map-status[hidden] {
+      display: none;
+    }
+
+    .home-map-footer {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .home-map-popup {
+      min-width: 190px;
+      color: #173f35;
+    }
+
+    .home-map-popup strong,
+    .home-map-popup span {
+      display: block;
+    }
+
+    .home-map-popup-name {
+      margin-bottom: 4px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .home-map-popup-meta,
+    .home-map-popup-rating,
+    .home-map-popup-more {
+      margin-top: 3px;
+      color: #5f706a;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .home-map-popup-link {
+      display: inline-flex;
+      margin-top: 9px;
+      padding: 7px 10px;
+      border-radius: 9px;
+      background: #7ED957;
+      color: #173A22 !important;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .home-map-marker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border: 3px solid white;
+      border-radius: 50% 50% 50% 10%;
+      background: #ff6a00;
+      color: white;
+      box-shadow: 0 5px 14px rgba(23, 63, 53, 0.28);
+      font-size: 12px;
+      font-weight: 900;
+      transform: rotate(-45deg);
+    }
+
+    .home-map-marker span {
+      transform: rotate(45deg);
+    }
+
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+      background: white;
+    }
+
+    @media (max-width: 920px) {
+      .home-map-card {
+        min-height: 380px;
+      }
+
+      .home-offers-map,
+      .home-map-shell {
+        min-height: 280px;
+        height: 280px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .home-map-footer {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 
@@ -664,18 +795,19 @@
 
   </div>
 
-  <aside class="home-side-card" aria-labelledby="featuredOffersTitle">
-    <div class="featured-header">
-      <span class="featured-eyebrow" data-i18n="home.featuredEyebrow">Doporučené</span>
-      <h2 id="featuredOffersTitle" data-i18n="home.featuredTitle">Nejlépe hodnocené nabídky</h2>
-      <p data-i18n="home.featuredText">Oblíbené věci od spolehlivých uživatelů Rentulo.</p>
+  <aside class="home-side-card home-map-card" aria-labelledby="homeMapTitle">
+    <div class="featured-header home-map-header">
+      <span class="featured-eyebrow" data-i18n="home.mapEyebrow">Mapa nabídek</span>
+      <h2 id="homeMapTitle" data-i18n="home.mapTitle">Co si můžete půjčit v okolí</h2>
+      <p data-i18n="home.mapText">Body zobrazují jen přibližnou polohu. V každém místě má přednost nejlépe hodnocená nabídka.</p>
     </div>
 
-    <div class="featured-list" id="featuredOffersList" aria-live="polite">
-      <div class="featured-loading" data-i18n="home.featuredLoading">Načítám doporučené nabídky...</div>
+    <div class="home-map-shell">
+      <div id="homeOffersMap" class="home-offers-map" aria-label="Mapa dostupných nabídek"></div>
+      <div id="homeMapStatus" class="home-map-status" aria-live="polite" data-i18n="home.mapLoading">Načítám nabídky do mapy...</div>
     </div>
 
-    <div class="featured-footer">
+    <div class="featured-footer home-map-footer">
       <a class="featured-all-link" href="vysledky.html" data-i18n="home.featuredAll">Všechny nabídky</a>
       <button class="nearby-link" id="nearbyCard" type="button">
         <span id="nearbyCardStatus" data-i18n="home.nearbyTitle">Najít nabídky v okolí</span>
@@ -687,6 +819,7 @@
 
   </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/api.js"></script>
