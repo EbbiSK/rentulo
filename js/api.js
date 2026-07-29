@@ -742,4 +742,36 @@ async function apiCreateNotification(notificationData) {
 }
 
 
+
+async function apiSendReservationEmail(reservationId, eventType) {
+  const supabaseClient = getSupabaseClient();
+
+  if (!supabaseClient || !reservationId || !eventType) {
+    return { ok: false, skipped: true };
+  }
+
+  try {
+    const { data, error } = await supabaseClient.functions.invoke(
+      "send-reservation-email",
+      {
+        body: {
+          reservation_id: reservationId,
+          event: eventType
+        }
+      }
+    );
+
+    if (error) {
+      console.warn("E-mailové upozornění se nepodařilo odeslat:", error);
+      return { ok: false, error: error };
+    }
+
+    return data || { ok: true };
+  } catch (error) {
+    console.warn("E-mailové upozornění se nepodařilo odeslat:", error);
+    return { ok: false, error: error };
+  }
+}
+
 window.apiGetReservations = apiGetReservations;
+window.apiSendReservationEmail = apiSendReservationEmail;
