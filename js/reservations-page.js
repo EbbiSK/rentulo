@@ -10,6 +10,42 @@ function reservationsTranslate(key, fallback) {
     let supabaseReservations = [];
     let supabaseReviews = [];
 
+    async function sendReservationEmailSafely(reservationId, eventType) {
+      if (!reservationId || !eventType) {
+        return;
+      }
+
+      if (typeof window.apiSendReservationEmail === "function") {
+        await window.apiSendReservationEmail(reservationId, eventType);
+        return;
+      }
+
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        console.warn("E-mailové upozornění nebylo odesláno: Supabase není dostupný.");
+        return;
+      }
+
+      try {
+        const { error } = await supabaseClient.functions.invoke(
+          "send-reservation-email",
+          {
+            body: {
+              reservation_id: reservationId,
+              event: eventType
+            }
+          }
+        );
+
+        if (error) {
+          console.warn("E-mailové upozornění se nepodařilo odeslat:", error);
+        }
+      } catch (error) {
+        console.warn("E-mailové upozornění se nepodařilo odeslat:", error);
+      }
+    }
+
     function findRenterReviewForReservation(reservation) {
       if (!reservation) {
         return null;
@@ -452,9 +488,7 @@ return (
         return;
       }
 
-      if (typeof window.apiSendReservationEmail === "function") {
-        await window.apiSendReservationEmail(reservationId, "cancelled");
-      }
+      await sendReservationEmailSafely(reservationId, "cancelled");
 
       alert(reservationsTranslate("reservations.success.cancelled", "Rezervace byla zrušena a přesunuta do Historie."));
 
@@ -508,8 +542,8 @@ const data = Array.isArray(paidReservations)
 
         
 
-      if (data && typeof window.apiSendReservationEmail === "function") {
-        await window.apiSendReservationEmail(reservationId, "paid");
+      if (data) {
+        await sendReservationEmailSafely(reservationId, "paid");
       }
 
       supabaseReservations = await loadMyReservationsFromSupabase();
