@@ -238,7 +238,7 @@ function setupEditOfferPhotoUpload() {
       if (file.size > EDIT_OFFER_PHOTO_MAX_BYTES) {
         photoInput.value = "";
         updateEditPhotoFileName(null);
-        updateEditPhotoStatus(editT("editOffer.photoTooLarge", "Fotka je příliš velká. Maximální velikost je 10 MB."), "error");
+        updateEditPhotoStatus(editT("editOffer.photoTooLarge", "Fotka je příliš velká. Maximální velikost je 5 MB."), "error");
         return;
       }
 

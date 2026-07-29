@@ -447,7 +447,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           offerPhotoFile = null;
           photoInput.value = "";
           renderPhotoPreview("");
-          updatePhotoStatus(offerTranslate("offer.photoTooLarge", "Fotka je příliš velká. Maximální velikost je 10 MB."), "error");
+          updatePhotoStatus(offerTranslate("offer.photoTooLarge", "Fotka je příliš velká. Maximální velikost je 5 MB."), "error");
           setRemovePhotoButtonVisible(removePhotoButton, false);
           return;
         }
