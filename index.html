@@ -549,26 +549,25 @@
 
     .home-map-status {
       position: absolute;
-      inset: 0;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: rgba(240, 250, 234, 0.94);
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      z-index: 500;
+      padding: 9px 12px;
+      border: 1px solid rgba(207, 225, 197, 0.95);
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.9);
       color: #4b5f57;
       text-align: center;
-      font-size: 13px;
-      line-height: 1.4;
+      font-size: 12px;
+      line-height: 1.35;
       font-weight: 800;
+      box-shadow: 0 4px 12px rgba(23, 63, 53, 0.1);
+      backdrop-filter: blur(4px);
     }
 
     .home-map-status[hidden] {
       display: none;
-    }
-
-    .home-map-footer {
-      grid-template-columns: 1fr 1fr;
     }
 
     .home-map-popup {
@@ -642,12 +641,6 @@
       .home-map-shell {
         min-height: 280px;
         height: 280px;
-      }
-    }
-
-    @media (max-width: 520px) {
-      .home-map-footer {
-        grid-template-columns: 1fr;
       }
     }
 
@@ -807,12 +800,6 @@
       <div id="homeMapStatus" class="home-map-status" aria-live="polite" data-i18n="home.mapLoading">Načítám nabídky do mapy...</div>
     </div>
 
-    <div class="featured-footer home-map-footer">
-      <a class="featured-all-link" href="vysledky.html" data-i18n="home.featuredAll">Všechny nabídky</a>
-      <button class="nearby-link" id="nearbyCard" type="button">
-        <span id="nearbyCardStatus" data-i18n="home.nearbyTitle">Najít nabídky v okolí</span>
-      </button>
-    </div>
   </aside>
 
 </section>

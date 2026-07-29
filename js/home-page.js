@@ -2,7 +2,8 @@ document.addEventListener("DOMContentLoaded", function () {
   renderSharedNavigation("");
   setupHomeSearch();
   setupCategorySearch();
-  setupNearbySearch();
+  initializeHomeMap();
+  centerHomeMapOnVisitor();
   loadHomeMapOffers();
 });
 
@@ -104,6 +105,42 @@ function setupNearbySearch() {
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
     );
   });
+}
+
+
+function centerHomeMapOnVisitor() {
+  const storedLocation = getStoredUserLocation();
+
+  if (storedLocation && homeMap) {
+    homeMap.setView([storedLocation.latitude, storedLocation.longitude], 9);
+    return;
+  }
+
+  if (!navigator.geolocation) return;
+
+  navigator.geolocation.getCurrentPosition(
+    function (position) {
+      const location = {
+        latitude: Number(position.coords.latitude),
+        longitude: Number(position.coords.longitude)
+      };
+
+      if (!Number.isFinite(location.latitude) || !Number.isFinite(location.longitude)) return;
+
+      localStorage.setItem("rentuloUserLocation", JSON.stringify({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        savedAt: new Date().toISOString()
+      }));
+
+      if (homeMap) homeMap.setView([location.latitude, location.longitude], 9);
+      renderHomeOffersMap();
+    },
+    function () {
+      // Bez souhlasu zůstane zobrazena neutrální mapa Česka.
+    },
+    { enableHighAccuracy: false, timeout: 6000, maximumAge: 600000 }
+  );
 }
 
 function getStoredUserLocation() {
@@ -280,7 +317,7 @@ function renderHomeOffersMap() {
   if (!homeMapOffers.length) {
     if (status) {
       status.hidden = false;
-      status.textContent = homeTranslate("home.mapEmpty", "Na mapě zatím nejsou žádné nabídky s uloženou přibližnou polohou.");
+      status.textContent = homeTranslate("home.mapEmpty", "V tomto okolí zatím nejsou žádné nabídky.");
     }
     return;
   }
