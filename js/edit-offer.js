@@ -3,7 +3,7 @@ let editCurrentOffer = null;
 let editHasBlockingReservation = false;
 let editSaveInProgress = false;
 
-const EDIT_OFFER_PHOTO_MAX_BYTES = 10 * 1024 * 1024;
+const EDIT_OFFER_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 const EDIT_OFFER_PHOTO_ALLOWED_TYPES = [
   "image/jpeg",
   "image/png",

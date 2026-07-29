@@ -2,7 +2,7 @@ let offerSaveInProgress = false;
     let offerPhotoDataUrl = "";
     let offerPhotoFile = null;
 
-    const OFFER_PHOTO_MAX_BYTES = 10 * 1024 * 1024;
+    const OFFER_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
     const OFFER_PHOTO_ALLOWED_TYPES = [
       "image/jpeg",
       "image/png",
