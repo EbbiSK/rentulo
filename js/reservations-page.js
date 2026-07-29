@@ -496,7 +496,7 @@ return (
 
 const data = Array.isArray(paidReservations)
   ? paidReservations[0] || null
-  : null;
+  : paidReservations || null;
 
       if (error) {
         console.error(error);
