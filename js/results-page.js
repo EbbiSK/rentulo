@@ -15,6 +15,12 @@
     function resultsCategoryLabel(category) {
       const normalized = normalizeText(category || "");
       const keys = {
+        "domacnost": "home.category.household",
+        "zahrada": "home.category.garden",
+        "stavba": "home.category.construction",
+        "hobby": "home.category.hobby",
+        "party": "home.category.party",
+        "ostatni": "home.category.other",
         "dum a zahrada": "category.homeGarden",
         "dilna a naradi": "category.workshopTools",
         "sport a volny cas": "category.sportLeisure",
@@ -23,8 +29,7 @@
         "auto a doprava": "category.autoTransport",
         "party a akce": "category.partyEvents",
         "cestovani a kempovani": "category.travelCamping",
-        "stavebni technika": "category.construction",
-        "ostatni": "category.other"
+        "stavebni technika": "category.construction"
       };
       const key = keys[normalized];
       return key ? resultsTranslate(key, category) : category;
