@@ -856,6 +856,10 @@ total_price: totalPrice,
         } catch (storageError) {
           console.warn("ID nové rezervace se nepodařilo uložit do sessionStorage.", storageError);
         }
+
+        if (typeof window.apiSendReservationEmail === "function") {
+          await window.apiSendReservationEmail(data.id, "new_request");
+        }
       }
 
       window.location.href = "moje-rezervace.html";

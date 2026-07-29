@@ -452,6 +452,10 @@ return (
         return;
       }
 
+      if (typeof window.apiSendReservationEmail === "function") {
+        await window.apiSendReservationEmail(reservationId, "cancelled");
+      }
+
       alert(reservationsTranslate("reservations.success.cancelled", "Rezervace byla zrušena a přesunuta do Historie."));
 
       supabaseReservations = await loadMyReservationsFromSupabase();
@@ -503,6 +507,10 @@ const data = Array.isArray(paidReservations)
       
 
         
+
+      if (data && typeof window.apiSendReservationEmail === "function") {
+        await window.apiSendReservationEmail(reservationId, "paid");
+      }
 
       supabaseReservations = await loadMyReservationsFromSupabase();
       supabaseReviews = await loadMyReviewsFromSupabase();

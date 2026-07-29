@@ -347,34 +347,46 @@ const data = Array.isArray(updatedReservations)
     }
 
     async function approveReservation(reservationId) {
-      await updateReservationStatus(
+      const updated = await updateReservationStatus(
   reservationId,
   RESERVATION_STATUS_APPROVED
 );
+      if (updated && typeof window.apiSendReservationEmail === "function") {
+        await window.apiSendReservationEmail(reservationId, "approved");
+      }
       await reloadAndReopen(reservationId, "open");
     }
 
     async function rejectReservation(reservationId) {
-     await updateReservationStatus(
+     const updated = await updateReservationStatus(
   reservationId,
   RESERVATION_STATUS_REJECTED
 );
+      if (updated && typeof window.apiSendReservationEmail === "function") {
+        await window.apiSendReservationEmail(reservationId, "rejected");
+      }
       await reloadAndReopen(reservationId, "history");
     }
 
     async function markReservationPickedUp(reservationId) {
-      await updateReservationStatus(
+      const updated = await updateReservationStatus(
   reservationId,
   RESERVATION_STATUS_PICKED_UP
 );
+      if (updated && typeof window.apiSendReservationEmail === "function") {
+        await window.apiSendReservationEmail(reservationId, "picked_up");
+      }
       await reloadAndReopen(reservationId, "open");
     }
 
     async function markReservationReturned(reservationId) {
-      await updateReservationStatus(
+      const updated = await updateReservationStatus(
   reservationId,
   RESERVATION_STATUS_RETURNED
 );
+      if (updated && typeof window.apiSendReservationEmail === "function") {
+        await window.apiSendReservationEmail(reservationId, "returned");
+      }
       await reloadAndReopen(reservationId, "history");
     }
 
