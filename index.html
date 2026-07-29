@@ -549,20 +549,22 @@
 
     .home-map-status {
       position: absolute;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
+      left: 50%;
+      bottom: 7px;
       z-index: 500;
-      padding: 9px 12px;
+      width: max-content;
+      max-width: calc(100% - 24px);
+      transform: translateX(-50%);
+      padding: 5px 9px;
       border: 1px solid rgba(207, 225, 197, 0.95);
-      border-radius: 11px;
+      border-radius: 9px;
       background: rgba(255, 255, 255, 0.9);
       color: #4b5f57;
       text-align: center;
-      font-size: 12px;
-      line-height: 1.35;
+      font-size: 11px;
+      line-height: 1.25;
       font-weight: 800;
-      box-shadow: 0 4px 12px rgba(23, 63, 53, 0.1);
+      box-shadow: 0 3px 9px rgba(23, 63, 53, 0.08);
       backdrop-filter: blur(4px);
     }
 
