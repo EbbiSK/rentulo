@@ -108,39 +108,62 @@ function setupNearbySearch() {
 }
 
 
+function applyVisitorLocation(position) {
+  const location = {
+    latitude: Number(position && position.coords ? position.coords.latitude : NaN),
+    longitude: Number(position && position.coords ? position.coords.longitude : NaN)
+  };
+
+  if (!Number.isFinite(location.latitude) || !Number.isFinite(location.longitude)) return;
+
+  localStorage.setItem("rentuloUserLocation", JSON.stringify({
+    latitude: location.latitude,
+    longitude: location.longitude,
+    savedAt: new Date().toISOString()
+  }));
+
+  if (homeMap) {
+    homeMap.setView([location.latitude, location.longitude], 9, { animate: true });
+    window.setTimeout(function () {
+      if (homeMap) homeMap.invalidateSize();
+    }, 0);
+  }
+
+  renderHomeOffersMap();
+}
+
+function requestVisitorLocation() {
+  if (!navigator.geolocation) return;
+
+  navigator.geolocation.getCurrentPosition(
+    applyVisitorLocation,
+    function () {
+      // Bez souhlasu zůstane zobrazena neutrální mapa Česka.
+    },
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
+  );
+}
+
 function centerHomeMapOnVisitor() {
   const storedLocation = getStoredUserLocation();
 
   if (storedLocation && homeMap) {
     homeMap.setView([storedLocation.latitude, storedLocation.longitude], 9);
-    return;
   }
 
-  if (!navigator.geolocation) return;
+  requestVisitorLocation();
 
-  navigator.geolocation.getCurrentPosition(
-    function (position) {
-      const location = {
-        latitude: Number(position.coords.latitude),
-        longitude: Number(position.coords.longitude)
-      };
-
-      if (!Number.isFinite(location.latitude) || !Number.isFinite(location.longitude)) return;
-
-      localStorage.setItem("rentuloUserLocation", JSON.stringify({
-        latitude: location.latitude,
-        longitude: location.longitude,
-        savedAt: new Date().toISOString()
-      }));
-
-      if (homeMap) homeMap.setView([location.latitude, location.longitude], 9);
-      renderHomeOffersMap();
-    },
-    function () {
-      // Bez souhlasu zůstane zobrazena neutrální mapa Česka.
-    },
-    { enableHighAccuracy: false, timeout: 6000, maximumAge: 600000 }
-  );
+  if (navigator.permissions && typeof navigator.permissions.query === "function") {
+    navigator.permissions.query({ name: "geolocation" }).then(function (permissionStatus) {
+      permissionStatus.addEventListener("change", function () {
+        if (permissionStatus.state === "granted") {
+          requestVisitorLocation();
+        }
+      });
+    }).catch(function () {
+      // Permissions API nemusí být v každém prohlížeči dostupné.
+    });
+  }
 }
 
 function getStoredUserLocation() {
