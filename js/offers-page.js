@@ -1252,9 +1252,20 @@ function renderSimpleOffer(offer, requests) {
                 </a>`
           }
 
-          <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">
-            ${offersTranslate("offers.editShort", "Upravit")}
-          </a>
+          <details class="offer-more-menu simple-offer-more-menu">
+            <summary aria-label="${escapeHtml(offersTranslate("offers.moreActions", "Další akce nabídky"))}">•••</summary>
+            <div class="offer-more-menu-panel">
+              <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">
+                ${offersTranslate("offers.edit", "Upravit nabídku")}
+              </a>
+              <button
+                class="danger"
+                type="button"
+                data-offers-action="delete-offer"
+                data-offer-id="${escapeHtml(offerId)}"
+              >${offersTranslate("offers.delete", "Smazat nabídku")}</button>
+            </div>
+          </details>
         </div>
       </article>
 
