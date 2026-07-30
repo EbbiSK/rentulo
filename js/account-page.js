@@ -380,7 +380,8 @@ category: row.category || accountTranslate("account.categoryFallback", "Ostatní
       const offersResult = await supabaseClient
         .from("offers")
         .select("*")
-        .eq("owner_id", supabaseUser.id);
+        .eq("owner_id", supabaseUser.id)
+        .neq("status", "deleted");
 
       if (offersResult.error) {
         console.error(offersResult.error);
