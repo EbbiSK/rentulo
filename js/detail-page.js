@@ -801,7 +801,7 @@ const hasGps = offerHasGpsLocation(offer);
       const { data, error } = await supabaseClient
         .from("reservations")
         .insert(reservationToInsert)
-        .select()
+        .select("id")
         .single();
 
       if (error) {
