@@ -280,35 +280,7 @@ async function apiGetCurrentUser() {
     return null;
   }
 
-  const storedUser = localStorage.getItem("rentuloUser");
-
-  if (!storedUser) {
-    return apiClone(data.user);
-  }
-
-  try {
-    const profile = JSON.parse(storedUser);
-
-    if (
-      profile.id &&
-      profile.id !== data.user.id
-    ) {
-      if (typeof clearCurrentUser === "function") {
-        clearCurrentUser();
-      }
-
-      return null;
-    }
-
-    return apiClone({
-      ...profile,
-      id: data.user.id,
-      email: data.user.email || profile.email
-    });
-  } catch (error) {
-    console.warn("Přihlášeného uživatele se nepodařilo načíst:", error);
-    return apiClone(data.user);
-  }
+  return apiClone(data.user);
 }
 
 async function apiRegister(userData) {

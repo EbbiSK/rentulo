@@ -224,32 +224,28 @@ let offerSaveInProgress = false;
         });
       }
     }
-function getOfferCurrentUserSafe() {
-  if (typeof getCurrentUser === "function") {
-    return getCurrentUser();
-  }
-
-  try {
-    const value = localStorage.getItem("rentuloUser");
-    return value ? JSON.parse(value) : null;
-  } catch (error) {
-    return null;
-  }
-}
-    function fillProfileAddressAsDefault() {
-      const currentUser =
-  typeof getCurrentUserSafe === "function"
-    ? getOfferCurrentUserSafe()
-    : null;
+    async function fillProfileAddressAsDefault(authenticatedUser) {
       const toolCityInput = document.getElementById("toolCity");
       const toolPostalInput = document.getElementById("toolPostalCode");
+      const supabaseClient = window.rentuloSupabase ||
+        (typeof rentuloSupabase !== "undefined" ? rentuloSupabase : null);
 
-      if (!currentUser) {
+      if (!authenticatedUser || !authenticatedUser.id || !supabaseClient) {
         return;
       }
 
-      const userCity = currentUser.city || currentUser.mesto || "";
-      const userPostalCode = currentUser.postalCode || currentUser.psc || "";
+      const { data: profile, error } = await supabaseClient
+        .from("profiles")
+        .select("city, postal_code")
+        .eq("id", authenticatedUser.id)
+        .maybeSingle();
+
+      if (error || !profile) {
+        return;
+      }
+
+      const userCity = profile.city || "";
+      const userPostalCode = profile.postal_code || "";
 
       if (toolCityInput && !toolCityInput.value.trim() && userCity) {
         toolCityInput.value = userCity;
@@ -891,7 +887,7 @@ return {
       renderSharedNavigation("nabidnout");
       setupCitySuggestions();
       setupPostalCodeAutocomplete();
-      fillProfileAddressAsDefault();
+      await fillProfileAddressAsDefault(authenticatedUser);
       setupOfferPhotoUpload();
       setupPickupCustomFields();
       setupPickupLocation();

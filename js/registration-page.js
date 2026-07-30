@@ -153,20 +153,6 @@
       return null;
     }
 
-    function registrationSaveCurrentUser(user) {
-      if (typeof saveCurrentUser === "function") {
-        saveCurrentUser(user);
-        return;
-      }
-
-      try {
-        localStorage.setItem("rentuloUser", JSON.stringify(user));
-localStorage.setItem("rentuloLoggedIn", "true");
-      } catch (error) {
-        console.warn(registrationT("registration.console.saveUserFailed", "Nepodařilo se uložit aktuálního uživatele do localStorage."), error);
-      }
-    }
-
     function setupCitySuggestions() {
       const datalist = document.getElementById("citySuggestions");
 
@@ -402,8 +388,6 @@ const { error: profileError } = await supabaseClient
 if (profileError) {
   throw profileError;
 }
-        registrationSaveCurrentUser(createdUser);
-
         window.location.href = "ucet-vytvoren.html";
       } catch (error) {
         console.error(error);

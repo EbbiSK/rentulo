@@ -24,16 +24,6 @@
     localStorage.removeItem("rentuloRememberLogin");
   }
 
-  function saveVerifiedUser(user) {
-    if (typeof saveCurrentUser === "function") {
-      saveCurrentUser(user);
-      return;
-    }
-
-    localStorage.setItem("rentuloUser", JSON.stringify(user));
-    localStorage.setItem("rentuloLoggedIn", "true");
-  }
-
   function redirectToLogin() {
     const currentPage = window.location.pathname.split("/").pop() || "muj-ucet.html";
     const returnTo = currentPage + window.location.search + window.location.hash;
@@ -62,7 +52,7 @@
         return null;
       }
 
-      saveVerifiedUser(user);
+      clearLegacyAuthState();
       return user;
     } catch (error) {
       console.error("Ověření přihlášení se nezdařilo:", error);

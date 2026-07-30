@@ -1,6 +1,7 @@
     let supabaseOffers = [];
     let supabaseOwnerReservations = [];
     let supabaseRenterReservations = [];
+    let verifiedAccountUser = null;
 
     function getSupabaseClient() {
       if (window.rentuloSupabase) {
@@ -76,19 +77,6 @@
 
     function isWaitingForPaymentStatus(status) {
       return normalizeStatus(status) === RESERVATION_STATUS_APPROVED;
-    }
-
-    function getCurrentUserSafe() {
-      if (typeof getCurrentUser === "function") {
-        return getCurrentUser();
-      }
-
-      try {
-        const value = localStorage.getItem("rentuloUser");
-        return value ? JSON.parse(value) : null;
-      } catch (error) {
-        return null;
-      }
     }
 
     function getUserNameSafe(user) {
@@ -430,7 +418,7 @@ const renterReservationsResult = {
     }
 
     function updateAccountActionBadgesFromSupabase() {
-      const user = getCurrentUserSafe();
+      const user = verifiedAccountUser;
 
       if (!user) {
         window.location.href = "prihlaseni.html";
@@ -666,6 +654,7 @@ if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
         return;
       }
 
+      verifiedAccountUser = user;
       updateProfileBox(user);
       renderSharedNavigation("muj-ucet");
 
