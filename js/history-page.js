@@ -337,13 +337,10 @@ async function historySaveReview(reservationId, role) {
   }
 
   const result = await client.from("reviews").insert({
-    reservation_id: reservationId,
-    reviewer_id: historyCurrentUser.id,
-    reviewed_user_id: reviewedUserId,
-    offer_id: historyGetOfferId(reservation),
-    rating: rating,
-    text: text
-  });
+  reservation_id: reservationId,
+  rating: rating,
+  text: text
+});
 
   if (result.error) {
     console.error("Chyba při ukládání hodnocení:", result.error);
