@@ -597,18 +597,12 @@ const data = Array.isArray(paidReservations)
       }
 
       const reviewToInsert = {
-        reservation_id: reservation.id || reservation.reservationId,
-        reviewer_id: supabaseUser.id,
-        reviewed_user_id: reservation.ownerId,
-        offer_id: reservation.offerId,
-        rating: rating,
-        text: text
-      };
+  reservation_id: reservation.id,
+  rating: rating,
+  text: text
+};
 
-      if (!reviewToInsert.reviewed_user_id) {
-        alert(reservationsTranslate("reservations.error.ownerId", "Chybí ID majitele pro hodnocení."));
-        return;
-      }
+      
 
       const reviewSupabaseClient = getSupabaseClient();
 

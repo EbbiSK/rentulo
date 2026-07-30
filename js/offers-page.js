@@ -749,13 +749,10 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       }
 
       const reviewToInsert = {
-        reservation_id: reservation.id,
-        reviewer_id: supabaseUser.id,
-        reviewed_user_id: reservation.renterId,
-        offer_id: reservation.offerId,
-        rating: rating,
-        text: text
-      };
+  reservation_id: reservation.id,
+  rating: rating,
+  text: text
+};
 
       const { error } = await supabaseClient
         .from("reviews")
