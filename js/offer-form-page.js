@@ -664,7 +664,7 @@ return {
         !Number.isNaN(pickupLongitude);
 
       return {
-        owner_id: supabaseUser.id,
+        
         name: getInputValue("toolName"),
         category: getInputValue("toolCategory"),
         description: getInputValue("toolDescription"),
