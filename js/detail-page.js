@@ -793,37 +793,10 @@ const hasGps = offerHasGpsLocation(offer);
 
 
       const reservationToInsert = {
-        offer_id: offer.id,
-        owner_id: ownerId,
-        renter_id: supabaseUser.id,
-
-        status: "pending",
-
-        offer_name: getOfferName(offer),
-        category: getOfferCategory(offer),
-        city: getOfferCity(offer),
-
-        price_per_day: pricePerDay,
-
-
-        start_date: startDate,
-end_date: endDate,
-date_from: startDate,
-date_to: endDate,
-days: days,
-total_days: days,
-total_price: totalPrice,
-
-        platform_fee_percent: PLATFORM_FEE_PERCENT,
-        platform_fee_amount: platformFeeAmount,
-        owner_payout: ownerPayout,
-
-        renter_name: getUserName(currentUser),
-        renter_email: getUserEmail(currentUser),
-        renter_phone: getUserPhone(currentUser),
-
-        contact_visible_after_payment: false
-      };
+         offer_id: offer.id,
+         start_date: startDate,
+         end_date: endDate
+  };
 
       const { data, error } = await supabaseClient
         .from("reservations")
