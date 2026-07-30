@@ -392,8 +392,17 @@ return (
       return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(address);
     }
 
-    function getReservationPhoto() {
-      return "";
+    function getReservationPhoto(reservation) {
+      if (!reservation) {
+        return "";
+      }
+
+      return (
+        reservation.photoUrl ||
+        reservation.photo_url ||
+        reservation.image ||
+        ""
+      );
     }
 
     function renderToolThumb(reservation) {
