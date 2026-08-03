@@ -1050,7 +1050,7 @@
 
     .nav-notification-badge {
       background: #FF6A00 !important;
-      color: #173f35 !important;
+      color: white !important;
     }
 
     .nav-account-link:hover .nav-notification-badge {

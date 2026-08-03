@@ -564,7 +564,7 @@ function navInjectStyles() {
       height: 18px;
       padding: 0 6px;
       border-radius: 999px;
-      background: #ff6500;
+      background: #FF6A00;
       color: white;
       font-size: 12px;
       line-height: 18px;
@@ -574,7 +574,7 @@ function navInjectStyles() {
 
     .nav-account-link:hover
     .nav-notification-badge {
-      background: #df5b00;
+      background: #E85F00;
     }
 
     .logout-link {
