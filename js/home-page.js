@@ -2,18 +2,21 @@ document.addEventListener("DOMContentLoaded", function () {
   renderSharedNavigation("");
   setupHomeSearch();
   setupCategorySearch();
+  applyHomeDynamicTranslations();
   initializeHomeMap();
   centerHomeMapOnVisitor();
   loadHomeMapOffers();
 });
 
 document.addEventListener("rentuloLanguageChanged", function () {
+  applyHomeDynamicTranslations();
   renderHomeOffersMap();
 });
 
 let homeMap = null;
 let homeMapLayer = null;
 let homeMapOffers = [];
+let homeMapLoadState = "loading";
 
 function homeTranslate(key, fallback) {
   if (typeof window.rentuloTranslate === "function") {
@@ -61,9 +64,28 @@ function setupHomeSearch() {
 function setupCategorySearch() {
   document.querySelectorAll(".home-point-button").forEach(function (button) {
     button.addEventListener("click", function () {
-      goToResults(button.dataset.search || "", "");
+      const category = button.dataset.category || "";
+      const searchParams = new URLSearchParams();
+
+      if (category) {
+        searchParams.set("kategorie", category);
+      }
+
+      const queryString = searchParams.toString();
+      window.location.href = queryString ? "vysledky.html?" + queryString : "vysledky.html";
     });
   });
+}
+
+function applyHomeDynamicTranslations() {
+  const mapElement = document.getElementById("homeOffersMap");
+
+  if (mapElement) {
+    mapElement.setAttribute(
+      "aria-label",
+      homeTranslate("home.mapAriaLabel", "Mapa dostupných nabídek")
+    );
+  }
 }
 
 function setupNearbySearch() {
@@ -255,7 +277,7 @@ async function loadHomeMapOffers() {
     return Number.isFinite(offer.map_latitude) && Number.isFinite(offer.map_longitude);
   });
 
-  if (status) status.hidden = true;
+  homeMapLoadState = homeMapOffers.length ? "ready" : "empty";
   renderHomeOffersMap();
 }
 
@@ -288,7 +310,8 @@ function createMapMarkerIcon(count) {
 
 function formatMapPrice(value) {
   const language = typeof window.getRentuloLanguage === "function" ? window.getRentuloLanguage() : "cs";
-  const locale = language === "de" ? "de-DE" : language === "en" ? "en-GB" : "cs-CZ";
+  const locales = { cs: "cs-CZ", en: "en-GB", de: "de-DE", pl: "pl-PL" };
+  const locale = locales[language] || locales.cs;
   return Number(value || 0).toLocaleString(locale) + " Kč / " + homeTranslate("home.featuredDay", "den");
 }
 
@@ -309,9 +332,14 @@ function buildMapPopup(group) {
 
   const rating = document.createElement("span");
   rating.className = "home-map-popup-rating";
-  rating.textContent = best.ratingCount > 0
-    ? "★ " + best.averageRating.toFixed(1) + " · " + best.ratingCount + " " + homeTranslate("home.featuredRatingMany", "hodnocení")
-    : homeTranslate("home.featuredNoRating", "Zatím bez hodnocení");
+  if (best.ratingCount > 0) {
+    const ratingCountText = best.ratingCount === 1
+      ? homeTranslate("home.featuredRatingOne", "1 hodnocení")
+      : best.ratingCount + " " + homeTranslate("home.featuredRatingMany", "hodnocení");
+    rating.textContent = "★ " + best.averageRating.toFixed(1) + " · " + ratingCountText;
+  } else {
+    rating.textContent = homeTranslate("home.featuredNoRating", "Zatím bez hodnocení");
+  }
   wrapper.appendChild(rating);
 
   if (group.length > 1) {
@@ -333,6 +361,22 @@ function buildMapPopup(group) {
 function renderHomeOffersMap() {
   const status = document.getElementById("homeMapStatus");
   initializeHomeMap();
+
+  if (homeMapLoadState === "loading") {
+    if (status) {
+      status.hidden = false;
+      status.textContent = homeTranslate("home.mapLoading", "Načítám nabídky do mapy...");
+    }
+    return;
+  }
+
+  if (homeMapLoadState === "error") {
+    if (status) {
+      status.hidden = false;
+      status.textContent = homeTranslate("home.mapUnavailable", "Mapu se teď nepodařilo načíst. Nabídky zůstávají dostupné ve výsledcích hledání.");
+    }
+    return;
+  }
 
   if (!homeMap || !homeMapLayer) return;
   homeMapLayer.clearLayers();
@@ -386,6 +430,7 @@ function renderHomeOffersMap() {
 
 function showHomeMapError() {
   const status = document.getElementById("homeMapStatus");
+  homeMapLoadState = "error";
   if (!status) return;
   status.hidden = false;
   status.textContent = homeTranslate("home.mapUnavailable", "Mapu se teď nepodařilo načíst. Nabídky zůstávají dostupné ve výsledcích hledání.");
