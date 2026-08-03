@@ -52,6 +52,15 @@ const templates = {
     picked_up: ["Gegenstand abgeholt", "Der Eigentümer hat den Gegenstand als abgeholt markiert."],
     returned: ["Gegenstand zurückgegeben", "Die Vermietung wurde als abgeschlossen markiert."],
   },
+  pl: {
+    new_request: ["Nowa prośba o wypożyczenie", "Nowa prośba o wypożyczenie oczekuje przy Twojej ofercie."],
+    approved: ["Prośba została zaakceptowana", "Właściciel zaakceptował Twoją prośbę. Możesz teraz dokończyć płatność."],
+    rejected: ["Prośba została odrzucona", "Właściciel odrzucił Twoją prośbę o wypożyczenie."],
+    cancelled: ["Rezerwacja została anulowana", "Rezerwacja została anulowana, a termin jest ponownie dostępny."],
+    paid: ["Rezerwacja została opłacona", "Płatność została potwierdzona. Dane kontaktowe są teraz dostępne dla uczestników rezerwacji."],
+    picked_up: ["Rzecz została odebrana", "Właściciel oznaczył rzecz jako odebraną."],
+    returned: ["Rzecz została zwrócona", "Wypożyczenie zostało oznaczone jako zakończone."],
+  },
 } as const;
 
 function escapeHtml(value: unknown): string {
@@ -166,7 +175,7 @@ Deno.serve(async (req) => {
       continue;
     }
 
-    const language = profile.preferred_language === "en" || profile.preferred_language === "de"
+    const language = profile.preferred_language === "en" || profile.preferred_language === "de" || profile.preferred_language === "pl"
       ? profile.preferred_language
       : "cs";
     const [subject, intro] = templates[language][event];

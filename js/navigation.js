@@ -88,7 +88,8 @@ function navFlagMarkup(language) {
   const flagClass = {
     cs: "flag-cz",
     en: "flag-gb",
-    de: "flag-de"
+    de: "flag-de",
+    pl: "flag-pl"
   }[language] || "flag-cz";
 
   return `<span class="nav-language-flag ${flagClass}" aria-hidden="true"></span>`;
@@ -121,6 +122,9 @@ function navLanguageControl() {
         </button>
         <button type="button" role="menuitem" data-language="de" aria-label="Deutsch">
           ${navFlagMarkup("de")}
+        </button>
+        <button type="button" role="menuitem" data-language="pl" aria-label="Polski">
+          ${navFlagMarkup("pl")}
         </button>
       </div>
     </div>
@@ -237,6 +241,9 @@ function navEnsureLanguageStyles() {
     }
     .flag-de {
       background: linear-gradient(to bottom, #000000 0 33.333%, #dd0000 33.333% 66.666%, #ffce00 66.666% 100%);
+    }
+    .flag-pl {
+      background: linear-gradient(to bottom, #ffffff 0 50%, #dc143c 50% 100%);
     }
     @media (max-width: 760px) {
       .nav-language-button {
