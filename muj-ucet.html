@@ -207,6 +207,53 @@
       color: #df5b00;
     }
 
+    .account-load-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 0 14px;
+      padding: 11px 14px;
+      border: 1px solid #cfe5da;
+      border-radius: 14px;
+      background: #f4fbf7;
+      color: #4b5f57;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+
+    .account-load-status.hidden {
+      display: none;
+    }
+
+    .account-load-status.error {
+      border-color: #f2b8b5;
+      background: #fff5f4;
+      color: #9f2d25;
+    }
+
+    .account-load-retry {
+      flex-shrink: 0;
+      border: 0;
+      border-radius: 10px;
+      background: #eef6f2;
+      color: #173f35;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .account-load-retry:hover {
+      background: #e1f0e9;
+    }
+
+    .account-load-retry:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
     .account-table-card {
       background: transparent;
     }
@@ -677,6 +724,15 @@
         width: 100%;
         margin-top: 5px;
       }
+
+      .account-load-status {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .account-load-retry {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -722,7 +778,6 @@
 
         <div class="profile-info">
           <strong id="profileName">Uživatel</strong>
-          <span data-i18n="account.verified">Ověřený účet</span>
           <small id="profileEmail">email@example.cz</small>
           <small id="profileRating">Hodnocení: zatím bez hodnocení</small>
         </div>
@@ -730,6 +785,19 @@
     </section>
 
     <div class="account-alert-summary" id="accountAlertSummary"></div>
+
+    <div class="account-load-status" id="accountLoadStatus" role="status" aria-live="polite">
+      <span id="accountLoadStatusText" data-i18n="account.load.loading">Načítám údaje účtu...</span>
+      <button
+        class="account-load-retry"
+        id="accountLoadRetry"
+        type="button"
+        data-i18n="account.load.retry"
+        hidden
+      >
+        Zkusit znovu
+      </button>
+    </div>
 
     <section class="account-table-card">
       <div class="account-table-title">

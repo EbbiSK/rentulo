@@ -1,7 +1,15 @@
+    const ACCOUNT_LOCALES = {
+      cs: "cs-CZ",
+      en: "en-GB",
+      de: "de-DE",
+      pl: "pl-PL"
+    };
+
     let supabaseOffers = [];
     let supabaseOwnerReservations = [];
     let supabaseRenterReservations = [];
     let verifiedAccountUser = null;
+    let accountLoadState = "idle";
 
     function getSupabaseClient() {
       if (window.rentuloSupabase) {
@@ -40,6 +48,10 @@
         ? window.rentuloTranslate(key)
         : fallback;
 
+      if (text === key) {
+        text = fallback;
+      }
+
       Object.keys(replacements || {}).forEach(function (name) {
         text = text.replaceAll("{" + name + "}", String(replacements[name]));
       });
@@ -47,12 +59,78 @@
       return text;
     }
 
-    function accountCountText(count, singularKey, pluralKey, singularFallback, pluralFallback) {
+    function getAccountLocale() {
+      const language = typeof window.getRentuloLanguage === "function"
+        ? window.getRentuloLanguage()
+        : "cs";
+
+      return ACCOUNT_LOCALES[language] || ACCOUNT_LOCALES.cs;
+    }
+
+    function formatAccountNumber(value, options) {
+      const numberValue = Number(value);
+
+      if (!Number.isFinite(numberValue)) {
+        return String(value === undefined || value === null ? "" : value);
+      }
+
+      return numberValue.toLocaleString(getAccountLocale(), options);
+    }
+
+    function getAccountPluralText(prefix, count, fallbacks, replacements) {
+      const pluralCategory = new Intl.PluralRules(getAccountLocale()).select(Number(count));
+      const supportedCategory = ["one", "few", "many", "other"].includes(pluralCategory)
+        ? pluralCategory
+        : "other";
+      const suffix = supportedCategory.charAt(0).toUpperCase() + supportedCategory.slice(1);
+      const fallback = fallbacks[supportedCategory] || fallbacks.other || "";
+
       return accountTranslate(
-        count === 1 ? singularKey : pluralKey,
-        count === 1 ? singularFallback : pluralFallback,
-        { count: count }
+        prefix + suffix,
+        fallback,
+        Object.assign({}, replacements || {}, {
+          count: formatAccountNumber(count)
+        })
       );
+    }
+
+    function renderAccountLoadState() {
+      const status = document.getElementById("accountLoadStatus");
+      const statusText = document.getElementById("accountLoadStatusText");
+      const retryButton = document.getElementById("accountLoadRetry");
+
+      if (!status || !statusText || !retryButton) {
+        return;
+      }
+
+      status.classList.remove("hidden", "error");
+      retryButton.hidden = true;
+      retryButton.disabled = false;
+
+      if (accountLoadState === "ready") {
+        status.classList.add("hidden");
+        return;
+      }
+
+      if (accountLoadState === "error") {
+        status.classList.add("error");
+        statusText.textContent = accountTranslate(
+          "account.load.error",
+          "Údaje účtu se teď nepodařilo načíst. Zkuste to znovu."
+        );
+        retryButton.textContent = accountTranslate(
+          "account.load.retry",
+          "Zkusit znovu"
+        );
+        retryButton.hidden = false;
+        return;
+      }
+
+      statusText.textContent = accountTranslate(
+        "account.load.loading",
+        "Načítám údaje účtu..."
+      );
+      retryButton.disabled = true;
     }
 
     function normalizeStatus(status) {
@@ -211,12 +289,19 @@ if (profileRating) {
         const ratingSummary = await loadCurrentUserRating(user);
 
         if (ratingSummary && ratingSummary.rating_count) {
-          profileRating.textContent = accountTranslate(
-            "account.ratingValue",
-            "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
+          profileRating.textContent = getAccountPluralText(
+            "account.rating",
+            Number(ratingSummary.rating_count),
             {
-              average: ratingSummary.average_rating,
-              count: ratingSummary.rating_count
+              one: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
+              few: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
+              many: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
+              other: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)"
+            },
+            {
+              average: formatAccountNumber(ratingSummary.average_rating, {
+                maximumFractionDigits: 1
+              })
             }
           );
         }
@@ -353,26 +438,35 @@ category: row.category || accountTranslate("account.categoryFallback", "Ostatní
     
 
     async function loadSupabaseAccountData() {
+      accountLoadState = "loading";
+      renderAccountLoadState();
+
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
+        accountLoadState = "error";
+        renderAccountLoadState();
         return false;
       }
 
       const supabaseUser = await getCurrentSupabaseUser();
 
       if (!supabaseUser) {
+        accountLoadState = "error";
+        renderAccountLoadState();
         return false;
       }
 
       const offersResult = await supabaseClient
         .from("offers")
-        .select("*")
+        .select("id, owner_id, name, category, city, price_per_day, status, created_at")
         .eq("owner_id", supabaseUser.id)
         .neq("status", "deleted");
 
       if (offersResult.error) {
         console.error(offersResult.error);
+        accountLoadState = "error";
+        renderAccountLoadState();
         return false;
       }
 
@@ -381,6 +475,8 @@ category: row.category || accountTranslate("account.categoryFallback", "Ostatní
 
 if (reservationsResult.error) {
   console.error(reservationsResult.error);
+  accountLoadState = "error";
+  renderAccountLoadState();
   return false;
 }
 
@@ -412,7 +508,8 @@ const renterReservationsResult = {
         ? renterReservationsResult.data.map(normalizeSupabaseReservation)
         : [];
 
-      
+      accountLoadState = "ready";
+      renderAccountLoadState();
 
       return true;
     }
@@ -424,8 +521,6 @@ const renterReservationsResult = {
         window.location.href = "prihlaseni.html";
         return;
       }
-
-      updateProfileBox(user);
 
       const myOffers = supabaseOffers;
       const myReservations = supabaseRenterReservations;
@@ -481,23 +576,29 @@ if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
 
       if (waitingPaymentCount > 0) {
         reservationsCard.classList.add("account-action-alert");
-        reservationsText.textContent = accountCountText(
+        reservationsText.textContent = getAccountPluralText(
+          "account.dynamic.waitingPayment",
           waitingPaymentCount,
-          "account.dynamic.waitingPaymentOne",
-          "account.dynamic.waitingPaymentMany",
-          "1 rezervace čeká na platbu",
-          "{count} rezervace čekají na platbu"
+          {
+            one: "1 rezervace čeká na platbu",
+            few: "{count} rezervace čekají na platbu",
+            many: "{count} rezervací čeká na platbu",
+            other: "{count} rezervací čeká na platbu"
+          }
         );
       } else {
         reservationsCard.classList.remove("account-action-alert");
 
         if (activeReservations.length > 0) {
-          reservationsText.textContent = accountCountText(
+          reservationsText.textContent = getAccountPluralText(
+            "account.dynamic.activeReservation",
             activeReservations.length,
-            "account.dynamic.activeReservationOne",
-            "account.dynamic.activeReservationMany",
-            "Máte 1 aktivní rezervaci",
-            "Máte {count} aktivních rezervací"
+            {
+              one: "Máte 1 aktivní rezervaci",
+              few: "Máte {count} aktivní rezervace",
+              many: "Máte {count} aktivních rezervací",
+              other: "Máte {count} aktivních rezervací"
+            }
           );
         } else {
           reservationsText.textContent = accountTranslate(
@@ -511,28 +612,37 @@ if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
         offersCard.classList.add("account-action-alert");
 
         if (pendingRequestsCount > 0) {
-          offersText.textContent = accountCountText(
+          offersText.textContent = getAccountPluralText(
+            "account.dynamic.pendingRequest",
             pendingRequestsCount,
-            "account.dynamic.pendingRequestOne",
-            "account.dynamic.pendingRequestMany",
-            "Máte 1 novou žádost k potvrzení",
-            "Máte {count} nové žádosti k potvrzení"
+            {
+              one: "Máte 1 novou žádost k potvrzení",
+              few: "Máte {count} nové žádosti k potvrzení",
+              many: "Máte {count} nových žádostí k potvrzení",
+              other: "Máte {count} nových žádostí k potvrzení"
+            }
           );
         } else if (paidRequestsCount > 0) {
-          offersText.textContent = accountCountText(
+          offersText.textContent = getAccountPluralText(
+            "account.dynamic.paidRequest",
             paidRequestsCount,
-            "account.dynamic.paidRequestOne",
-            "account.dynamic.paidRequestMany",
-            "1 rezervace je zaplacená, označte vyzvednutí",
-            "{count} rezervace jsou zaplacené, označte vyzvednutí"
+            {
+              one: "1 rezervace je zaplacená, označte vyzvednutí",
+              few: "{count} rezervace jsou zaplacené, označte vyzvednutí",
+              many: "{count} rezervací je zaplacených, označte vyzvednutí",
+              other: "{count} rezervací je zaplacených, označte vyzvednutí"
+            }
           );
         } else if (pickedUpRequestsCount > 0) {
-          offersText.textContent = accountCountText(
+          offersText.textContent = getAccountPluralText(
+            "account.dynamic.pickedUp",
             pickedUpRequestsCount,
-            "account.dynamic.pickedUpOne",
-            "account.dynamic.pickedUpMany",
-            "1 půjčení probíhá, po vrácení ho uzavřete",
-            "{count} půjčení probíhají, po vrácení je uzavřete"
+            {
+              one: "1 půjčení probíhá, po vrácení ho uzavřete",
+              few: "{count} půjčení probíhají, po vrácení je uzavřete",
+              many: "{count} půjčení probíhá, po vrácení je uzavřete",
+              other: "{count} půjčení probíhá, po vrácení je uzavřete"
+            }
           );
         } else {
           offersText.textContent = accountTranslate(
@@ -544,20 +654,26 @@ if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
         offersCard.classList.remove("account-action-alert");
 
         if (incomingOpenRequests.length > 0) {
-          offersText.textContent = accountCountText(
+          offersText.textContent = getAccountPluralText(
+            "account.dynamic.incomingRequest",
             incomingOpenRequests.length,
-            "account.dynamic.incomingRequestOne",
-            "account.dynamic.incomingRequestMany",
-            "Máte 1 otevřenou žádost u svých nabídek",
-            "Máte {count} otevřených žádostí u svých nabídek"
+            {
+              one: "Máte 1 otevřenou žádost u svých nabídek",
+              few: "Máte {count} otevřené žádosti u svých nabídek",
+              many: "Máte {count} otevřených žádostí u svých nabídek",
+              other: "Máte {count} otevřených žádostí u svých nabídek"
+            }
           );
         } else if (myOffers.length > 0) {
-          offersText.textContent = accountCountText(
+          offersText.textContent = getAccountPluralText(
+            "account.dynamic.myOffer",
             myOffers.length,
-            "account.dynamic.myOfferOne",
-            "account.dynamic.myOfferMany",
-            "Máte 1 vlastní nabídku",
-            "Máte {count} vlastní nabídky"
+            {
+              one: "Máte 1 vlastní nabídku",
+              few: "Máte {count} vlastní nabídky",
+              many: "Máte {count} vlastních nabídek",
+              other: "Máte {count} vlastních nabídek"
+            }
           );
         } else {
           offersText.textContent = accountTranslate(
@@ -574,52 +690,64 @@ if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
 
         if (waitingPaymentCount > 0) {
           messageParts.push(
-            "<strong>" + waitingPaymentCount + "</strong> " +
-            accountCountText(
+            "<strong>" + formatAccountNumber(waitingPaymentCount) + "</strong> " +
+            getAccountPluralText(
+              "account.alert.waitingPayment",
               waitingPaymentCount,
-              "account.alert.waitingPaymentOne",
-              "account.alert.waitingPaymentMany",
-              "rezervace čeká na platbu",
-              "rezervace čekají na platbu"
+              {
+                one: "rezervace čeká na platbu",
+                few: "rezervace čekají na platbu",
+                many: "rezervací čeká na platbu",
+                other: "rezervací čeká na platbu"
+              }
             )
           );
         }
 
         if (pendingRequestsCount > 0) {
           messageParts.push(
-            "<strong>" + pendingRequestsCount + "</strong> " +
-            accountCountText(
+            "<strong>" + formatAccountNumber(pendingRequestsCount) + "</strong> " +
+            getAccountPluralText(
+              "account.alert.pending",
               pendingRequestsCount,
-              "account.alert.pendingOne",
-              "account.alert.pendingMany",
-              "nová žádost čeká na potvrzení",
-              "nové žádosti čekají na potvrzení"
+              {
+                one: "nová žádost čeká na potvrzení",
+                few: "nové žádosti čekají na potvrzení",
+                many: "nových žádostí čeká na potvrzení",
+                other: "nových žádostí čeká na potvrzení"
+              }
             )
           );
         }
 
         if (paidRequestsCount > 0) {
           messageParts.push(
-            "<strong>" + paidRequestsCount + "</strong> " +
-            accountCountText(
+            "<strong>" + formatAccountNumber(paidRequestsCount) + "</strong> " +
+            getAccountPluralText(
+              "account.alert.paid",
               paidRequestsCount,
-              "account.alert.paidOne",
-              "account.alert.paidMany",
-              "zaplacená rezervace čeká na označení vyzvednutí",
-              "zaplacené rezervace čekají na označení vyzvednutí"
+              {
+                one: "zaplacená rezervace čeká na označení vyzvednutí",
+                few: "zaplacené rezervace čekají na označení vyzvednutí",
+                many: "zaplacených rezervací čeká na označení vyzvednutí",
+                other: "zaplacených rezervací čeká na označení vyzvednutí"
+              }
             )
           );
         }
 
         if (pickedUpRequestsCount > 0) {
           messageParts.push(
-            "<strong>" + pickedUpRequestsCount + "</strong> " +
-            accountCountText(
+            "<strong>" + formatAccountNumber(pickedUpRequestsCount) + "</strong> " +
+            getAccountPluralText(
+              "account.alert.pickedUp",
               pickedUpRequestsCount,
-              "account.alert.pickedUpOne",
-              "account.alert.pickedUpMany",
-              "půjčení čeká na označení vrácení",
-              "půjčení čekají na označení vrácení"
+              {
+                one: "půjčení čeká na označení vrácení",
+                few: "půjčení čekají na označení vrácení",
+                many: "půjčení čeká na označení vrácení",
+                other: "půjčení čeká na označení vrácení"
+              }
             )
           );
         }
@@ -655,23 +783,56 @@ if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
       }
 
       verifiedAccountUser = user;
-      updateProfileBox(user);
+      await updateProfileBox(user);
       renderSharedNavigation("muj-ucet");
 
       const loaded = await loadSupabaseAccountData();
 
       if (!loaded) {
-        updateAccountActionBadgesFromSupabase();
         return;
       }
 
       updateAccountActionBadgesFromSupabase();
     }
 
-    document.addEventListener("rentuloLanguageChanged", function () {
-      updateAccountActionBadgesFromSupabase();
+    async function retryAccountDataLoad() {
+      if (accountLoadState === "loading") {
+        return;
+      }
+
+      const retryButton = document.getElementById("accountLoadRetry");
+
+      if (retryButton) {
+        retryButton.disabled = true;
+      }
+
+      const loaded = await loadSupabaseAccountData();
+
+      if (loaded) {
+        updateAccountActionBadgesFromSupabase();
+      }
+    }
+
+    document.addEventListener("rentuloLanguageChanged", async function () {
+      renderAccountLoadState();
+
+      if (verifiedAccountUser) {
+        await updateProfileBox(verifiedAccountUser);
+      }
+
+      if (accountLoadState === "ready") {
+        updateAccountActionBadgesFromSupabase();
+      } else {
+        renderSharedNavigation("muj-ucet");
+      }
     });
 
     document.addEventListener("DOMContentLoaded", function () {
+      const retryButton = document.getElementById("accountLoadRetry");
+
+      if (retryButton) {
+        retryButton.addEventListener("click", retryAccountDataLoad);
+      }
+
       initializeAccountPage();
     });
