@@ -8,6 +8,146 @@
 <link rel="stylesheet" href="css/account-pages.css" />
   <link rel="stylesheet" href="css/my-reservations.css" />
   <link rel="stylesheet" href="css/compact-records.css" />
+
+  <style>
+    /* Mint visual refresh for My reservations. Functional behavior stays unchanged. */
+    body {
+      background: #dff7ee !important;
+      color: #173f35;
+    }
+
+    .header {
+      padding-top: 12px !important;
+      padding-bottom: 12px !important;
+    }
+
+    .logo-icon {
+      width: 56px !important;
+      height: 56px !important;
+      flex-basis: 56px !important;
+    }
+
+    .logo-text strong {
+      font-size: 28px !important;
+      color: #173f35 !important;
+    }
+
+    .account-page-header {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid #c9e2d6;
+      border-radius: 20px;
+      padding: 22px 185px 22px 22px !important;
+      box-shadow: 0 12px 32px rgba(23, 63, 53, 0.06);
+    }
+
+    .account-page-header h1,
+    .reservation-section-header h2,
+    .account-empty-state h2 {
+      color: #173f35 !important;
+    }
+
+    .top-action-button {
+      right: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%);
+      background: #73d64d !important;
+      color: #173a22 !important;
+      box-shadow: none !important;
+    }
+
+    .top-action-button:hover {
+      background: #68c547 !important;
+    }
+
+    .reservation-section-header,
+    .reservation-table-card,
+    .reservation-card,
+    .account-empty-state,
+    .section-empty-note {
+      border: 1px solid #cfe4da !important;
+      box-shadow: 0 12px 32px rgba(23, 63, 53, 0.055) !important;
+    }
+
+    .reservation-section-header,
+    .reservation-table th,
+    .detail-row td,
+    .reservation-detail-panel {
+      background: #f7fcf9 !important;
+    }
+
+    .reservation-row:hover {
+      background: #f4fbf7 !important;
+    }
+
+    .tool-thumb,
+    .info-box {
+      background: #f4fbf7 !important;
+      border-color: #cfe4da !important;
+    }
+
+    .status-pill,
+    .status-rejected,
+    .payment-box.waiting,
+    .contact-box.hidden,
+    .reservation-state-box.rejected {
+      background: #fff3e8 !important;
+      border-color: #f2c79f !important;
+      color: #8a4b16 !important;
+    }
+
+    .payment-box.waiting strong,
+    .contact-box.hidden strong,
+    .reservation-state-box.rejected strong {
+      color: #8a4b16 !important;
+    }
+
+    .reservation-card.priority {
+      border-color: #f2c79f !important;
+      box-shadow: 0 12px 30px rgba(138, 75, 22, 0.08) !important;
+    }
+
+    .small-button.orange,
+    .reservation-primary-action.orange {
+      background: #e99a58 !important;
+      color: #ffffff !important;
+    }
+
+    .small-button.orange:hover,
+    .reservation-primary-action.orange:hover {
+      background: #d98743 !important;
+    }
+
+    .small-button,
+    .btn-register,
+    .logout-link {
+      background: #73d64d !important;
+      color: #173a22 !important;
+    }
+
+    .small-button.light,
+    .reservation-primary-action:not(.orange) {
+      background: #edf6f1 !important;
+      color: #173f35 !important;
+    }
+
+    @media (max-width: 980px) {
+      .account-page-header {
+        padding: 20px !important;
+      }
+
+      .top-action-button {
+        position: static !important;
+        transform: none !important;
+        width: 100%;
+        margin-top: 16px !important;
+      }
+
+      .reservation-row,
+      .reservation-card {
+        border-color: #cfe4da !important;
+      }
+    }
+  </style>
 </head>
 
 <body data-navigation-page="muj-ucet">
