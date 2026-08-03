@@ -362,6 +362,98 @@
         width: 100%;
       }
     }
+
+
+    /* Mint visual refresh for How it works. Functional behavior stays unchanged. */
+    body {
+      background: #dff7ee !important;
+      color: #173f35;
+    }
+
+    .header {
+      padding-top: 12px !important;
+      padding-bottom: 12px !important;
+    }
+
+    .logo-icon {
+      width: 56px !important;
+      height: 56px !important;
+      flex-basis: 56px !important;
+    }
+
+    .logo-text strong {
+      font-size: 28px !important;
+      color: #173f35 !important;
+    }
+
+    .manual-card {
+      background: rgba(255, 255, 255, 0.76) !important;
+      border-color: #c9e2d6 !important;
+      border-radius: 20px !important;
+      box-shadow: 0 12px 32px rgba(23, 63, 53, 0.06) !important;
+    }
+
+    .manual-mini-summary,
+    .manual-choice-card,
+    .manual-note {
+      background: #f7fcf9 !important;
+      border-color: #cfe4da !important;
+      box-shadow: none !important;
+    }
+
+    .manual-step {
+      background: #ffffff !important;
+      border-color: #d6e8df !important;
+    }
+
+    .manual-step span {
+      background: #e8f8ef !important;
+      color: #173f35 !important;
+      border: 1px solid #bddfce;
+    }
+
+    .manual-button,
+    .btn-register,
+    .logout-link {
+      background: #73d64d !important;
+      color: #173a22 !important;
+      box-shadow: none !important;
+    }
+
+    .manual-button:hover,
+    .btn-register:hover,
+    .logout-link:hover {
+      background: #68c547 !important;
+    }
+
+    .eyebrow,
+    .manual-mini-summary strong {
+      color: #4c9637 !important;
+    }
+
+    .nav-notification-badge {
+      background: #e99a58 !important;
+      color: #ffffff !important;
+    }
+
+    .nav-account-link:hover .nav-notification-badge {
+      background: #d98743 !important;
+    }
+
+    @media (max-width: 700px) {
+      .manual-page {
+        padding-top: 14px !important;
+      }
+
+      .manual-card {
+        padding: 18px !important;
+      }
+
+      .manual-choice-card {
+        padding: 14px !important;
+      }
+    }
+
   </style>
 </head>
 
@@ -375,7 +467,6 @@
 
       <div class="logo-text">
         <strong>Rentulo</strong>
-        <small data-i18n="brand.subtitle">Půjč si cokoli</small>
       </div>
     </a>
 
