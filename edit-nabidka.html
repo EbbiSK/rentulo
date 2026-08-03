@@ -14,7 +14,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f4f6f7;
+      background: #dff7ee;
       color: #173f35;
     }
 
@@ -47,9 +47,9 @@
     }
 
     .logo-icon {
-      width: 40px;
-      height: 40px;
-      flex: 0 0 40px;
+      width: 56px;
+      height: 56px;
+      flex: 0 0 56px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -68,7 +68,7 @@
 
     .logo-text strong {
       display: block;
-      font-size: 21px;
+      font-size: 25px;
       line-height: 1;
       color: #173f35;
     }
@@ -107,7 +107,7 @@
     .back-link {
       display: inline-block;
       margin-bottom: 10px;
-      color: #5f7d71;
+      color: #4f972d;
       font-size: 14px;
       font-weight: 800;
     }
@@ -119,14 +119,18 @@
     .edit-page-header {
       position: relative;
       margin-bottom: 18px;
-      padding-right: 190px;
+      padding: 24px 210px 24px 24px;
+      background: #f7fcf9;
+      border: 1px solid #cfe4da;
+      border-radius: 18px;
+      box-shadow: 0 12px 32px rgba(23, 63, 53, 0.055);
     }
 
     .eyebrow {
       margin: 0 0 4px;
       font-size: 13px;
       font-weight: 800;
-      color: #5f7d71;
+      color: #4f972d;
     }
 
     h1 {
@@ -146,15 +150,16 @@
 
     .top-action-button {
       position: absolute;
-      right: 0;
-      top: 16px;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       min-height: 42px;
       padding: 10px 18px;
       border-radius: 14px;
-      background: #eef1f2;
+      background: #eef7f2;
       color: #173f35;
       font-size: 14px;
       font-weight: 900;
@@ -171,17 +176,17 @@
     .edit-card,
     .edit-help-card {
       background: #ffffff;
-      border: 1px solid #e1e6e8;
+      border: 1px solid #cfe4da;
       border-radius: 18px;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 12px 32px rgba(23, 63, 53, 0.055);
       overflow: hidden;
     }
 
     .edit-card-header,
     .edit-help-header {
       padding: 15px 16px;
-      background: #ffffff;
-      border-bottom: 1px solid #e8edef;
+      background: #f7fcf9;
+      border-bottom: 1px solid #dbece4;
     }
 
     .edit-card-header h2,
@@ -200,6 +205,7 @@
 
     .edit-help-content {
       padding: 14px 16px 16px;
+      background: #fbfefc;
     }
 
     .edit-help-content p {
@@ -245,7 +251,7 @@
     }
 
     .photo-upload-box {
-      border: 1px solid #e1e6e8;
+      border: 1px solid #cfe4da;
       border-radius: 16px;
       background: #ffffff;
       overflow: hidden;
@@ -253,8 +259,8 @@
 
     .photo-upload-header {
       padding: 12px 14px;
-      border-bottom: 1px solid #e8edef;
-      background: #f8fafb;
+      border-bottom: 1px solid #dbece4;
+      background: #f7fcf9;
     }
 
     .photo-upload-header strong {
@@ -284,8 +290,8 @@
       width: 140px;
       height: 110px;
       border-radius: 14px;
-      background: #f1f4f4;
-      border: 1px solid #dbe2e4;
+      background: #f4fbf7;
+      border: 1px solid #cfe4da;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -329,7 +335,7 @@
       width: 100%;
       min-height: 44px;
       padding: 8px 10px;
-      border: 1px solid #d9e0e3;
+      border: 1px solid #cfe4da;
       border-radius: 12px;
       background: #ffffff;
     }
@@ -338,7 +344,7 @@
       flex: 0 0 auto;
       padding: 8px 12px;
       border-radius: 10px;
-      background: #eef1f2;
+      background: #eef7f2;
       color: #173f35;
       font-size: 12px;
       font-weight: 900;
@@ -362,10 +368,10 @@
 
     .photo-remove-button {
       justify-self: start;
-      border: 1px solid #d9e0e3;
+      border: 1px solid #cfe4da;
       border-radius: 10px;
       padding: 8px 12px;
-      background: #eef1f2;
+      background: #eef7f2;
       color: #173f35;
       font-size: 12px;
       font-weight: 900;
@@ -413,7 +419,7 @@
     .form-group textarea {
       width: 100%;
       min-height: 44px;
-      border: 1px solid #d9e0e3;
+      border: 1px solid #cfe4da;
       border-radius: 12px;
       background: #ffffff;
       padding: 10px 12px;
@@ -439,12 +445,12 @@
 
     .input-error {
       border-color: #c2410c !important;
-      background: #fffaf7 !important;
+      background: #fff8f2 !important;
       box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.12) !important;
     }
 
     .locked-input {
-      background: #f1f4f4 !important;
+      background: #f2f8f5 !important;
       color: #66736e !important;
       cursor: not-allowed;
     }
@@ -453,9 +459,9 @@
       margin: 5px 0 0;
       padding: 9px 11px;
       border-radius: 10px;
-      background: #fff5ef;
-      border: 1px solid #ffd7bf;
-      color: #7a4321;
+      background: #fff3e8;
+      border: 1px solid #f2c79f;
+      color: #8a4b16;
       font-size: 12px;
       line-height: 1.4;
       font-weight: 800;
@@ -493,9 +499,9 @@
 
     .btn-secondary,
     .edit-cancel-button {
-      background: #eef1f2;
+      background: #eef7f2;
       color: #173f35;
-      border: 1px solid #d9e0e3;
+      border: 1px solid #cfe4da;
     }
 
     .btn-primary:focus,
@@ -534,7 +540,7 @@
     }
 
     .site-message.error {
-      background: #c2410c;
+      background: #b85f24;
     }
 
     .site-message.success {
@@ -547,8 +553,8 @@
       padding: 24px;
       border-radius: 18px;
       background: #ffffff;
-      border: 1px solid #e1e6e8;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+      border: 1px solid #cfe4da;
+      box-shadow: 0 12px 32px rgba(23, 63, 53, 0.055);
     }
 
     .login-required-box h1 {
@@ -587,9 +593,29 @@
     }
 
     .login-required-actions .secondary-action {
-      background: #eef1f2;
+      background: #eef7f2;
       color: #173f35;
-      border: 1px solid #d9e0e3;
+      border: 1px solid #cfe4da;
+    }
+
+
+    /* Mint visual refresh aligned with the homepage. Functional behavior stays unchanged. */
+    .edit-card-body {
+      background: #ffffff;
+    }
+
+    .photo-upload-box,
+    .photo-file-control,
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      border-color: #cfe4da;
+    }
+
+    .top-action-button:hover,
+    .edit-cancel-button:hover,
+    .photo-remove-button:hover {
+      background: #e5f3ec;
     }
 
     @media (max-width: 980px) {
@@ -611,6 +637,7 @@
         position: static;
         display: inline-flex;
         margin-top: 14px;
+        transform: none;
       }
 
       .edit-layout {
