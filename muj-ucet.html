@@ -14,7 +14,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f4f6f7;
+      background: #dff7ee;
       color: #173f35;
     }
 
@@ -30,7 +30,7 @@
     .header {
       max-width: 1240px;
       margin: 0 auto;
-      padding: 10px 20px;
+      padding: 12px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -40,13 +40,13 @@
     .logo {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .logo-icon {
-      width: 40px;
-      height: 40px;
-      flex: 0 0 40px;
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -61,16 +61,13 @@
 
     .logo-text strong {
       display: block;
-      font-size: 21px;
+      font-size: 25px;
       line-height: 1;
       color: #173f35;
     }
 
     .logo-text small {
-      display: block;
-      margin-top: 2px;
-      font-size: 12px;
-      color: #66736e;
+      display: none;
     }
 
     .nav {
@@ -88,7 +85,7 @@
     .logout-link {
       background: #7ED957;
       color: #173A22 !important;
-      padding: 10px 20px;
+      padding: 12px 20px;
       border-radius: 999px;
       font-weight: 800;
       cursor: pointer;
@@ -97,7 +94,7 @@
     .account-page {
       max-width: 1240px;
       margin: 0 auto;
-      padding: 10px 20px 24px;
+      padding: 18px 20px 32px;
     }
 
     .account-top {
@@ -111,9 +108,9 @@
     .account-welcome,
     .account-profile-card {
       background: white;
-      border: 1px solid #e1e6e8;
+      border: 1px solid #cfe5da;
       border-radius: 16px;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 12px 28px rgba(23, 63, 53, 0.06);
       padding: 16px;
     }
 
@@ -131,8 +128,12 @@
       line-height: 1.05;
     }
 
+    .account-welcome {
+      background: #f4fbf7;
+    }
+
     .account-welcome h1 {
-      margin-top: 8px;
+      margin-top: 10px;
     }
 
     .account-welcome p {
@@ -153,8 +154,9 @@
       width: 52px;
       height: 52px;
       border-radius: 14px;
-      background: #FF6A00;
-      color: white;
+      background: #e8f6ef;
+      color: #173f35;
+      border: 1px solid #c8e2d6;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -198,7 +200,7 @@
       font-size: 14px;
       font-weight: 800;
       line-height: 1.4;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 12px 28px rgba(23, 63, 53, 0.06);
     }
 
     .account-alert-summary strong {
@@ -216,7 +218,7 @@
     .account-table-title h2 {
       margin: 0;
       color: #073f2e;
-      font-size: 21px;
+      font-size: 25px;
     }
 
     .account-table-title span {
@@ -247,17 +249,17 @@
       align-items: center;
       min-height: 138px;
       padding: 17px;
-      border: 1px solid #e1e6e8;
+      border: 1px solid #cfe5da;
       border-radius: 18px;
       background: white;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 12px 28px rgba(23, 63, 53, 0.06);
       transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
     }
 
     .account-action-row:hover {
       transform: translateY(-2px);
-      border-color: #cfd8dc;
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.06);
+      border-color: #afd5c3;
+      box-shadow: 0 16px 32px rgba(23, 63, 53, 0.09);
     }
 
     .account-action-icon {
@@ -265,8 +267,9 @@
       width: 52px;
       height: 52px;
       border-radius: 15px;
-      background: #f7f9f9;
-      color: #4f9f2f;
+      background: #e8f6ef;
+      color: #173f35;
+      border: 1px solid #c8e2d6;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -303,7 +306,7 @@
       display: inline-flex;
       width: fit-content;
       border-radius: 999px;
-      background: #f7f9f9;
+      background: #eef8f3;
       color: #4b5f57;
       padding: 5px 9px;
       font-size: 12px;
@@ -329,8 +332,8 @@
     }
 
     .account-action-button:hover { background: #6BCB47; }
-    .account-action-button.light { background: #f1f3f2; color: #173f35; }
-    .account-action-button.light:hover { background: #e7ebea; }
+    .account-action-button.light { background: #eef6f2; color: #173f35; }
+    .account-action-button.light:hover { background: #e1f0e9; }
     .account-action-button.orange { background: #FF6A00; color: white; }
     .account-action-button.orange:hover { background: #E85F00; }
 .account-settings-details {
@@ -356,10 +359,10 @@
 
 .account-settings-panel {
   padding: 20px;
-  border: 1px solid #e1e6e8;
+  border: 1px solid #cfe5da;
   border-radius: 18px;
   background: white;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 12px 28px rgba(23, 63, 53, 0.06);
 }
 
 .account-settings-header {
@@ -373,7 +376,7 @@
 .account-settings-header h2 {
   margin: 0 0 5px;
   color: #073f2e;
-  font-size: 21px;
+  font-size: 25px;
 }
 
 .account-settings-header p {
@@ -396,7 +399,7 @@
 }
 
 .account-settings-close:hover {
-  background: #e7ebea;
+  background: #e1f0e9;
 }
 
 .account-settings-grid {
@@ -421,7 +424,7 @@
 .account-setting-field select {
   width: 100%;
   min-height: 44px;
-  border: 1px solid #d8cec2;
+  border: 1px solid #cfe0d8;
   border-radius: 11px;
   background: white;
   color: #073f2e;
@@ -444,7 +447,7 @@
   gap: 16px;
   min-height: 44px;
   padding: 10px 12px;
-  border: 1px solid #d8cec2;
+  border: 1px solid #cfe0d8;
   border-radius: 11px;
 }
 
@@ -485,7 +488,7 @@
   position: absolute;
   inset: 0;
   border-radius: 999px;
-  background: #cfc8be;
+  background: #c8d9d1;
   cursor: pointer;
   transition: background 0.18s ease;
 }
@@ -646,7 +649,7 @@
       .profile-avatar {
         width: 44px;
         height: 44px;
-        font-size: 21px;
+        font-size: 25px;
       }
 
       .account-table-title {
@@ -667,7 +670,7 @@
       .account-action-icon {
         width: 44px;
         height: 44px;
-        font-size: 21px;
+        font-size: 25px;
       }
 
       .account-action-button {
@@ -683,7 +686,7 @@
   <header class="header">
     <a href="index.html" class="logo">
       <div class="logo-icon">
-        <img src="assets/rentulo-logo-mark.png" alt="" width="40" height="40" aria-hidden="true" />
+        <img src="assets/rentulo-logo-mark.png" alt="" width="48" height="48" aria-hidden="true" />
       </div>
 
       <div class="logo-text">
