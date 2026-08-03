@@ -1,6 +1,16 @@
 let offerSaveInProgress = false;
+    let offerSaveStatus = "";
     let offerPhotoDataUrl = "";
     let offerPhotoFile = null;
+    let offerPhotoProcessing = false;
+    let offerPhotoSelectionToken = 0;
+    let pickupLocationState = "idle";
+    let offerOwnerProfile = {
+      phone: "",
+      street: "",
+      city: "",
+      postalCode: ""
+    };
 
     const OFFER_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
     const OFFER_PHOTO_ALLOWED_TYPES = [
@@ -132,6 +142,8 @@ let offerSaveInProgress = false;
     function normalizeCityName(value) {
       return String(value || "")
         .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase();
     }
 
@@ -181,6 +193,10 @@ let offerSaveInProgress = false;
       const postalCode = cityPostalCodes[city];
 
       if (!postalCode) {
+        if (postalInput.dataset.autoFilled === "true") {
+          postalInput.value = "";
+        }
+
         return;
       }
 
@@ -236,7 +252,7 @@ let offerSaveInProgress = false;
 
       const { data: profile, error } = await supabaseClient
         .from("profiles")
-        .select("city, postal_code")
+        .select("phone, street, city, postal_code")
         .eq("id", authenticatedUser.id)
         .maybeSingle();
 
@@ -246,6 +262,13 @@ let offerSaveInProgress = false;
 
       const userCity = profile.city || "";
       const userPostalCode = profile.postal_code || "";
+
+      offerOwnerProfile = {
+        phone: profile.phone || "",
+        street: profile.street || "",
+        city: userCity,
+        postalCode: userPostalCode
+      };
 
       if (toolCityInput && !toolCityInput.value.trim() && userCity) {
         toolCityInput.value = userCity;
@@ -302,7 +325,28 @@ let offerSaveInProgress = false;
       }
     }
 
-    function showOfferFormMessage(message, type) {
+    function setDynamicTranslatedText(element, key, fallback) {
+      if (!element) {
+        return;
+      }
+
+      element.dataset.dynamicI18nKey = key || "";
+      element.dataset.dynamicI18nFallback = fallback || "";
+      element.textContent = offerTranslate(key, fallback);
+    }
+
+    function refreshDynamicTranslatedText(element) {
+      if (!element || !element.dataset.dynamicI18nKey) {
+        return;
+      }
+
+      element.textContent = offerTranslate(
+        element.dataset.dynamicI18nKey,
+        element.dataset.dynamicI18nFallback || ""
+      );
+    }
+
+    function showOfferFormMessage(message, type, key) {
       const messageBox = document.getElementById("offerFormMessage");
 
       if (!messageBox) {
@@ -311,11 +355,21 @@ let offerSaveInProgress = false;
 
       messageBox.textContent = message;
       messageBox.className = "form-message active " + type;
+      messageBox.dataset.dynamicI18nKey = key || "";
+      messageBox.dataset.dynamicI18nFallback = message || "";
 
       messageBox.scrollIntoView({
         behavior: "smooth",
         block: "center"
       });
+    }
+
+    function showOfferTranslatedFormMessage(key, fallback, type) {
+      showOfferFormMessage(
+        offerTranslate(key, fallback),
+        type,
+        key
+      );
     }
 
     function hideOfferFormMessage() {
@@ -327,9 +381,11 @@ let offerSaveInProgress = false;
 
       messageBox.textContent = "";
       messageBox.className = "form-message";
+      delete messageBox.dataset.dynamicI18nKey;
+      delete messageBox.dataset.dynamicI18nFallback;
     }
 
-    function updatePhotoStatus(message, type) {
+    function updatePhotoStatus(message, type, key) {
       const status = document.getElementById("toolPhotoStatus");
 
       if (!status) {
@@ -338,6 +394,16 @@ let offerSaveInProgress = false;
 
       status.textContent = message;
       status.className = "photo-upload-status " + (type || "");
+      status.dataset.dynamicI18nKey = key || "";
+      status.dataset.dynamicI18nFallback = message || "";
+    }
+
+    function updatePhotoStatusByKey(key, fallback, type) {
+      updatePhotoStatus(
+        offerTranslate(key, fallback),
+        type,
+        key
+      );
     }
 
     function renderPhotoPreview(dataUrl) {
@@ -348,7 +414,7 @@ let offerSaveInProgress = false;
       }
 
       if (!dataUrl) {
-        preview.innerHTML = offerTranslate("offer.noPhoto", "Bez fotky");
+        preview.textContent = offerTranslate("offer.noPhoto", "Bez fotky");
         return;
       }
 
@@ -418,12 +484,14 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
 
       photoInput.addEventListener("change", function () {
         const file = photoInput.files && photoInput.files[0];
+        const selectionToken = ++offerPhotoSelectionToken;
 
         if (!file) {
           offerPhotoDataUrl = "";
           offerPhotoFile = null;
+          offerPhotoProcessing = false;
           renderPhotoPreview("");
-          updatePhotoStatus(offerTranslate("offer.photoNotSelected", "Fotka nebyla vybraná."), "");
+          updatePhotoStatusByKey("offer.photoNotSelected", "Fotka nebyla vybraná.", "");
           setRemovePhotoButtonVisible(removePhotoButton, false);
           return;
         }
@@ -431,9 +499,10 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
         if (!OFFER_PHOTO_ALLOWED_TYPES.includes(file.type)) {
           offerPhotoDataUrl = "";
           offerPhotoFile = null;
+          offerPhotoProcessing = false;
           photoInput.value = "";
           renderPhotoPreview("");
-          updatePhotoStatus(offerTranslate("offer.photoInvalidType", "Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP."), "error");
+          updatePhotoStatusByKey("offer.photoInvalidType", "Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP.", "error");
           setRemovePhotoButtonVisible(removePhotoButton, false);
           return;
         }
@@ -441,47 +510,57 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
         if (file.size > OFFER_PHOTO_MAX_BYTES) {
           offerPhotoDataUrl = "";
           offerPhotoFile = null;
+          offerPhotoProcessing = false;
           photoInput.value = "";
           renderPhotoPreview("");
-          updatePhotoStatus(offerTranslate("offer.photoTooLarge", "Fotka je příliš velká. Maximální velikost je 5 MB."), "error");
+          updatePhotoStatusByKey("offer.photoTooLarge", "Fotka je příliš velká. Maximální velikost je 5 MB.", "error");
           setRemovePhotoButtonVisible(removePhotoButton, false);
           return;
         }
 
         offerPhotoFile = file;
-        updatePhotoStatus(offerTranslate("offer.photoProcessing", "Zpracovávám fotku..."), "");
+        offerPhotoProcessing = true;
+        updatePhotoStatusByKey("offer.photoProcessing", "Zpracovávám fotku...", "");
 
         resizeImageToDataUrl(file, function (dataUrl) {
+          if (selectionToken !== offerPhotoSelectionToken) {
+            return;
+          }
+
+          offerPhotoProcessing = false;
+
           if (!dataUrl) {
             offerPhotoDataUrl = "";
             offerPhotoFile = null;
             photoInput.value = "";
             renderPhotoPreview("");
-            updatePhotoStatus(offerTranslate("offer.photoLoadFailed", "Fotku se nepodařilo načíst. Zkuste jiný obrázek."), "error");
+            updatePhotoStatusByKey("offer.photoLoadFailed", "Fotku se nepodařilo načíst. Zkuste jiný obrázek.", "error");
             setRemovePhotoButtonVisible(removePhotoButton, false);
             return;
           }
 
           offerPhotoDataUrl = dataUrl;
           renderPhotoPreview(offerPhotoDataUrl);
-          updatePhotoStatus(offerTranslate("offer.photoReady", "Fotka byla připravená k uložení."), "success");
+          updatePhotoStatusByKey("offer.photoReady", "Fotka byla připravená k uložení.", "success");
           setRemovePhotoButtonVisible(removePhotoButton, true);
         });
       });
 
       if (removePhotoButton) {
         removePhotoButton.addEventListener("click", function () {
+          offerPhotoSelectionToken += 1;
           offerPhotoDataUrl = "";
           offerPhotoFile = null;
+          offerPhotoProcessing = false;
           photoInput.value = "";
           renderPhotoPreview("");
-          updatePhotoStatus(offerTranslate("offer.photoRemoved", "Fotka byla odebraná."), "");
+          updatePhotoStatusByKey("offer.photoRemoved", "Fotka byla odebraná.", "");
           setRemovePhotoButtonVisible(removePhotoButton, false);
         });
       }
     }
 
-    function getPickupAddress(currentUser) {
+    function getPickupAddress() {
       const pickupUseCustom = document.getElementById("pickupUseCustom");
       const useCustomPickup = pickupUseCustom ? pickupUseCustom.checked : false;
 
@@ -491,25 +570,19 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           street: getInputValue("pickupStreet"),
           city: getInputValue("pickupCity"),
           postalCode: getInputValue("pickupPostalCode"),
-          note: getInputValue("pickupNote")
+          note: getInputValue("pickupNote"),
+          phone: offerOwnerProfile.phone
         };
       }
 
-     const safeUser = currentUser || {};
-
-return {
-  mode: "profile",
-  street: safeUser.street || safeUser.ulice || "",
-  city:
-    safeUser.city ||
-    safeUser.mesto ||
-    getInputValue("toolCity"),
-  postalCode:
-    safeUser.postalCode ||
-    safeUser.psc ||
-    getInputValue("toolPostalCode"),
-  note: ""
-};
+      return {
+        mode: "profile",
+        street: offerOwnerProfile.street,
+        city: offerOwnerProfile.city || getInputValue("toolCity"),
+        postalCode: offerOwnerProfile.postalCode || getInputValue("toolPostalCode"),
+        note: "",
+        phone: offerOwnerProfile.phone
+      };
     }
 
     function getFullPickupAddress(pickupAddress) {
@@ -544,7 +617,6 @@ return {
       });
 
       const parsedPrice = parseMoneyValue(getInputValue("toolPrice"));
-     const parsedDeposit = 0;
 
       if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
         markOfferFormError("toolPrice");
@@ -566,7 +638,7 @@ return {
       }
 
       if (hasError) {
-        showOfferFormMessage(offerTranslate("offer.validationRequired", "Vyplňte prosím všechna povinná pole. GPS poloha je volitelná."), "error");
+        showOfferTranslatedFormMessage("offer.validationRequired", "Vyplňte prosím všechna povinná pole. GPS poloha je volitelná.", "error");
         return false;
       }
 
@@ -615,7 +687,7 @@ return {
       const photoBlob = dataUrlToBlob(offerPhotoDataUrl);
       const fileName = userId + "/" + Date.now() + "-offer.jpg";
 
-      updatePhotoStatus(offerTranslate("offer.photoUploading", "Nahrávám fotku do Supabase..."), "");
+      updatePhotoStatusByKey("offer.photoUploading", "Nahrávám fotku...", "");
 
       const { error } = await supabaseClient.storage
         .from("offer-photos")
@@ -632,7 +704,7 @@ return {
         .from("offer-photos")
         .getPublicUrl(fileName);
 
-      updatePhotoStatus(offerTranslate("offer.photoUploaded", "Fotka byla nahraná."), "success");
+      updatePhotoStatusByKey("offer.photoUploaded", "Fotka byla nahraná.", "success");
 
       return {
         url: data && data.publicUrl ? data.publicUrl : "",
@@ -641,11 +713,7 @@ return {
     }
 
     function createSupabaseOfferObject(status, supabaseUser, photoUrl) {
-      const currentUser =
-  typeof getCurrentUserSafe === "function"
-    ? getOfferCurrentUserSafe()
-    : null;
-      const pickupAddress = getPickupAddress(currentUser);
+      const pickupAddress = getPickupAddress();
 
       const pickupLatitudeValue = getInputValue("pickupLatitude");
       const pickupLongitudeValue = getInputValue("pickupLongitude");
@@ -660,7 +728,7 @@ return {
         !Number.isNaN(pickupLongitude);
 
       return {
-        
+        owner_id: supabaseUser.id,
         name: getInputValue("toolName"),
         category: getInputValue("toolCategory"),
         description: getInputValue("toolDescription"),
@@ -671,11 +739,12 @@ return {
         status: status,
         photo_url: photoUrl || null,
 
+        pickup_mode: pickupAddress.mode,
         pickup_street: pickupAddress.street,
         pickup_city: pickupAddress.city,
         pickup_postal_code: pickupAddress.postalCode,
         pickup_note: pickupAddress.note,
-        pickup_phone: getUserPhone(currentUser),
+        pickup_phone: pickupAddress.phone,
         pickup_latitude: hasPickupGps ? pickupLatitude : null,
         pickup_longitude: hasPickupGps ? pickupLongitude : null
       };
@@ -684,6 +753,8 @@ return {
     function setOfferSavingState(isSaving, status) {
       const publishOfferButton = document.getElementById("publishOfferButton");
       const saveDraftButton = document.getElementById("saveDraftButton");
+
+      offerSaveStatus = isSaving ? status : "";
 
       if (publishOfferButton) {
         publishOfferButton.disabled = isSaving;
@@ -705,19 +776,19 @@ return {
         return;
       }
 
-      if (!navIsLoggedIn()) {
-        showOfferLoginRequired();
-        return;
-      }
-
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        showOfferFormMessage(offerTranslate("offer.errorSupabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu."), "error");
+        showOfferTranslatedFormMessage("offer.errorSupabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu.", "error");
         return;
       }
 
       if (!validateOfferForm(status)) {
+        return;
+      }
+
+      if (offerPhotoProcessing) {
+        showOfferTranslatedFormMessage("offer.photoProcessingWait", "Počkejte prosím, až se dokončí zpracování fotky.", "error");
         return;
       }
 
@@ -730,7 +801,7 @@ return {
         const supabaseUser = await getCurrentSupabaseUser();
 
         if (!supabaseUser) {
-          showOfferFormMessage(offerTranslate("offer.errorNotAuthenticated", "Vaše přihlášení vypršelo. Přihlaste se prosím znovu."), "error");
+          showOfferTranslatedFormMessage("offer.errorNotAuthenticated", "Vaše přihlášení vypršelo. Přihlaste se prosím znovu.", "error");
           offerSaveInProgress = false;
           setOfferSavingState(false, status);
           return;
@@ -755,25 +826,31 @@ return {
       } catch (error) {
         if (uploadedPhotoPath) {
           await removeOfferPhotoFromStorage(supabaseClient, uploadedPhotoPath);
+
+          if (offerPhotoDataUrl) {
+            updatePhotoStatusByKey("offer.photoReady", "Fotka byla připravená k uložení.", "success");
+          }
         }
 
         console.error("Nabídku se nepodařilo uložit.", error);
         offerSaveInProgress = false;
         setOfferSavingState(false, status);
 
-        const message = error && error.message ? error.message : "";
+        const message = error && error.message
+          ? String(error.message).toLowerCase()
+          : "";
 
         if (message.includes("row-level security")) {
-          showOfferFormMessage(offerTranslate("offer.errorRls", "Nabídku se nepodařilo uložit. Odhlaste se, znovu se přihlaste a opakujte akci."), "error");
+          showOfferTranslatedFormMessage("offer.errorRls", "Nabídku se nepodařilo uložit. Odhlaste se, znovu se přihlaste a opakujte akci.", "error");
           return;
         }
 
         if (message.includes("column") || message.includes("schema cache")) {
-          showOfferFormMessage(offerTranslate("offer.errorSchema", "Nabídku se nyní nepodařilo uložit. Zkuste to prosím později."), "error");
+          showOfferTranslatedFormMessage("offer.errorSchema", "Nabídku se nyní nepodařilo uložit. Zkuste to prosím později.", "error");
           return;
         }
 
-        showOfferFormMessage(offerTranslate("offer.errorSave", "Nabídku se nepodařilo uložit. Zkuste odebrat fotku a uložit znovu."), "error");
+        showOfferTranslatedFormMessage("offer.errorSave", "Nabídku se nepodařilo uložit. Zkuste odebrat fotku a uložit znovu.", "error");
       }
     }
 
@@ -794,9 +871,71 @@ return {
       });
     }
 
-    function setupPickupLocation() {
+    function setPickupLocationState(state) {
       const pickupLocationButton = document.getElementById("pickupLocationButton");
       const pickupLocationStatus = document.getElementById("pickupLocationStatus");
+      const stateConfig = {
+        idle: {
+          buttonKey: "offer.useLocation",
+          buttonFallback: "Použít moji aktuální polohu",
+          statusKey: "offer.locationNotSaved",
+          statusFallback: "Poloha zatím není uložená.",
+          statusType: ""
+        },
+        detecting: {
+          buttonKey: "offer.locationDetecting",
+          buttonFallback: "Zjišťuji polohu...",
+          statusKey: "offer.locationDetecting",
+          statusFallback: "Zjišťuji polohu...",
+          statusType: ""
+        },
+        saved: {
+          buttonKey: "offer.locationSavedButton",
+          buttonFallback: "Poloha byla uložena",
+          statusKey: "offer.locationSaved",
+          statusFallback: "Poloha byla uložena k nabídce.",
+          statusType: "success"
+        },
+        failed: {
+          buttonKey: "offer.useLocation",
+          buttonFallback: "Použít moji aktuální polohu",
+          statusKey: "offer.locationFailed",
+          statusFallback: "Polohu se nepodařilo získat. Nabídku můžete uložit i bez GPS.",
+          statusType: "error"
+        },
+        unavailable: {
+          buttonKey: "offer.useLocation",
+          buttonFallback: "Použít moji aktuální polohu",
+          statusKey: "offer.locationUnavailable",
+          statusFallback: "Poloha není v tomto prohlížeči dostupná.",
+          statusType: "error"
+        }
+      };
+      const config = stateConfig[state] || stateConfig.idle;
+
+      pickupLocationState = stateConfig[state] ? state : "idle";
+
+      if (pickupLocationButton) {
+        pickupLocationButton.disabled = pickupLocationState === "detecting";
+        setDynamicTranslatedText(
+          pickupLocationButton,
+          config.buttonKey,
+          config.buttonFallback
+        );
+      }
+
+      if (pickupLocationStatus) {
+        pickupLocationStatus.className = "pickup-location-status " + config.statusType;
+        setDynamicTranslatedText(
+          pickupLocationStatus,
+          config.statusKey,
+          config.statusFallback
+        );
+      }
+    }
+
+    function setupPickupLocation() {
+      const pickupLocationButton = document.getElementById("pickupLocationButton");
       const pickupLatitudeInput = document.getElementById("pickupLatitude");
       const pickupLongitudeInput = document.getElementById("pickupLongitude");
 
@@ -804,49 +943,29 @@ return {
         return;
       }
 
+      setPickupLocationState(pickupLocationState);
+
       pickupLocationButton.addEventListener("click", function () {
         if (!navigator.geolocation) {
-          if (pickupLocationStatus) {
-            pickupLocationStatus.textContent = offerTranslate("offer.locationUnavailable", "Poloha není v tomto prohlížeči dostupná.");
-            pickupLocationStatus.className = "pickup-location-status error";
-          }
-
+          setPickupLocationState("unavailable");
           alert(offerTranslate("offer.locationUnavailable", "Poloha není v tomto prohlížeči dostupná."));
           return;
         }
 
-        pickupLocationButton.disabled = true;
-        pickupLocationButton.textContent = offerTranslate("offer.locationDetecting", "Zjišťuji polohu...");
-
-        if (pickupLocationStatus) {
-          pickupLocationStatus.textContent = offerTranslate("offer.locationDetecting", "Zjišťuji polohu...");
-          pickupLocationStatus.className = "pickup-location-status";
-        }
+        setPickupLocationState("detecting");
 
         navigator.geolocation.getCurrentPosition(
           function (position) {
             pickupLatitudeInput.value = position.coords.latitude;
             pickupLongitudeInput.value = position.coords.longitude;
 
-            pickupLocationButton.disabled = false;
-            pickupLocationButton.textContent = offerTranslate("offer.locationSavedButton", "Poloha byla uložena");
-
-            if (pickupLocationStatus) {
-              pickupLocationStatus.textContent = offerTranslate("offer.locationSaved", "Poloha byla uložena k nabídce.");
-              pickupLocationStatus.className = "pickup-location-status success";
-            }
+            setPickupLocationState("saved");
           },
           function () {
             pickupLatitudeInput.value = "";
             pickupLongitudeInput.value = "";
 
-            pickupLocationButton.disabled = false;
-            pickupLocationButton.textContent = offerTranslate("offer.useLocation", "Použít moji aktuální polohu");
-
-            if (pickupLocationStatus) {
-              pickupLocationStatus.textContent = offerTranslate("offer.locationFailed", "Polohu se nepodařilo získat. Nabídku můžete uložit i bez GPS.");
-              pickupLocationStatus.className = "pickup-location-status error";
-            }
+            setPickupLocationState("failed");
 
             alert(offerTranslate("offer.locationFailedAlert", "Polohu se nepodařilo získat. Nabídku můžete uložit i bez GPS polohy."));
           },
@@ -877,6 +996,14 @@ return {
       }
     }
 
+    function refreshOfferDynamicTranslations() {
+      renderPhotoPreview(offerPhotoDataUrl);
+      refreshDynamicTranslatedText(document.getElementById("toolPhotoStatus"));
+      refreshDynamicTranslatedText(document.getElementById("offerFormMessage"));
+      setPickupLocationState(pickupLocationState);
+      setOfferSavingState(offerSaveInProgress, offerSaveStatus);
+    }
+
     document.addEventListener("DOMContentLoaded", async function () {
       const authenticatedUser = await window.rentuloAuthGuard.requireUser();
 
@@ -892,4 +1019,8 @@ return {
       setupPickupCustomFields();
       setupPickupLocation();
       setupOfferForm();
+    });
+
+    document.addEventListener("rentuloLanguageChanged", function () {
+      refreshOfferDynamicTranslations();
     });

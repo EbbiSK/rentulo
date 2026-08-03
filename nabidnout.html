@@ -294,6 +294,7 @@
     }
 
     .photo-upload-header strong,
+    .photo-upload-header .photo-upload-title,
     .pickup-options-header strong,
     .pickup-location-header strong {
       display: block;
@@ -723,11 +724,11 @@
 
         <form class="offer-card-body tool-form" id="offerForm">
 
-          <div class="form-message" id="offerFormMessage"></div>
+          <div class="form-message" id="offerFormMessage" role="status" aria-live="polite"></div>
 
           <div class="photo-upload-box">
             <div class="photo-upload-header">
-              <strong data-i18n="offer.photoTitle">Fotka nabízené věci</strong>
+              <label for="toolPhoto" class="photo-upload-title" data-i18n="offer.photoTitle">Fotka nabízené věci</label>
               <p data-i18n="offer.photoDescription">Přidejte fotku nabízené věci. Zobrazí se u nabídky a později i ve výsledcích. Fotka je nepovinná.</p>
             </div>
 
@@ -737,7 +738,7 @@
               <div class="photo-upload-actions">
                 <input id="toolPhoto" type="file" accept="image/jpeg,image/png,image/webp" />
                 <button type="button" class="photo-remove-button" id="removeToolPhotoButton" data-i18n="offer.removePhoto" hidden>Odebrat fotku</button>
-                <span class="photo-upload-status" id="toolPhotoStatus" data-i18n="offer.photoRecommendation">Doporučeno: kvalitní a dobře osvětlená fotka.</span>
+                <span class="photo-upload-status" id="toolPhotoStatus" data-i18n="offer.photoRecommendation" role="status" aria-live="polite">Doporučeno: kvalitní a dobře osvětlená fotka.</span>
               </div>
             </div>
           </div>
@@ -828,7 +829,7 @@
 
                 <div class="pickup-location-actions">
                   <button type="button" class="pickup-location-button" id="pickupLocationButton" data-i18n="offer.useLocation">Použít moji aktuální polohu</button>
-                  <span class="pickup-location-status" id="pickupLocationStatus" data-i18n="offer.locationNotSaved">Poloha zatím není uložená.</span>
+                  <span class="pickup-location-status" id="pickupLocationStatus" data-i18n="offer.locationNotSaved" role="status" aria-live="polite">Poloha zatím není uložená.</span>
                 </div>
 
                 <input type="hidden" id="pickupLatitude" />
