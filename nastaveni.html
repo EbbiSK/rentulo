@@ -131,6 +131,43 @@
       white-space: nowrap;
     }
 
+    .settings-load-state {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+      padding: 14px 16px;
+      border: 1px solid #cfe5da;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.76);
+      color: #66736e;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .settings-load-state.is-error {
+      border-color: #f0c7c2;
+      background: #fffafa;
+      color: #b42318;
+    }
+
+    .settings-load-state[hidden],
+    .settings-content[hidden],
+    .settings-retry-button[hidden] {
+      display: none;
+    }
+
+    .settings-retry-button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .settings-retry-button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
     .settings-card {
       margin-top: 14px;
       padding: 20px;
@@ -357,6 +394,11 @@
         grid-template-columns: 1fr;
       }
 
+      .settings-load-state {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
       .actions {
         align-items: stretch;
         flex-direction: column;
@@ -408,6 +450,21 @@
 </a>
     </div>
 
+    <div class="settings-load-state" id="settingsLoadState" role="status" aria-live="polite">
+      <span id="settingsLoadText" data-i18n="settings.loading">Načítám nastavení…</span>
+      <button
+        type="button"
+        class="back-link settings-retry-button"
+        id="settingsRetryButton"
+        data-i18n="settings.retry"
+        hidden
+      >
+        Načíst znovu
+      </button>
+    </div>
+
+    <div class="settings-content" id="settingsContent" hidden>
+
     <section class="settings-card">
       <h2 data-i18n="settings.profileTitle">Osobní údaje</h2>
       <p data-i18n="settings.profileDescription">Upravte údaje zadané při registraci.</p>
@@ -426,7 +483,7 @@
 
           <div class="field">
             <label for="profilePhone" data-i18n="settings.phone">Telefon</label>
-            <input type="tel" id="profilePhone" autocomplete="tel" inputmode="tel" maxlength="40" required />
+            <input type="tel" id="profilePhone" autocomplete="tel" inputmode="tel" maxlength="32" required />
           </div>
 
           <div class="field">
@@ -489,16 +546,22 @@
 </span>
           <div class="switch-row">
             <div class="switch-copy">
-              <strong data-i18n="settings.emailDescription">
+              <strong id="emailNotificationsTitle" data-i18n="settings.emailDescription">
   Důležitá upozornění o rezervacích
 </strong>
-              <small data-i18n="settings.systemEmails">
+              <small id="emailNotificationsDescription" data-i18n="settings.systemEmails">
   Systémové a bezpečnostní e-maily zůstanou vždy aktivní.
 </small>
             </div>
 
             <label class="switch">
-              <input type="checkbox" id="emailNotifications" checked />
+              <input
+                type="checkbox"
+                id="emailNotifications"
+                aria-labelledby="emailNotificationsTitle"
+                aria-describedby="emailNotificationsDescription"
+                checked
+              />
               <span class="switch-slider"></span>
             </label>
           </div>
@@ -551,6 +614,8 @@
         </div>
       </form>
     </section>
+
+    </div>
 
   </main>
 

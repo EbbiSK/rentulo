@@ -19,7 +19,7 @@
     return fallback;
   }
 
-  function setMessage(element, text, type) {
+  function renderMessage(element, text, type) {
     if (!element) {
       return;
     }
@@ -29,6 +29,98 @@
 
     if (text && type) {
       element.classList.add(type);
+    }
+  }
+
+  function setMessage(element, text, type) {
+    if (!element) {
+      return;
+    }
+
+    delete element.dataset.messageKey;
+    delete element.dataset.messageFallback;
+    delete element.dataset.messageValues;
+    renderMessage(element, text, type);
+  }
+
+  function formatTranslatedMessage(key, fallback, values) {
+    let text = translate(key, fallback);
+
+    Object.keys(values || {}).forEach(function (name) {
+      text = text.split("{" + name + "}").join(String(values[name]));
+    });
+
+    return text;
+  }
+
+  function setTranslatedMessage(element, key, fallback, type, values) {
+    if (!element) {
+      return;
+    }
+
+    element.dataset.messageKey = key;
+    element.dataset.messageFallback = fallback || "";
+    element.dataset.messageValues = JSON.stringify(values || {});
+    renderMessage(
+      element,
+      formatTranslatedMessage(key, fallback, values),
+      type
+    );
+  }
+
+  function refreshTranslatedMessages() {
+    document
+      .querySelectorAll(".message[data-message-key]")
+      .forEach(function (element) {
+        let values = {};
+
+        try {
+          values = JSON.parse(element.dataset.messageValues || "{}");
+        } catch (_error) {
+          values = {};
+        }
+
+        renderMessage(
+          element,
+          formatTranslatedMessage(
+            element.dataset.messageKey,
+            element.dataset.messageFallback || "",
+            values
+          ),
+          element.classList.contains("error") ? "error" : "success"
+        );
+      });
+  }
+
+  function setLoadState(mode) {
+    const state = document.getElementById("settingsLoadState");
+    const text = document.getElementById("settingsLoadText");
+    const retryButton = document.getElementById("settingsRetryButton");
+    const content = document.getElementById("settingsContent");
+    const isLoading = mode === "loading";
+    const isError = mode === "error";
+
+    if (state) {
+      state.hidden = !isLoading && !isError;
+      state.classList.toggle("is-error", isError);
+      state.dataset.state = mode;
+    }
+
+    if (text) {
+      const key = isError ? "settings.loadError" : "settings.loading";
+      const fallback = isError
+        ? "Nastavení se nepodařilo načíst."
+        : "Načítám nastavení…";
+      text.dataset.i18n = key;
+      text.textContent = translate(key, fallback);
+    }
+
+    if (retryButton) {
+      retryButton.hidden = !isError;
+    }
+
+    if (content) {
+      content.hidden = isLoading || isError;
     }
   }
 
@@ -140,23 +232,32 @@
     const settingsMessage = document.getElementById("settingsMessage");
     const profileMessage = document.getElementById("profileMessage");
 
-    const { data, error } = await client
-      .from("profiles")
-      .select(
-        "full_name, email, phone, street, city, postal_code, preferred_language, email_notifications"
-      )
-      .eq("id", user.id)
-      .maybeSingle();
+    setLoadState("loading");
+    setMessage(settingsMessage, "", "");
+    setMessage(profileMessage, "", "");
 
-    if (error) {
+    let data;
+    let error;
+
+    try {
+      const response = await client
+        .from("profiles")
+        .select(
+          "full_name, email, phone, street, city, postal_code, preferred_language, email_notifications"
+        )
+        .eq("id", user.id)
+        .maybeSingle();
+
+      data = response.data;
+      error = response.error;
+    } catch (requestError) {
+      error = requestError;
+    }
+
+    if (error || !data) {
       console.error(error);
-      const errorText = translate(
-        "settings.loadError",
-        "Nastavení se nepodařilo načíst."
-      );
-      setMessage(settingsMessage, errorText, "error");
-      setMessage(profileMessage, errorText, "error");
-      return;
+      setLoadState("error");
+      return false;
     }
 
     let profile = data || null;
@@ -164,18 +265,22 @@
     const profileEmail = normalizeEmail(profile && profile.email);
 
     if (authEmail && authEmail !== profileEmail) {
-      const { error: emailSyncError } = await client
-        .from("profiles")
-        .update({
-          email: authEmail,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", user.id);
+      try {
+        const { error: emailSyncError } = await client
+          .from("profiles")
+          .update({
+            email: authEmail,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", user.id);
 
-      if (emailSyncError) {
+        if (emailSyncError) {
+          console.error("Potvrzený e-mail se nepodařilo synchronizovat.", emailSyncError);
+        } else {
+          profile = { ...(profile || {}), email: authEmail };
+        }
+      } catch (emailSyncError) {
         console.error("Potvrzený e-mail se nepodařilo synchronizovat.", emailSyncError);
-      } else {
-        profile = { ...(profile || {}), email: authEmail };
       }
     }
 
@@ -184,13 +289,12 @@
 
     const pendingEmail = normalizeEmail(user && user.new_email);
     if (pendingEmail && pendingEmail !== authEmail) {
-      setMessage(
+      setTranslatedMessage(
         profileMessage,
-        translate(
-          "settings.emailConfirmationPending",
-          "Změna e-mailu na " + pendingEmail + " čeká na potvrzení. Do potvrzení zůstává aktivní původní e-mail."
-        ).replace("{email}", pendingEmail),
-        "success"
+        "settings.emailConfirmationPending",
+        "Změna e-mailu na {email} čeká na potvrzení. Do potvrzení zůstává aktivní původní e-mail.",
+        "success",
+        { email: pendingEmail }
       );
     }
 
@@ -211,6 +315,8 @@
     }
 
     applyLanguage(language);
+    setLoadState("ready");
+    return true;
   }
 
   async function saveProfile(client, user) {
@@ -230,33 +336,41 @@
     const city = normalizeText(cityInput && cityInput.value);
     const postalCode = normalizeText(postalCodeInput && postalCodeInput.value);
 
+    if (button && button.disabled) {
+      return user;
+    }
+
     setMessage(message, "", "");
 
     if (!fullName || !email || !phone || !street || !city || !postalCode) {
-      setMessage(
+      setTranslatedMessage(
         message,
-        translate("settings.profileRequired", "Vyplňte všechna osobní data."),
+        "settings.profileRequired",
+        "Vyplňte všechna osobní data.",
         "error"
       );
-      return;
+      return user;
     }
 
     if (!isValidEmail(email)) {
-      setMessage(
+      setTranslatedMessage(
         message,
-        translate("settings.invalidEmail", "Zadejte platnou e-mailovou adresu."),
+        "settings.invalidEmail",
+        "Zadejte platnou e-mailovou adresu.",
         "error"
       );
-      return;
+      return user;
     }
 
     setButtonLoading(button, true);
 
     try {
       const currentEmail = normalizeEmail(user.email);
+      const currentPendingEmail = normalizeEmail(user.new_email);
       let emailConfirmationRequired = false;
+      let authUser = user;
 
-      if (email !== currentEmail) {
+      if (email !== currentEmail && email !== currentPendingEmail) {
         const { data: authData, error: authError } = await client.auth.updateUser({
           email: email,
           data: {
@@ -273,6 +387,7 @@
         }
 
         const returnedUser = authData && authData.user ? authData.user : null;
+        authUser = returnedUser || user;
         const returnedEmail = normalizeEmail(returnedUser && returnedUser.email);
         const pendingEmail = normalizeEmail(returnedUser && returnedUser.new_email);
 
@@ -284,7 +399,11 @@
           emailConfirmationRequired = true;
         }
       } else {
-        const { error: metadataError } = await client.auth.updateUser({
+        emailConfirmationRequired = Boolean(
+          currentPendingEmail && email === currentPendingEmail
+        );
+
+        const { data: authData, error: metadataError } = await client.auth.updateUser({
           data: {
             full_name: fullName,
             phone: phone,
@@ -297,6 +416,8 @@
         if (metadataError) {
           throw metadataError;
         }
+
+        authUser = authData && authData.user ? authData.user : user;
       }
 
       const profileUpdate = {
@@ -322,48 +443,47 @@
       }
 
       const effectiveEmail = emailConfirmationRequired ? currentEmail : email;
-      syncLocalUser(
-        {
-          ...user,
+      const updatedUser = {
+          ...authUser,
           email: effectiveEmail,
           user_metadata: {
-            ...(user.user_metadata || {}),
+            ...(authUser.user_metadata || {}),
             full_name: fullName,
             phone: phone,
             street: street,
             city: city,
             postal_code: postalCode
           }
-        },
+        };
+
+      syncLocalUser(
+        updatedUser,
         {
           ...profileUpdate,
           email: effectiveEmail
         }
       );
 
-      setMessage(
+      setTranslatedMessage(
         message,
         emailConfirmationRequired
-          ? translate(
-              "settings.profileSavedEmailConfirmation",
-              "Osobní údaje byly uloženy. Změnu e-mailu potvrďte odkazem zaslaným na novou adresu."
-            )
-          : translate(
-              "settings.profileSaved",
-              "Osobní údaje byly uloženy."
-            ),
+          ? "settings.profileSavedEmailConfirmation"
+          : "settings.profileSaved",
+        emailConfirmationRequired
+          ? "Osobní údaje byly uloženy. Změnu e-mailu potvrďte odkazem zaslaným na novou adresu."
+          : "Osobní údaje byly uloženy.",
         "success"
       );
+      return updatedUser;
     } catch (error) {
       console.error(error);
-      setMessage(
+      setTranslatedMessage(
         message,
-        translate(
-          "settings.profileSaveError",
-          "Osobní údaje se nepodařilo uložit. Zkuste to prosím znovu."
-        ),
+        "settings.profileSaveError",
+        "Osobní údaje se nepodařilo uložit. Zkuste to prosím znovu.",
         "error"
       );
+      return user;
     } finally {
       setButtonLoading(button, false);
     }
@@ -377,6 +497,10 @@
 
     const preferredLanguage = languageSelect ? languageSelect.value : "cs";
     const emailNotifications = emailCheckbox ? emailCheckbox.checked : true;
+
+    if (saveButton && saveButton.disabled) {
+      return;
+    }
 
     setMessage(message, "", "");
 
@@ -397,16 +521,18 @@
       }
 
       applyLanguage(preferredLanguage);
-      setMessage(
+      setTranslatedMessage(
         message,
-        translate("settings.saved", "Nastavení bylo uloženo."),
+        "settings.saved",
+        "Nastavení bylo uloženo.",
         "success"
       );
     } catch (error) {
       console.error(error);
-      setMessage(
+      setTranslatedMessage(
         message,
-        translate("settings.saveError", "Nastavení se nepodařilo uložit."),
+        "settings.saveError",
+        "Nastavení se nepodařilo uložit.",
         "error"
       );
     } finally {
@@ -423,27 +549,27 @@
     const password = newPassword ? newPassword.value : "";
     const confirmation = confirmPassword ? confirmPassword.value : "";
 
+    if (button && button.disabled) {
+      return;
+    }
+
     setMessage(message, "", "");
 
     if (password.length < 8) {
-      setMessage(
+      setTranslatedMessage(
         message,
-        translate(
-          "settings.passwordTooShort",
-          "Heslo musí mít alespoň 8 znaků."
-        ),
+        "settings.passwordTooShort",
+        "Heslo musí mít alespoň 8 znaků.",
         "error"
       );
       return;
     }
 
     if (password !== confirmation) {
-      setMessage(
+      setTranslatedMessage(
         message,
-        translate(
-          "settings.passwordMismatch",
-          "Zadaná hesla se neshodují."
-        ),
+        "settings.passwordMismatch",
+        "Zadaná hesla se neshodují.",
         "error"
       );
       return;
@@ -477,22 +603,18 @@
         confirmPassword.type = "password";
       }
 
-      setMessage(
+      setTranslatedMessage(
         message,
-        translate(
-          "settings.passwordChanged",
-          "Heslo bylo úspěšně změněno."
-        ),
+        "settings.passwordChanged",
+        "Heslo bylo úspěšně změněno.",
         "success"
       );
     } catch (error) {
       console.error(error);
-      setMessage(
+      setTranslatedMessage(
         message,
-        translate(
-          "settings.passwordChangeError",
-          "Heslo se nepodařilo změnit. Zkuste to prosím znovu."
-        ),
+        "settings.passwordChangeError",
+        "Heslo se nepodařilo změnit. Zkuste to prosím znovu.",
         "error"
       );
     } finally {
@@ -537,26 +659,36 @@
     const client = getSupabaseClient();
 
     if (!client) {
+      setLoadState("error");
+
+      const unavailableRetryButton = document.getElementById("settingsRetryButton");
+      if (unavailableRetryButton) {
+        unavailableRetryButton.addEventListener("click", function () {
+          window.location.reload();
+        });
+      }
+
       return;
     }
 
-    await loadPageData(client, user);
     initializePasswordVisibility();
 
     const profileForm = document.getElementById("profileForm");
     const saveButton = document.getElementById("saveSettingsButton");
     const passwordForm = document.getElementById("passwordForm");
+    const retryButton = document.getElementById("settingsRetryButton");
+    let currentUser = user;
 
     if (profileForm) {
-      profileForm.addEventListener("submit", function (event) {
+      profileForm.addEventListener("submit", async function (event) {
         event.preventDefault();
-        saveProfile(client, user);
+        currentUser = await saveProfile(client, currentUser);
       });
     }
 
     if (saveButton) {
       saveButton.addEventListener("click", function () {
-        saveSettings(client, user);
+        saveSettings(client, currentUser);
       });
     }
 
@@ -566,6 +698,20 @@
         changePassword(client);
       });
     }
+
+    if (retryButton) {
+      retryButton.addEventListener("click", async function () {
+        setButtonLoading(retryButton, true);
+
+        try {
+          await loadPageData(client, currentUser);
+        } finally {
+          setButtonLoading(retryButton, false);
+        }
+      });
+    }
+
+    await loadPageData(client, currentUser);
   }
 
   document.addEventListener("rentuloLanguageChanged", function (event) {
@@ -574,6 +720,13 @@
 
     if (languageSelect && language) {
       languageSelect.value = language;
+    }
+
+    refreshTranslatedMessages();
+
+    const loadState = document.getElementById("settingsLoadState");
+    if (loadState && loadState.dataset.state) {
+      setLoadState(loadState.dataset.state);
     }
   });
 
