@@ -84,19 +84,46 @@ function navGetLanguage() {
   return localStorage.getItem("rentuloLanguage") || "cs";
 }
 
+function navFlagMarkup(language) {
+  const flagClass = {
+    cs: "flag-cz",
+    en: "flag-gb",
+    de: "flag-de"
+  }[language] || "flag-cz";
+
+  return `<span class="nav-language-flag ${flagClass}" aria-hidden="true"></span>`;
+}
+
 function navLanguageControl() {
   const language = navGetLanguage();
   const label = navTranslate("nav.language", "Jazyk");
 
   return `
-    <label class="nav-language-control" title="${label}">
-      <span class="nav-language-label">${label}</span>
-      <select id="sharedLanguageSelect" aria-label="${label}">
-        <option value="cs"${language === "cs" ? " selected" : ""}>CZ</option>
-        <option value="en"${language === "en" ? " selected" : ""}>EN</option>
-        <option value="de"${language === "de" ? " selected" : ""}>DE</option>
-      </select>
-    </label>
+    <div class="nav-language-control">
+      <button
+        type="button"
+        id="sharedLanguageButton"
+        class="nav-language-button"
+        aria-label="${label}"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        ${navFlagMarkup(language)}
+        <span class="nav-language-chevron" aria-hidden="true">⌄</span>
+      </button>
+
+      <div id="sharedLanguageMenu" class="nav-language-menu" role="menu" hidden>
+        <button type="button" role="menuitem" data-language="cs" aria-label="Čeština">
+          ${navFlagMarkup("cs")}
+        </button>
+        <button type="button" role="menuitem" data-language="en" aria-label="English">
+          ${navFlagMarkup("en")}
+        </button>
+        <button type="button" role="menuitem" data-language="de" aria-label="Deutsch">
+          ${navFlagMarkup("de")}
+        </button>
+      </div>
+    </div>
   `;
 }
 
@@ -109,42 +136,112 @@ function navEnsureLanguageStyles() {
   style.id = "rentuloLanguageStyles";
   style.textContent = `
     .nav-language-control {
+      position: relative;
       display: inline-flex;
-      align-items: center;
-      gap: 6px;
       flex-shrink: 0;
     }
-    .nav-language-label {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
+    .nav-language-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 58px;
+      height: 40px;
+      padding: 0 9px;
+      border: 1px solid #cbeab8;
+      border-radius: 14px;
+      background: #f0faea;
+      color: #173f35;
+      cursor: pointer;
+      appearance: none;
+      box-shadow: none;
     }
-    .nav-language-control select {
-      min-width: 58px;
-      height: 36px;
-      padding: 0 24px 0 10px;
-      border: 1px solid rgba(7, 63, 46, 0.22);
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.78);
-      color: #073f2e;
-      font: inherit;
-      font-size: 13px;
-      font-weight: 800;
+    .nav-language-button:hover {
+      background: #e8f7df;
+      border-color: #aeda98;
+    }
+    .nav-language-button:focus,
+    .nav-language-button:focus-visible {
+      outline: none;
+      border-color: #9fd486;
+      box-shadow: 0 0 0 2px rgba(111, 207, 101, 0.14);
+    }
+    .nav-language-chevron {
+      font-size: 15px;
+      line-height: 1;
+      transform: translateY(-1px);
+    }
+    .nav-language-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      z-index: 1200;
+      display: grid;
+      gap: 4px;
+      min-width: 62px;
+      padding: 5px;
+      border: 1px solid #cbeab8;
+      border-radius: 14px;
+      background: #f8fff4;
+      box-shadow: 0 10px 24px rgba(23, 63, 53, 0.10);
+    }
+    .nav-language-menu[hidden] {
+      display: none;
+    }
+    .nav-language-menu button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 34px;
+      padding: 0;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
       cursor: pointer;
     }
-    .nav-language-control select:focus {
-      outline: 2px solid rgba(0, 107, 69, 0.2);
-      outline-offset: 2px;
+    .nav-language-menu button:hover,
+    .nav-language-menu button:focus-visible {
+      outline: none;
+      background: #edf8f3;
+    }
+    .nav-language-flag {
+      position: relative;
+      display: inline-block;
+      width: 26px;
+      height: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(23, 63, 53, 0.18);
+      border-radius: 3px;
+      box-shadow: 0 1px 2px rgba(23, 63, 53, 0.12);
+      flex: 0 0 26px;
+    }
+    .flag-cz {
+      background: linear-gradient(to bottom, #ffffff 0 50%, #d7141a 50% 100%);
+    }
+    .flag-cz::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 52%;
+      background: #11457e;
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+    }
+    .flag-gb {
+      background:
+        linear-gradient(33deg, transparent 42%, #ffffff 42% 47%, #c8102e 47% 53%, #ffffff 53% 58%, transparent 58%),
+        linear-gradient(-33deg, transparent 42%, #ffffff 42% 47%, #c8102e 47% 53%, #ffffff 53% 58%, transparent 58%),
+        linear-gradient(to right, transparent 39%, #ffffff 39% 45%, #c8102e 45% 55%, #ffffff 55% 61%, transparent 61%),
+        linear-gradient(to bottom, transparent 34%, #ffffff 34% 42%, #c8102e 42% 58%, #ffffff 58% 66%, transparent 66%),
+        #012169;
+    }
+    .flag-de {
+      background: linear-gradient(to bottom, #000000 0 33.333%, #dd0000 33.333% 66.666%, #ffce00 66.666% 100%);
     }
     @media (max-width: 760px) {
-      .nav-language-control select {
-        height: 34px;
+      .nav-language-button {
+        width: 56px;
+        height: 38px;
       }
     }
   `;
@@ -886,19 +983,47 @@ function renderSharedNavigation(
     );
   }
 
-  const languageSelect = document.getElementById("sharedLanguageSelect");
+  const languageButton = document.getElementById("sharedLanguageButton");
+  const languageMenu = document.getElementById("sharedLanguageMenu");
 
-  if (languageSelect) {
-    languageSelect.addEventListener("change", function () {
-      const language = languageSelect.value;
+  if (languageButton && languageMenu) {
+    const closeLanguageMenu = function () {
+      languageMenu.hidden = true;
+      languageButton.setAttribute("aria-expanded", "false");
+    };
+
+    languageButton.addEventListener("click", function (event) {
+      event.stopPropagation();
+      const willOpen = languageMenu.hidden;
+      languageMenu.hidden = !willOpen;
+      languageButton.setAttribute("aria-expanded", String(willOpen));
+    });
+
+    languageMenu.addEventListener("click", function (event) {
+      const option = event.target.closest("[data-language]");
+      if (!option) {
+        return;
+      }
+
+      const language = option.dataset.language;
+      closeLanguageMenu();
 
       if (typeof window.setRentuloLanguage === "function") {
         window.setRentuloLanguage(language);
       } else {
         localStorage.setItem("rentuloLanguage", language);
+        window.location.reload();
       }
 
       navSavePreferredLanguage(language);
+    });
+
+    document.addEventListener("click", closeLanguageMenu);
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeLanguageMenu();
+        languageButton.focus();
+      }
     });
   }
 }
