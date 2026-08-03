@@ -11,7 +11,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f4f6f7;
+      background: #dff7ee;
       color: #173f35;
     }
 
@@ -35,9 +35,9 @@
     }
 
     .logo-icon {
-      width: 40px;
-      height: 40px;
-      flex: 0 0 40px;
+      width: 52px;
+      height: 52px;
+      flex: 0 0 52px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -52,7 +52,7 @@
 
     .logo-text strong {
       display: block;
-      font-size: 21px;
+      font-size: 25px;
       line-height: 1;
       color: #173f35;
     }
@@ -61,7 +61,7 @@
       display: block;
       margin-top: 2px;
       font-size: 12px;
-      color: #66736e;
+      color: #5d6d66;
     }
 
     .nav {
@@ -96,7 +96,12 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 14px;
-      margin-bottom: 14px;
+      margin-bottom: 18px;
+      padding: 18px 20px;
+      border: 1px solid #cfe5da;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 10px 24px rgba(23, 63, 53, 0.04);
     }
 
     .settings-heading h1 {
@@ -119,7 +124,7 @@
       min-height: 42px;
       padding: 9px 15px;
       border-radius: 12px;
-      background: #eef1f2;
+      background: #edf6f1;
       color: #173f35;
       font-size: 13px;
       font-weight: 900;
@@ -129,14 +134,15 @@
     .settings-card {
       margin-top: 14px;
       padding: 20px;
-      border: 1px solid #e1e6e8;
+      border: 1px solid #cfe5da;
       border-radius: 16px;
       background: white;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 12px 30px rgba(23, 63, 53, 0.06);
     }
 
     .settings-card h2 {
       margin: 0 0 5px;
+      color: #173f35;
       font-size: 21px;
     }
 
@@ -169,7 +175,7 @@
     .field input {
       width: 100%;
       min-height: 44px;
-      border: 1px solid #d9e0e3;
+      border: 1px solid #cfe0d8;
       border-radius: 12px;
       background: white;
       color: #173f35;
@@ -192,8 +198,9 @@
       gap: 14px;
       min-height: 44px;
       padding: 10px 12px;
-      border: 1px solid #d9e0e3;
+      border: 1px solid #cfe0d8;
       border-radius: 12px;
+      background: #f7fbf9;
     }
 
     .switch-copy strong {
@@ -228,7 +235,7 @@
       position: absolute;
       inset: 0;
       border-radius: 999px;
-      background: #cfd7da;
+      background: #cbd9d2;
       cursor: pointer;
       transition: background 0.18s ease;
     }
@@ -258,6 +265,7 @@
 
     .primary-button {
       border: 0;
+      box-shadow: 0 6px 14px rgba(73, 145, 55, 0.12);
       border-radius: 12px;
       background: #7ED957;
       color: #173A22;
@@ -267,7 +275,7 @@
       cursor: pointer;
     }
 
-    .primary-button:hover { background: #6fca49; }
+    .primary-button:hover { background: #69c94f; }
     .primary-button:disabled { cursor: wait; opacity: 0.65; }
 
     .message {
@@ -342,6 +350,7 @@
 
       .settings-heading {
         flex-direction: column;
+        padding: 16px;
       }
 
       .settings-grid {
