@@ -1,14 +1,96 @@
-function reservationsTranslate(key, fallback) {
-  if (typeof window.rentuloTranslate === "function") {
-    return window.rentuloTranslate(key);
+const RESERVATIONS_LOCALES = {
+  cs: "cs-CZ",
+  en: "en-GB",
+  de: "de-DE",
+  pl: "pl-PL"
+};
+
+function reservationsTranslate(key, fallback, values) {
+  let text = typeof window.rentuloTranslate === "function"
+    ? window.rentuloTranslate(key)
+    : fallback;
+
+  if (text === key) {
+    text = fallback;
   }
 
-  return fallback;
+  if (values && typeof values === "object") {
+    Object.keys(values).forEach(function (name) {
+      text = String(text).replaceAll("{" + name + "}", String(values[name]));
+    });
+  }
+
+  return text;
+}
+
+function getReservationsLocale() {
+  const language = typeof window.getRentuloLanguage === "function"
+    ? window.getRentuloLanguage()
+    : "cs";
+
+  return RESERVATIONS_LOCALES[language] || RESERVATIONS_LOCALES.cs;
+}
+
+function formatReservationsNumber(value) {
+  const numberValue = Number(value);
+
+  if (!Number.isFinite(numberValue)) {
+    return String(value === undefined || value === null ? "" : value);
+  }
+
+  return numberValue.toLocaleString(getReservationsLocale());
+}
+
+function formatReservationsMoney(value) {
+  return formatReservationsNumber(value) + " Kč";
+}
+
+function formatReservationsDate(value) {
+  if (!value) {
+    return "-";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return date.toLocaleDateString(getReservationsLocale());
+}
+
+function formatReservationsDateTime(value) {
+  if (!value) {
+    return "-";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return date.toLocaleString(getReservationsLocale());
+}
+
+function getReservationsCountText(count) {
+  const pluralCategory = new Intl.PluralRules(getReservationsLocale()).select(Number(count));
+  const supportedCategory = ["one", "few", "many", "other"].includes(pluralCategory)
+    ? pluralCategory
+    : "other";
+  const suffix = supportedCategory.charAt(0).toUpperCase() + supportedCategory.slice(1);
+
+  return reservationsTranslate(
+    "reservations.count" + suffix,
+    "{count} rezervací",
+    { count: formatReservationsNumber(count) }
+  );
 }
 
   const PLATFORM_FEE_PERCENT = 10;
     let supabaseReservations = [];
     let supabaseReviews = [];
+    let reservationsLoadState = "idle";
 
     async function sendReservationEmailSafely(reservationId, eventType) {
       if (!reservationId || !eventType) {
@@ -87,7 +169,7 @@ function reservationsTranslate(key, fallback) {
         <div class="review-lines">
           <span>${escapeHtml(getStars(review.rating))}</span>
           ${review.text ? `<span>${escapeHtml(review.text)}</span>` : ""}
-          <span>${escapeHtml(reservationsTranslate("reservations.review.sent", "Odesláno"))}: ${escapeHtml(formatDateTime(review.created_at))}</span>
+          <span>${escapeHtml(reservationsTranslate("reservations.review.sent", "Odesláno"))}: ${escapeHtml(formatReservationsDateTime(review.created_at))}</span>
         </div>
       `;
     }
@@ -145,8 +227,8 @@ function reservationsTranslate(key, fallback) {
         ownerId: row.owner_id,
         renterId: row.renter_id,
 
-        toolName: row.offer_name || reservationsTranslate("reservations.fallback.itemForRent", "Věc k půjčení"),
-offerName: row.offer_name || reservationsTranslate("reservations.fallback.itemForRent", "Věc k půjčení"),
+        toolName: row.offer_name || "",
+offerName: row.offer_name || "",
 
 category: row.category || reservationsTranslate("reservations.fallback.other", "Ostatní"),
         city: row.city || "",
@@ -171,7 +253,7 @@ category: row.category || reservationsTranslate("reservations.fallback.other", "
         renterEmail: row.renter_email || "",
         renterPhone: row.renter_phone || "",
 
-        ownerName: row.owner_name || reservationsTranslate("reservations.fallback.owner", "Majitel"),
+        ownerName: row.owner_name || "",
         ownerEmail: row.owner_email || "",
         ownerPhone: row.owner_phone || "",
 
@@ -204,12 +286,14 @@ category: row.category || reservationsTranslate("reservations.fallback.other", "
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
+        reservationsLoadState = "error";
         return [];
       }
 
       const supabaseUser = await getCurrentSupabaseUser();
 
       if (!supabaseUser) {
+        reservationsLoadState = "redirecting";
         window.location.href = "prihlaseni.html";
         return [];
       }
@@ -217,17 +301,19 @@ category: row.category || reservationsTranslate("reservations.fallback.other", "
       const { data: reservationsData, error } = await supabaseClient
   .rpc("get_my_reservations");
 
+      if (error) {
+        console.error(error);
+        reservationsLoadState = "error";
+        return [];
+      }
+
 const data = Array.isArray(reservationsData)
   ? reservationsData.filter(function (reservation) {
       return reservation.renter_id === supabaseUser.id;
     })
   : [];
 
-      if (error) {
-        console.error(error);
-        alert(reservationsTranslate("reservations.error.load", "Rezervace se nepodařilo načíst. Obnovte stránku a zkuste to znovu."));
-        return [];
-      }
+      reservationsLoadState = "ready";
 
       return Array.isArray(data)
         ? data.map(normalizeSupabaseReservation)
@@ -272,11 +358,12 @@ const data = Array.isArray(reservationsData)
     }
 
     function getSafeReservationToolName(reservation) {
-      if (typeof getReservationToolName === "function") {
-        return getReservationToolName(reservation);
-      }
-
-      return reservation.toolName || reservation.offerName || reservationsTranslate("reservations.fallback.item", "Věc");
+      return (
+        reservation.offer_name ||
+        reservation.toolName ||
+        reservation.offerName ||
+        reservationsTranslate("reservations.fallback.item", "Věc")
+      );
     }
 
     function getSafeReservationDateFrom(reservation) {
@@ -372,7 +459,12 @@ return (
     }
 
     function getReservationOwnerName(reservation) {
-      return reservation.ownerName || reservation.owner || reservationsTranslate("reservations.fallback.owner", "Majitel");
+      return (
+        reservation.owner_name ||
+        reservation.ownerName ||
+        reservation.owner ||
+        reservationsTranslate("reservations.fallback.owner", "Majitel")
+      );
     }
 
     function getPickupAddress(reservation) {
@@ -414,14 +506,14 @@ return (
 
       if (photo) {
         return `
-          <div class="tool-thumb">
-            <img src="${escapeHtml(photo)}" alt="${escapeHtml(toolName)}">
+          <div class="tool-thumb tool-image">
+            <img src="${escapeHtml(photo)}" alt="${escapeHtml(toolName)}" loading="lazy" decoding="async">
           </div>
         `;
       }
 
       return `
-        <div class="tool-thumb">⌁</div>
+        <div class="tool-thumb tool-image">⌁</div>
       `;
     }
 
@@ -441,6 +533,36 @@ return (
           <p>${escapeHtml(reservationsTranslate("reservations.loading.description", "Chvíli strpení, načítáme vaše rezervace ze Supabase."))}</p>
         </section>
       `;
+    }
+
+    function renderLoadErrorState() {
+      document.getElementById("reservationsList").innerHTML = `
+        <section class="account-empty-state">
+          <h2>${escapeHtml(reservationsTranslate("reservations.loadError.title", "Rezervace se nepodařilo načíst."))}</h2>
+          <p>${escapeHtml(reservationsTranslate("reservations.loadError.description", "Obnovte stránku nebo zkuste načtení znovu."))}</p>
+          <button class="reservation-primary-action" type="button" data-reservations-action="retry-load">
+            ${escapeHtml(reservationsTranslate("reservations.loadError.retry", "Zkusit znovu"))}
+          </button>
+        </section>
+      `;
+    }
+
+    async function retryLoadReservations() {
+      reservationsLoadState = "loading";
+      renderLoadingState();
+
+      supabaseReservations = await loadMyReservationsFromSupabase();
+      supabaseReviews = reservationsLoadState === "ready"
+        ? await loadMyReviewsFromSupabase()
+        : [];
+
+      renderSharedNavigation("muj-ucet");
+
+      if (reservationsLoadState === "ready") {
+        renderReservations();
+      } else if (reservationsLoadState === "error") {
+        renderLoadErrorState();
+      }
     }
 
     async function cancelReservation(reservationId) {
@@ -464,7 +586,7 @@ return (
       });
 
       if (!reservation) {
-        alert("Rezervace nebyla nalezena.");
+        alert(reservationsTranslate("reservations.error.notFound", "Rezervace nebyla nalezena."));
         return;
       }
 
@@ -504,11 +626,7 @@ return (
 
       alert(reservationsTranslate("reservations.success.cancelled", "Rezervace byla zrušena a přesunuta do Historie."));
 
-      supabaseReservations = await loadMyReservationsFromSupabase();
-      supabaseReviews = await loadMyReviewsFromSupabase();
-
-      renderSharedNavigation("muj-ucet");
-      renderReservations();
+      await retryLoadReservations();
     }
 
     async function payReservation(reservationId) {
@@ -558,13 +676,11 @@ const data = Array.isArray(paidReservations)
         await sendReservationEmailSafely(reservationId, "paid");
       }
 
-      supabaseReservations = await loadMyReservationsFromSupabase();
-      supabaseReviews = await loadMyReviewsFromSupabase();
+      await retryLoadReservations();
 
-      renderSharedNavigation("muj-ucet");
-      renderReservations();
-
-      openReservationDetail(reservationId);
+      if (reservationsLoadState === "ready") {
+        openReservationDetail(reservationId);
+      }
     }
 
     async function saveRenterReview(reservationId) {
@@ -574,7 +690,7 @@ const data = Array.isArray(paidReservations)
       });
 
       if (!reservation) {
-        alert("Rezervace nebyla nalezena.");
+        alert(reservationsTranslate("reservations.error.notFound", "Rezervace nebyla nalezena."));
         return;
       }
 
@@ -640,10 +756,11 @@ const data = Array.isArray(paidReservations)
       }
 
       alert(reservationsTranslate("reservations.success.reviewSaved", "Hodnocení bylo uloženo."));
-      supabaseReservations = await loadMyReservationsFromSupabase();
-      supabaseReviews = await loadMyReviewsFromSupabase();
-      renderReservations();
-      openReservationDetail(reservationId);
+      await retryLoadReservations();
+
+      if (reservationsLoadState === "ready") {
+        openReservationDetail(reservationId);
+      }
     }
 
     function openReservationDetail(reservationId) {
@@ -724,7 +841,7 @@ const data = Array.isArray(paidReservations)
 
       return `
         <div class="review-box">
-          <strong>Ohodnotit majitele</strong>
+          <strong>${escapeHtml(reservationsTranslate("reservations.review.rateOwner", "Ohodnotit majitele"))}</strong>
           <div class="review-lines">
             <label>
               ${escapeHtml(reservationsTranslate("reservations.review.stars", "Počet hvězdiček"))}
@@ -757,9 +874,9 @@ const data = Array.isArray(paidReservations)
             <strong>${escapeHtml(reservationsTranslate("reservations.payment.platformTitle", "Platba přes provozovatele platformy"))}</strong>
             ${escapeHtml(reservationsTranslate("reservations.payment.testInfo", "Kliknutím na tlačítko Zaplatit provedete testovací platbu."))}
             <div class="payment-lines">
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.totalToPay", "Celkem zaplatíte"))}: ${escapeHtml(totalPrice)} Kč</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.fee", "Provize Rentulo 10 %"))}: ${escapeHtml(platformFee)} Kč</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.ownerGets", "Majitel dostane"))}: ${escapeHtml(ownerPayout)} Kč</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.totalToPay", "Celkem zaplatíte"))}: ${escapeHtml(formatReservationsMoney(totalPrice))}</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.fee", "Provize Rentulo 10 %"))}: ${escapeHtml(formatReservationsMoney(platformFee))}</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.ownerGets", "Majitel dostane"))}: ${escapeHtml(formatReservationsMoney(ownerPayout))}</span>
             </div>
           </div>
         `;
@@ -776,15 +893,15 @@ const data = Array.isArray(paidReservations)
             <strong>${paymentTitle}</strong>
             ${escapeHtml(reservationsTranslate("reservations.payment.feeInfo", "Rentulo si ponechá provizi 10 % a majiteli bude vyplaceno 90 % z půjčovného."))}
             <div class="payment-lines">
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.totalPaid", "Celkem zaplaceno"))}: ${escapeHtml(totalPrice)} Kč</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.rentuloFee", "Provize Rentulo"))}: ${escapeHtml(platformFee)} Kč</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.ownerAmount", "Částka pro majitele"))}: ${escapeHtml(ownerPayout)} Kč</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.totalPaid", "Celkem zaplaceno"))}: ${escapeHtml(formatReservationsMoney(totalPrice))}</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.rentuloFee", "Provize Rentulo"))}: ${escapeHtml(formatReservationsMoney(platformFee))}</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.ownerAmount", "Částka pro majitele"))}: ${escapeHtml(formatReservationsMoney(ownerPayout))}</span>
               <span>${escapeHtml(reservationsTranslate("reservations.payment.statusLabel", "Stav platby"))}: ${escapeHtml(
                 reservation.paymentProviderStatus === "paid_test"
                   ? reservationsTranslate("reservations.payment.statusPaidTest", "Testovací platba")
                   : reservationsTranslate("reservations.payment.statusPaid", "Zaplaceno")
               )}</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.paidAt", "Zaplaceno"))}: ${escapeHtml(formatDateTime(reservation.paidAt))}</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.paidAt", "Zaplaceno"))}: ${escapeHtml(formatReservationsDateTime(reservation.paidAt))}</span>
             </div>
           </div>
         `;
@@ -912,33 +1029,39 @@ const data = Array.isArray(paidReservations)
       const totalPrice = getSafeReservationTotalPrice(reservation);
       const platformFee = getSafeReservationPlatformFee(reservation, PLATFORM_FEE_PERCENT);
       const ownerPayout = getSafeReservationOwnerPayout(reservation, PLATFORM_FEE_PERCENT);
+      const normalizedStatus = normalizeReservationStatus(status);
+      const paymentStatusText = getSafeReservationContactVisible(status)
+        ? reservationsTranslate("reservations.payment.paidLower", "zaplaceno")
+        : normalizedStatus === RESERVATION_STATUS_APPROVED
+          ? reservationsTranslate("reservations.payment.waitingLower", "čeká na platbu")
+          : reservationsTranslate("reservations.payment.pendingLower", "čeká na potvrzení");
 
       return `
         <div class="reservation-detail-panel">
           <div class="detail-grid">
             <div class="info-box">
               <span>${escapeHtml(reservationsTranslate("reservations.detail.term", "Termín"))}</span>
-              <strong>${escapeHtml(formatDate(startDate))} – ${escapeHtml(formatDate(endDate))}</strong>
+              <strong>${escapeHtml(formatReservationsDate(startDate))} – ${escapeHtml(formatReservationsDate(endDate))}</strong>
             </div>
 
             <div class="info-box">
               <span>${escapeHtml(reservationsTranslate("reservations.detail.total", "Celkem k platbě"))}</span>
-              <strong>${escapeHtml(totalPrice)} Kč</strong>
+              <strong>${escapeHtml(formatReservationsMoney(totalPrice))}</strong>
             </div>
 
             <div class="info-box">
               <span>${escapeHtml(reservationsTranslate("reservations.detail.payment", "Platba"))}</span>
-              <strong>${escapeHtml(getSafeReservationContactVisible(status) ? reservationsTranslate("reservations.payment.paidLower", "zaplaceno") : reservationsTranslate("reservations.payment.waitingLower", "čeká na platbu"))}</strong>
+              <strong>${escapeHtml(paymentStatusText)}</strong>
             </div>
 
             <div class="info-box">
               <span>${escapeHtml(reservationsTranslate("reservations.detail.fee", "Provize 10 %"))}</span>
-              <strong>${escapeHtml(platformFee)} Kč</strong>
+              <strong>${escapeHtml(formatReservationsMoney(platformFee))}</strong>
             </div>
 
             <div class="info-box">
               <span>${escapeHtml(reservationsTranslate("reservations.detail.ownerGets", "Majitel dostane"))}</span>
-              <strong>${escapeHtml(ownerPayout)} Kč</strong>
+              <strong>${escapeHtml(formatReservationsMoney(ownerPayout))}</strong>
             </div>
           </div>
 
@@ -1018,7 +1141,7 @@ const data = Array.isArray(paidReservations)
 
       if (isPaymentRequired) {
         menuItems += `
-          <button type="button" data-reservations-action="toggle-detail" data-reservation-id="${escapeHtml(reservationId)}" data-use-primary-toggle="true">
+          <button id="detail-toggle-${escapeHtml(reservationId)}" type="button" data-reservations-action="toggle-detail" data-reservation-id="${escapeHtml(reservationId)}" data-use-primary-toggle="true">
             ${escapeHtml(reservationsTranslate("reservations.detailReservation", "Detail rezervace"))}
           </button>
         `;
@@ -1077,11 +1200,11 @@ const data = Array.isArray(paidReservations)
     </div>
 
     <div class="simple-reservation-date">
-      ${escapeHtml(formatDate(startDate))} – ${escapeHtml(formatDate(endDate))}
+      ${escapeHtml(formatReservationsDate(startDate))} – ${escapeHtml(formatReservationsDate(endDate))}
     </div>
 
     <div class="simple-reservation-price">
-      ${escapeHtml(totalPrice)} Kč
+      ${escapeHtml(formatReservationsMoney(totalPrice))}
     </div>
 
     <div class="simple-reservation-status status-${escapeHtml(String(normalizedStatus).toLowerCase())}">
@@ -1114,9 +1237,7 @@ const data = Array.isArray(paidReservations)
     }
 
     function renderReservationSection(title, reservations, emptyText, sectionClass, isHistorySection) {
-      const countText = reservations.length === 1
-        ? reservationsTranslate("reservations.countOne", "1 rezervace")
-        : reservations.length + " " + reservationsTranslate("reservations.countMany", "rezervací");
+      const countText = getReservationsCountText(reservations.length);
 
       const content = reservations.length
         ? renderReservationList(reservations, isHistorySection)
@@ -1134,13 +1255,7 @@ const data = Array.isArray(paidReservations)
       `;
     }
 
-    async function renderReservations() {
-      const currentUser = await apiGetCurrentUser();
-      if (!currentUser) {
-        window.location.href = "prihlaseni.html";
-        return;
-      }
-
+    function renderReservations() {
       const reservations = supabaseReservations;
 
       if (!reservations.length) {
@@ -1175,6 +1290,7 @@ const data = Array.isArray(paidReservations)
 
       renderSharedNavigation("muj-ucet");
       renderLoadingState();
+      reservationsLoadState = "loading";
 
       const currentUser = await apiGetCurrentUser();
 
@@ -1184,10 +1300,73 @@ const data = Array.isArray(paidReservations)
       }
 
       supabaseReservations = await loadMyReservationsFromSupabase();
-      supabaseReviews = await loadMyReviewsFromSupabase();
+      supabaseReviews = reservationsLoadState === "ready"
+        ? await loadMyReviewsFromSupabase()
+        : [];
 
       renderSharedNavigation("muj-ucet");
+
+      if (reservationsLoadState === "ready") {
+        renderReservations();
+      } else if (reservationsLoadState === "error") {
+        renderLoadErrorState();
+      }
+    }
+
+    function captureReservationsUiState() {
+      const openDetailIds = Array.from(
+        document.querySelectorAll("#reservationsList .detail-row.open[id]")
+      ).map(function (element) {
+        return element.id;
+      });
+      const reviewValues = {};
+
+      document.querySelectorAll("#reservationsList select[id], #reservationsList textarea[id]")
+        .forEach(function (element) {
+          reviewValues[element.id] = element.value;
+        });
+
+      return {
+        openDetailIds: openDetailIds,
+        reviewValues: reviewValues
+      };
+    }
+
+    function restoreReservationsUiState(state) {
+      if (!state) {
+        return;
+      }
+
+      state.openDetailIds.forEach(function (detailId) {
+        const detail = document.getElementById(detailId);
+
+        if (!detail) {
+          return;
+        }
+
+        detail.classList.add("open");
+
+        const reservationId = detailId.replace("reservation-detail-", "");
+        const button = document.getElementById("detail-toggle-" + reservationId);
+
+        if (button) {
+          button.textContent = reservationsTranslate("reservations.hideDetail", "Skrýt detail");
+        }
+      });
+
+      Object.keys(state.reviewValues).forEach(function (elementId) {
+        const element = document.getElementById(elementId);
+
+        if (element) {
+          element.value = state.reviewValues[elementId];
+        }
+      });
+    }
+
+    function rerenderReservationsForLanguageChange() {
+      const uiState = captureReservationsUiState();
       renderReservations();
+      restoreReservationsUiState(uiState);
     }
 function closeReservationMoreMenus(exceptMenu = null) {
   document
@@ -1204,7 +1383,7 @@ function handleReservationMenuOutsideClick(event) {
 
   closeReservationMoreMenus(clickedMenu);
 }
-    function handleReservationsActionClick(event) {
+    async function handleReservationsActionClick(event) {
       const actionButton = event.target.closest("[data-reservations-action]");
 
       if (!actionButton) {
@@ -1218,31 +1397,70 @@ if (actionMenu) {
       const action = actionButton.dataset.reservationsAction;
       const reservationId = actionButton.dataset.reservationId;
 
+      if (action === "retry-load") {
+        if (actionButton.dataset.busy === "true") {
+          return;
+        }
+
+        actionButton.dataset.busy = "true";
+        actionButton.disabled = true;
+
+        try {
+          await retryLoadReservations();
+        } finally {
+          if (actionButton.isConnected) {
+            delete actionButton.dataset.busy;
+            actionButton.disabled = false;
+          }
+        }
+
+        return;
+      }
+
       if (!reservationId) {
         return;
       }
 
-      if (action === "save-review") {
-        saveRenterReview(reservationId);
+      const mutationActions = new Set(["save-review", "pay", "cancel"]);
+      const isMutationAction = mutationActions.has(action);
+
+      if (isMutationAction && actionButton.dataset.busy === "true") {
         return;
       }
 
-      if (action === "pay") {
-        payReservation(reservationId);
-        return;
+      if (isMutationAction) {
+        actionButton.dataset.busy = "true";
+        actionButton.disabled = true;
       }
 
-      if (action === "cancel") {
-        cancelReservation(reservationId);
-        return;
-      }
+      try {
+        if (action === "save-review") {
+          await saveRenterReview(reservationId);
+          return;
+        }
 
-      if (action === "toggle-detail") {
-        const toggleButton = actionButton.dataset.usePrimaryToggle === "true"
-          ? document.getElementById("detail-toggle-" + reservationId)
-          : actionButton;
+        if (action === "pay") {
+          await payReservation(reservationId);
+          return;
+        }
 
-        toggleReservationDetail(reservationId, toggleButton);
+        if (action === "cancel") {
+          await cancelReservation(reservationId);
+          return;
+        }
+
+        if (action === "toggle-detail") {
+          const toggleButton = actionButton.dataset.usePrimaryToggle === "true"
+            ? document.getElementById("detail-toggle-" + reservationId) || actionButton
+            : actionButton;
+
+          toggleReservationDetail(reservationId, toggleButton);
+        }
+      } finally {
+        if (isMutationAction && actionButton.isConnected) {
+          delete actionButton.dataset.busy;
+          actionButton.disabled = false;
+        }
       }
     }
 
@@ -1250,4 +1468,16 @@ if (actionMenu) {
 document.addEventListener("click", handleReservationMenuOutsideClick);
     document.addEventListener("DOMContentLoaded", function () {
       initializeReservationsPage();
+    });
+
+    document.addEventListener("rentuloLanguageChanged", function () {
+      renderSharedNavigation("muj-ucet");
+
+      if (reservationsLoadState === "loading") {
+        renderLoadingState();
+      } else if (reservationsLoadState === "error") {
+        renderLoadErrorState();
+      } else if (reservationsLoadState === "ready") {
+        rerenderReservationsForLanguageChange();
+      }
     });
