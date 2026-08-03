@@ -195,6 +195,7 @@ h1 {
 .history-detail-button {
   justify-self: end;
   min-width: 90px;
+  border: 1px solid #d4e3dc;
   background: #eee8de;
   color: #173f35;
 }
@@ -203,9 +204,9 @@ h1 {
   background: #e2dbd1;
 }
 
-.history-switch-button:focus-visible,
-.history-detail-button:focus-visible,
-.history-primary-button:focus-visible {
+.history-switch-button:focus,
+.history-detail-button:focus,
+.history-primary-button:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(63, 142, 40, 0.22);
 }
@@ -218,6 +219,11 @@ h1 {
 
 .history-primary-button:hover {
   background: #6fca4b;
+}
+
+.history-primary-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
 }
 
 .history-detail {
@@ -305,6 +311,17 @@ h1 {
   background: #fff;
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
   font-size: 14px;
+}
+
+.history-state-note {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.history-state-note strong {
+  color: #173f35;
 }
 
 @media (max-width: 820px) {

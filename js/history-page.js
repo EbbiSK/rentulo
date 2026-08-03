@@ -1,11 +1,22 @@
 let historyCurrentUser = null;
 let historyReservations = [];
 let historyReviews = [];
+let historyLoadState = "idle";
+
+const HISTORY_LOCALES = {
+  cs: "cs-CZ",
+  en: "en-GB",
+  de: "de-DE",
+  pl: "pl-PL"
+};
 
 function historyT(key, fallback, values) {
   let text = fallback || key;
   if (typeof window.rentuloTranslate === "function") {
     text = window.rentuloTranslate(key);
+  }
+  if (text === key) {
+    text = fallback || key;
   }
   if (values) {
     Object.keys(values).forEach(function (name) {
@@ -19,7 +30,21 @@ function historyLocale() {
   const language = typeof window.getRentuloLanguage === "function"
     ? window.getRentuloLanguage()
     : "cs";
-  return language === "en" ? "en-GB" : language === "de" ? "de-DE" : "cs-CZ";
+  return HISTORY_LOCALES[language] || HISTORY_LOCALES.cs;
+}
+
+function historyFormatNumber(value) {
+  const numberValue = Number(value);
+
+  if (!Number.isFinite(numberValue)) {
+    return String(value === undefined || value === null ? "" : value);
+  }
+
+  return numberValue.toLocaleString(historyLocale());
+}
+
+function historyFormatMoney(value) {
+  return historyFormatNumber(value) + " Kč";
 }
 
 const HISTORY_FINISHED_STATUSES = new Set([
@@ -201,7 +226,7 @@ function historyRenderDetail(reservation, role) {
     <div class="history-detail" id="history-detail-${escapeHtml(reservationId)}-${escapeHtml(role)}">
       <div class="history-detail-grid">
         <div><span>${escapeHtml(historyT("history.detail.term", "Termín"))}</span><strong>${escapeHtml(historyFormatDate(startDate))} – ${escapeHtml(historyFormatDate(endDate))}</strong></div>
-        <div><span>${escapeHtml(historyT("history.detail.total", "Celková cena"))}</span><strong>${escapeHtml(price)} Kč</strong></div>
+        <div><span>${escapeHtml(historyT("history.detail.total", "Celková cena"))}</span><strong>${escapeHtml(historyFormatMoney(price))}</strong></div>
         <div><span>${escapeHtml(historyT("history.detail.status", "Stav"))}</span><strong>${escapeHtml(historyStatusText(reservation.status))}</strong></div>
         <div><span>${escapeHtml(counterpartLabel)}</span><strong>${escapeHtml(counterpartName)}</strong></div>
       </div>
@@ -229,7 +254,7 @@ function historyRenderRow(reservation, role) {
           <div class="simple-reservation-info"><strong>${escapeHtml(name)}</strong></div>
         </div>
         <div class="simple-reservation-date">${escapeHtml(historyFormatDate(startDate))} – ${escapeHtml(historyFormatDate(endDate))}</div>
-        <div class="simple-reservation-price">${escapeHtml(price)} Kč</div>
+        <div class="simple-reservation-price">${escapeHtml(historyFormatMoney(price))}</div>
         <div class="simple-reservation-status status-${escapeHtml(normalizedStatus)}">${escapeHtml(status)}</div>
         <button type="button" class="history-detail-button" data-history-toggle="${escapeHtml(reservationId)}" data-history-role="${escapeHtml(role)}">${escapeHtml(historyT("history.detail.show", "Detail"))}</button>
       </div>
@@ -248,7 +273,96 @@ function historyRenderList(reservations, emptyText, role) {
   }).join("")}</div>`;
 }
 
+function historyRenderState(title, text, allowRetry) {
+  return `
+    <div class="section-empty-note history-state-note">
+      <strong>${escapeHtml(title)}</strong>
+      <span>${escapeHtml(text)}</span>
+      ${allowRetry ? `
+        <button type="button" class="history-primary-button" data-history-retry>
+          ${escapeHtml(historyT("history.loadError.retry", "Zkusit znovu"))}
+        </button>
+      ` : ""}
+    </div>
+  `;
+}
+
+function historyRenderLoadingState() {
+  historyLoadState = "loading";
+  const markup = historyRenderState(
+    historyT("history.loading.title", "Načítám historii..."),
+    historyT("history.loading.text", "Chvíli strpení, načítáme rezervace a hodnocení."),
+    false
+  );
+
+  document.getElementById("rentalHistoryList").innerHTML = markup;
+  document.getElementById("offerHistoryList").innerHTML = markup;
+}
+
+function historyRenderLoadErrorState() {
+  historyLoadState = "error";
+  const markup = historyRenderState(
+    historyT("history.loadError.title", "Historii se nepodařilo načíst."),
+    historyT("history.loadError.text", "Obnovte stránku nebo zkuste načtení znovu."),
+    true
+  );
+
+  document.getElementById("rentalHistoryList").innerHTML = markup;
+  document.getElementById("offerHistoryList").innerHTML = markup;
+}
+
+function historyCaptureUiState() {
+  const openDetailIds = Array.from(document.querySelectorAll(".history-detail.open"))
+    .map(function (detail) { return detail.id; });
+  const reviewValues = {};
+
+  document
+    .querySelectorAll('[id^="history-rating-"], [id^="history-text-"]')
+    .forEach(function (element) {
+      reviewValues[element.id] = element.value;
+    });
+
+  return {
+    openDetailIds: openDetailIds,
+    reviewValues: reviewValues
+  };
+}
+
+function historyRestoreUiState(state) {
+  if (!state) return;
+
+  const openDetailIds = new Set(state.openDetailIds || []);
+
+  document.querySelectorAll("[data-history-toggle]").forEach(function (toggle) {
+    const detailId = "history-detail-" + toggle.dataset.historyToggle + "-" + toggle.dataset.historyRole;
+    const detail = document.getElementById(detailId);
+    const shouldOpen = Boolean(detail && openDetailIds.has(detailId));
+
+    if (detail) {
+      detail.classList.toggle("open", shouldOpen);
+    }
+
+    toggle.textContent = shouldOpen
+      ? historyT("history.detail.hide", "Skrýt detail")
+      : historyT("history.detail.show", "Detail");
+  });
+
+  Object.keys(state.reviewValues || {}).forEach(function (elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.value = state.reviewValues[elementId];
+    }
+  });
+}
+
+function historyRerenderForLanguageChange() {
+  const uiState = historyCaptureUiState();
+  historyRenderAll();
+  historyRestoreUiState(uiState);
+}
+
 function historyRenderAll() {
+  historyLoadState = "ready";
   const currentUserId = String(historyCurrentUser.id);
   const rentalHistory = historyReservations
     .filter(function (reservation) {
@@ -275,22 +389,81 @@ function historyRenderAll() {
   );
 }
 
-async function historyLoadReviews() {
+async function historyLoadReservations() {
   const client = typeof getSupabaseClient === "function" ? getSupabaseClient() : null;
-  if (!client || !historyCurrentUser) return [];
-
-  const result = await client
-    .from("reviews")
-    .select("*")
-    .or("reviewer_id.eq." + historyCurrentUser.id + ",reviewed_user_id.eq." + historyCurrentUser.id)
-    .order("created_at", { ascending: false });
-
-  if (result.error) {
-    console.warn("Hodnocení se nepodařilo načíst.", result.error);
-    return [];
+  if (!client) {
+    return { data: [], error: new Error("Supabase client is unavailable.") };
   }
 
-  return Array.isArray(result.data) ? result.data : [];
+  try {
+    const result = await client.rpc("get_my_reservations");
+
+    if (result.error) {
+      console.warn("Historii rezervací se nepodařilo načíst.", result.error);
+      return { data: [], error: result.error };
+    }
+
+    const rows = Array.isArray(result.data) ? result.data : [];
+    const reservations = rows.map(function (row) {
+      return typeof apiNormalizeReservation === "function"
+        ? apiNormalizeReservation(row)
+        : row;
+    });
+
+    return { data: reservations, error: null };
+  } catch (error) {
+    console.warn("Historii rezervací se nepodařilo načíst.", error);
+    return { data: [], error: error };
+  }
+}
+
+async function historyLoadReviews() {
+  const client = typeof getSupabaseClient === "function" ? getSupabaseClient() : null;
+  if (!client || !historyCurrentUser) {
+    return { data: [], error: new Error("Review data is unavailable.") };
+  }
+
+  try {
+    const result = await client
+      .from("reviews")
+      .select("*")
+      .or("reviewer_id.eq." + historyCurrentUser.id + ",reviewed_user_id.eq." + historyCurrentUser.id)
+      .order("created_at", { ascending: false });
+
+    if (result.error) {
+      console.warn("Hodnocení se nepodařilo načíst.", result.error);
+      return { data: [], error: result.error };
+    }
+
+    return {
+      data: Array.isArray(result.data) ? result.data : [],
+      error: null
+    };
+  } catch (error) {
+    console.warn("Hodnocení se nepodařilo načíst.", error);
+    return { data: [], error: error };
+  }
+}
+
+async function historyLoadData() {
+  historyRenderLoadingState();
+
+  const results = await Promise.all([
+    historyLoadReservations(),
+    historyLoadReviews()
+  ]);
+  const reservationResult = results[0];
+  const reviewResult = results[1];
+
+  if (reservationResult.error || reviewResult.error) {
+    historyRenderLoadErrorState();
+    return false;
+  }
+
+  historyReservations = reservationResult.data;
+  historyReviews = reviewResult.data;
+  historyRenderAll();
+  return true;
 }
 
 async function historySaveReview(reservationId, role) {
@@ -337,10 +510,10 @@ async function historySaveReview(reservationId, role) {
   }
 
   const result = await client.from("reviews").insert({
-  reservation_id: reservationId,
-  rating: rating,
-  text: text
-});
+    reservation_id: reservationId,
+    rating: rating,
+    text: text
+  });
 
   if (result.error) {
     console.error("Chyba při ukládání hodnocení:", result.error);
@@ -352,15 +525,25 @@ async function historySaveReview(reservationId, role) {
     return;
   }
 
+  const uiState = historyCaptureUiState();
+  historyReviews.unshift({
+    reservation_id: reservationId,
+    reviewer_id: currentUserId,
+    reviewed_user_id: reviewedUserId,
+    rating: rating,
+    text: text,
+    created_at: new Date().toISOString()
+  });
+
   alert(historyT("history.success.saved", "Hodnocení bylo uloženo."));
-  historyReviews = await historyLoadReviews();
   historyRenderAll();
+  historyRestoreUiState(uiState);
 
   const detail = document.getElementById("history-detail-" + reservationId + "-" + role);
   if (detail) detail.classList.add("open");
 }
 
-document.addEventListener("click", function (event) {
+document.addEventListener("click", async function (event) {
   const toggle = event.target.closest("[data-history-toggle]");
   if (toggle) {
     const reservationId = toggle.dataset.historyToggle;
@@ -374,15 +557,56 @@ document.addEventListener("click", function (event) {
     return;
   }
 
+  const retryButton = event.target.closest("[data-history-retry]");
+  if (retryButton) {
+    if (retryButton.dataset.busy === "true") return;
+
+    retryButton.dataset.busy = "true";
+    retryButton.disabled = true;
+
+    try {
+      await historyLoadData();
+    } finally {
+      if (retryButton.isConnected) {
+        delete retryButton.dataset.busy;
+        retryButton.disabled = false;
+      }
+    }
+
+    return;
+  }
+
   const reviewButton = event.target.closest("[data-history-review]");
   if (reviewButton) {
-    historySaveReview(reviewButton.dataset.historyReview, reviewButton.dataset.historyRole);
+    if (reviewButton.dataset.busy === "true") return;
+
+    reviewButton.dataset.busy = "true";
+    reviewButton.disabled = true;
+
+    try {
+      await historySaveReview(reviewButton.dataset.historyReview, reviewButton.dataset.historyRole);
+    } finally {
+      if (reviewButton.isConnected) {
+        delete reviewButton.dataset.busy;
+        reviewButton.disabled = false;
+      }
+    }
   }
 });
 
 document.addEventListener("rentuloLanguageChanged", function () {
-  if (historyCurrentUser) {
-    historyRenderAll();
+  if (typeof renderSharedNavigation === "function") {
+    renderSharedNavigation("muj-ucet");
+  }
+
+  if (!historyCurrentUser) return;
+
+  if (historyLoadState === "loading") {
+    historyRenderLoadingState();
+  } else if (historyLoadState === "error") {
+    historyRenderLoadErrorState();
+  } else if (historyLoadState === "ready") {
+    historyRerenderForLanguageChange();
   }
 });
 
@@ -394,10 +618,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   historyCurrentUser = await window.rentuloAuthGuard.requireUser();
   if (!historyCurrentUser) return;
-
-  historyReservations = await apiGetReservations();
-  historyReviews = await historyLoadReviews();
-  historyRenderAll();
 
   const historyButtons = document.querySelectorAll(".history-switch-button");
   const rentalHistorySection = document.getElementById("rentalHistorySection");
@@ -412,4 +632,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       offerHistorySection.hidden = selectedView !== "offers";
     });
   });
+
+  await historyLoadData();
 });
