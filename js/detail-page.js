@@ -1,5 +1,6 @@
     const PLATFORM_FEE_PERCENT = 10;
     let currentOffer = null;
+    let detailPageState = "idle";
 
     function detailTranslate(key, replacements) {
       let text = typeof window.rentuloTranslate === "function"
@@ -13,6 +14,50 @@
       return text;
     }
 
+    function getDetailLocale() {
+      const language = typeof window.getRentuloLanguage === "function"
+        ? window.getRentuloLanguage()
+        : "cs";
+      const locales = {
+        cs: "cs-CZ",
+        en: "en-GB",
+        de: "de-DE",
+        pl: "pl-PL"
+      };
+
+      return locales[language] || locales.cs;
+    }
+
+    function formatDetailNumber(value, options) {
+      const numberValue = Number(value);
+
+      if (!Number.isFinite(numberValue)) {
+        return String(value === undefined || value === null ? "" : value);
+      }
+
+      return numberValue.toLocaleString(getDetailLocale(), options);
+    }
+
+    function formatDetailMoney(value) {
+      return formatDetailNumber(value) + " Kč";
+    }
+
+    function formatDetailMoneyPerDay(value) {
+      return formatDetailNumber(value) + " " + detailTranslate("detail.currencyPerDay");
+    }
+
+    function getDetailRatingLabel(count) {
+      const pluralCategory = new Intl.PluralRules(getDetailLocale()).select(Number(count));
+      const keys = {
+        one: "detail.ratingOne",
+        few: "detail.ratingFew",
+        many: "detail.ratingMany",
+        other: "detail.ratingOther"
+      };
+
+      return detailTranslate(keys[pluralCategory] || keys.other);
+    }
+
     function detailCategoryLabel(category) {
       const value = String(category || "").trim();
       const categories = {
@@ -22,15 +67,15 @@
         "Hobby": "home.category.hobby",
         "Párty": "home.category.party",
         "Ostatní": "home.category.other",
-        "Dům a zahrada": "home.category.household",
-        "Dílna a nářadí": "home.category.construction",
-        "Stavební technika": "home.category.construction",
-        "Sport a volný čas": "home.category.hobby",
-        "Elektronika": "home.category.hobby",
-        "Děti a rodina": "home.category.hobby",
-        "Cestování a kempování": "home.category.hobby",
-        "Párty a akce": "home.category.party",
-        "Auto a doprava": "home.category.other"
+        "Dům a zahrada": "detail.category.homeGarden",
+        "Dílna a nářadí": "detail.category.workshopTools",
+        "Stavební technika": "detail.category.construction",
+        "Sport a volný čas": "detail.category.sportLeisure",
+        "Elektronika": "detail.category.electronics",
+        "Děti a rodina": "detail.category.childrenFamily",
+        "Cestování a kempování": "detail.category.travelCamping",
+        "Párty a akce": "detail.category.partyEvents",
+        "Auto a doprava": "detail.category.autoTransport"
       };
       return categories[value]
         ? detailTranslate(categories[value])
@@ -139,8 +184,12 @@ owner_id: row.owner_id,
     async function loadOfferFromSupabase(offerId) {
       const supabaseClient = getSupabaseClient();
 
-      if (!supabaseClient || !offerId) {
+      if (!offerId) {
         return null;
+      }
+
+      if (!supabaseClient) {
+        throw new Error("Supabase client is unavailable.");
       }
 
       const { data, error } = await supabaseClient
@@ -151,7 +200,7 @@ owner_id: row.owner_id,
 
       if (error) {
         console.error(error);
-        return null;
+        throw error;
       }
 
       return data ? normalizeSupabaseOffer(data) : null;
@@ -341,6 +390,24 @@ function renderDetailImage(offer) {
       `;
     }
 
+    function renderLoadError() {
+      document.getElementById("detailContent").innerHTML = `
+        <div class="message-card warning">
+          <strong>${detailTranslate("detail.loadErrorTitle")}</strong><br>
+          ${detailTranslate("detail.loadErrorText")}
+          <br>
+          <button type="button" class="primary-button" id="detailRetryButton">
+            ${detailTranslate("detail.reload")}
+          </button>
+        </div>
+      `;
+
+      const retryButton = document.getElementById("detailRetryButton");
+      if (retryButton) {
+        retryButton.addEventListener("click", initializeDetailPage);
+      }
+    }
+
     function renderSidebarMessage(type, title, text, buttonHref, buttonText) {
       return `
         <div class="message-card ${type === "warning" ? "warning" : ""}">
@@ -355,7 +422,7 @@ function renderDetailImage(offer) {
     function renderUnavailableSidebar(price, ownerPublicName, ownerPublicCity, messageTitle, messageText) {
       return `
         <aside class="sidebar">
-          <div class="price">${escapeHtml(price)}</div>
+          <div class="price">${escapeHtml(formatDetailNumber(price))}</div>
           <div class="price-small">${detailTranslate("detail.currencyPerDay")}</div>
 
           <div class="info-list">
@@ -394,7 +461,7 @@ function renderDetailImage(offer) {
     function renderBookingSidebar(offer, price, ownerPublicName, ownerPublicCity, ownerGetsPerDay, platformFeePerDay) {
       return `
         <aside class="sidebar">
-          <div class="price">${escapeHtml(price)}</div>
+          <div class="price">${escapeHtml(formatDetailNumber(price))}</div>
           <div class="price-small">${detailTranslate("detail.currencyPerDay")}</div>
 
           <div class="info-list">
@@ -410,12 +477,12 @@ function renderDetailImage(offer) {
 
             <div class="info-row">
               <span>${detailTranslate("detail.ownerReceives")}</span>
-              <span>${escapeHtml(ownerGetsPerDay)} Kč / den</span>
+              <span>${escapeHtml(formatDetailMoneyPerDay(ownerGetsPerDay))}</span>
             </div>
 
             <div class="info-row">
               <span>${detailTranslate("detail.platformFee")}</span>
-              <span>${escapeHtml(platformFeePerDay)} Kč / den</span>
+              <span>${escapeHtml(formatDetailMoneyPerDay(platformFeePerDay))}</span>
             </div>
           </div>
 
@@ -454,7 +521,7 @@ function renderDetailImage(offer) {
 
               <div class="calc-row">
                 <span>${detailTranslate("detail.pricePerDay")}</span>
-                <strong>${escapeHtml(price)} Kč</strong>
+                <strong>${escapeHtml(formatDetailMoney(price))}</strong>
               </div>
 
               <div class="calc-row">
@@ -611,7 +678,6 @@ const hasGps = offerHasGpsLocation(offer);
               <h1>${escapeHtml(offerName)}</h1>
 
               <div class="badges">
-                <span class="badge">${detailTranslate("detail.verifiedOwner")}</span>
                 <span class="badge" id="ownerRatingBadge">${detailTranslate("detail.ratingLoading")}</span>
               </div>
 
@@ -735,10 +801,10 @@ const hasGps = offerHasGpsLocation(offer);
 
       ratingBadge.textContent =
         detailTranslate("detail.ratingPrefix") + " ⭐ " +
-        data.average_rating +
+        formatDetailNumber(data.average_rating, { maximumFractionDigits: 2 }) +
         " / 5 (" +
-        data.rating_count +
-        " " + detailTranslate("detail.ratingsCount") + ")";
+        formatDetailNumber(data.rating_count) +
+        " " + getDetailRatingLabel(data.rating_count) + ")";
     }
 
 
@@ -748,7 +814,7 @@ const hasGps = offerHasGpsLocation(offer);
 
       if (!supabaseClient) {
         alert(detailTranslate("detail.error.supabase"));
-        return;
+        return false;
       }
 
       const supabaseUser = await getCurrentSupabaseUser();
@@ -759,7 +825,7 @@ const hasGps = offerHasGpsLocation(offer);
   `prihlaseni.html?returnTo=${encodeURIComponent(
     window.location.pathname.split("/").pop() + window.location.search
   )}`;
-        return;
+        return false;
       }
 
       const currentUser = await apiGetCurrentUser();
@@ -770,20 +836,20 @@ const hasGps = offerHasGpsLocation(offer);
   `prihlaseni.html?returnTo=${encodeURIComponent(
     window.location.pathname.split("/").pop() + window.location.search
   )}`;
-        return;
+        return false;
       }
 
       const ownerId = String(offer.ownerId || offer.owner_id || "");
 
       if (!ownerId) {
         alert(detailTranslate("detail.error.ownerMissing"));
-        return;
+        return false;
       }
 
       if (String(supabaseUser.id) === ownerId) {
         alert(detailTranslate("detail.error.ownItem"));
         renderDetail(offer);
-        return;
+        return false;
       }
 
       const pricePerDay = getOfferPrice(offer);
@@ -811,16 +877,16 @@ const hasGps = offerHasGpsLocation(offer);
 
         if (errorMessage.includes("Reservation dates overlap")) {
           alert(detailTranslate("detail.error.overlap"));
-          return;
+          return false;
         }
 
         if (errorMessage.includes("row-level security")) {
           alert(detailTranslate("detail.error.rls"));
-          return;
+          return false;
         }
 
         alert(detailTranslate("detail.error.save"));
-        return;
+        return false;
       }
 
       if (data && data.id) {
@@ -831,11 +897,16 @@ const hasGps = offerHasGpsLocation(offer);
         }
 
         if (typeof window.apiSendReservationEmail === "function") {
-          await window.apiSendReservationEmail(data.id, "new_request");
+          try {
+            await window.apiSendReservationEmail(data.id, "new_request");
+          } catch (emailError) {
+            console.warn("E-mail o nové rezervaci se nepodařilo odeslat.", emailError);
+          }
         }
       }
 
       window.location.href = "moje-rezervace.html";
+      return true;
     }
     function setupBookingForm(offer) {
       const startDateInput = document.getElementById("startDate");
@@ -897,7 +968,7 @@ const hasGps = offerHasGpsLocation(offer);
         const total = days * getOfferPrice(offer);
 
         calcDays.textContent = days > 0 ? detailTranslate(days === 1 ? "detail.oneDay" : "detail.manyDays", { days: days }) : "-";
-        calcTotal.textContent = days > 0 ? total + " Kč" : "-";
+        calcTotal.textContent = days > 0 ? formatDetailMoney(total) : "-";
 
         if (!activeStartDate || !activeEndDate || days <= 0) {
           if (bookingDateHelp) {
@@ -989,11 +1060,28 @@ const hasGps = offerHasGpsLocation(offer);
         }
 
         rentButton.textContent = detailTranslate("detail.sendingRequest");
-        createSupabaseReservation(offer, startDate, endDate, days, total);
+        try {
+          const reservationCreated = await createSupabaseReservation(
+            offer,
+            startDate,
+            endDate,
+            days,
+            total
+          );
+
+          if (!reservationCreated) {
+            await updateCalculation();
+          }
+        } catch (error) {
+          console.error(error);
+          alert(detailTranslate("detail.error.save"));
+          await updateCalculation();
+        }
       });
     }
 
     async function initializeDetailPage() {
+      detailPageState = "loading";
       document.title = detailTranslate("detail.documentTitle");
       renderSharedNavigation("");
       setupBackLink();
@@ -1002,20 +1090,70 @@ const hasGps = offerHasGpsLocation(offer);
       const offerId = getOfferIdFromUrl();
 
       if (!offerId) {
+        detailPageState = "notFound";
         renderNotFound();
         return;
       }
 
-      const offer = await loadOfferFromSupabase(offerId);
+      try {
+        const offer = await loadOfferFromSupabase(offerId);
 
-      if (!offer) {
+        if (!offer) {
+          detailPageState = "notFound";
+          renderNotFound();
+          return;
+        }
+
+        detailPageState = "ready";
+        await renderDetail(offer);
+      } catch (error) {
+        console.error(error);
+        detailPageState = "error";
+        renderLoadError();
+      }
+    }
+
+    async function rerenderDetailForLanguage() {
+      document.title = detailTranslate("detail.documentTitle");
+
+      if (detailPageState === "loading") {
+        renderLoading();
+        return;
+      }
+
+      if (detailPageState === "notFound") {
         renderNotFound();
         return;
       }
 
-      renderDetail(offer);
+      if (detailPageState === "error") {
+        renderLoadError();
+        return;
+      }
+
+      if (detailPageState !== "ready" || !currentOffer) {
+        return;
+      }
+
+      const startDateValue = document.getElementById("startDate")?.value || "";
+      const endDateValue = document.getElementById("endDate")?.value || "";
+
+      await renderDetail(currentOffer);
+
+      const startDateInput = document.getElementById("startDate");
+      const endDateInput = document.getElementById("endDate");
+
+      if (startDateInput && endDateInput) {
+        startDateInput.value = startDateValue;
+        endDateInput.value = endDateValue;
+        startDateInput.dispatchEvent(new Event("change"));
+      }
     }
 
     document.addEventListener("DOMContentLoaded", function () {
       initializeDetailPage();
+    });
+
+    document.addEventListener("rentuloLanguageChanged", function () {
+      rerenderDetailForLanguage();
     });
