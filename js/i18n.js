@@ -3978,7 +3978,7 @@
           "reservations.error.reviewSave": "Nie udało się zapisać oceny.",
           "reservations.success.reviewSaved": "Ocena została zapisana.",
 
-          "reservation.status.pending": "Oczekuje na zaakceptowanie",
+          "reservation.status.pending": "Oczekuje na akceptację",
           "reservation.status.approved": "Oczekuje na płatność",
           "reservation.status.paid": "Opłacono",
           "reservation.status.pickedUp": "Odebrano",
