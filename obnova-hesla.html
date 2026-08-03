@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title data-i18n="passwordRecovery.documentTitle">Obnova hesla - Rentulo</title>
+  <link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
   <style>
     * {
       box-sizing: border-box;
@@ -12,7 +13,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f4f6f7;
+      background: #dff7ee;
       color: #173f35;
     }
 
@@ -33,19 +34,19 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 12px;
     }
 
     .logo-icon {
-      width: 40px;
-      height: 40px;
-      flex: 0 0 40px;
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -60,13 +61,16 @@
 
     .logo-text strong {
       display: block;
-      font-size: 21px;
+      font-size: 25px;
       line-height: 1;
       color: #173f35;
     }
 
     .logo-text small {
-      display: none;
+      display: block;
+      margin-top: 3px;
+      font-size: 13px;
+      color: #66736e;
     }
 
     .nav {
@@ -89,8 +93,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: #7ed957;
-      color: #173a22 !important;
+      background: #6FCF65;
+      color: #123F34 !important;
       padding: 10px 20px;
       border-radius: 999px;
       font-weight: 900;
@@ -120,13 +124,13 @@
 
     .auth-intro {
       padding: 26px;
-      background: #f8fafb;
-      border-right: 1px solid #e8edef;
+      background: #f0faea;
+      border-right: 1px solid #d4e9c8;
     }
 
     .eyebrow {
       margin: 0 0 6px;
-      color: #5f7d71;
+      color: #4f972d;
       font-size: 13px;
       font-weight: 900;
     }
@@ -211,8 +215,8 @@
       align-items: start;
       padding: 10px 11px;
       border-radius: 12px;
-      background: #f8fafb;
-      border: 1px solid #e1e6e8;
+      background: #f7fbf9;
+      border: 1px solid #dce9e3;
       color: #4d5b55;
       font-size: 13px;
       line-height: 1.35;
@@ -231,8 +235,8 @@
       min-height: 44px;
       border: none;
       border-radius: 12px;
-      background: #7ed957;
-      color: #173a22;
+      background: #6FCF65;
+      color: #123F34;
       padding: 0 18px;
       font-size: 15px;
       font-weight: 900;
@@ -277,7 +281,7 @@
       margin-top: 14px;
       padding: 11px 12px;
       border-radius: 12px;
-      background: #eef7ea;
+      background: #f0faea;
       border: 1px solid #d4e9c8;
       color: #173f35;
       font-size: 13px;
@@ -295,11 +299,14 @@
       .header {
         flex-direction: column;
         align-items: flex-start;
+        background: transparent;
       }
 
       .nav {
+        width: 100%;
         flex-wrap: wrap;
-        gap: 12px;
+        justify-content: flex-start;
+        gap: 10px 14px;
       }
 
       .auth-card {
@@ -308,7 +315,7 @@
 
       .auth-intro {
         border-right: none;
-        border-bottom: 1px solid #e8edef;
+        border-bottom: 1px solid #d4e9c8;
       }
     }
 
