@@ -1231,10 +1231,25 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       }
     }
 
-    function openOfferRequests(offerId) {
+    function toggleOfferRequests(offerId) {
       const offerDetail = document.getElementById("offer-detail-" + offerId);
       const openPanel = document.getElementById("open-panel-" + offerId);
       const openButton = document.getElementById("open-toggle-" + offerId);
+      const isOpen = openPanel && openPanel.classList.contains("open");
+
+      if (isOpen) {
+        openPanel.classList.remove("open");
+
+        if (openButton) {
+          openButton.textContent = openButton.getAttribute("data-closed-text");
+
+          if (openButton.getAttribute("data-important") === "true") {
+            openButton.classList.add("important");
+          }
+        }
+
+        return;
+      }
 
       if (offerDetail) {
         offerDetail.classList.add("open");
@@ -1709,7 +1724,7 @@ return [
             await publishOffer(offerId);
             break;
           case "open-offer-requests":
-            openOfferRequests(offerId);
+            toggleOfferRequests(offerId);
             break;
           case "toggle-offer-detail":
             toggleOfferDetail(actionButton.dataset.detailId || "", actionButton);
