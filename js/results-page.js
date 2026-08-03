@@ -1,6 +1,8 @@
     let resultsOffers = [];
     let resultsRatingSummaries = {};
     let resultsReservedOfferIds = new Set();
+    let resultsLoadState = "idle";
+    let resultsGpsLoadState = "idle";
 
     function resultsTranslate(key, fallback) {
       if (typeof window.rentuloTranslate === "function") {
@@ -10,6 +12,43 @@
         }
       }
       return fallback || key;
+    }
+
+    function getResultsLocale() {
+      const language = typeof window.getRentuloLanguage === "function"
+        ? window.getRentuloLanguage()
+        : "cs";
+      const locales = {
+        cs: "cs-CZ",
+        en: "en-GB",
+        de: "de-DE",
+        pl: "pl-PL"
+      };
+
+      return locales[language] || locales.cs;
+    }
+
+    function formatResultsNumber(value, options) {
+      const numberValue = Number(value);
+
+      if (!Number.isFinite(numberValue)) {
+        return String(value === undefined || value === null ? "" : value);
+      }
+
+      return numberValue.toLocaleString(getResultsLocale(), options);
+    }
+
+    function getResultsRatingLabel(count) {
+      const pluralCategory = new Intl.PluralRules(getResultsLocale()).select(Number(count));
+      const keys = {
+        one: ["results.ratingOne", "hodnocení"],
+        few: ["results.ratingFew", "hodnocení"],
+        many: ["results.ratingMany", "hodnocení"],
+        other: ["results.ratingOther", "hodnocení"]
+      };
+      const selected = keys[pluralCategory] || keys.other;
+
+      return resultsTranslate(selected[0], selected[1]);
     }
 
     function resultsCategoryLabel(category) {
@@ -81,14 +120,23 @@
       const params = getResultsParams();
       const latitudeFromUrl = Number(params.get("lat"));
 
-      if (!Number.isNaN(latitudeFromUrl) && params.get("lat") !== null) {
+      if (
+        Number.isFinite(latitudeFromUrl) &&
+        latitudeFromUrl >= -90 &&
+        latitudeFromUrl <= 90 &&
+        params.get("lat") !== null
+      ) {
         return latitudeFromUrl;
       }
 
       const storedLocation = loadJson("rentuloUserLocation", null);
 
       if (storedLocation && storedLocation.latitude !== undefined && storedLocation.latitude !== null) {
-        return Number(storedLocation.latitude);
+        const storedLatitude = Number(storedLocation.latitude);
+
+        if (Number.isFinite(storedLatitude) && storedLatitude >= -90 && storedLatitude <= 90) {
+          return storedLatitude;
+        }
       }
 
       return null;
@@ -98,14 +146,23 @@
       const params = getResultsParams();
       const longitudeFromUrl = Number(params.get("lng"));
 
-      if (!Number.isNaN(longitudeFromUrl) && params.get("lng") !== null) {
+      if (
+        Number.isFinite(longitudeFromUrl) &&
+        longitudeFromUrl >= -180 &&
+        longitudeFromUrl <= 180 &&
+        params.get("lng") !== null
+      ) {
         return longitudeFromUrl;
       }
 
       const storedLocation = loadJson("rentuloUserLocation", null);
 
       if (storedLocation && storedLocation.longitude !== undefined && storedLocation.longitude !== null) {
-        return Number(storedLocation.longitude);
+        const storedLongitude = Number(storedLocation.longitude);
+
+        if (Number.isFinite(storedLongitude) && storedLongitude >= -180 && storedLongitude <= 180) {
+          return storedLongitude;
+        }
       }
 
       return null;
@@ -184,10 +241,11 @@
     }
 
     async function loadOffersFromSupabase() {
+      resultsLoadState = "loading";
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        renderEmptyResults("load-error");
+        resultsLoadState = "error";
         return [];
       }
 
@@ -202,13 +260,75 @@
 
       if (error) {
        console.error("Ponuky sa nepodařilo načíst.");
-        renderEmptyResults("load-error");
+        resultsLoadState = "error";
         return [];
       }
+
+      resultsLoadState = "ready";
 
       return Array.isArray(data)
         ? data.map(normalizeSupabaseOffer)
         : [];
+    }
+
+    async function attachPublicGpsLocations(offers) {
+      resultsGpsLoadState = "idle";
+
+      if (!isNearbySearchMode() || !Array.isArray(offers) || !offers.length) {
+        return offers;
+      }
+
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        resultsGpsLoadState = "error";
+        return offers;
+      }
+
+      resultsGpsLoadState = "loading";
+
+      const { data, error } = await supabaseClient.rpc("get_public_map_offers");
+
+      if (error || !Array.isArray(data)) {
+        console.warn("GPS polohy nabídek se nepodařilo načíst.");
+        resultsGpsLoadState = "error";
+        return offers;
+      }
+
+      const locationsByOfferId = new Map();
+
+      data.forEach(function (row) {
+        const latitude = Number(row && row.map_latitude);
+        const longitude = Number(row && row.map_longitude);
+
+        if (
+          row &&
+          row.id &&
+          Number.isFinite(latitude) &&
+          Number.isFinite(longitude)
+        ) {
+          locationsByOfferId.set(String(row.id), {
+            latitude: latitude,
+            longitude: longitude
+          });
+        }
+      });
+
+      resultsGpsLoadState = "ready";
+
+      return offers.map(function (offer) {
+        const location = locationsByOfferId.get(String(getOfferId(offer) || ""));
+
+        if (!location) {
+          return offer;
+        }
+
+        return {
+          ...offer,
+          pickupLatitude: location.latitude,
+          pickupLongitude: location.longitude
+        };
+      });
     }
 
     function getOfferOwnerId(offer) {
@@ -341,11 +461,13 @@
         return resultsTranslate("results.noRatings", "Zatím bez hodnocení");
       }
 
+      const ratingCount = Number(summary.ratingCount);
+
       return "⭐ " +
-        summary.averageRating +
+        formatResultsNumber(summary.averageRating, { maximumFractionDigits: 2 }) +
         " / 5 (" +
-        summary.ratingCount +
-        " " + resultsTranslate("results.ratings", "hodnocení") + ")";
+        formatResultsNumber(ratingCount) +
+        " " + getResultsRatingLabel(ratingCount) + ")";
     }
 
     function getOfferDistanceKm(offer) {
@@ -401,16 +523,20 @@
       }
 
       const distanceMeters = Math.round(distanceKm * 1000);
+      const approximate = resultsTranslate("results.approximate", "cca");
 
       if (distanceMeters < 50) {
         return resultsTranslate("results.veryNear", "ve vaší blízkosti");
       }
 
       if (distanceKm < 1) {
-        return "cca " + distanceMeters + " m";
+        return approximate + " " + formatResultsNumber(distanceMeters) + " m";
       }
 
-      return "cca " + distanceKm.toFixed(1).replace(".", ",") + " km";
+      return approximate + " " + formatResultsNumber(distanceKm, {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      }) + " km";
     }
 
     function getOfferId(offer) {
@@ -558,7 +684,7 @@ function getOfferPhoto(offer) {
             <div class="result-info">
               <div class="result-info-box">
                 <span>${escapeHtml(resultsTranslate("results.pricePerDay", "Cena za den"))}</span>
-                <strong>${escapeHtml(price)} Kč</strong>
+                <strong>${escapeHtml(formatResultsNumber(price))} ${escapeHtml(resultsTranslate("results.currency", "Kč"))}</strong>
               </div>
 
               <div class="result-info-box ${availabilityClass}">
@@ -702,6 +828,13 @@ const HOME_CATEGORY_GROUPS = {
 
       banner.classList.add("active");
 
+      if (resultsGpsLoadState === "error") {
+        banner.classList.add("warning");
+        nearbyText.textContent =
+          resultsTranslate("results.nearbyGpsLoadError", "GPS polohy nabídek se nepodařilo načíst. Nabídky zobrazujeme bez řazení podle vzdálenosti.");
+        return;
+      }
+
       if (userLatitude === null || userLongitude === null) {
         banner.classList.add("warning");
         nearbyText.textContent =
@@ -726,43 +859,11 @@ const HOME_CATEGORY_GROUPS = {
         resultsTranslate("results.nearbyAllGps", "Všechny zobrazené nabídky mají uloženou GPS polohu a jsou seřazené podle vzdálenosti od vás.");
     }
 
-    function setupResultsFromUrl() {
-      const params = getResultsParams();
-
-      const whatInput = document.getElementById("results-search-what");
+    function applyResultsModeTranslations() {
       const whereInput = document.getElementById("results-search-where");
-      const categoryFilter = document.getElementById("categoryFilter");
-      const priceFilter = document.getElementById("priceFilter");
-      const availabilityFilter = document.getElementById("availabilityFilter");
-
-      const what = params.get("co") || "";
-      const where = params.get("kde") || "";
-      const category = params.get("kategorie") || "";
-      const price = params.get("cena") || "";
-      const availability = params.get("dostupnost") || "";
-
-      if (whatInput) {
-        whatInput.value = what;
-      }
-
-      if (whereInput) {
-        whereInput.value = where;
-      }
-
-      if (categoryFilter) {
-        categoryFilter.value = category;
-      }
-
-      if (priceFilter) {
-        priceFilter.value = price;
-      }
-
-      if (availabilityFilter) {
-        availabilityFilter.value = availability;
-      }
 
       if (isNearbySearchMode()) {
-        if (whereInput && !whereInput.value) {
+        if (whereInput && whereInput.dataset.locationMode === "nearby") {
           whereInput.value = resultsTranslate("results.myLocation", "Moje poloha");
         }
 
@@ -784,6 +885,50 @@ const HOME_CATEGORY_GROUPS = {
       }
     }
 
+    function setupResultsFromUrl() {
+      const params = getResultsParams();
+
+      const whatInput = document.getElementById("results-search-what");
+      const whereInput = document.getElementById("results-search-where");
+      const categoryFilter = document.getElementById("categoryFilter");
+      const priceFilter = document.getElementById("priceFilter");
+      const availabilityFilter = document.getElementById("availabilityFilter");
+
+      const what = params.get("co") || "";
+      const where = params.get("kde") || "";
+      const category = params.get("kategorie") || "";
+      const price = params.get("cena") || "";
+      const availability = params.get("dostupnost") || "";
+      const hasExplicitWhere = Boolean(where.trim());
+
+      if (whatInput) {
+        whatInput.value = what;
+      }
+
+      if (whereInput) {
+        whereInput.value = where;
+        delete whereInput.dataset.locationMode;
+
+        if (isNearbySearchMode() && !hasExplicitWhere) {
+          whereInput.dataset.locationMode = "nearby";
+        }
+      }
+
+      if (categoryFilter) {
+        categoryFilter.value = category;
+      }
+
+      if (priceFilter) {
+        priceFilter.value = price;
+      }
+
+      if (availabilityFilter) {
+        availabilityFilter.value = availability;
+      }
+
+      applyResultsModeTranslations();
+    }
+
     function updateUrlFromCurrentControls() {
       const params = getResultsParams();
 
@@ -798,6 +943,11 @@ const HOME_CATEGORY_GROUPS = {
       const category = categoryFilter ? categoryFilter.value : "";
       const price = priceFilter ? priceFilter.value : "";
       const availability = availabilityFilter ? availabilityFilter.value : "";
+      const usingCurrentLocation = Boolean(
+        isNearbySearchMode() &&
+        whereInput &&
+        whereInput.dataset.locationMode === "nearby"
+      );
 
       if (what) {
         params.set("co", what);
@@ -805,13 +955,18 @@ const HOME_CATEGORY_GROUPS = {
         params.delete("co");
       }
 
-      if (where && normalizeText(where) !== "moje poloha") {
+      if (usingCurrentLocation) {
+        params.delete("kde");
+      } else if (where) {
         params.set("kde", where);
         params.delete("okoli");
         params.delete("lat");
         params.delete("lng");
       } else {
         params.delete("kde");
+        params.delete("okoli");
+        params.delete("lat");
+        params.delete("lng");
       }
 
       if (category) {
@@ -846,23 +1001,8 @@ const HOME_CATEGORY_GROUPS = {
     }
 
     function getEmptyResultType(offers, filteredOffers) {
-      const userLatitude = getSearchLatitude();
-      const userLongitude = getSearchLongitude();
-
       if (!offers.length) {
         return "no-offers";
-      }
-
-      if (isNearbySearchMode() && (userLatitude === null || userLongitude === null)) {
-        return "nearby-no-location";
-      }
-
-      if (
-        isNearbySearchMode() &&
-        offers.length > 0 &&
-        offers.filter(offerHasGpsLocation).length === 0
-      ) {
-        return "nearby-no-gps";
       }
 
       if (!filteredOffers.length) {
@@ -876,6 +1016,11 @@ const HOME_CATEGORY_GROUPS = {
       const offers = resultsOffers;
 
       updateNearbyBanner(offers);
+
+      if (resultsLoadState === "error") {
+        renderEmptyResults("load-error");
+        return;
+      }
 
       if (!offers.length) {
         renderEmptyResults("no-offers");
@@ -927,6 +1072,7 @@ const HOME_CATEGORY_GROUPS = {
       });
 
       document.getElementById("results-search-where").addEventListener("input", function () {
+        delete this.dataset.locationMode;
         renderResults();
       });
 
@@ -959,6 +1105,7 @@ const HOME_CATEGORY_GROUPS = {
       renderEmptyResults("loading");
 
       resultsOffers = await loadOffersFromSupabase();
+      resultsOffers = await attachPublicGpsLocations(resultsOffers);
       await loadRatingSummariesForOffers(resultsOffers);
 
       renderResults();
@@ -970,6 +1117,6 @@ const HOME_CATEGORY_GROUPS = {
 
     document.addEventListener("rentuloLanguageChanged", function () {
       document.title = resultsTranslate("results.documentTitle", "Výsledky vyhledávání - Rentulo");
-      setupResultsFromUrl();
+      applyResultsModeTranslations();
       renderResults();
     });
