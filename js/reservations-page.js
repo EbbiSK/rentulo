@@ -193,6 +193,9 @@ category: row.category || reservationsTranslate("reservations.fallback.other", "
         createdAt: row.created_at || "",
         updatedAt: row.updated_at || "",
 
+        photoUrl: row.photo_url || "",
+        photo_url: row.photo_url || "",
+
         source: "supabase"
       };
     }
