@@ -8,6 +8,173 @@
 <link rel="stylesheet" href="css/account-pages.css" />
   <link rel="stylesheet" href="css/my-offers.css" />
   <link rel="stylesheet" href="css/compact-records.css" />
+
+  <style>
+    /* Mint visual refresh for My offers. Functional behavior stays unchanged. */
+    body {
+      background: #dff7ee !important;
+      color: #173f35;
+    }
+
+    .header {
+      padding-top: 12px !important;
+      padding-bottom: 12px !important;
+    }
+
+    .logo-icon {
+      width: 56px !important;
+      height: 56px !important;
+      flex-basis: 56px !important;
+    }
+
+    .logo-text strong {
+      font-size: 25px !important;
+      color: #173f35 !important;
+    }
+
+    .logo-text small {
+      display: none !important;
+    }
+
+    .account-page {
+      padding-top: 18px !important;
+    }
+
+    .back-link {
+      color: #3f8f2d !important;
+    }
+
+    .account-page-header {
+      margin-bottom: 16px !important;
+      padding: 20px 190px 20px 20px !important;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid #cde5da;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(23, 63, 53, 0.05);
+    }
+
+    .account-page-header h1 {
+      color: #173f35 !important;
+    }
+
+    .top-action-button {
+      top: 50% !important;
+      right: 20px !important;
+      transform: translateY(-50%);
+      background: #73d64f !important;
+      color: #173a22 !important;
+      box-shadow: none !important;
+    }
+
+    .top-action-button:hover {
+      background: #63c943 !important;
+    }
+
+    .account-message {
+      background: #eff9f4 !important;
+      border-color: #c9e2d6 !important;
+    }
+
+    .offers-table-card,
+    .account-empty-state,
+    .simple-offer-row {
+      border-color: #cfe3da !important;
+      box-shadow: 0 12px 30px rgba(23, 63, 53, 0.055) !important;
+    }
+
+    .offer-table-head,
+    .offer-row:hover,
+    .offer-detail,
+    .request-panel-header,
+    .request-detail,
+    .history-detail {
+      background: #f5fbf8 !important;
+    }
+
+    .tool-image,
+    .mini-stat,
+    .request-panel,
+    .money-cell,
+    .request-contact-box {
+      border-color: #d5e7df !important;
+    }
+
+    .tool-image {
+      background: #edf7f2 !important;
+    }
+
+    .small-button,
+    .offer-primary-button,
+    .simple-offer-actions button:not(.danger) {
+      background: #73d64f !important;
+      color: #173a22 !important;
+    }
+
+    .small-button:hover,
+    .offer-primary-button:hover,
+    .simple-offer-actions button:not(.danger):hover {
+      background: #63c943 !important;
+    }
+
+    .small-button.light,
+    .request-toggle-button:not(.important),
+    .history-toggle-button,
+    .simple-offer-actions a,
+    .simple-offer-actions .simple-offer-more-menu summary {
+      background: #edf5f1 !important;
+      color: #173f35 !important;
+    }
+
+    /* Attention states remain orange, but use a softer peach palette. */
+    .status-pill.draft,
+    .request-status,
+    .count-pill.important,
+    .status-pending,
+    .status-approved,
+    .status-draft,
+    .request-note {
+      background: #fff3e8 !important;
+      color: #8a4b16 !important;
+      border-color: #f2c79f !important;
+    }
+
+    .small-button.orange,
+    .request-toggle-button.important,
+    .simple-offer-actions .urgent {
+      background: #d9823b !important;
+      color: #fff !important;
+    }
+
+    .small-button.orange:hover,
+    .request-toggle-button.important:hover,
+    .simple-offer-actions .urgent:hover {
+      background: #c8712f !important;
+    }
+
+    .account-empty-state a {
+      background: #73d64f !important;
+      color: #173a22 !important;
+    }
+
+    @media (max-width: 820px) {
+      .logo-icon {
+        width: 50px !important;
+        height: 50px !important;
+        flex-basis: 50px !important;
+      }
+
+      .account-page-header {
+        padding: 18px !important;
+      }
+
+      .top-action-button {
+        transform: none !important;
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+
 </head>
 
 <body data-navigation-page="muj-ucet">
