@@ -13,6 +13,11 @@
   border-radius: 14px !important;
 }
 
+/* Reservation statuses are longer in EN/DE/PL than offer statuses. */
+.simple-reservation-row {
+  grid-template-columns: minmax(0, 1.6fr) 190px 120px minmax(180px, auto) minmax(150px, auto) !important;
+}
+
 .simple-offer-main,
 .simple-reservation-main {
   gap: 9px !important;
