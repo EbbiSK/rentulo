@@ -69,6 +69,9 @@
       "sokolov": "356 01"
     };
 
+    let registrationSubmitInProgress = false;
+    let registrationErrorState = null;
+
     function registrationT(key, fallback) {
       if (typeof window.rentuloTranslate === "function") {
         return window.rentuloTranslate(key);
@@ -81,32 +84,47 @@
       return String(email || "").trim().toLowerCase();
     }
 
+    function registrationIsValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
     function normalizeCityName(value) {
       return String(value || "")
         .trim()
         .toLowerCase();
     }
 
-    function registrationShowError(message) {
+    function registrationRenderError() {
       const errorBox = document.getElementById("registrationError");
 
       if (!errorBox) {
         return;
       }
 
-      errorBox.textContent = message;
+      if (!registrationErrorState) {
+        errorBox.textContent = "";
+        errorBox.classList.remove("active");
+        return;
+      }
+
+      errorBox.textContent = registrationT(
+        registrationErrorState.key,
+        registrationErrorState.fallback
+      );
       errorBox.classList.add("active");
     }
 
+    function registrationShowError(key, fallback) {
+      registrationErrorState = {
+        key: key,
+        fallback: fallback || key
+      };
+      registrationRenderError();
+    }
+
     function registrationHideError() {
-      const errorBox = document.getElementById("registrationError");
-
-      if (!errorBox) {
-        return;
-      }
-
-      errorBox.textContent = "";
-      errorBox.classList.remove("active");
+      registrationErrorState = null;
+      registrationRenderError();
     }
 
     function registrationClearErrors() {
@@ -114,31 +132,47 @@
 
       fields.forEach(function (field) {
         field.classList.remove("input-error");
+        field.removeAttribute("aria-invalid");
       });
     }
 
     function registrationMarkError(input) {
       if (input) {
         input.classList.add("input-error");
+        input.setAttribute("aria-invalid", "true");
       }
+    }
+
+    function registrationFocusFirstError() {
+      const firstInvalidField = document.querySelector(
+        "#registrationForm input[aria-invalid='true']"
+      );
+
+      if (firstInvalidField && typeof firstInvalidField.focus === "function") {
+        firstInvalidField.focus();
+      }
+    }
+
+    function registrationSetButtonState(isSubmitting) {
+      const submitButton = document.getElementById("registrationSubmitButton");
+
+      if (!submitButton) {
+        return;
+      }
+
+      submitButton.disabled = Boolean(isSubmitting);
+      submitButton.setAttribute(
+        "aria-busy",
+        isSubmitting ? "true" : "false"
+      );
+      submitButton.textContent = registrationT(
+        isSubmitting ? "registration.submitting" : "registration.submit",
+        isSubmitting ? "Vytvářím účet..." : "Vytvořit účet"
+      );
     }
 
     function registrationIsEmpty(value) {
       return String(value || "").trim() === "";
-    }
-
-    function registrationGetInitials(fullName) {
-      if (!fullName) {
-        return "U";
-      }
-
-      const parts = fullName.trim().split(" ").filter(Boolean);
-
-      if (parts.length === 1) {
-        return parts[0].charAt(0).toUpperCase();
-      }
-
-      return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
     }
 
     function registrationGetSupabaseClient() {
@@ -217,8 +251,79 @@
       });
     }
 
+    function registrationHandleAuthError(error, emailInput, passwordInput) {
+      const code = String(error && error.code ? error.code : "").toLowerCase();
+
+      if (
+        code === "email_exists" ||
+        code === "user_already_exists" ||
+        code === "identity_already_exists"
+      ) {
+        registrationMarkError(emailInput);
+        registrationShowError(
+          "registration.error.exists",
+          "Uživatel s tímto e-mailem už existuje. Zkuste se přihlásit."
+        );
+        return;
+      }
+
+      if (code === "email_address_invalid") {
+        registrationMarkError(emailInput);
+        registrationShowError(
+          "registration.error.invalidEmail",
+          "Zadejte platný e-mail."
+        );
+        return;
+      }
+
+      if (code === "weak_password") {
+        registrationMarkError(passwordInput);
+        registrationShowError(
+          "registration.error.weakPassword",
+          "Heslo nesplňuje bezpečnostní požadavky. Použijte alespoň 8 znaků."
+        );
+        return;
+      }
+
+      if (
+        code === "over_email_send_rate_limit" ||
+        code === "over_request_rate_limit"
+      ) {
+        registrationShowError(
+          "registration.error.rateLimit",
+          "Proběhlo příliš mnoho pokusů. Počkejte chvíli a zkuste to znovu."
+        );
+        return;
+      }
+
+      if (
+        code === "signup_disabled" ||
+        code === "email_provider_disabled" ||
+        code === "provider_disabled"
+      ) {
+        registrationShowError(
+          "registration.error.unavailable",
+          "Registrace je dočasně nedostupná. Zkuste to prosím později."
+        );
+        return;
+      }
+
+      console.error(
+        registrationT("registration.console.failed", "Registrace se nepodařila."),
+        error
+      );
+      registrationShowError(
+        "registration.error.generic",
+        "Registrace se nepodařila. Zkuste to prosím znovu."
+      );
+    }
+
     async function createUserAccount(event) {
       event.preventDefault();
+
+      if (registrationSubmitInProgress) {
+        return;
+      }
 
       registrationHideError();
       registrationClearErrors();
@@ -226,7 +331,10 @@
       const supabaseClient = registrationGetSupabaseClient();
 
       if (!supabaseClient) {
-        registrationShowError(registrationT("registration.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu."));
+        registrationShowError(
+          "registration.error.supabase",
+          "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu."
+        );
         return;
       }
 
@@ -237,12 +345,8 @@
       const cityInput = document.getElementById("city");
       const postalCodeInput = document.getElementById("postalCode");
       const passwordInput = document.getElementById("password");
-      const submitButton = document.getElementById("registrationSubmitButton");
-
       const termsBusiness = document.getElementById("termsBusiness");
       const termsPrivacy = document.getElementById("termsPrivacy");
-      const termsIdentity = document.getElementById("termsIdentity");
-
       const requiredFields = [
         fullNameInput,
         emailInput,
@@ -253,6 +357,18 @@
         passwordInput
       ];
 
+      if (
+        requiredFields.some(function (field) { return !field; }) ||
+        !termsBusiness ||
+        !termsPrivacy
+      ) {
+        registrationShowError(
+          "registration.error.supabase",
+          "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu."
+        );
+        return;
+      }
+
       let hasError = false;
 
       requiredFields.forEach(function (field) {
@@ -262,44 +378,57 @@
         }
       });
 
-      if (!termsBusiness.checked) {
-        registrationMarkError(termsBusiness);
-        hasError = true;
-      }
-
-      if (!termsPrivacy.checked) {
-        registrationMarkError(termsPrivacy);
-        hasError = true;
-      }
-
-      if (!termsIdentity.checked) {
-        registrationMarkError(termsIdentity);
-        hasError = true;
-      }
+      [termsBusiness, termsPrivacy].forEach(function (field) {
+        if (!field.checked) {
+          registrationMarkError(field);
+          hasError = true;
+        }
+      });
 
       if (hasError) {
-        registrationShowError(registrationT("registration.error.required", "Vyplňte prosím všechna pole a potvrďte všechny souhlasy."));
-        return;
-      }
-
-      if (passwordInput.value.length < 6) {
-        registrationMarkError(passwordInput);
-        registrationShowError(registrationT("registration.error.passwordLength", "Heslo musí mít alespoň 6 znaků."));
+        registrationShowError(
+          "registration.error.required",
+          "Vyplňte prosím všechna pole a potvrďte oba souhlasy."
+        );
+        registrationFocusFirstError();
         return;
       }
 
       const email = registrationNormalizeEmail(emailInput.value);
+
+      if (!registrationIsValidEmail(email)) {
+        registrationMarkError(emailInput);
+        registrationShowError(
+          "registration.error.invalidEmail",
+          "Zadejte platný e-mail."
+        );
+        registrationFocusFirstError();
+        return;
+      }
+
+      if (passwordInput.value.length < 8) {
+        registrationMarkError(passwordInput);
+        registrationShowError(
+          "registration.error.passwordLength",
+          "Heslo musí mít alespoň 8 znaků."
+        );
+        registrationFocusFirstError();
+        return;
+      }
+
       const fullName = fullNameInput.value.trim();
       const phone = phoneInput.value.trim();
       const street = streetInput.value.trim();
       const city = cityInput.value.trim();
       const postalCode = postalCodeInput.value.trim();
       const now = new Date().toISOString();
+      const preferredLanguage =
+        typeof window.getRentuloLanguage === "function"
+          ? window.getRentuloLanguage()
+          : "cs";
 
-      if (submitButton) {
-        submitButton.disabled = true;
-        submitButton.textContent = registrationT("registration.submitting", "Vytvářím účet...");
-      }
+      registrationSubmitInProgress = true;
+      registrationSetButtonState(true);
 
       try {
         const { data, error } = await supabaseClient.auth.signUp({
@@ -312,96 +441,77 @@
               street: street,
               city: city,
               postal_code: postalCode,
+              preferred_language: preferredLanguage,
               terms_business_accepted: true,
               terms_privacy_accepted: true,
-              terms_identity_accepted: true,
               terms_accepted_at: now
             }
           }
         });
 
         if (error) {
-          const message = String(error.message || "");
+          registrationHandleAuthError(error, emailInput, passwordInput);
+          registrationFocusFirstError();
+          return;
+        }
 
-          if (message.toLowerCase().includes("already registered") || message.toLowerCase().includes("already exists")) {
-            registrationMarkError(emailInput);
-            registrationShowError(registrationT("registration.error.exists", "Uživatel s tímto e-mailem už existuje. Zkuste se přihlásit."));
-            return;
-          }
-
-          console.error(
-            registrationT("registration.console.failed", "Registrace se nepodařila."),
-            error
-          );
+        if (!data || !data.user) {
           registrationShowError(
-            registrationT(
-              "registration.error.generic",
-              "Registrace se nepodařila. Zkuste to prosím znovu."
-            )
+            "registration.error.userMissing",
+            "Účet se nepodařilo bezpečně vytvořit. Zkuste to prosím znovu."
           );
           return;
         }
 
-        const createdUser = {
-          id: data && data.user ? data.user.id : "supabase-user-" + Date.now(),
-          fullName: fullName,
-          name: fullName,
-          email: email,
-          phone: phone,
-          street: street,
-          city: city,
-          postalCode: postalCode,
-          initials: registrationGetInitials(fullName),
-          role: "user",
+        if (
+          Array.isArray(data.user.identities) &&
+          data.user.identities.length === 0
+        ) {
+          registrationMarkError(emailInput);
+          registrationShowError(
+            "registration.error.exists",
+            "Uživatel s tímto e-mailem už existuje. Zkuste se přihlásit."
+          );
+          registrationFocusFirstError();
+          return;
+        }
 
-          termsBusinessAccepted: true,
-          termsPrivacyAccepted: true,
-          termsIdentityAccepted: true,
-          termsAcceptedAt: now,
-
-          createdAt: now,
-          updatedAt: now,
-          source: "supabase"
-        };
-const { error: profileError } = await supabaseClient
-  .from("profiles")
-  .upsert(
-    {
-      id: createdUser.id,
-      full_name: createdUser.fullName,
-      email: createdUser.email,
-      phone: createdUser.phone,
-      street: createdUser.street,
-      city: createdUser.city,
-      postal_code: createdUser.postalCode,
-
-
-
-
-      updated_at: createdUser.updatedAt
-    },
-    {
-      onConflict: "id"
-    }
-  );
-
-if (profileError) {
-  throw profileError;
-}
         window.location.href = "ucet-vytvoren.html";
       } catch (error) {
-        console.error(error);
-        registrationShowError(registrationT("registration.error.connection", "Registrace se nepodařila. Zkontrolujte připojení a zkuste to znovu."));
+        console.error(
+          registrationT("registration.console.failed", "Registrace se nepodařila."),
+          error
+        );
+        registrationShowError(
+          "registration.error.connection",
+          "Registrace se nepodařila. Zkontrolujte připojení a zkuste to znovu."
+        );
       } finally {
-        if (submitButton) {
-          submitButton.disabled = false;
-          submitButton.textContent = registrationT("registration.submit", "Vytvořit účet");
-        }
+        registrationSubmitInProgress = false;
+        registrationSetButtonState(false);
       }
     }
 
+    function handleRegistrationLanguageChange() {
+      document.title = registrationT(
+        "registration.documentTitle",
+        "Registrace - Rentulo"
+      );
+      registrationRenderError();
+      registrationSetButtonState(registrationSubmitInProgress);
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
-      renderSharedNavigation("");
+      document.title = registrationT(
+        "registration.documentTitle",
+        "Registrace - Rentulo"
+      );
+
+      if (typeof window.applyRentuloTranslations === "function") {
+        window.applyRentuloTranslations();
+      }
+
+      renderSharedNavigation("registrace");
       setupCitySuggestions();
       setupPostalCodeAutocomplete();
 
@@ -409,5 +519,18 @@ if (profileError) {
 
       if (registrationForm) {
         registrationForm.addEventListener("submit", createUserAccount);
+        registrationForm.addEventListener("input", function (event) {
+          const field = event.target;
+
+          if (field && field.matches("input")) {
+            field.classList.remove("input-error");
+            field.removeAttribute("aria-invalid");
+          }
+        });
       }
     });
+
+    document.addEventListener(
+      "rentuloLanguageChanged",
+      handleRegistrationLanguageChange
+    );

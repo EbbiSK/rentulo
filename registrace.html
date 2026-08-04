@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title data-i18n="registration.documentTitle">Registrace - Rentulo</title>
+  <link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
 
   <style>
     * { box-sizing: border-box; }
@@ -369,32 +370,63 @@
         </div>
       </div>
 
-      <form id="registrationForm" autocomplete="off">
+      <form id="registrationForm" autocomplete="on" novalidate>
         <div class="form-grid">
 
-          <div class="auth-error-message" id="registrationError"></div>
+          <div
+            class="auth-error-message"
+            id="registrationError"
+            role="alert"
+            aria-live="assertive"
+          ></div>
 
           <div class="form-group">
             <label for="fullName" data-i18n="registration.fullNameLabel">Jméno a příjmení</label>
-            <input type="text" id="fullName" data-i18n-placeholder="registration.fullNamePlaceholder" placeholder="např. Jan Novák" required />
+            <input
+              type="text"
+              id="fullName"
+              name="name"
+              autocomplete="name"
+              maxlength="120"
+              aria-describedby="registrationError"
+              data-i18n-placeholder="registration.fullNamePlaceholder"
+              placeholder="např. Jan Novák"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="email" data-i18n="registration.emailLabel">E-mail</label>
             <input
-  type="email"
-  id="email"
-  name="registration-email"
-  autocomplete="off"
-  data-i18n-placeholder="registration.emailPlaceholder" placeholder="např. jan@novak.cz"
-  required
->
+              type="email"
+              id="email"
+              name="email"
+              autocomplete="email"
+              inputmode="email"
+              autocapitalize="none"
+              spellcheck="false"
+              maxlength="254"
+              aria-describedby="registrationError"
+              data-i18n-placeholder="registration.emailPlaceholder"
+              placeholder="např. jan@novak.cz"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="phone" data-i18n="registration.phoneLabel">Telefon</label>
-            <input type="tel" id="phone" data-i18n-placeholder="registration.phonePlaceholder" placeholder="např. +420 777 123 456" required />
-            <p class="registration-note" data-i18n="registration.phoneNote">
+            <input
+              type="tel"
+              id="phone"
+              name="tel"
+              autocomplete="tel"
+              maxlength="32"
+              aria-describedby="registrationError registrationPhoneNote"
+              data-i18n-placeholder="registration.phonePlaceholder"
+              placeholder="např. +420 777 123 456"
+              required
+            />
+            <p class="registration-note" id="registrationPhoneNote" data-i18n="registration.phoneNote">
               Telefon se zobrazí až po zaplacení rezervace.
             </p>
           </div>
@@ -402,35 +434,78 @@
           <div class="form-group">
             <label for="password" data-i18n="registration.passwordLabel">Heslo</label>
             <input
-  type="password"
-  id="password"
-  name="registration-password"
-  autocomplete="new-password"
-  data-i18n-placeholder="registration.passwordPlaceholder" placeholder="Zadejte heslo"
-  required
->
+              type="password"
+              id="password"
+              name="password"
+              autocomplete="new-password"
+              minlength="8"
+              maxlength="1024"
+              aria-describedby="registrationError registrationPasswordNote"
+              data-i18n-placeholder="registration.passwordPlaceholder"
+              placeholder="Zadejte heslo"
+              required
+            />
+            <p class="registration-note" id="registrationPasswordNote" data-i18n="registration.passwordNote">
+              Použijte alespoň 8 znaků.
+            </p>
           </div>
 
           <div class="form-group full">
             <label for="street" data-i18n="registration.streetLabel">Ulice a číslo popisné</label>
-            <input type="text" id="street" data-i18n-placeholder="registration.streetPlaceholder" placeholder="např. Dlouhá 12" required />
+            <input
+              type="text"
+              id="street"
+              name="street-address"
+              autocomplete="street-address"
+              maxlength="160"
+              aria-describedby="registrationError"
+              data-i18n-placeholder="registration.streetPlaceholder"
+              placeholder="např. Dlouhá 12"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="city" data-i18n="registration.cityLabel">Město</label>
-            <input type="text" id="city" list="citySuggestions" data-i18n-placeholder="registration.cityPlaceholder" placeholder="např. Praha" required />
+            <input
+              type="text"
+              id="city"
+              name="address-level2"
+              autocomplete="address-level2"
+              maxlength="100"
+              list="citySuggestions"
+              aria-describedby="registrationError"
+              data-i18n-placeholder="registration.cityPlaceholder"
+              placeholder="např. Praha"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="postalCode" data-i18n="registration.postalCodeLabel">PSČ</label>
-            <input type="text" id="postalCode" data-i18n-placeholder="registration.postalCodePlaceholder" placeholder="např. 110 00" required />
+            <input
+              type="text"
+              id="postalCode"
+              name="postal-code"
+              autocomplete="postal-code"
+              maxlength="20"
+              aria-describedby="registrationError"
+              data-i18n-placeholder="registration.postalCodePlaceholder"
+              placeholder="např. 110 00"
+              required
+            />
           </div>
 
           <datalist id="citySuggestions"></datalist>
 
           <div class="terms-list">
             <label class="terms-check">
-              <input type="checkbox" id="termsBusiness" />
+              <input
+                type="checkbox"
+                id="termsBusiness"
+                name="termsBusiness"
+                aria-describedby="registrationError"
+              />
               <span>
                 <span data-i18n="registration.termsBusinessPrefix">Souhlasím s</span>
                 <a href="obchodni-podminky.html" target="_blank" rel="noopener noreferrer" data-i18n="registration.termsBusinessLink">obchodními podmínkami</a>.
@@ -438,17 +513,15 @@
             </label>
 
             <label class="terms-check">
-              <input type="checkbox" id="termsPrivacy" />
+              <input
+                type="checkbox"
+                id="termsPrivacy"
+                name="termsPrivacy"
+                aria-describedby="registrationError"
+              />
               <span>
                 <span data-i18n="registration.termsPrivacyPrefix">Souhlasím se</span>
                 <a href="ochrana-osobnich-udaju.html" target="_blank" rel="noopener noreferrer" data-i18n="registration.termsPrivacyLink">zpracováním osobních údajů</a>.
-              </span>
-            </label>
-
-            <label class="terms-check">
-              <input type="checkbox" id="termsIdentity" />
-              <span>
-                <span data-i18n="registration.identityConsent">Beru na vědomí, že při osobním předání věci může druhá strana přiměřeně ověřit moji totožnost.</span>
               </span>
             </label>
           </div>
@@ -471,7 +544,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
-<script src="js/utils.js"></script>
+  <script src="js/utils.js"></script>
   <script src="js/api.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/navigation.js"></script>
