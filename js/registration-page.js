@@ -88,6 +88,21 @@
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
+    function registrationMeetsPasswordRequirements(password) {
+      const value = String(password || "");
+      const allowedSymbols = "!@#$%^&*()_+-=[]{};'\\\":|<>?,./`~";
+
+      return (
+        value.length >= 8 &&
+        /[a-z]/.test(value) &&
+        /[A-Z]/.test(value) &&
+        /[0-9]/.test(value) &&
+        Array.prototype.some.call(value, function (character) {
+          return allowedSymbols.indexOf(character) !== -1;
+        })
+      );
+    }
+
     function normalizeCityName(value) {
       return String(value || "")
         .trim()
@@ -280,7 +295,7 @@
         registrationMarkError(passwordInput);
         registrationShowError(
           "registration.error.weakPassword",
-          "Heslo nesplňuje bezpečnostní požadavky. Použijte alespoň 8 znaků."
+          "Heslo musí mít alespoň 8 znaků a obsahovat malé písmeno, velké písmeno, číslici a symbol."
         );
         return;
       }
@@ -406,11 +421,11 @@
         return;
       }
 
-      if (passwordInput.value.length < 8) {
+      if (!registrationMeetsPasswordRequirements(passwordInput.value)) {
         registrationMarkError(passwordInput);
         registrationShowError(
           "registration.error.passwordLength",
-          "Heslo musí mít alespoň 8 znaků."
+          "Heslo musí mít alespoň 8 znaků a obsahovat malé písmeno, velké písmeno, číslici a symbol."
         );
         registrationFocusFirstError();
         return;
