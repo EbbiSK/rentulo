@@ -10,7 +10,7 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: #073d2b;
   text-decoration: none;
 }
@@ -65,9 +65,10 @@
 }
 
 .logo-text strong {
+  font-family: Arial, sans-serif;
   font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.4px;
+  font-weight: 700;
+  letter-spacing: normal;
 }
 
 .logo-text small {
