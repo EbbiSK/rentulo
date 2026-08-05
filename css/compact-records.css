@@ -147,6 +147,27 @@
   background: #FF6A00 !important;
 }
 
+.offer-primary-button:focus,
+.reservation-primary-action:focus {
+  outline: none;
+}
+
+.offer-primary-button:focus-visible,
+.reservation-primary-action:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.95),
+    0 0 0 6px rgba(115, 214, 79, 0.45);
+}
+
+.offer-primary-button.orange:focus-visible,
+.offer-primary-button.urgent:focus-visible,
+.reservation-primary-action.orange:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.95),
+    0 0 0 6px rgba(255, 106, 0, 0.38);
+}
+
 .simple-offer-actions .simple-offer-more-menu {
   position: relative;
   flex: 0 0 auto;
