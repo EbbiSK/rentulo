@@ -867,35 +867,30 @@ const data = Array.isArray(paidReservations)
       `;
     }
 
-    function renderPaymentBox(reservation, status, totalPrice, platformFee, ownerPayout) {
-      if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
+    function renderPaymentBox(reservation, status) {
+      const normalizedStatus = normalizeReservationStatus(status);
+
+      if (normalizedStatus === RESERVATION_STATUS_APPROVED) {
         return `
           <div class="payment-box waiting">
             <strong>${escapeHtml(reservationsTranslate("reservations.payment.platformTitle", "Platba přes provozovatele platformy"))}</strong>
             ${escapeHtml(reservationsTranslate("reservations.payment.testInfo", "Kliknutím na tlačítko Zaplatit provedete testovací platbu."))}
             <div class="payment-lines">
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.totalToPay", "Celkem zaplatíte"))}: ${escapeHtml(formatReservationsMoney(totalPrice))}</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.fee", "Provize Rentulo 10 %"))}: ${escapeHtml(formatReservationsMoney(platformFee))}</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.ownerGets", "Majitel dostane"))}: ${escapeHtml(formatReservationsMoney(ownerPayout))}</span>
+              <span>${escapeHtml(reservationsTranslate("reservations.payment.statusLabel", "Stav platby"))}: ${escapeHtml(reservationsTranslate("reservations.payment.waitingLower", "čeká na platbu"))}</span>
             </div>
           </div>
         `;
       }
 
       if (getSafeReservationContactVisible(status)) {
-        const paymentTitle =
-  normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED
+        const paymentTitle = normalizedStatus === RESERVATION_STATUS_RETURNED
           ? reservationsTranslate("reservations.payment.completed", "Platba byla přijata a půjčení je dokončeno")
           : reservationsTranslate("reservations.payment.accepted", "Platba přijata přes provozovatele platformy");
 
         return `
           <div class="payment-box paid">
-            <strong>${paymentTitle}</strong>
-            ${escapeHtml(reservationsTranslate("reservations.payment.feeInfo", "Rentulo si ponechá provizi 10 % a majiteli bude vyplaceno 90 % z půjčovného."))}
+            <strong>${escapeHtml(paymentTitle)}</strong>
             <div class="payment-lines">
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.totalPaid", "Celkem zaplaceno"))}: ${escapeHtml(formatReservationsMoney(totalPrice))}</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.rentuloFee", "Provize Rentulo"))}: ${escapeHtml(formatReservationsMoney(platformFee))}</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.ownerAmount", "Částka pro majitele"))}: ${escapeHtml(formatReservationsMoney(ownerPayout))}</span>
               <span>${escapeHtml(reservationsTranslate("reservations.payment.statusLabel", "Stav platby"))}: ${escapeHtml(
                 reservation.paymentProviderStatus === "paid_test"
                   ? reservationsTranslate("reservations.payment.statusPaidTest", "Testovací platba")
@@ -1067,7 +1062,7 @@ const data = Array.isArray(paidReservations)
 
           ${renderReservationStateBox(reservation, status)}
 
-          ${renderPaymentBox(reservation, status, totalPrice, platformFee, ownerPayout)}
+          ${renderPaymentBox(reservation, status)}
 
           ${renderContactBox(reservation, status)}
 
