@@ -81,8 +81,8 @@
 .status-pending,
 .status-approved,
 .status-draft {
-  background: #fff0e6 !important;
-  color: #b94d00 !important;
+  background: #fff3e8 !important;
+  color: #8a4b16 !important;
 }
 
 .status-paid,
