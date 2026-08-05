@@ -293,7 +293,7 @@
   min-height: 52px;
   padding: 0 24px;
   border-radius: 16px;
-  background: #ff6500;
+  background: #FF6A00;
   color: #ffffff;
   font-size: 16px;
   font-weight: 800;
@@ -303,7 +303,7 @@
 
 .empty-results a:hover,
 .empty-results-button:hover {
-  background: #e95d00;
+  background: #E85F00;
   color: #ffffff;
   text-decoration: none;
 }
