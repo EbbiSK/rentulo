@@ -1034,7 +1034,7 @@ const data = Array.isArray(paidReservations)
         ? reservationsTranslate("reservations.payment.paidLower", "zaplaceno")
         : normalizedStatus === RESERVATION_STATUS_APPROVED
           ? reservationsTranslate("reservations.payment.waitingLower", "čeká na platbu")
-          : reservationsTranslate("reservations.payment.pendingLower", "čeká na potvrzení");
+          : reservationsTranslate("reservations.payment.pendingLower", "dostupná po schválení");
 
       return `
         <div class="reservation-detail-panel">
