@@ -263,7 +263,19 @@ category: row.category || reservationsTranslate("reservations.fallback.other", "
         pickupPostalCode: row.pickup_postal_code || "",
         pickupFullAddress: row.pickup_full_address || "",
         pickupNote: row.pickup_note || "",
+pickupLatitude:
+  row.pickup_latitude !== null &&
+  row.pickup_latitude !== undefined &&
+  Number.isFinite(Number(row.pickup_latitude))
+    ? Number(row.pickup_latitude)
+    : null,
 
+pickupLongitude:
+  row.pickup_longitude !== null &&
+  row.pickup_longitude !== undefined &&
+  Number.isFinite(Number(row.pickup_longitude))
+    ? Number(row.pickup_longitude)
+    : null,
         status: row.status || "pending",
         statusText: getSafeReservationStatusText(row.status || "pending"),
 
@@ -483,9 +495,18 @@ return (
       return reservation.pickupCity || reservation.ownerCity || reservation.city || "-";
     }
 
-    function getMapUrl(address) {
-      return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(address);
-    }
+    function getMapUrl(address, latitude, longitude) {
+  const hasCoordinates =
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude);
+
+  const destination = hasCoordinates
+    ? `${latitude},${longitude}`
+    : address;
+
+  return "https://www.google.com/maps/search/?api=1&query=" +
+    encodeURIComponent(destination);
+}
 
     function getReservationPhoto(reservation) {
       if (!reservation) {
@@ -1121,7 +1142,11 @@ const data = Array.isArray(paidReservations)
       const reservationId = reservation.id || reservation.reservationId;
       const offerId = getSafeReservationOfferId(reservation);
       const pickupAddress = getPickupAddress(reservation);
-
+const pickupLatitude = reservation.pickupLatitude;
+const pickupLongitude = reservation.pickupLongitude;
+const hasPickupCoordinates =
+  Number.isFinite(pickupLatitude) &&
+  Number.isFinite(pickupLongitude);
       const isPaymentRequired = normalizedStatus === RESERVATION_STATUS_APPROVED;
       const isPriority = !isHistorySection && (
         isPaymentRequired ||
@@ -1165,9 +1190,9 @@ const data = Array.isArray(paidReservations)
         `;
       }
 
-      if (isMapUsefulForStatus(status) && pickupAddress) {
-        menuItems += `
-          <a href="${escapeHtml(getMapUrl(pickupAddress))}" target="_blank" rel="noopener noreferrer">
+      if (isMapUsefulForStatus(status) && (hasPickupCoordinates || pickupAddress)) {
+  menuItems += `
+    <a href="${escapeHtml(getMapUrl(pickupAddress, pickupLatitude, pickupLongitude))}" target="_blank" rel="noopener noreferrer">
             ${escapeHtml(reservationsTranslate("reservations.pickupMap", "Mapa vyzvednutí"))}
           </a>
         `;
