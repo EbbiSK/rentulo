@@ -646,6 +646,10 @@ const data = Array.isArray(updatedReservations)
 
       renderOffers();
 
+      if (typeof window.refreshRentuloNotificationBadge === "function") {
+        await window.refreshRentuloNotificationBadge();
+      }
+
       setTimeout(function () {
         reopenReservationAfterRender(reservationId, panelType);
       }, 0);

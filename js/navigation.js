@@ -779,6 +779,19 @@ async function navLoadNotificationCountFromSupabase(
   renderSharedNavigation(activePage);
 }
 
+window.refreshRentuloNotificationBadge = async function () {
+  const activePage =
+    document.body.dataset.navigationPage || "";
+
+  if (!activePage) {
+    return;
+  }
+
+  await navLoadNotificationCountFromSupabase(
+    activePage
+  );
+};
+
 function renderSharedNavigation(
   activePage
 ) {
