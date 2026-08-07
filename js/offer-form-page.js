@@ -4,7 +4,6 @@ let offerSaveInProgress = false;
     let offerPhotoFile = null;
     let offerPhotoProcessing = false;
     let offerPhotoSelectionToken = 0;
-    let pickupLocationState = "idle";
     let offerOwnerProfile = {
       phone: "",
       street: "",
@@ -207,24 +206,8 @@ let offerSaveInProgress = false;
     }
 
     function setupPostalCodeAutocomplete() {
-      const toolCityInput = document.getElementById("toolCity");
-      const toolPostalInput = document.getElementById("toolPostalCode");
       const pickupCityInput = document.getElementById("pickupCity");
       const pickupPostalInput = document.getElementById("pickupPostalCode");
-
-      if (toolCityInput && toolPostalInput) {
-        toolCityInput.addEventListener("input", function () {
-          fillPostalCodeFromCity("toolCity", "toolPostalCode");
-        });
-
-        toolCityInput.addEventListener("change", function () {
-          fillPostalCodeFromCity("toolCity", "toolPostalCode");
-        });
-
-        toolPostalInput.addEventListener("input", function () {
-          toolPostalInput.dataset.autoFilled = "false";
-        });
-      }
 
       if (pickupCityInput && pickupPostalInput) {
         pickupCityInput.addEventListener("input", function () {
@@ -241,8 +224,6 @@ let offerSaveInProgress = false;
       }
     }
     async function fillProfileAddressAsDefault(authenticatedUser) {
-      const toolCityInput = document.getElementById("toolCity");
-      const toolPostalInput = document.getElementById("toolPostalCode");
       const supabaseClient = window.rentuloSupabase ||
         (typeof rentuloSupabase !== "undefined" ? rentuloSupabase : null);
 
@@ -270,14 +251,6 @@ let offerSaveInProgress = false;
         postalCode: userPostalCode
       };
 
-      if (toolCityInput && !toolCityInput.value.trim() && userCity) {
-        toolCityInput.value = userCity;
-      }
-
-      if (toolPostalInput && !toolPostalInput.value.trim() && userPostalCode) {
-        toolPostalInput.value = userPostalCode;
-        toolPostalInput.dataset.autoFilled = "true";
-      }
     }
 
     function parseMoneyValue(value) {
@@ -578,19 +551,11 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
       return {
         mode: "profile",
         street: offerOwnerProfile.street,
-        city: offerOwnerProfile.city || getInputValue("toolCity"),
-        postalCode: offerOwnerProfile.postalCode || getInputValue("toolPostalCode"),
+        city: offerOwnerProfile.city,
+        postalCode: offerOwnerProfile.postalCode,
         note: "",
         phone: offerOwnerProfile.phone
       };
-    }
-
-    function getFullPickupAddress(pickupAddress) {
-      return [
-        pickupAddress.street,
-        pickupAddress.city,
-        pickupAddress.postalCode
-      ].filter(Boolean).join(", ");
     }
 
     function validateOfferForm(status) {
@@ -600,10 +565,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
       const requiredFields = [
         "toolName",
         "toolCategory",
-        "toolCity",
-        "toolPostalCode",
         "toolPrice",
-
         "toolDescription"
       ];
 
@@ -635,10 +597,21 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
             hasError = true;
           }
         });
+      } else {
+        const profilePickup = getPickupAddress();
+
+        if (!profilePickup.street || !profilePickup.city || !profilePickup.postalCode) {
+          showOfferTranslatedFormMessage(
+            "offer.profilePickupMissing",
+            "Ve vašem profilu chybí úplná adresa pro vyzvednutí. Doplňte ji v Nastavení nebo zvolte jiné místo vyzvednutí.",
+            "error"
+          );
+          return false;
+        }
       }
 
       if (hasError) {
-        showOfferTranslatedFormMessage("offer.validationRequired", "Vyplňte prosím všechna povinná pole. GPS poloha je volitelná.", "error");
+        showOfferTranslatedFormMessage("offer.validationRequired", "Vyplňte prosím všechna povinná pole.", "error");
         return false;
       }
 
@@ -712,28 +685,51 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
       };
     }
 
-    function createSupabaseOfferObject(status, supabaseUser, photoUrl) {
-      const pickupAddress = getPickupAddress();
+    async function geocodePickupAddress(supabaseClient, pickupAddress) {
+      const { data, error } = await supabaseClient.functions.invoke("geocode-pickup", {
+        body: {
+          city: pickupAddress.city,
+          postalCode: pickupAddress.postalCode
+        }
+      });
 
-      const pickupLatitudeValue = getInputValue("pickupLatitude");
-      const pickupLongitudeValue = getInputValue("pickupLongitude");
+      if (error) {
+        const geocodeError = new Error("Pickup geocoding is temporarily unavailable");
+        geocodeError.code = "PICKUP_GEOCODING_UNAVAILABLE";
+        throw geocodeError;
+      }
 
-      const pickupLatitude = pickupLatitudeValue ? Number(pickupLatitudeValue) : null;
-      const pickupLongitude = pickupLongitudeValue ? Number(pickupLongitudeValue) : null;
+      if (!data || data.ok !== true) {
+        const geocodeError = new Error("Pickup address was not found");
+        geocodeError.code = data && data.reason === "not_found"
+          ? "PICKUP_GEOCODING_NOT_FOUND"
+          : "PICKUP_GEOCODING_UNAVAILABLE";
+        throw geocodeError;
+      }
 
-      const hasPickupGps =
-        pickupLatitude !== null &&
-        pickupLongitude !== null &&
-        !Number.isNaN(pickupLatitude) &&
-        !Number.isNaN(pickupLongitude);
+      const latitude = Number(data.latitude);
+      const longitude = Number(data.longitude);
 
+      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+        const geocodeError = new Error("Pickup geocoding returned invalid coordinates");
+        geocodeError.code = "PICKUP_GEOCODING_UNAVAILABLE";
+        throw geocodeError;
+      }
+
+      return {
+        latitude: latitude,
+        longitude: longitude
+      };
+    }
+
+    function createSupabaseOfferObject(status, supabaseUser, photoUrl, pickupAddress, pickupCoordinates) {
       return {
         owner_id: supabaseUser.id,
         name: getInputValue("toolName"),
         category: getInputValue("toolCategory"),
         description: getInputValue("toolDescription"),
-        city: getInputValue("toolCity"),
-        postal_code: getInputValue("toolPostalCode"),
+        city: pickupAddress.city,
+        postal_code: pickupAddress.postalCode,
         price_per_day: parseMoneyValue(getInputValue("toolPrice")),
 
         status: status,
@@ -745,8 +741,8 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
         pickup_postal_code: pickupAddress.postalCode,
         pickup_note: pickupAddress.note,
         pickup_phone: pickupAddress.phone,
-        pickup_latitude: hasPickupGps ? pickupLatitude : null,
-        pickup_longitude: hasPickupGps ? pickupLongitude : null
+        pickup_latitude: pickupCoordinates.latitude,
+        pickup_longitude: pickupCoordinates.longitude
       };
     }
 
@@ -807,9 +803,17 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           return;
         }
 
+        const pickupAddress = getPickupAddress();
+        const pickupCoordinates = await geocodePickupAddress(supabaseClient, pickupAddress);
         const uploadedPhoto = await uploadOfferPhoto(supabaseClient, supabaseUser.id);
         uploadedPhotoPath = uploadedPhoto.path;
-        const supabaseOffer = createSupabaseOfferObject(status, supabaseUser, uploadedPhoto.url);
+        const supabaseOffer = createSupabaseOfferObject(
+          status,
+          supabaseUser,
+          uploadedPhoto.url,
+          pickupAddress,
+          pickupCoordinates
+        );
 
         const { data, error } = await supabaseClient
           .from("offers")
@@ -839,6 +843,24 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
         const message = error && error.message
           ? String(error.message).toLowerCase()
           : "";
+
+        if (error && error.code === "PICKUP_GEOCODING_NOT_FOUND") {
+          showOfferTranslatedFormMessage(
+            "offer.geocodeNotFound",
+            "Místo vyzvednutí se nepodařilo najít na mapě. Zkontrolujte ulici, město a PSČ.",
+            "error"
+          );
+          return;
+        }
+
+        if (error && error.code === "PICKUP_GEOCODING_UNAVAILABLE") {
+          showOfferTranslatedFormMessage(
+            "offer.geocodeUnavailable",
+            "Polohu místa vyzvednutí se teď nepodařilo ověřit. Zkuste to prosím znovu.",
+            "error"
+          );
+          return;
+        }
 
         if (message.includes("row-level security")) {
           showOfferTranslatedFormMessage("offer.errorRls", "Nabídku se nepodařilo uložit. Odhlaste se, znovu se přihlaste a opakujte akci.", "error");
@@ -871,113 +893,6 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
       });
     }
 
-    function setPickupLocationState(state) {
-      const pickupLocationButton = document.getElementById("pickupLocationButton");
-      const pickupLocationStatus = document.getElementById("pickupLocationStatus");
-      const stateConfig = {
-        idle: {
-          buttonKey: "offer.useLocation",
-          buttonFallback: "Použít moji aktuální polohu",
-          statusKey: "offer.locationNotSaved",
-          statusFallback: "Poloha zatím není uložená.",
-          statusType: ""
-        },
-        detecting: {
-          buttonKey: "offer.locationDetecting",
-          buttonFallback: "Zjišťuji polohu...",
-          statusKey: "offer.locationDetecting",
-          statusFallback: "Zjišťuji polohu...",
-          statusType: ""
-        },
-        saved: {
-          buttonKey: "offer.locationSavedButton",
-          buttonFallback: "Poloha byla uložena",
-          statusKey: "offer.locationSaved",
-          statusFallback: "Poloha byla uložena k nabídce.",
-          statusType: "success"
-        },
-        failed: {
-          buttonKey: "offer.useLocation",
-          buttonFallback: "Použít moji aktuální polohu",
-          statusKey: "offer.locationFailed",
-          statusFallback: "Polohu se nepodařilo získat. Nabídku můžete uložit i bez GPS.",
-          statusType: "error"
-        },
-        unavailable: {
-          buttonKey: "offer.useLocation",
-          buttonFallback: "Použít moji aktuální polohu",
-          statusKey: "offer.locationUnavailable",
-          statusFallback: "Poloha není v tomto prohlížeči dostupná.",
-          statusType: "error"
-        }
-      };
-      const config = stateConfig[state] || stateConfig.idle;
-
-      pickupLocationState = stateConfig[state] ? state : "idle";
-
-      if (pickupLocationButton) {
-        pickupLocationButton.disabled = pickupLocationState === "detecting";
-        setDynamicTranslatedText(
-          pickupLocationButton,
-          config.buttonKey,
-          config.buttonFallback
-        );
-      }
-
-      if (pickupLocationStatus) {
-        pickupLocationStatus.className = "pickup-location-status " + config.statusType;
-        setDynamicTranslatedText(
-          pickupLocationStatus,
-          config.statusKey,
-          config.statusFallback
-        );
-      }
-    }
-
-    function setupPickupLocation() {
-      const pickupLocationButton = document.getElementById("pickupLocationButton");
-      const pickupLatitudeInput = document.getElementById("pickupLatitude");
-      const pickupLongitudeInput = document.getElementById("pickupLongitude");
-
-      if (!pickupLocationButton || !pickupLatitudeInput || !pickupLongitudeInput) {
-        return;
-      }
-
-      setPickupLocationState(pickupLocationState);
-
-      pickupLocationButton.addEventListener("click", function () {
-        if (!navigator.geolocation) {
-          setPickupLocationState("unavailable");
-          alert(offerTranslate("offer.locationUnavailable", "Poloha není v tomto prohlížeči dostupná."));
-          return;
-        }
-
-        setPickupLocationState("detecting");
-
-        navigator.geolocation.getCurrentPosition(
-          function (position) {
-            pickupLatitudeInput.value = position.coords.latitude;
-            pickupLongitudeInput.value = position.coords.longitude;
-
-            setPickupLocationState("saved");
-          },
-          function () {
-            pickupLatitudeInput.value = "";
-            pickupLongitudeInput.value = "";
-
-            setPickupLocationState("failed");
-
-            alert(offerTranslate("offer.locationFailedAlert", "Polohu se nepodařilo získat. Nabídku můžete uložit i bez GPS polohy."));
-          },
-          {
-            enableHighAccuracy: false,
-            timeout: 8000,
-            maximumAge: 300000
-          }
-        );
-      });
-    }
-
     function setupOfferForm() {
       const offerForm = document.getElementById("offerForm");
       const saveDraftButton = document.getElementById("saveDraftButton");
@@ -1000,7 +915,6 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
       renderPhotoPreview(offerPhotoDataUrl);
       refreshDynamicTranslatedText(document.getElementById("toolPhotoStatus"));
       refreshDynamicTranslatedText(document.getElementById("offerFormMessage"));
-      setPickupLocationState(pickupLocationState);
       setOfferSavingState(offerSaveInProgress, offerSaveStatus);
     }
 
@@ -1017,7 +931,6 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
       await fillProfileAddressAsDefault(authenticatedUser);
       setupOfferPhotoUpload();
       setupPickupCustomFields();
-      setupPickupLocation();
       setupOfferForm();
     });
 

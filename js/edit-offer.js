@@ -434,19 +434,21 @@ function normalizeEditOfferCategory(category) {
 function fillEditForm(offer) {
   const nameInput = document.querySelector("#edit-name");
   const categorySelect = document.querySelector("#edit-category");
+  const pickupStreetInput = document.querySelector("#edit-pickup-street");
   const cityInput = document.querySelector("#edit-city");
   const postalInput = document.querySelector("#edit-postal-code");
+  const pickupNoteInput = document.querySelector("#edit-pickup-note");
   const priceInput = document.querySelector("#edit-price");
-  
   const descriptionInput = document.querySelector("#edit-description");
 
   if (
     !nameInput ||
     !categorySelect ||
+    !pickupStreetInput ||
     !cityInput ||
     !postalInput ||
+    !pickupNoteInput ||
     !priceInput ||
-
     !descriptionInput
   ) {
     editShowMessage(editT("editOffer.formLoadFailed", "Formulář pro úpravu nabídky se nepodařilo načíst."));
@@ -455,10 +457,11 @@ function fillEditForm(offer) {
 
   nameInput.value = offer.name || "";
   categorySelect.value = normalizeEditOfferCategory(offer.category);
-  cityInput.value = offer.city || "";
-  postalInput.value = offer.postal_code || "";
+  pickupStreetInput.value = offer.pickup_street || "";
+  cityInput.value = offer.pickup_city || offer.city || "";
+  postalInput.value = offer.pickup_postal_code || offer.postal_code || "";
+  pickupNoteInput.value = offer.pickup_note || "";
   priceInput.value = editValueOrEmpty(offer.price_per_day);
-  
   descriptionInput.value = offer.description || "";
 
   editOfferPhotoDataUrl = getEditOfferPhoto(offer);
@@ -579,6 +582,40 @@ function setEditSavingState(isSaving) {
     : editT("editOffer.save", "Uložit změny");
 }
 
+async function geocodeEditedPickupAddress(supabaseClient, pickupAddress) {
+  const { data, error } = await supabaseClient.functions.invoke("geocode-pickup", {
+    body: {
+      city: pickupAddress.city,
+      postalCode: pickupAddress.postalCode
+    }
+  });
+
+  if (error) {
+    const geocodeError = new Error("Pickup geocoding is temporarily unavailable");
+    geocodeError.code = "PICKUP_GEOCODING_UNAVAILABLE";
+    throw geocodeError;
+  }
+
+  if (!data || data.ok !== true) {
+    const geocodeError = new Error("Pickup address was not found");
+    geocodeError.code = data && data.reason === "not_found"
+      ? "PICKUP_GEOCODING_NOT_FOUND"
+      : "PICKUP_GEOCODING_UNAVAILABLE";
+    throw geocodeError;
+  }
+
+  const latitude = Number(data.latitude);
+  const longitude = Number(data.longitude);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    const geocodeError = new Error("Pickup geocoding returned invalid coordinates");
+    geocodeError.code = "PICKUP_GEOCODING_UNAVAILABLE";
+    throw geocodeError;
+  }
+
+  return { latitude, longitude };
+}
+
 async function initializeEditOfferPage(supabaseUser) {
   const offerId = getEditToolId();
 
@@ -654,19 +691,21 @@ function setupEditOfferSave() {
 
     const nameInput = document.querySelector("#edit-name");
     const categorySelect = document.querySelector("#edit-category");
+    const pickupStreetInput = document.querySelector("#edit-pickup-street");
     const cityInput = document.querySelector("#edit-city");
-    const postalInput = document.querySelector("#edit-postal-code")
+    const postalInput = document.querySelector("#edit-postal-code");
+    const pickupNoteInput = document.querySelector("#edit-pickup-note");
     const priceInput = document.querySelector("#edit-price");
-  
     const descriptionInput = document.querySelector("#edit-description");
 
     if (
       !nameInput ||
       !categorySelect ||
+      !pickupStreetInput ||
       !cityInput ||
       !postalInput ||
+      !pickupNoteInput ||
       !priceInput ||
-
       !descriptionInput
     ) {
       editShowMessage(editT("editOffer.formLoadFailed", "Formulář pro úpravu nabídky se nepodařilo načíst."));
@@ -675,7 +714,7 @@ function setupEditOfferSave() {
 
     let hasError = false;
 
-    [nameInput, cityInput, postalInput, descriptionInput].forEach(function (field) {
+    [nameInput, pickupStreetInput, cityInput, postalInput, descriptionInput].forEach(function (field) {
       if (editIsEmpty(field.value)) {
         editMarkError(field);
         hasError = true;
@@ -720,17 +759,47 @@ function setupEditOfferSave() {
     let newlyUploadedPhotoPath = "";
 
     try {
+      const pickupAddress = {
+        street: pickupStreetInput.value.trim(),
+        city: cityInput.value.trim(),
+        postalCode: postalInput.value.trim()
+      };
+      const pickupCoordinates = await geocodeEditedPickupAddress(supabaseClient, pickupAddress);
       const previousPhotoUrl = getEditOfferPhoto(editCurrentOffer);
       const uploadedPhoto = await uploadEditedOfferPhoto(supabaseClient, supabaseUser.id);
       newlyUploadedPhotoPath = uploadedPhoto.isNew ? uploadedPhoto.path : "";
 
+      const originalPickupAddress = [
+        editCurrentOffer.pickup_street || "",
+        editCurrentOffer.pickup_city || editCurrentOffer.city || "",
+        editCurrentOffer.pickup_postal_code || editCurrentOffer.postal_code || ""
+      ].map(function (value) {
+        return String(value).trim().toLowerCase();
+      }).join("|");
+      const editedPickupAddress = [
+        pickupAddress.street,
+        pickupAddress.city,
+        pickupAddress.postalCode
+      ].map(function (value) {
+        return String(value).trim().toLowerCase();
+      }).join("|");
+
       const updatePayload = {
         name: nameInput.value.trim(),
         category: categorySelect.value.trim(),
-        city: cityInput.value.trim(),
-        postal_code: postalInput.value.trim(),
+        city: pickupAddress.city,
+        postal_code: pickupAddress.postalCode,
         description: descriptionInput.value.trim(),
-        photo_url: uploadedPhoto.url
+        photo_url: uploadedPhoto.url,
+        pickup_mode: originalPickupAddress === editedPickupAddress
+          ? (editCurrentOffer.pickup_mode || "profile")
+          : "custom",
+        pickup_street: pickupAddress.street,
+        pickup_city: pickupAddress.city,
+        pickup_postal_code: pickupAddress.postalCode,
+        pickup_note: pickupNoteInput.value.trim(),
+        pickup_latitude: pickupCoordinates.latitude,
+        pickup_longitude: pickupCoordinates.longitude
       };
 
       if (!editHasBlockingReservation) {
@@ -774,6 +843,23 @@ function setupEditOfferSave() {
       console.error(error);
       editSaveInProgress = false;
       setEditSavingState(false);
+
+      if (error && error.code === "PICKUP_GEOCODING_NOT_FOUND") {
+        editShowMessage(editT(
+          "offer.geocodeNotFound",
+          "Místo vyzvednutí se nepodařilo najít na mapě. Zkontrolujte ulici, město a PSČ."
+        ));
+        return;
+      }
+
+      if (error && error.code === "PICKUP_GEOCODING_UNAVAILABLE") {
+        editShowMessage(editT(
+          "offer.geocodeUnavailable",
+          "Polohu místa vyzvednutí se teď nepodařilo ověřit. Zkuste to prosím znovu."
+        ));
+        return;
+      }
+
       editShowMessage(editT("editOffer.saveFailed", "Změny se nepodařilo uložit. Zkuste to prosím znovu."));
     }
   });
