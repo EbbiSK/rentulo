@@ -6,6 +6,7 @@ const corsHeaders = {
 };
 
 type GeocodePayload = {
+  street?: string;
   city?: string;
   postalCode?: string;
 };
@@ -29,7 +30,27 @@ function cleanAddressPart(value: unknown, maxLength: number): string {
   return String(value ?? "").trim().replace(/\s+/g, " ").slice(0, maxLength);
 }
 
-async function fetchWithTimeout(url: string, init: RequestInit = {}, timeoutMs = 4500): Promise<Response> {
+function splitStreetAndHouseNumber(value: string): {
+  street: string;
+  houseNumber: string;
+} {
+  const match = value.match(/^(.*\S)\s+(\d+[A-Za-z]?(?:[/-]\d+[A-Za-z]?)?)$/u);
+
+  if (!match) {
+    return { street: value, houseNumber: "" };
+  }
+
+  return {
+    street: match[1].trim(),
+    houseNumber: match[2].trim(),
+  };
+}
+
+async function fetchWithTimeout(
+  url: string,
+  init: RequestInit = {},
+  timeoutMs = 4500,
+): Promise<Response> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -40,13 +61,22 @@ async function fetchWithTimeout(url: string, init: RequestInit = {}, timeoutMs =
   }
 }
 
-async function geocodeWithNominatim(city: string, postalCode: string): Promise<GeocodeResult> {
-  const query = [postalCode, city, "Česko"].join(", ");
+async function geocodeWithNominatim(
+  street: string,
+  city: string,
+  postalCode: string,
+): Promise<GeocodeResult> {
   const url = new URL("https://nominatim.openstreetmap.org/search");
-  url.searchParams.set("q", query);
+
   url.searchParams.set("format", "jsonv2");
   url.searchParams.set("limit", "1");
   url.searchParams.set("countrycodes", "cz");
+  url.searchParams.set("city", city);
+  url.searchParams.set("postalcode", postalCode);
+
+  if (street) {
+    url.searchParams.set("street", street);
+  }
 
   let response: Response;
 
@@ -55,7 +85,8 @@ async function geocodeWithNominatim(city: string, postalCode: string): Promise<G
       headers: {
         Accept: "application/json",
         "Accept-Language": "cs",
-        "User-Agent": "Rentulo/1.0 (https://rentulo-seven.vercel.app; contact: info@rentulo.cz)",
+        "User-Agent":
+          "Rentulo/1.0 (https://rentulo-seven.vercel.app; contact: info@rentulo.cz)",
       },
     });
   } catch (error) {
@@ -89,8 +120,22 @@ async function geocodeWithNominatim(city: string, postalCode: string): Promise<G
   }
 }
 
-async function geocodeWithPhoton(city: string, postalCode: string): Promise<GeocodeResult> {
+async function geocodeWithPhoton(
+  street: string,
+  city: string,
+  postalCode: string,
+): Promise<GeocodeResult> {
   const url = new URL("https://photon.komoot.io/structured");
+  const streetParts = splitStreetAndHouseNumber(street);
+
+  if (streetParts.street) {
+    url.searchParams.set("street", streetParts.street);
+  }
+
+  if (streetParts.houseNumber) {
+    url.searchParams.set("housenumber", streetParts.houseNumber);
+  }
+
   url.searchParams.set("city", city);
   url.searchParams.set("postcode", postalCode.replace(/\s+/g, ""));
   url.searchParams.set("countrycode", "CZ");
@@ -104,7 +149,8 @@ async function geocodeWithPhoton(city: string, postalCode: string): Promise<Geoc
       headers: {
         Accept: "application/json",
         "Accept-Language": "cs",
-        "User-Agent": "Rentulo/1.0 (https://rentulo-seven.vercel.app; contact: info@rentulo.cz)",
+        "User-Agent":
+          "Rentulo/1.0 (https://rentulo-seven.vercel.app; contact: info@rentulo.cz)",
       },
     });
   } catch (error) {
@@ -174,6 +220,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Invalid JSON" }, 400);
   }
 
+  const street = cleanAddressPart(payload.street, 180);
   const city = cleanAddressPart(payload.city, 120);
   const postalCode = cleanAddressPart(payload.postalCode, 24);
 
@@ -181,7 +228,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Incomplete pickup location" }, 400);
   }
 
-  const nominatimResult = await geocodeWithNominatim(city, postalCode);
+  const nominatimResult = await geocodeWithNominatim(street, city, postalCode);
   if (nominatimResult.kind === "ok") {
     return jsonResponse({
       ok: true,
@@ -192,7 +239,7 @@ Deno.serve(async (req) => {
 
   // Public geocoding services may occasionally reject shared cloud IPs or be temporarily unavailable.
   // Use Photon as a fallback so creating an offer does not depend on a single provider.
-  const photonResult = await geocodeWithPhoton(city, postalCode);
+  const photonResult = await geocodeWithPhoton(street, city, postalCode);
   if (photonResult.kind === "ok") {
     return jsonResponse({
       ok: true,
@@ -201,7 +248,10 @@ Deno.serve(async (req) => {
     });
   }
 
-  if (nominatimResult.kind === "not_found" && photonResult.kind === "not_found") {
+  if (
+    nominatimResult.kind === "not_found" &&
+    photonResult.kind === "not_found"
+  ) {
     return jsonResponse({ ok: false, reason: "not_found" });
   }
 
