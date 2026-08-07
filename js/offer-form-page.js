@@ -688,9 +688,10 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
     async function geocodePickupAddress(supabaseClient, pickupAddress) {
       const { data, error } = await supabaseClient.functions.invoke("geocode-pickup", {
         body: {
-          city: pickupAddress.city,
-          postalCode: pickupAddress.postalCode
-        }
+  street: pickupAddress.street,
+  city: pickupAddress.city,
+  postalCode: pickupAddress.postalCode
+}
       });
 
       if (error) {
