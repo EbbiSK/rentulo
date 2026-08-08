@@ -356,8 +356,6 @@
     .button-label-loading { display: none; }
     .primary-button.is-loading .button-label-default { display: none; }
     .primary-button.is-loading .button-label-loading { display: inline; }
-    .danger-button.is-loading .button-label-default { display: none; }
-    .danger-button.is-loading .button-label-loading { display: inline; }
 
     .profile-note {
       margin: 14px 0 0 !important;
@@ -367,14 +365,30 @@
     }
 
     .danger-card {
-      border-color: #f0c7c2;
-      background: #fffafa;
+      position: relative;
+      overflow: hidden;
+      border-color: #d7e6de;
+      background: white;
     }
 
-    .danger-card h2 { color: #8a1c13; }
+    .danger-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 4px;
+      background: #d76b60;
+    }
+
+    .danger-card h2 { color: #173f35; }
 
     .danger-note {
       margin: 0;
+      padding: 11px 13px;
+      border: 1px solid #f0d8d4;
+      border-radius: 12px;
+      background: #fff8f7;
       color: #6d514e;
       font-size: 13px;
       line-height: 1.45;
@@ -383,25 +397,35 @@
     .danger-note + .danger-note { margin-top: 8px; }
 
     .danger-button {
-      border: 1px solid #d92d20;
+      border: 1px solid #dc7a70;
       border-radius: 12px;
       background: white;
-      color: #b42318;
+      color: #a53229;
       padding: 11px 18px;
       font-size: 14px;
       font-weight: 900;
       cursor: pointer;
+      transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
     }
 
-    .danger-button:hover { background: #fff1f0; }
+    .danger-button:hover {
+      border-color: #ce6258;
+      background: #fff7f6;
+    }
+
     .danger-button:disabled { cursor: not-allowed; opacity: 0.55; }
 
     .danger-button-final {
+      border-color: #b42318;
       background: #b42318;
       color: white;
+      box-shadow: 0 6px 14px rgba(180, 35, 24, 0.14);
     }
 
-    .danger-button-final:hover { background: #9f1f16; }
+    .danger-button-final:hover {
+      border-color: #9f1f16;
+      background: #9f1f16;
+    }
 
     .danger-button:focus { outline: none; }
     .danger-button:focus-visible {
@@ -411,9 +435,9 @@
     .danger-confirmation {
       margin-top: 16px;
       padding: 16px;
-      border: 1px solid #f0c7c2;
+      border: 1px solid #dce8e2;
       border-radius: 14px;
-      background: white;
+      background: #fbfdfc;
     }
 
     .danger-confirmation[hidden] { display: none; }
@@ -443,11 +467,6 @@
       margin-top: 1px;
       accent-color: #b42318;
       flex: 0 0 auto;
-    }
-
-    .danger-checkbox input:focus { outline: none; }
-    .danger-checkbox input:focus-visible {
-      box-shadow: 0 0 0 3px rgba(126, 217, 87, 0.28);
     }
 
     @media (max-width: 760px) {
