@@ -486,7 +486,7 @@ function renderDetailImage(offer) {
             </div>
           </div>
 
-          <div class="availability-box available">
+          <div class="availability-box available" id="bookingAvailabilityBox">
             <strong>${detailTranslate("detail.availableTitle")}</strong>
             ${detailTranslate("detail.availableText")}
           </div>
@@ -681,7 +681,7 @@ const hasGps = offerHasGpsLocation(offer);
                 <span class="badge" id="ownerRatingBadge">${detailTranslate("detail.ratingLoading")}</span>
               </div>
 
-              <div class="availability-panel ${availabilityBadgeClass}">
+              <div class="availability-panel ${availabilityBadgeClass}" id="detailAvailabilityPanel">
                 <strong>${escapeHtml(availabilityText)}</strong>
                 ${escapeHtml(availabilityPanelText)}
               </div>
@@ -915,6 +915,8 @@ const hasGps = offerHasGpsLocation(offer);
       const calcTotal = document.getElementById("calcTotal");
       const rentButton = document.getElementById("rentButton");
       const bookingDateHelp = document.getElementById("bookingDateHelp");
+      const detailAvailabilityPanel = document.getElementById("detailAvailabilityPanel");
+      const bookingAvailabilityBox = document.getElementById("bookingAvailabilityBox");
 
       if (!startDateInput || !endDateInput || !calcDays || !calcTotal || !rentButton) {
         return;
@@ -925,6 +927,42 @@ const hasGps = offerHasGpsLocation(offer);
 
       startDateInput.min = today;
       endDateInput.min = getNextDate(today);
+
+      function updateAvailabilityElement(element, state, title, text) {
+        if (!element) {
+          return;
+        }
+
+        element.classList.remove("available", "unavailable");
+        element.classList.add(state === "conflict" ? "unavailable" : "available");
+        element.innerHTML = `<strong>${escapeHtml(title)}</strong>${escapeHtml(text)}`;
+      }
+
+      function setAvailabilityDisplay(state) {
+        const hasConflict = state === "conflict";
+
+        updateAvailabilityElement(
+          detailAvailabilityPanel,
+          state,
+          hasConflict
+            ? detailTranslate("detail.dateConflictButton")
+            : detailTranslate("detail.available"),
+          hasConflict
+            ? detailTranslate("detail.dateConflictText")
+            : detailTranslate("detail.availabilityPanelActive")
+        );
+
+        updateAvailabilityElement(
+          bookingAvailabilityBox,
+          state,
+          hasConflict
+            ? detailTranslate("detail.dateConflictButton")
+            : detailTranslate("detail.availableTitle"),
+          hasConflict
+            ? detailTranslate("detail.dateConflictText")
+            : detailTranslate("detail.availableText")
+        );
+      }
 
       function setRentButtonState(state) {
         if (state === "available") {
@@ -971,6 +1009,7 @@ const hasGps = offerHasGpsLocation(offer);
         calcTotal.textContent = days > 0 ? formatDetailMoney(total) : "-";
 
         if (!activeStartDate || !activeEndDate || days <= 0) {
+          setAvailabilityDisplay("available");
           if (bookingDateHelp) {
             bookingDateHelp.textContent = !activeStartDate || !activeEndDate
               ? detailTranslate("detail.dateHelp")
@@ -980,6 +1019,7 @@ const hasGps = offerHasGpsLocation(offer);
           return;
         }
 
+        setAvailabilityDisplay("available");
         setRentButtonState("checking");
         if (bookingDateHelp) {
           bookingDateHelp.textContent = detailTranslate("detail.checkingAvailability");
@@ -997,6 +1037,7 @@ const hasGps = offerHasGpsLocation(offer);
           }
 
           if (hasConflict) {
+            setAvailabilityDisplay("conflict");
             setRentButtonState("conflict");
             if (bookingDateHelp) {
               bookingDateHelp.textContent = detailTranslate("detail.dateConflictText");
@@ -1004,6 +1045,7 @@ const hasGps = offerHasGpsLocation(offer);
             return;
           }
 
+          setAvailabilityDisplay("available");
           setRentButtonState("available");
           if (bookingDateHelp) {
             bookingDateHelp.textContent = detailTranslate("detail.dateAvailableText");
