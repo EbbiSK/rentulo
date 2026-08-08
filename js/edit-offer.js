@@ -585,6 +585,7 @@ function setEditSavingState(isSaving) {
 async function geocodeEditedPickupAddress(supabaseClient, pickupAddress) {
   const { data, error } = await supabaseClient.functions.invoke("geocode-pickup", {
     body: {
+      street: pickupAddress.street,
       city: pickupAddress.city,
       postalCode: pickupAddress.postalCode
     }

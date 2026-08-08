@@ -412,13 +412,14 @@
           hosting webu a Resend pro odesílání e-mailových oznámení.
         </p>
         <p data-i18n="privacy.s6p2">
-          Mapové podklady poskytuje OpenStreetMap. Pro odvození přibližné polohy
-          nabídky používá platforma geokódovací službu Nominatim; při ukládání
-          nabídky se této službě předává město a PSČ místa vyzvednutí, nikoli
-          neveřejná ulice a číslo.
-          Externí programové knihovny se načítají přes jsDelivr. Při načtení těchto
-          zdrojů mohou jejich provozovatelé obdržet běžné technické údaje, například
-          IP adresu a údaje prohlížeče. Po kliknutí na odkaz s adresou může uživatel
+          Mapové podklady poskytuje OpenStreetMap. Pro geokódování místa vyzvednutí
+          a určení polohy nabídky platforma prostřednictvím serverové funkce předává
+          ulici a číslo, město a PSČ místa vyzvednutí službě Nominatim. Pokud
+          Nominatim nevrátí použitelný výsledek nebo je dočasně nedostupný, mohou být
+          stejné údaje předány jako náhradní geokódovací službě Photon. Externí
+          programové knihovny se načítají přes jsDelivr. Při načtení těchto zdrojů
+          mohou jejich provozovatelé obdržet běžné technické údaje, například IP
+          adresu a údaje prohlížeče. Po kliknutí na odkaz s adresou může uživatel
           otevřít Google Maps. Úplný seznam poskytovatelů, účely, právní základy a
           případná předávání do třetích zemí musí před veřejným spuštěním
           zkontrolovat právník.
@@ -440,14 +441,14 @@
       <div class="privacy-section">
         <h2 data-i18n="privacy.s8Title">8. Lokalita a poloha</h2>
         <p data-i18n="privacy.s8p1">
-          Poloha nabídky se nevybírá z GPS zařízení majitele. Při uložení nabídky
-          se přibližné souřadnice odvodí z města a PSČ místa vyzvednutí a uloží se
-          k nabídce; veřejná mapa používá pouze jejich zaokrouhlenou podobu. Pokud
-          návštěvník
-          povolí polohu zařízení, jeho přesné souřadnice se uloží do jeho prohlížeče
-          a použijí se k vyhledání a řazení nabídek v okolí; neukládají se do jeho
-          profilu v Supabase. Při přechodu na výsledky mohou být souřadnice také
-          součástí adresy stránky.
+          Poloha nabídky se nevybírá z GPS zařízení majitele. Při vytvoření nebo
+          úpravě nabídky se pro geokódování použije ulice a číslo, město a PSČ místa
+          vyzvednutí. Z výsledku se k nabídce uloží souřadnice místa vyzvednutí;
+          veřejná mapa však zpřístupňuje pouze jejich zaokrouhlenou podobu a přesnou
+          adresu nezobrazuje. Pokud návštěvník povolí polohu zařízení, jeho přesné
+          souřadnice se uloží do jeho prohlížeče a použijí se k vyhledání a řazení
+          nabídek v okolí; neukládají se do jeho profilu v Supabase. Při přechodu na
+          výsledky mohou být souřadnice také součástí adresy stránky.
         </p>
       </div>
 
