@@ -583,18 +583,18 @@
 
     <section class="settings-card">
       <h2 data-i18n="settings.passwordTitle">Změna hesla</h2>
-      <p data-i18n="settings.passwordDescription">Nové heslo musí mít alespoň 8 znaků.</p>
+      <p id="settingsPasswordRequirements" data-i18n="settings.passwordDescription">Použijte alespoň 8 znaků, včetně malého a velkého písmene, číslice a symbolu (např. ! nebo @).</p>
 
       <form id="passwordForm">
         <div class="settings-grid">
           <div class="field">
             <label for="newPassword" data-i18n="settings.newPassword">Nové heslo</label>
-            <input type="password" id="newPassword" autocomplete="new-password" minlength="8" />
+            <input type="password" id="newPassword" autocomplete="new-password" minlength="8" aria-describedby="settingsPasswordRequirements" />
           </div>
 
           <div class="field">
             <label for="confirmPassword" data-i18n="settings.confirmPassword">Potvrzení nového hesla</label>
-            <input type="password" id="confirmPassword" autocomplete="new-password" minlength="8" />
+            <input type="password" id="confirmPassword" autocomplete="new-password" minlength="8" aria-describedby="settingsPasswordRequirements" />
           </div>
         </div>
 

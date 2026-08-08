@@ -411,11 +411,11 @@
         <div class="status-message" id="passwordMessage" role="status" aria-live="polite"></div>
         <div class="form-group full">
           <label for="newPassword" data-i18n="passwordRecovery.newPassword">Nové heslo</label>
-          <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required />
+          <input id="newPassword" type="password" autocomplete="new-password" minlength="8" aria-describedby="recoveryDescription" required />
         </div>
         <div class="form-group full">
           <label for="confirmPassword" data-i18n="passwordRecovery.confirmPassword">Potvrzení nového hesla</label>
-          <input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required />
+          <input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" aria-describedby="recoveryDescription" required />
         </div>
         <button type="submit" class="auth-button" id="savePasswordButton" data-i18n="passwordRecovery.save">Uložit nové heslo</button>
         <p class="auth-note"><a href="prihlaseni.html" data-i18n="passwordRecovery.backToLogin">Zpět na přihlášení</a></p>

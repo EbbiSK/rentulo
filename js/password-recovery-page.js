@@ -30,7 +30,7 @@
     if (requestForm) requestForm.classList.add("hidden");
     if (passwordForm) passwordForm.classList.remove("hidden");
     if (title) title.textContent = t("passwordRecovery.newTitle", "Nastavit nové heslo");
-    if (description) description.textContent = t("passwordRecovery.newDescription", "Zadejte nové heslo alespoň o 8 znacích.");
+    if (description) description.textContent = t("passwordRecovery.newDescription", "Použijte alespoň 8 znaků, včetně malého a velkého písmene, číslice a symbolu (např. ! nebo @).");
   }
 
   async function handleRequest(event, client) {
@@ -86,8 +86,16 @@
     const confirmation = confirmInput ? confirmInput.value : "";
 
     setMessage(message, "", "");
-    if (password.length < 8) {
-      setMessage(message, t("passwordRecovery.error.passwordLength", "Heslo musí mít alespoň 8 znaků."), "error");
+    if (!meetsRentuloPasswordRequirements(password)) {
+      setMessage(
+        message,
+        t(
+          "passwordRecovery.error.passwordRequirements",
+          "Heslo musí mít alespoň 8 znaků a obsahovat malé písmeno, velké písmeno, číslici a symbol."
+        ),
+        "error"
+      );
+      if (passwordInput) passwordInput.focus();
       return;
     }
     if (password !== confirmation) {
@@ -104,7 +112,18 @@
       const { error } = await client.auth.updateUser({ password: password });
       if (error) {
         console.error(error);
-        setMessage(message, t("passwordRecovery.error.invalidLink", "Odkaz pro obnovu hesla je neplatný nebo vypršel. Požádejte o nový odkaz."), "error");
+        if (isRentuloWeakPasswordError(error)) {
+          setMessage(
+            message,
+            t(
+              "passwordRecovery.error.passwordRequirements",
+              "Heslo musí mít alespoň 8 znaků a obsahovat malé písmeno, velké písmeno, číslici a symbol."
+            ),
+            "error"
+          );
+        } else {
+          setMessage(message, t("passwordRecovery.error.invalidLink", "Odkaz pro obnovu hesla je neplatný nebo vypršel. Požádejte o nový odkaz."), "error");
+        }
         return;
       }
 

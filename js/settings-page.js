@@ -555,13 +555,16 @@
 
     setMessage(message, "", "");
 
-    if (password.length < 8) {
+    if (!meetsRentuloPasswordRequirements(password)) {
       setTranslatedMessage(
         message,
-        "settings.passwordTooShort",
-        "Heslo musí mít alespoň 8 znaků.",
+        "settings.passwordRequirements",
+        "Heslo musí mít alespoň 8 znaků a obsahovat malé písmeno, velké písmeno, číslici a symbol.",
         "error"
       );
+      if (newPassword) {
+        newPassword.focus();
+      }
       return;
     }
 
@@ -611,12 +614,22 @@
       );
     } catch (error) {
       console.error(error);
-      setTranslatedMessage(
-        message,
-        "settings.passwordChangeError",
-        "Heslo se nepodařilo změnit. Zkuste to prosím znovu.",
-        "error"
-      );
+
+      if (isRentuloWeakPasswordError(error)) {
+        setTranslatedMessage(
+          message,
+          "settings.passwordRequirements",
+          "Heslo musí mít alespoň 8 znaků a obsahovat malé písmeno, velké písmeno, číslici a symbol.",
+          "error"
+        );
+      } else {
+        setTranslatedMessage(
+          message,
+          "settings.passwordChangeError",
+          "Heslo se nepodařilo změnit. Zkuste to prosím znovu.",
+          "error"
+        );
+      }
     } finally {
       setButtonLoading(button, false);
     }
