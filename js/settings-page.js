@@ -115,26 +115,6 @@
       text.textContent = translate(key, fallback);
     }
 
-    if (checkAccountCancellationButton) {
-      checkAccountCancellationButton.addEventListener("click", function () {
-        checkAccountCancellation(client);
-      });
-    }
-
-    if (cancelAccountPassword) {
-      cancelAccountPassword.addEventListener("input", updateAccountCancellationButtonState);
-    }
-
-    if (cancelAccountAcknowledge) {
-      cancelAccountAcknowledge.addEventListener("change", updateAccountCancellationButtonState);
-    }
-
-    if (cancelAccountButton) {
-      cancelAccountButton.addEventListener("click", function () {
-        cancelAccount(client, currentUser);
-      });
-    }
-
     if (retryButton) {
       retryButton.hidden = !isError;
     }
@@ -1105,6 +1085,32 @@
         } finally {
           setButtonLoading(retryButton, false);
         }
+      });
+    }
+
+    if (checkAccountCancellationButton) {
+      checkAccountCancellationButton.addEventListener("click", function () {
+        checkAccountCancellation(client);
+      });
+    }
+
+    if (cancelAccountPassword) {
+      cancelAccountPassword.addEventListener(
+        "input",
+        updateAccountCancellationButtonState
+      );
+    }
+
+    if (cancelAccountAcknowledge) {
+      cancelAccountAcknowledge.addEventListener(
+        "change",
+        updateAccountCancellationButtonState
+      );
+    }
+
+    if (cancelAccountButton) {
+      cancelAccountButton.addEventListener("click", function () {
+        cancelAccount(client, currentUser);
       });
     }
 
