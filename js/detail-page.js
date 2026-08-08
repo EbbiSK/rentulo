@@ -967,13 +967,14 @@ const hasGps = offerHasGpsLocation(offer);
       function setRentButtonState(state) {
         if (state === "available") {
           rentButton.disabled = false;
-          rentButton.classList.remove("disabled");
+          rentButton.classList.remove("disabled", "date-conflict");
           rentButton.textContent = detailTranslate("detail.requestRental");
           return;
         }
 
         rentButton.disabled = true;
         rentButton.classList.add("disabled");
+        rentButton.classList.toggle("date-conflict", state === "conflict");
 
         if (state === "checking") {
           rentButton.textContent = detailTranslate("detail.checkingDates");
