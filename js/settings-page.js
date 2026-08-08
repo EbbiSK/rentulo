@@ -541,11 +541,13 @@
   }
 
   async function changePassword(client) {
+    const currentPassword = document.getElementById("currentPassword");
     const newPassword = document.getElementById("newPassword");
     const confirmPassword = document.getElementById("confirmPassword");
     const button = document.getElementById("changePasswordButton");
     const message = document.getElementById("passwordMessage");
 
+    const current = currentPassword ? currentPassword.value : "";
     const password = newPassword ? newPassword.value : "";
     const confirmation = confirmPassword ? confirmPassword.value : "";
 
@@ -554,6 +556,19 @@
     }
 
     setMessage(message, "", "");
+
+    if (!current) {
+      setTranslatedMessage(
+        message,
+        "settings.currentPasswordRequired",
+        "Zadejte současné heslo.",
+        "error"
+      );
+      if (currentPassword) {
+        currentPassword.focus();
+      }
+      return;
+    }
 
     if (!meetsRentuloPasswordRequirements(password)) {
       setTranslatedMessage(
@@ -581,10 +596,17 @@
     setButtonLoading(button, true);
 
     try {
-      const { error } = await client.auth.updateUser({ password: password });
+      const { error } = await client.auth.updateUser({
+        password: password,
+        current_password: current,
+      });
 
       if (error) {
         throw error;
+      }
+
+      if (currentPassword) {
+        currentPassword.value = "";
       }
 
       if (newPassword) {
@@ -598,6 +620,9 @@
       const showPasswords = document.getElementById("showPasswords");
       if (showPasswords) {
         showPasswords.checked = false;
+      }
+      if (currentPassword) {
+        currentPassword.type = "password";
       }
       if (newPassword) {
         newPassword.type = "password";
@@ -622,6 +647,26 @@
           "Heslo musí mít alespoň 8 znaků a obsahovat malé písmeno, velké písmeno, číslici a symbol.",
           "error"
         );
+      } else if (isCurrentPasswordError(error)) {
+        setTranslatedMessage(
+          message,
+          "settings.currentPasswordIncorrect",
+          "Současné heslo není správné.",
+          "error"
+        );
+        if (currentPassword) {
+          currentPassword.focus();
+        }
+      } else if (isSamePasswordError(error)) {
+        setTranslatedMessage(
+          message,
+          "settings.passwordSameAsCurrent",
+          "Nové heslo musí být jiné než současné heslo.",
+          "error"
+        );
+        if (newPassword) {
+          newPassword.focus();
+        }
       } else {
         setTranslatedMessage(
           message,
@@ -635,8 +680,25 @@
     }
   }
 
+  function isCurrentPasswordError(error) {
+    const code = String(error && error.code ? error.code : "").toLowerCase();
+    const message = String(error && error.message ? error.message : "").toLowerCase();
+    return (
+      code === "current_password_required" ||
+      code === "current_password_mismatch" ||
+      message.includes("current password")
+    );
+  }
+
+  function isSamePasswordError(error) {
+    const code = String(error && error.code ? error.code : "").toLowerCase();
+    const message = String(error && error.message ? error.message : "").toLowerCase();
+    return code === "same_password" || message.includes("different from the old password");
+  }
+
   function initializePasswordVisibility() {
     const checkbox = document.getElementById("showPasswords");
+    const currentPassword = document.getElementById("currentPassword");
     const newPassword = document.getElementById("newPassword");
     const confirmPassword = document.getElementById("confirmPassword");
 
@@ -646,6 +708,10 @@
 
     checkbox.addEventListener("change", function () {
       const inputType = checkbox.checked ? "text" : "password";
+
+      if (currentPassword) {
+        currentPassword.type = inputType;
+      }
 
       if (newPassword) {
         newPassword.type = inputType;
