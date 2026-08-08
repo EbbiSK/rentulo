@@ -356,6 +356,8 @@
     .button-label-loading { display: none; }
     .primary-button.is-loading .button-label-default { display: none; }
     .primary-button.is-loading .button-label-loading { display: inline; }
+    .danger-button.is-loading .button-label-default { display: none; }
+    .danger-button.is-loading .button-label-loading { display: inline; }
 
     .profile-note {
       margin: 14px 0 0 !important;
@@ -376,6 +378,76 @@
       color: #6d514e;
       font-size: 13px;
       line-height: 1.45;
+    }
+
+    .danger-note + .danger-note { margin-top: 8px; }
+
+    .danger-button {
+      border: 1px solid #d92d20;
+      border-radius: 12px;
+      background: white;
+      color: #b42318;
+      padding: 11px 18px;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .danger-button:hover { background: #fff1f0; }
+    .danger-button:disabled { cursor: not-allowed; opacity: 0.55; }
+
+    .danger-button-final {
+      background: #b42318;
+      color: white;
+    }
+
+    .danger-button-final:hover { background: #9f1f16; }
+
+    .danger-button:focus { outline: none; }
+    .danger-button:focus-visible {
+      box-shadow: 0 0 0 3px rgba(126, 217, 87, 0.28);
+    }
+
+    .danger-confirmation {
+      margin-top: 16px;
+      padding: 16px;
+      border: 1px solid #f0c7c2;
+      border-radius: 14px;
+      background: white;
+    }
+
+    .danger-confirmation[hidden] { display: none; }
+
+    .danger-confirmation > p {
+      margin: 0 0 14px;
+      color: #6d514e;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .danger-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      margin-top: 14px;
+      color: #4f3d3a;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+
+    .danger-checkbox input {
+      width: 17px;
+      height: 17px;
+      margin-top: 1px;
+      accent-color: #b42318;
+      flex: 0 0 auto;
+    }
+
+    .danger-checkbox input:focus { outline: none; }
+    .danger-checkbox input:focus-visible {
+      box-shadow: 0 0 0 3px rgba(126, 217, 87, 0.28);
     }
 
     @media (max-width: 760px) {
@@ -414,6 +486,7 @@
       }
 
       .primary-button,
+      .danger-button,
       .back-link {
         width: 100%;
       }
@@ -622,6 +695,41 @@
           <span class="message" id="passwordMessage" role="status" aria-live="polite"></span>
         </div>
       </form>
+    </section>
+
+    <section class="settings-card danger-card" id="accountCancellationSection">
+      <h2 data-i18n="settings.cancelAccountTitle">Zrušení účtu</h2>
+      <p data-i18n="settings.cancelAccountDescription">Zrušení účtu je nevratné. Pokud máte rozpracované rezervace, nejprve je musíte dokončit nebo zrušit. Vaše aktivní nabídky se při zrušení skryjí.</p>
+      <p class="danger-note" data-i18n="settings.cancelAccountRetentionNote">Historické údaje o dokončených rezervacích, platbách a hodnoceních mohou zůstat zachované po dobu nutnou pro právní, účetní nebo bezpečnostní povinnosti. Finální retenční pravidla před spuštěním zkontroluje právník.</p>
+
+      <div class="actions">
+        <button type="button" class="danger-button" id="checkAccountCancellationButton">
+          <span class="button-label-default" data-i18n="settings.cancelAccountCheck">Zkontrolovat možnost zrušení</span>
+          <span class="button-label-loading" data-i18n="settings.cancelAccountChecking">Kontroluji…</span>
+        </button>
+        <span class="message" id="accountCancellationMessage" role="status" aria-live="polite"></span>
+      </div>
+
+      <div class="danger-confirmation" id="accountCancellationConfirmation" hidden>
+        <p data-i18n="settings.cancelAccountConfirmIntro">Pro dokončení zrušení potvrďte, že rozumíte následkům, a zadejte své současné heslo.</p>
+
+        <div class="field">
+          <label for="cancelAccountPassword" data-i18n="settings.cancelAccountPasswordLabel">Současné heslo</label>
+          <input type="password" id="cancelAccountPassword" autocomplete="current-password" />
+        </div>
+
+        <label class="danger-checkbox" for="cancelAccountAcknowledge">
+          <input type="checkbox" id="cancelAccountAcknowledge" />
+          <span data-i18n="settings.cancelAccountConfirmLabel">Rozumím, že zrušením ztratím přístup k účtu a že tuto akci nelze běžně vrátit zpět.</span>
+        </label>
+
+        <div class="actions">
+          <button type="button" class="danger-button danger-button-final" id="cancelAccountButton" disabled>
+            <span class="button-label-default" data-i18n="settings.cancelAccountFinalButton">Trvale zrušit účet</span>
+            <span class="button-label-loading" data-i18n="settings.cancelAccountCancelling">Ruším účet…</span>
+          </button>
+        </div>
+      </div>
     </section>
 
     </div>

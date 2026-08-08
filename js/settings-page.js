@@ -115,6 +115,26 @@
       text.textContent = translate(key, fallback);
     }
 
+    if (checkAccountCancellationButton) {
+      checkAccountCancellationButton.addEventListener("click", function () {
+        checkAccountCancellation(client);
+      });
+    }
+
+    if (cancelAccountPassword) {
+      cancelAccountPassword.addEventListener("input", updateAccountCancellationButtonState);
+    }
+
+    if (cancelAccountAcknowledge) {
+      cancelAccountAcknowledge.addEventListener("change", updateAccountCancellationButtonState);
+    }
+
+    if (cancelAccountButton) {
+      cancelAccountButton.addEventListener("click", function () {
+        cancelAccount(client, currentUser);
+      });
+    }
+
     if (retryButton) {
       retryButton.hidden = !isError;
     }
@@ -696,6 +716,300 @@
     return code === "same_password" || message.includes("different from the old password");
   }
 
+  function firstResultRow(value) {
+    if (Array.isArray(value)) {
+      return value[0] || null;
+    }
+
+    if (value && typeof value === "object") {
+      return value;
+    }
+
+    return null;
+  }
+
+  function setAccountCancellationConfirmationVisible(visible) {
+    const confirmation = document.getElementById("accountCancellationConfirmation");
+    const password = document.getElementById("cancelAccountPassword");
+    const acknowledge = document.getElementById("cancelAccountAcknowledge");
+    const cancelButton = document.getElementById("cancelAccountButton");
+
+    if (confirmation) {
+      confirmation.hidden = !visible;
+    }
+
+    if (!visible) {
+      if (password) {
+        password.value = "";
+      }
+      if (acknowledge) {
+        acknowledge.checked = false;
+      }
+      if (cancelButton) {
+        cancelButton.disabled = true;
+      }
+    }
+  }
+
+  function updateAccountCancellationButtonState() {
+    const password = document.getElementById("cancelAccountPassword");
+    const acknowledge = document.getElementById("cancelAccountAcknowledge");
+    const button = document.getElementById("cancelAccountButton");
+
+    if (!button || button.classList.contains("is-loading")) {
+      return;
+    }
+
+    button.disabled = !(
+      password && password.value && acknowledge && acknowledge.checked
+    );
+  }
+
+  async function checkAccountCancellation(client) {
+    const button = document.getElementById("checkAccountCancellationButton");
+    const message = document.getElementById("accountCancellationMessage");
+
+    if (button && button.disabled) {
+      return;
+    }
+
+    setMessage(message, "", "");
+    setAccountCancellationConfirmationVisible(false);
+    setButtonLoading(button, true);
+
+    try {
+      const { data, error } = await client.rpc("get_my_account_deactivation_status");
+
+      if (error) {
+        throw error;
+      }
+
+      const status = firstResultRow(data);
+
+      if (!status) {
+        throw new Error("Account deactivation status is missing.");
+      }
+
+      if (status.account_status === "deactivated") {
+        setTranslatedMessage(
+          message,
+          "settings.cancelAccountAlreadyDeactivated",
+          "Účetní data už byla deaktivována. Potvrďte akci znovu, abychom dokončili odebrání možnosti přihlášení.",
+          "success"
+        );
+        setAccountCancellationConfirmationVisible(true);
+        updateAccountCancellationButtonState();
+        return;
+      }
+
+      if (!status.can_deactivate) {
+        setTranslatedMessage(
+          message,
+          "settings.cancelAccountBlocked",
+          "Účet zatím nelze zrušit. Máte {count} rozpracovaných rezervací ({owner} jako majitel, {renter} jako zájemce). Nejdříve je dokončete nebo zrušte.",
+          "error",
+          {
+            count: status.blocking_reservations_count || 0,
+            owner: status.blocking_as_owner_count || 0,
+            renter: status.blocking_as_renter_count || 0,
+          }
+        );
+        return;
+      }
+
+      setTranslatedMessage(
+        message,
+        "settings.cancelAccountReady",
+        "Účet lze zrušit. Počet vašich nabídek, které se při zrušení uzavřou: {offers}.",
+        "success",
+        { offers: status.offers_to_close_count || 0 }
+      );
+      setAccountCancellationConfirmationVisible(true);
+      updateAccountCancellationButtonState();
+    } catch (error) {
+      console.error(error);
+      setTranslatedMessage(
+        message,
+        "settings.cancelAccountCheckError",
+        "Možnost zrušení účtu se nepodařilo zkontrolovat. Zkuste to prosím znovu.",
+        "error"
+      );
+    } finally {
+      setButtonLoading(button, false);
+    }
+  }
+
+  async function readFunctionErrorPayload(error) {
+    const context = error && error.context ? error.context : null;
+
+    if (!context || typeof context.json !== "function") {
+      return null;
+    }
+
+    try {
+      return await context.json();
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  async function cancelAccount(client, currentUser) {
+    const password = document.getElementById("cancelAccountPassword");
+    const acknowledge = document.getElementById("cancelAccountAcknowledge");
+    const button = document.getElementById("cancelAccountButton");
+    const message = document.getElementById("accountCancellationMessage");
+    const currentPassword = password ? password.value : "";
+
+    if (button && button.disabled) {
+      return;
+    }
+
+    if (!currentPassword || !acknowledge || !acknowledge.checked) {
+      setTranslatedMessage(
+        message,
+        "settings.cancelAccountConfirmationError",
+        "Zadejte současné heslo a potvrďte, že rozumíte následkům zrušení účtu.",
+        "error"
+      );
+      updateAccountCancellationButtonState();
+      return;
+    }
+
+    if (!currentUser || !currentUser.email) {
+      setTranslatedMessage(
+        message,
+        "settings.cancelAccountInvokeError",
+        "Účet se nepodařilo zrušit. Zkuste to prosím znovu.",
+        "error"
+      );
+      return;
+    }
+
+    setMessage(message, "", "");
+    setButtonLoading(button, true);
+    let completed = false;
+
+    try {
+      const { error: passwordError } = await client.auth.signInWithPassword({
+        email: currentUser.email,
+        password: currentPassword,
+      });
+
+      if (passwordError) {
+        const passwordErrorCode = String(passwordError.code || "").toLowerCase();
+        const passwordErrorMessage = String(passwordError.message || "").toLowerCase();
+
+        if (
+          passwordErrorCode === "invalid_credentials" ||
+          passwordErrorMessage.includes("invalid login credentials")
+        ) {
+          setTranslatedMessage(
+            message,
+            "settings.currentPasswordIncorrect",
+            "Současné heslo není správné.",
+            "error"
+          );
+          if (password) {
+            password.focus();
+          }
+          return;
+        }
+
+        throw passwordError;
+      }
+
+      const { data, error } = await client.functions.invoke("account-deactivation", {
+        body: {},
+      });
+
+      if (error) {
+        const details = await readFunctionErrorPayload(error);
+        const code = details && details.code ? details.code : "";
+
+        if (code === "ACCOUNT_HAS_ACTIVE_RESERVATIONS") {
+          setAccountCancellationConfirmationVisible(false);
+          setTranslatedMessage(
+            message,
+            "settings.cancelAccountBlocked",
+            "Účet zatím nelze zrušit. Máte {count} rozpracovaných rezervací ({owner} jako majitel, {renter} jako zájemce). Nejdříve je dokončete nebo zrušte.",
+            "error",
+            {
+              count: details.blocking_reservations_count || 0,
+              owner: details.blocking_as_owner_count || 0,
+              renter: details.blocking_as_renter_count || 0,
+            }
+          );
+          return;
+        }
+
+        if (code === "AUTH_SOFT_DELETE_FAILED") {
+          setTranslatedMessage(
+            message,
+            "settings.cancelAccountPartialError",
+            "Údaje účtu byly deaktivovány, ale odebrání možnosti přihlášení se nepodařilo dokončit. Zkuste zrušení účtu znovu.",
+            "error"
+          );
+          return;
+        }
+
+        throw error;
+      }
+
+      if (!data || data.ok !== true) {
+        throw new Error("Account deactivation did not return a successful result.");
+      }
+
+      completed = true;
+      setTranslatedMessage(
+        message,
+        "settings.cancelAccountSuccess",
+        "Účet byl zrušen. Nyní vás odhlásíme.",
+        "success"
+      );
+
+      if (password) {
+        password.value = "";
+      }
+      if (acknowledge) {
+        acknowledge.checked = false;
+      }
+
+      try {
+        await client.auth.signOut({ scope: "local" });
+      } catch (signOutError) {
+        console.warn("Local sign-out after account cancellation failed", signOutError);
+      }
+
+      window.setTimeout(function () {
+        window.location.replace("index.html");
+      }, 900);
+    } catch (error) {
+      console.error(error);
+      const messageText = String(error && error.message ? error.message : "").toLowerCase();
+
+      if (messageText.includes("jwt") || messageText.includes("unauthorized")) {
+        setTranslatedMessage(
+          message,
+          "settings.cancelAccountSessionExpired",
+          "Přihlášení vypršelo. Přihlaste se znovu a zrušení účtu zopakujte.",
+          "error"
+        );
+      } else {
+        setTranslatedMessage(
+          message,
+          "settings.cancelAccountInvokeError",
+          "Účet se nepodařilo zrušit. Zkuste to prosím znovu.",
+          "error"
+        );
+      }
+    } finally {
+      if (!completed && button && document.body.contains(button)) {
+        setButtonLoading(button, false);
+        updateAccountCancellationButtonState();
+      }
+    }
+  }
+
   function initializePasswordVisibility() {
     const checkbox = document.getElementById("showPasswords");
     const currentPassword = document.getElementById("currentPassword");
@@ -756,6 +1070,10 @@
     const saveButton = document.getElementById("saveSettingsButton");
     const passwordForm = document.getElementById("passwordForm");
     const retryButton = document.getElementById("settingsRetryButton");
+    const checkAccountCancellationButton = document.getElementById("checkAccountCancellationButton");
+    const cancelAccountButton = document.getElementById("cancelAccountButton");
+    const cancelAccountPassword = document.getElementById("cancelAccountPassword");
+    const cancelAccountAcknowledge = document.getElementById("cancelAccountAcknowledge");
     let currentUser = user;
 
     if (profileForm) {
