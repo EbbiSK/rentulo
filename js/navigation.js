@@ -605,6 +605,13 @@ function navInjectStyles() {
   outline-offset: 2px !important;
 }
 
+/* Main navigation text links: softer, rounded keyboard focus. */
+.nav > a[href]:not(.btn-register):focus-visible {
+  outline: 1px solid rgba(20, 82, 62, 0.58) !important;
+  outline-offset: 3px !important;
+  border-radius: 6px;
+}
+
 html[data-focus-input="keyboard"] .switch input:focus-visible + .switch-slider,
 .photo-file-input:focus-visible + .photo-file-control {
   outline: 1px solid rgba(64, 127, 101, 0.35) !important;
