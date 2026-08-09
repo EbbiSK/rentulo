@@ -624,6 +624,30 @@ function navInjectStyles() {
   border-radius: 8px;
 }
 
+/* Back-navigation links: precise rounded keyboard focus without layout shift. */
+a.back-link,
+a.results-back-link,
+a.manual-back {
+  position: relative;
+}
+
+a.back-link:focus-visible,
+a.results-back-link:focus-visible,
+a.manual-back:focus-visible {
+  outline: none !important;
+}
+
+a.back-link:focus-visible::after,
+a.results-back-link:focus-visible::after,
+a.manual-back:focus-visible::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 1px solid rgba(20, 82, 62, 0.52);
+  border-radius: 7px;
+  pointer-events: none;
+}
+
 html[data-focus-input="keyboard"] .switch input:focus-visible + .switch-slider,
 .photo-file-input:focus-visible + .photo-file-control {
   outline: 1px solid rgba(64, 127, 101, 0.35) !important;
