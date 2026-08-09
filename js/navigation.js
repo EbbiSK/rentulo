@@ -586,18 +586,25 @@ function navInjectStyles() {
 }
 
 :where(
-  a[href],
-  button,
   input,
   select,
   textarea,
   summary,
-  [role="button"],
   [tabindex]:not([tabindex="-1"])
 ):focus-visible {
   outline: 1px solid rgba(64, 127, 101, 0.35) !important;
   outline-offset: 1px !important;
 }
+
+:where(
+  a[href],
+  button,
+  [role="button"]
+):focus-visible {
+  outline: 1px solid rgba(20, 82, 62, 0.72) !important;
+  outline-offset: 2px !important;
+}
+
 .switch input:focus-visible + .switch-slider,
 .photo-file-input:focus-visible + .photo-file-control {
   outline: 1px solid rgba(64, 127, 101, 0.35) !important;
