@@ -22,7 +22,6 @@ function navIsLoggedIn() {
 function navGetCurrentUser() {
   return navVerifiedUser;
 }
-
 async function navResolveSupabaseUser() {
   const supabaseClient = navGetSupabaseClient();
 
@@ -44,7 +43,6 @@ async function navResolveSupabaseUser() {
     );
     navVerifiedUser = null;
   }
-
   return navVerifiedUser;
 }
 
@@ -72,7 +70,6 @@ function navTranslate(key, fallback) {
   if (typeof window.rentuloTranslate === "function") {
     return window.rentuloTranslate(key);
   }
-
   return fallback;
 }
 
@@ -94,7 +91,6 @@ function navFlagMarkup(language) {
 
   return `<span class="nav-language-flag ${flagClass}" aria-hidden="true"></span>`;
 }
-
 function navLanguageControl() {
   const language = navGetLanguage();
   const label = navTranslate("nav.language", "Jazyk");
@@ -112,7 +108,6 @@ function navLanguageControl() {
         ${navFlagMarkup(language)}
         <span class="nav-language-chevron" aria-hidden="true">⌄</span>
       </button>
-
       <div id="sharedLanguageMenu" class="nav-language-menu" role="menu" hidden>
         <button type="button" role="menuitem" data-language="cs" aria-label="Čeština">
           ${navFlagMarkup("cs")}
@@ -130,12 +125,10 @@ function navLanguageControl() {
     </div>
   `;
 }
-
 function navEnsureLanguageStyles() {
   if (document.getElementById("rentuloLanguageStyles")) {
     return;
   }
-
   const style = document.createElement("style");
   style.id = "rentuloLanguageStyles";
   style.textContent = `
@@ -254,7 +247,6 @@ function navEnsureLanguageStyles() {
   `;
   document.head.appendChild(style);
 }
-
 async function navSavePreferredLanguage(language) {
   const client = navGetSupabaseClient();
   const user = navGetCurrentUser();
@@ -275,7 +267,6 @@ async function navSavePreferredLanguage(language) {
     console.warn("Jazyk se nepodařilo uložit do profilu.", error);
   }
 }
-
 function navNormalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
 }
@@ -303,7 +294,6 @@ function navMergeById(primaryItems, secondaryItems) {
   if (Array.isArray(primaryItems)) {
     mergedItems.push(...primaryItems);
   }
-
   if (Array.isArray(secondaryItems)) {
     secondaryItems.forEach(function (secondaryItem) {
       const secondaryId = String(
@@ -320,7 +310,6 @@ function navMergeById(primaryItems, secondaryItems) {
           item.reservationId ||
           ""
         );
-
         return itemId && secondaryId && itemId === secondaryId;
       });
 
@@ -357,7 +346,6 @@ function navGetToolOwnerEmail(tool) {
   if (!tool) {
     return "";
   }
-
   return (
     tool.ownerEmail ||
     tool.userEmail ||
@@ -381,7 +369,6 @@ function navGetReservationToolId(reservation) {
     ""
   );
 }
-
 function navGetReservationRenterEmail(reservation) {
   if (typeof getReservationRenterEmail === "function") {
     return getReservationRenterEmail(reservation);
@@ -403,7 +390,6 @@ function navGetReservationStatus(reservation) {
   if (typeof getReservationStatus === "function") {
     return getReservationStatus(reservation);
   }
-
   if (!reservation) {
     return "pending";
   }
@@ -427,7 +413,6 @@ function navNormalizeReservationStatus(status) {
   if (normalizedStatus === "čeká na platbu") {
     return "approved";
   }
-
   if (normalizedStatus === "zaplaceno") {
     return "paid";
   }
@@ -454,7 +439,6 @@ function navNormalizeReservationStatus(status) {
 function navIsReservationWaitingForPayment(status) {
   const normalizedStatus =
     navNormalizeReservationStatus(status);
-
   return normalizedStatus === "approved";
 }
 
@@ -479,7 +463,6 @@ function navGetNotificationCount() {
   const userEmail = navNormalizeEmail(
     navGetUserEmail(currentUser)
   );
-
   if (!userEmail) {
     return 0;
   }
@@ -502,7 +485,6 @@ function navGetNotificationCount() {
     .map(function (tool) {
       return String(navGetToolId(tool));
     });
-
   const ownerActionRequests =
     reservations.filter(function (reservation) {
       const reservationToolId =
@@ -518,7 +500,6 @@ function navGetNotificationCount() {
         navRequiresOwnerAction(status)
       );
     }).length;
-
   const renterWaitingForPayment =
     reservations.filter(function (reservation) {
       const renterEmail =
@@ -544,7 +525,6 @@ function navGetNotificationCount() {
     renterWaitingForPayment
   );
 }
-
 function navInjectStyles() {
   if (
     document.getElementById(
@@ -565,7 +545,6 @@ function navInjectStyles() {
       align-items: center;
       gap: 7px;
     }
-
     .nav-notification-badge {
       min-width: 18px;
       height: 18px;
@@ -587,7 +566,6 @@ function navInjectStyles() {
     .logout-link {
       cursor: pointer;
     }
-
     .logout-link:hover {
       background: #00563a;
     }
@@ -615,14 +593,13 @@ function navInjectStyles() {
   [role="button"],
   [tabindex]:not([tabindex="-1"])
 ):focus-visible {
-  outline: 2px solid rgba(79, 159, 47, 0.78) !important;
-  outline-offset: 3px !important;
+  outline: 2px solid rgba(64, 127, 101, 0.28) !important;
+  outline-offset: 1px !important;
 }
-
 .switch input:focus-visible + .switch-slider,
 .photo-file-input:focus-visible + .photo-file-control {
-  outline: 2px solid rgba(79, 159, 47, 0.78) !important;
-  outline-offset: 3px !important;
+  outline: 2px solid rgba(64, 127, 101, 0.28) !important;
+  outline-offset: 1px !important;
 }
     @media (max-width: 600px) {
       .nav {
@@ -644,7 +621,6 @@ function navInjectStyles() {
       }
     }
   `;
-
   document.head.appendChild(style);
 }
 
@@ -673,7 +649,6 @@ function renderSharedBranding() {
   if (logoTitle) {
     logoTitle.textContent = "Rentulo";
   }
-
   const logoSubtitle =
     document.querySelector(
       ".logo-subtitle"
@@ -707,7 +682,6 @@ function navClearLocalLogin() {
 async function navLogoutUser() {
   const supabaseClient =
     navGetSupabaseClient();
-
   if (
     supabaseClient &&
     supabaseClient.auth &&
@@ -733,7 +707,6 @@ async function navLoadNotificationCountFromSupabase(
   activePage
 ) {
   const currentUser = navGetCurrentUser();
-
   if (
     !currentUser ||
     typeof apiGetReservations !==
@@ -757,7 +730,6 @@ async function navLoadNotificationCountFromSupabase(
     navNormalizeEmail(
       navGetUserEmail(currentUser)
     );
-
   const notificationCount =
     reservations.filter(function (
       reservation
@@ -780,7 +752,6 @@ async function navLoadNotificationCountFromSupabase(
           reservation.renter_email ||
           ""
         );
-
       const status =
         navGetReservationStatus(
           reservation
@@ -804,7 +775,6 @@ async function navLoadNotificationCountFromSupabase(
         renterNeedsPayment
       );
     }).length;
-
   window.rentuloAccountNotificationCount =
     notificationCount;
 
@@ -829,7 +799,6 @@ function renderSharedNavigation(
 ) {
   renderSharedBranding();
   navEnsureLanguageStyles();
-
   const nav =
     document.getElementById("mainNav") ||
     document.querySelector(".nav");
@@ -852,7 +821,6 @@ function renderSharedNavigation(
   )
     ? storedNotificationCount
     : navGetNotificationCount();
-
   const accountBadge =
     notificationCount > 0
       ? `
@@ -875,7 +843,6 @@ function renderSharedNavigation(
     activePage === "vysledky"
       ? "active-link"
       : "";
-
   const isOfferActive =
     activePage === "nabidnout"
       ? "active-link"
@@ -901,7 +868,6 @@ function renderSharedNavigation(
       "nav.howItWorks",
       "Jak to funguje"
     );
-
   const browseText =
     navTranslate(
       "nav.browse",
@@ -931,7 +897,6 @@ function renderSharedNavigation(
       "nav.logout",
       "Odhlásit se"
     );
-
   const registerText =
     navTranslate(
       "nav.register",
@@ -960,7 +925,6 @@ function renderSharedNavigation(
       >
         ${offerText}
       </a>
-
       <a
         href="muj-ucet.html"
         class="nav-account-link ${isAccountActive}"
@@ -987,7 +951,6 @@ function renderSharedNavigation(
       >
         ${howItWorksText}
       </a>
-
       <a
         href="vysledky.html"
         class="${isResultsActive}"
@@ -1015,7 +978,6 @@ function renderSharedNavigation(
       >
         ${registerText}
       </a>
-
       ${navLanguageControl()}
     `;
   }
@@ -1037,7 +999,6 @@ function renderSharedNavigation(
 
   const languageButton = document.getElementById("sharedLanguageButton");
   const languageMenu = document.getElementById("sharedLanguageMenu");
-
   if (languageButton && languageMenu) {
     const closeLanguageMenu = function () {
       languageMenu.hidden = true;
@@ -1050,7 +1011,6 @@ function renderSharedNavigation(
       languageMenu.hidden = !willOpen;
       languageButton.setAttribute("aria-expanded", String(willOpen));
     });
-
     languageMenu.addEventListener("click", function (event) {
       const option = event.target.closest("[data-language]");
       if (!option) {
@@ -1066,7 +1026,6 @@ function renderSharedNavigation(
         localStorage.setItem("rentuloLanguage", language);
         window.location.reload();
       }
-
       navSavePreferredLanguage(language);
     });
 
@@ -1087,7 +1046,6 @@ async function initializeSharedNavigation() {
   if (!page) {
     return;
   }
-
   await navGetVerifiedUser();
   renderSharedNavigation(page);
   navLoadNotificationCountFromSupabase(page);
@@ -1102,7 +1060,6 @@ async function initializeSharedNavigation() {
       "function"
   ) {
     navAuthListenerRegistered = true;
-
     supabaseClient.auth.onAuthStateChange(
       function (_event, session) {
         navVerifiedUser =
@@ -1124,7 +1081,6 @@ async function initializeSharedNavigation() {
     );
   }
 }
-
 document.addEventListener(
   "rentuloLanguageChanged",
   function () {
