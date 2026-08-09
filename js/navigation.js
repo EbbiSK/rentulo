@@ -157,11 +157,13 @@ function navEnsureLanguageStyles() {
       background: #e8f7df;
       border-color: #aeda98;
     }
-    .nav-language-button:focus,
-    .nav-language-button:focus-visible {
+    .nav-language-button:focus {
       outline: none;
+      box-shadow: none;
+    }
+    .nav-language-button:focus-visible {
       border-color: #9fd486;
-      box-shadow: 0 0 0 2px rgba(111, 207, 101, 0.14);
+      box-shadow: none;
     }
     .nav-language-chevron {
       font-size: 15px;
@@ -593,12 +595,12 @@ function navInjectStyles() {
   [role="button"],
   [tabindex]:not([tabindex="-1"])
 ):focus-visible {
-  outline: 2px solid rgba(64, 127, 101, 0.28) !important;
+  outline: 1px solid rgba(64, 127, 101, 0.35) !important;
   outline-offset: 1px !important;
 }
 .switch input:focus-visible + .switch-slider,
 .photo-file-input:focus-visible + .photo-file-control {
-  outline: 2px solid rgba(64, 127, 101, 0.28) !important;
+  outline: 1px solid rgba(64, 127, 101, 0.35) !important;
   outline-offset: 1px !important;
 }
     @media (max-width: 600px) {
