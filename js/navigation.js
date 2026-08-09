@@ -631,6 +631,13 @@ a.manual-back {
   position: relative;
 }
 
+/* Keep back-navigation links clean on mouse hover across the project. */
+a.back-link:hover,
+a.results-back-link:hover,
+a.manual-back:hover {
+  text-decoration: none !important;
+}
+
 a.back-link:focus-visible,
 a.results-back-link:focus-visible,
 a.manual-back:focus-visible {
