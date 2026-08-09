@@ -591,7 +591,39 @@ function navInjectStyles() {
     .logout-link:hover {
       background: #00563a;
     }
+/* Shared focus states across Rentulo */
+:where(
+  a[href],
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [role="button"],
+  [tabindex]:not([tabindex="-1"])
+):focus {
+  outline: none !important;
+}
 
+:where(
+  a[href],
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [role="button"],
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 2px solid rgba(79, 159, 47, 0.78) !important;
+  outline-offset: 3px !important;
+}
+
+.switch input:focus-visible + .switch-slider,
+.photo-file-input:focus-visible + .photo-file-control {
+  outline: 2px solid rgba(79, 159, 47, 0.78) !important;
+  outline-offset: 3px !important;
+}
     @media (max-width: 600px) {
       .nav {
         gap: 8px;
