@@ -165,6 +165,11 @@ function navEnsureLanguageStyles() {
       border-color: #9fd486;
       box-shadow: none;
     }
+    html[data-focus-input="pointer"] .nav-language-button:focus {
+      outline: none !important;
+      outline-offset: 0 !important;
+      box-shadow: none !important;
+    }
     .nav-language-chevron {
       font-size: 15px;
       line-height: 1;
