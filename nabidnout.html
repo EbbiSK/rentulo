@@ -443,6 +443,13 @@
       box-shadow: none;
     }
 
+    .form-group input:focus-visible,
+    .form-group select:focus-visible,
+    .form-group textarea:focus-visible {
+      outline: 1px solid rgba(64, 127, 101, 0.52) !important;
+      outline-offset: 1px !important;
+    }
+
     .photo-upload-actions input[type="file"]:focus {
       border-color: #7ed957;
       box-shadow: 0 0 0 3px rgba(126, 217, 87, 0.22);
