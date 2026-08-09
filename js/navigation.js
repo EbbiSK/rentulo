@@ -605,7 +605,7 @@ function navInjectStyles() {
   outline-offset: 2px !important;
 }
 
-.switch input:focus-visible + .switch-slider,
+html[data-focus-input="keyboard"] .switch input:focus-visible + .switch-slider,
 .photo-file-input:focus-visible + .photo-file-control {
   outline: 1px solid rgba(64, 127, 101, 0.35) !important;
   outline-offset: 1px !important;
@@ -631,6 +631,28 @@ function navInjectStyles() {
     }
   `;
   document.head.appendChild(style);
+}
+
+function navEnableFocusInputTracking() {
+  const root = document.documentElement;
+
+  document.addEventListener(
+    "keydown",
+    function (event) {
+      if (event.key === "Tab") {
+        root.dataset.focusInput = "keyboard";
+      }
+    },
+    true
+  );
+
+  document.addEventListener(
+    "pointerdown",
+    function () {
+      root.dataset.focusInput = "pointer";
+    },
+    true
+  );
 }
 
 function renderSharedBranding() {
@@ -1055,6 +1077,8 @@ async function initializeSharedNavigation() {
   if (!page) {
     return;
   }
+
+  navEnableFocusInputTracking();
   await navGetVerifiedUser();
   renderSharedNavigation(page);
   navLoadNotificationCountFromSupabase(page);
