@@ -130,6 +130,18 @@
       color: #173f35 !important;
     }
 
+    /* Keep the global keyboard focus outline, but remove the older double-ring shadow. */
+    .reservation-primary-action:focus,
+    .reservation-more-menu summary:focus {
+      outline: none;
+      box-shadow: none !important;
+    }
+
+    .reservation-primary-action:focus-visible,
+    .reservation-more-menu summary:focus-visible {
+      box-shadow: none !important;
+    }
+
     @media (max-width: 980px) {
       .account-page-header {
         padding: 20px !important;
