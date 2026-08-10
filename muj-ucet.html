@@ -309,6 +309,13 @@
       box-shadow: 0 16px 32px rgba(23, 63, 53, 0.09);
     }
 
+    /* Keyboard focus: keep the whole card clickable, but use only its existing border. */
+    .account-action-row:focus-visible {
+      outline: none !important;
+      border-color: rgba(20, 82, 62, 0.48);
+      box-shadow: 0 12px 28px rgba(23, 63, 53, 0.06);
+    }
+
     .account-action-icon {
       grid-area: icon;
       width: 52px;
