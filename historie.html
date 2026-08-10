@@ -121,8 +121,24 @@
     .history-review-box select:focus,
     .history-review-box textarea:focus {
       outline: none;
-      border-color: #84cfa5 !important;
-      box-shadow: 0 0 0 3px rgba(115, 214, 79, 0.14);
+      border-color: #cfe0d8 !important;
+      box-shadow: none;
+    }
+
+    .history-review-box select:focus-visible,
+    .history-review-box textarea:focus-visible {
+      outline: 1px solid rgba(64, 127, 101, 0.52) !important;
+      outline-offset: 1px !important;
+      border-color: #cfe0d8 !important;
+      box-shadow: none !important;
+    }
+
+    html[data-focus-input="pointer"] .history-review-box select:focus,
+    html[data-focus-input="pointer"] .history-review-box textarea:focus {
+      outline: none !important;
+      outline-offset: 0 !important;
+      border-color: #cfe0d8 !important;
+      box-shadow: none !important;
     }
 
     .status-waiting,

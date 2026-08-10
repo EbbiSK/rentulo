@@ -208,7 +208,23 @@ h1 {
 .history-detail-button:focus,
 .history-primary-button:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(63, 142, 40, 0.22);
+  box-shadow: none;
+}
+
+.history-switch-button:focus-visible,
+.history-detail-button:focus-visible,
+.history-primary-button:focus-visible {
+  outline: 1px solid rgba(64, 127, 101, 0.52);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+html[data-focus-input="pointer"] .history-switch-button:focus,
+html[data-focus-input="pointer"] .history-detail-button:focus,
+html[data-focus-input="pointer"] .history-primary-button:focus {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
 }
 
 .history-primary-button {
