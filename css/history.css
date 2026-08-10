@@ -219,6 +219,12 @@ h1 {
   box-shadow: none;
 }
 
+.history-switch-button.active:focus-visible {
+  outline: none;
+  outline-offset: 0;
+  box-shadow: inset 0 0 0 1px rgba(64, 127, 101, 0.52);
+}
+
 html[data-focus-input="pointer"] .history-switch-button:focus,
 html[data-focus-input="pointer"] .history-detail-button:focus,
 html[data-focus-input="pointer"] .history-primary-button:focus {
