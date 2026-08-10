@@ -529,8 +529,8 @@
 
     .form-group input:focus {
       outline: none;
-      border-color: #4f9b35;
-      box-shadow: 0 0 0 3px rgba(126, 217, 87, 0.20);
+      border-color: #d2e5dc;
+      box-shadow: none;
     }
 
     .date-help {
@@ -888,9 +888,33 @@
       background: #fff !important;
     }
 
-    input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible {
-      outline: 3px solid rgba(114, 216, 79, 0.24) !important;
-      outline-offset: 2px !important;
+    input:focus,
+    select:focus,
+    textarea:focus,
+    button:focus,
+    a:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    button:focus-visible,
+    a:focus-visible {
+      outline: 1px solid rgba(64, 127, 101, 0.52) !important;
+      outline-offset: 1px !important;
+      box-shadow: none !important;
+    }
+
+    html[data-focus-input="pointer"] input:focus,
+    html[data-focus-input="pointer"] select:focus,
+    html[data-focus-input="pointer"] textarea:focus,
+    html[data-focus-input="pointer"] button:focus,
+    html[data-focus-input="pointer"] a:focus {
+      outline: none !important;
+      outline-offset: 0 !important;
+      box-shadow: none !important;
     }
 
     @media (max-width: 760px) {
