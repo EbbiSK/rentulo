@@ -491,6 +491,10 @@
       margin-top: 6px;
     }
 
+    .review-lines textarea {
+      resize: none;
+    }
+
     .contact-box.hidden {
       background: #fff7f0;
       border: 1px solid #ffe0c8;

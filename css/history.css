@@ -314,6 +314,10 @@ html[data-focus-input="pointer"] .history-primary-button:focus {
   background: #fff;
 }
 
+.history-review-box textarea {
+  resize: none;
+}
+
 .history-review-stars {
   color: #4f9f2f;
   font-size: 18px;

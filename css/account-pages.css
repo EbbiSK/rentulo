@@ -426,7 +426,7 @@
 
 .owner-review-textarea {
   min-height: 100px;
-  resize: vertical;
+  resize: none;
   line-height: 1.45;
 }
 
