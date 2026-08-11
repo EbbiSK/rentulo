@@ -293,18 +293,6 @@
       font-weight: 700;
     }
 
-    .filter-note {
-      margin-top: 8px;
-      padding: 8px 9px;
-      border-radius: 11px;
-      background: #fafbfb;
-      border: 1px solid #e1e6e8;
-      color: #5f6d67;
-      font-size: 12px;
-      line-height: 1.35;
-      font-weight: 700;
-    }
-
     .results-list {
       display: grid;
       gap: 8px;
@@ -428,30 +416,12 @@
       line-height: 1.15;
     }
 
-    .result-info-box.available strong {
-      color: #4f9f35;
-    }
-
     .result-info-box.distance strong {
       color: #4f9f35;
     }
 
     .result-info-box.distance.missing strong {
       color: #7a8580;
-    }
-
-    .availability-note {
-      margin: 0 0 6px;
-      padding: 7px 9px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 800;
-      line-height: 1.3;
-    }
-
-    .availability-note.available {
-      background: #f0faea;
-      color: #173f35;
     }
 
     .result-actions {
@@ -575,7 +545,7 @@
 
       .filters-card {
         display: grid;
-        grid-template-columns: 80px repeat(3, 1fr);
+        grid-template-columns: 80px repeat(2, 1fr);
         gap: 8px;
         align-items: end;
       }
@@ -588,10 +558,6 @@
         margin-bottom: 0;
       }
 
-      .filter-note {
-        grid-column: 1 / -1;
-        margin-top: 0;
-      }
     }
 
     @media (max-width: 760px) {
@@ -744,7 +710,6 @@
       background: #ffffff !important;
     }
 
-    .filter-note,
     .result-info-box,
     .result-button.light,
     .empty-results-button.light {
@@ -762,22 +727,19 @@
       background: #173f35 !important;
     }
 
-    .nearby-results-banner,
-    .availability-note.available {
+    .nearby-results-banner {
       background: #eff9f4 !important;
       border-color: #c9e2d6 !important;
     }
 
     /* Attention states remain orange, but use a softer peach palette. */
-    .nearby-results-banner.warning,
-    .availability-note.unavailable {
+    .nearby-results-banner.warning {
       background: #fff3e8 !important;
       border-color: #f2c79f !important;
       color: #8a4b16 !important;
     }
 
-    .nearby-results-banner.warning span,
-    .result-info-box.unavailable strong {
+    .nearby-results-banner.warning span {
       color: #8a4b16 !important;
     }
 
@@ -850,17 +812,17 @@
       <div>
         <p class="eyebrow" id="resultsEyebrow" data-i18n="results.eyebrow">Výsledky vyhledávání</p>
 
-        <h1 id="resultsTitle" data-i18n="results.title">Dostupné věci k půjčení</h1>
+        <h1 id="resultsTitle" data-i18n="results.title">Věci k půjčení</h1>
 
         <p id="resultsDescription" data-i18n="results.description">
-          Zobrazují se aktuálně dostupné nabídky.
+          Zobrazují se aktuálně aktivní nabídky.
         </p>
       </div>
 
       <div class="results-search">
         <div class="search-field">
           <label for="results-search-what" data-i18n="results.searchWhatLabel">Co hledáte?</label>
-          <input id="results-search-what" type="text" placeholder="např. stan, kočárek nebo vrtačka" data-i18n-placeholder="results.searchWhatPlaceholder" />
+          <input id="results-search-what" type="text" placeholder="např. vrtačka nebo stan" data-i18n-placeholder="results.searchWhatPlaceholder" />
         </div>
 
         <div class="search-field">
@@ -907,17 +869,6 @@
           </select>
         </div>
 
-        <div class="filter-group">
-          <label for="availabilityFilter" data-i18n="results.availabilityLabel">Dostupnost termínu</label>
-          <select id="availabilityFilter">
-            <option value="" data-i18n="results.availabilityDetail">Dostupnost ověříme</option>
-            <option value="available" data-i18n="results.availabilitySelectable">Nabídky s výběrem termínu</option>
-          </select>
-        </div>
-
-        <div class="filter-note" data-i18n="results.filterNote">
-          Konkrétní termín ověříte po výběru data v detailu. Obsazené jsou pouze překrývající se dny.
-        </div>
       </aside>
 
       <section class="results-list" id="resultsList" aria-live="polite"></section>

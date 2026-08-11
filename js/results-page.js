@@ -665,9 +665,6 @@ function getOfferPhoto(offer) {
       const city = getOfferCity(offer);
       const category = resultsCategoryLabel(getOfferCategory(offer));
       const price = getOfferPrice(offer);
-      const availabilityClass = "available";
-      const availabilityText = resultsTranslate("results.dateVerified", "Termín ověříme");
-      const availabilityNote = resultsTranslate("results.availabilityNote", "Nabídku lze rezervovat ve volném termínu. Dostupnost konkrétních dat ověříte v detailu.");
 
       return `
         <article class="result-card">
@@ -687,9 +684,9 @@ function getOfferPhoto(offer) {
                 <strong>${escapeHtml(formatResultsNumber(price))} ${escapeHtml(resultsTranslate("results.currency", "Kč"))}</strong>
               </div>
 
-              <div class="result-info-box ${availabilityClass}">
-                <span>${escapeHtml(resultsTranslate("results.availability", "Dostupnost"))}</span>
-                <strong>${escapeHtml(availabilityText)}</strong>
+              <div class="result-info-box">
+                <span>${escapeHtml(resultsTranslate("results.term", "Termín"))}</span>
+                <strong>${escapeHtml(resultsTranslate("results.termSelectDetail", "Vyberete v detailu"))}</strong>
               </div>
 
               <div class="result-info-box">
@@ -699,10 +696,6 @@ function getOfferPhoto(offer) {
 
               ${renderDistanceBox(offer)}
             </div>
-
-            <p class="availability-note ${availabilityClass}">
-              ${escapeHtml(availabilityNote)}
-            </p>
 
             <div class="result-actions">
               <a class="result-button" href="detail.html?id=${encodeURIComponent(offerId)}">
@@ -735,7 +728,7 @@ const HOME_CATEGORY_GROUPS = {
   party: ["party", "party a akce"],
   ostatni: ["ostatni", "auto a doprava"]
 };
-    function offerMatchesSearch(offer, whatQuery, whereQuery, categoryFilter, priceFilter, availabilityFilter) {
+    function offerMatchesSearch(offer, whatQuery, whereQuery, categoryFilter, priceFilter) {
       const name = normalizeText(getOfferName(offer));
       const category = normalizeText(getOfferCategory(offer));
       const city = normalizeText(getOfferCity(offer));
@@ -771,10 +764,6 @@ const HOME_CATEGORY_GROUPS = {
       }
 
       if (priceFilter && price > Number(priceFilter)) {
-        return false;
-      }
-
-      if (availabilityFilter === "unavailable") {
         return false;
       }
 
@@ -892,13 +881,11 @@ const HOME_CATEGORY_GROUPS = {
       const whereInput = document.getElementById("results-search-where");
       const categoryFilter = document.getElementById("categoryFilter");
       const priceFilter = document.getElementById("priceFilter");
-      const availabilityFilter = document.getElementById("availabilityFilter");
 
       const what = params.get("co") || "";
       const where = params.get("kde") || "";
       const category = params.get("kategorie") || "";
       const price = params.get("cena") || "";
-      const availability = params.get("dostupnost") || "";
       const hasExplicitWhere = Boolean(where.trim());
 
       if (whatInput) {
@@ -922,10 +909,6 @@ const HOME_CATEGORY_GROUPS = {
         priceFilter.value = price;
       }
 
-      if (availabilityFilter) {
-        availabilityFilter.value = availability;
-      }
-
       applyResultsModeTranslations();
     }
 
@@ -936,13 +919,11 @@ const HOME_CATEGORY_GROUPS = {
       const whereInput = document.getElementById("results-search-where");
       const categoryFilter = document.getElementById("categoryFilter");
       const priceFilter = document.getElementById("priceFilter");
-      const availabilityFilter = document.getElementById("availabilityFilter");
 
       const what = whatInput ? whatInput.value.trim() : "";
       const where = whereInput ? whereInput.value.trim() : "";
       const category = categoryFilter ? categoryFilter.value : "";
       const price = priceFilter ? priceFilter.value : "";
-      const availability = availabilityFilter ? availabilityFilter.value : "";
       const usingCurrentLocation = Boolean(
         isNearbySearchMode() &&
         whereInput &&
@@ -981,11 +962,8 @@ const HOME_CATEGORY_GROUPS = {
         params.delete("cena");
       }
 
-      if (availability) {
-        params.set("dostupnost", availability);
-      } else {
-        params.delete("dostupnost");
-      }
+      // Remove the legacy availability filter parameter from older result URLs.
+      params.delete("dostupnost");
 
       const queryString = params.toString();
       const newUrl = queryString
@@ -1031,7 +1009,6 @@ const HOME_CATEGORY_GROUPS = {
       const whereQuery = document.getElementById("results-search-where").value;
       const categoryFilter = document.getElementById("categoryFilter").value;
       const priceFilter = document.getElementById("priceFilter").value;
-      const availabilityFilter = document.getElementById("availabilityFilter").value;
 
       const filteredOffers = offers.filter(function (offer) {
         return offerMatchesSearch(
@@ -1039,8 +1016,7 @@ const HOME_CATEGORY_GROUPS = {
           whatQuery,
           whereQuery,
           categoryFilter,
-          priceFilter,
-          availabilityFilter
+          priceFilter
         );
       });
 
@@ -1088,10 +1064,6 @@ const HOME_CATEGORY_GROUPS = {
       });
 
       document.getElementById("priceFilter").addEventListener("change", function () {
-        applySearchAndUpdateUrl();
-      });
-
-      document.getElementById("availabilityFilter").addEventListener("change", function () {
         applySearchAndUpdateUrl();
       });
     }
