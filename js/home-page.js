@@ -302,9 +302,9 @@ function initializeHomeMap() {
 }
 
 function updateHomeMapViewportStatus() {
-  const status = document.getElementById("homeMapStatus");
+  const emptyStatus = document.getElementById("homeMapEmptyStatus");
 
-  if (!status || !homeMap || !homeMapLayer || homeMapLoadState !== "ready") return;
+  if (!emptyStatus || !homeMap || !homeMapLayer || homeMapLoadState !== "ready") return;
 
   const visibleBounds = homeMap.getBounds();
   const hasVisibleOffer = homeMapLayer.getLayers().some(function (layer) {
@@ -313,12 +313,12 @@ function updateHomeMapViewportStatus() {
   });
 
   if (hasVisibleOffer) {
-    status.hidden = true;
+    emptyStatus.hidden = true;
     return;
   }
 
-  status.hidden = false;
-  status.textContent = homeTranslate(
+  emptyStatus.hidden = false;
+  emptyStatus.textContent = homeTranslate(
     "home.mapEmpty",
     "V zobrazené oblasti zatím nejsou žádné nabídky."
   );
@@ -386,9 +386,11 @@ function buildMapPopup(group) {
 
 function renderHomeOffersMap() {
   const status = document.getElementById("homeMapStatus");
+  const emptyStatus = document.getElementById("homeMapEmptyStatus");
   initializeHomeMap();
 
   if (homeMapLoadState === "loading") {
+    if (emptyStatus) emptyStatus.hidden = true;
     if (status) {
       status.hidden = false;
       status.textContent = homeTranslate("home.mapLoading", "Načítám nabídky do mapy...");
@@ -397,6 +399,7 @@ function renderHomeOffersMap() {
   }
 
   if (homeMapLoadState === "error") {
+    if (emptyStatus) emptyStatus.hidden = true;
     if (status) {
       status.hidden = false;
       status.textContent = homeTranslate("home.mapUnavailable", "Mapu se teď nepodařilo načíst. Nabídky zůstávají dostupné ve výsledcích hledání.");
@@ -408,9 +411,10 @@ function renderHomeOffersMap() {
   homeMapLayer.clearLayers();
 
   if (!homeMapOffers.length) {
-    if (status) {
-      status.hidden = false;
-      status.textContent = homeTranslate(
+    if (status) status.hidden = true;
+    if (emptyStatus) {
+      emptyStatus.hidden = false;
+      emptyStatus.textContent = homeTranslate(
         "home.mapEmpty",
         "V zobrazené oblasti zatím nejsou žádné nabídky."
       );
@@ -419,6 +423,7 @@ function renderHomeOffersMap() {
   }
 
   if (status) status.hidden = true;
+  if (emptyStatus) emptyStatus.hidden = true;
 
   const userLocation = getStoredUserLocation();
   const groups = new Map();
@@ -462,7 +467,9 @@ function renderHomeOffersMap() {
 
 function showHomeMapError() {
   const status = document.getElementById("homeMapStatus");
+  const emptyStatus = document.getElementById("homeMapEmptyStatus");
   homeMapLoadState = "error";
+  if (emptyStatus) emptyStatus.hidden = true;
   if (!status) return;
   status.hidden = false;
   status.textContent = homeTranslate("home.mapUnavailable", "Mapu se teď nepodařilo načíst. Nabídky zůstávají dostupné ve výsledcích hledání.");
