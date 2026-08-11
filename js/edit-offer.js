@@ -413,6 +413,7 @@ function updateEditPhotoStatus(message, type) {
 
   status.textContent = message;
   status.className = "photo-upload-status " + (type || "");
+  status.hidden = !message;
 }
 
 function resizeEditImageToDataUrl(file, callback) {
@@ -865,7 +866,7 @@ function fillEditForm(offer) {
   renderEditPhotoPreview(editOfferPhotoDataUrl);
 
   if (editOfferPhotoDataUrl) {
-    updateEditPhotoStatus(editT("editOffer.currentPhoto", "Aktuální fotka je uložená. Můžete ji změnit nebo odebrat."), "success");
+    updateEditPhotoStatus("", "");
   } else {
     updateEditPhotoStatus(editT("editOffer.noCurrentPhoto", "Tato nabídka zatím nemá fotku."), "");
   }
