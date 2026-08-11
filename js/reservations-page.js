@@ -1182,6 +1182,22 @@ const hasPickupCoordinates =
           </button>
         `;
 
+      const useDirectPostPaymentActions =
+        !isHistorySection &&
+        (
+          normalizedStatus === RESERVATION_STATUS_PAID ||
+          normalizedStatus === RESERVATION_STATUS_PICKED_UP
+        );
+
+      const directOfferDetailAction =
+        useDirectPostPaymentActions && offerId
+          ? `
+            <a class="reservation-primary-action offer-detail-link" href="detail.html?id=${encodeURIComponent(offerId)}">
+              ${escapeHtml(reservationsTranslate("reservations.offerDetail", "Detail nabídky"))}
+            </a>
+          `
+          : "";
+
       let menuItems = "";
 
       if (isPaymentRequired) {
@@ -1206,15 +1222,19 @@ const hasPickupCoordinates =
         `;
       }
 
-      if (isMapUsefulForStatus(status) && (hasPickupCoordinates || pickupAddress)) {
-  menuItems += `
-    <a href="${escapeHtml(getMapUrl(pickupAddress, pickupLatitude, pickupLongitude))}" target="_blank" rel="noopener noreferrer">
+      if (
+        !useDirectPostPaymentActions &&
+        isMapUsefulForStatus(status) &&
+        (hasPickupCoordinates || pickupAddress)
+      ) {
+        menuItems += `
+          <a href="${escapeHtml(getMapUrl(pickupAddress, pickupLatitude, pickupLongitude))}" target="_blank" rel="noopener noreferrer">
             ${escapeHtml(reservationsTranslate("reservations.pickupMap", "Mapa vyzvednutí"))}
           </a>
         `;
       }
 
-      if (offerId && !isHistorySection) {
+      if (offerId && !isHistorySection && !useDirectPostPaymentActions) {
         menuItems += `
           <a href="detail.html?id=${encodeURIComponent(offerId)}">
             ${escapeHtml(reservationsTranslate("reservations.itemDetail", "Detail věci"))}
@@ -1258,6 +1278,7 @@ const hasPickupCoordinates =
 
     <div class="simple-reservation-actions">
       ${primaryAction}
+      ${directOfferDetailAction}
       ${secondaryMenu}
     </div>
 

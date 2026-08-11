@@ -770,6 +770,13 @@
       color: #ffffff;
     }
 
+    .reservation-primary-action.offer-detail-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
     .reservation-more-menu {
       position: relative;
     }
