@@ -1,6 +1,8 @@
 let editOfferPhotoDataUrl = "";
 let editOfferPhotoProcessing = false;
 let editOfferPhotoSelectionToken = 0;
+let editOfferPhotoState = "none";
+let editOfferSelectedPhotoFileName = "";
 let editCurrentOffer = null;
 let editHasBlockingReservation = false;
 let editSaveInProgress = false;
@@ -358,24 +360,48 @@ function renderEditPhotoPreview(photoValue) {
   preview.innerHTML = `<img src="${photoValue}" alt="${editT("editOffer.photoTitle", "Fotka věci")}">`;
 }
 
-function updateEditPhotoFileName(file) {
+function updateEditPhotoControlState(state, fileNameValue) {
+  const button = document.querySelector(".photo-file-button");
   const fileName = document.getElementById("editPhotoFileName");
+
+  const states = {
+    current: {
+      buttonKey: "editOffer.changePhoto",
+      buttonFallback: "Změnit fotku",
+      fileKey: "editOffer.currentPhotoFile",
+      fileFallback: "Aktuální fotka je uložená"
+    },
+    new: {
+      buttonKey: "editOffer.chooseAnotherPhoto",
+      buttonFallback: "Vybrat jinou fotku"
+    },
+    none: {
+      buttonKey: "editOffer.choosePhoto",
+      buttonFallback: "Vybrat fotku",
+      fileKey: "editOffer.noFileChosen",
+      fileFallback: "Nebyl vybrán žádný soubor"
+    }
+  };
+
+  const nextState = states[state] || states.none;
+
+  if (button) {
+    button.setAttribute("data-i18n", nextState.buttonKey);
+    button.textContent = editT(nextState.buttonKey, nextState.buttonFallback);
+  }
 
   if (!fileName) {
     return;
   }
 
-  if (file && file.name) {
-    fileName.textContent = file.name;
+  if (state === "new" && fileNameValue) {
     fileName.removeAttribute("data-i18n");
+    fileName.textContent = fileNameValue;
     return;
   }
 
-  fileName.setAttribute("data-i18n", "editOffer.noFileChosen");
-  fileName.textContent = editT(
-    "editOffer.noFileChosen",
-    "Nebyl vybrán žádný soubor"
-  );
+  fileName.setAttribute("data-i18n", nextState.fileKey);
+  fileName.textContent = editT(nextState.fileKey, nextState.fileFallback);
 }
 
 function updateEditPhotoStatus(message, type) {
@@ -447,16 +473,17 @@ function setupEditOfferPhotoUpload() {
   setEditRemovePhotoButtonVisible(removePhotoButton, Boolean(editOfferPhotoDataUrl));
 
   if (photoInput) {
-    updateEditPhotoFileName(null);
+    updateEditPhotoControlState(editOfferPhotoState, editOfferSelectedPhotoFileName);
 
     photoInput.addEventListener("change", function () {
       const file = photoInput.files && photoInput.files[0];
       const selectionToken = ++editOfferPhotoSelectionToken;
-
-      updateEditPhotoFileName(file);
+      const previousPhotoState = editOfferPhotoState;
+      const previousPhotoFileName = editOfferSelectedPhotoFileName;
 
       if (!file) {
         editOfferPhotoProcessing = false;
+        updateEditPhotoControlState(previousPhotoState, previousPhotoFileName);
         updateEditPhotoStatus(editT("editOffer.photoNotSelected", "Fotka nebyla vybraná."), "");
         setEditRemovePhotoButtonVisible(removePhotoButton, Boolean(editOfferPhotoDataUrl));
         return;
@@ -465,7 +492,7 @@ function setupEditOfferPhotoUpload() {
       if (!EDIT_OFFER_PHOTO_ALLOWED_TYPES.includes(file.type)) {
         editOfferPhotoProcessing = false;
         photoInput.value = "";
-        updateEditPhotoFileName(null);
+        updateEditPhotoControlState(previousPhotoState, previousPhotoFileName);
         updateEditPhotoStatus(editT("editOffer.invalidPhoto", "Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP."), "error");
         setEditRemovePhotoButtonVisible(removePhotoButton, Boolean(editOfferPhotoDataUrl));
         return;
@@ -474,13 +501,14 @@ function setupEditOfferPhotoUpload() {
       if (file.size > EDIT_OFFER_PHOTO_MAX_BYTES) {
         editOfferPhotoProcessing = false;
         photoInput.value = "";
-        updateEditPhotoFileName(null);
+        updateEditPhotoControlState(previousPhotoState, previousPhotoFileName);
         updateEditPhotoStatus(editT("editOffer.photoTooLarge", "Fotka je příliš velká. Maximální velikost je 5 MB."), "error");
         setEditRemovePhotoButtonVisible(removePhotoButton, Boolean(editOfferPhotoDataUrl));
         return;
       }
 
       editOfferPhotoProcessing = true;
+      updateEditPhotoControlState("new", file.name);
       updateEditPhotoStatus(editT("editOffer.processingPhoto", "Zpracovávám fotku..."), "");
 
       resizeEditImageToDataUrl(file, function (dataUrl) {
@@ -492,14 +520,17 @@ function setupEditOfferPhotoUpload() {
 
         if (!dataUrl) {
           photoInput.value = "";
-          updateEditPhotoFileName(null);
+          updateEditPhotoControlState(previousPhotoState, previousPhotoFileName);
           updateEditPhotoStatus(editT("editOffer.photoLoadFailed", "Fotku se nepodařilo načíst. Zkuste jiný obrázek."), "error");
           setEditRemovePhotoButtonVisible(removePhotoButton, Boolean(editOfferPhotoDataUrl));
           return;
         }
 
         editOfferPhotoDataUrl = dataUrl;
+        editOfferPhotoState = "new";
+        editOfferSelectedPhotoFileName = file.name;
         renderEditPhotoPreview(editOfferPhotoDataUrl);
+        updateEditPhotoControlState(editOfferPhotoState, editOfferSelectedPhotoFileName);
         updateEditPhotoStatus(editT("editOffer.photoReady", "Nová fotka je připravená k uložení."), "success");
         setEditRemovePhotoButtonVisible(removePhotoButton, true);
       });
@@ -511,10 +542,12 @@ function setupEditOfferPhotoUpload() {
       editOfferPhotoSelectionToken += 1;
       editOfferPhotoProcessing = false;
       editOfferPhotoDataUrl = "";
+      editOfferPhotoState = "none";
+      editOfferSelectedPhotoFileName = "";
 
       if (photoInput) {
         photoInput.value = "";
-        updateEditPhotoFileName(null);
+        updateEditPhotoControlState(editOfferPhotoState, editOfferSelectedPhotoFileName);
       }
 
       renderEditPhotoPreview("");
@@ -827,6 +860,8 @@ function fillEditForm(offer) {
   renderEditProfilePickupAddress();
 
   editOfferPhotoDataUrl = getEditOfferPhoto(offer);
+  editOfferPhotoState = editOfferPhotoDataUrl ? "current" : "none";
+  editOfferSelectedPhotoFileName = "";
   renderEditPhotoPreview(editOfferPhotoDataUrl);
 
   if (editOfferPhotoDataUrl) {
