@@ -640,14 +640,16 @@ function fillEditForm(offer) {
 
   nameInput.value = offer.name || "";
   categorySelect.value = normalizeEditOfferCategory(offer.category);
-  pickupStreetInput.value = offer.pickup_street || "";
-  cityInput.value = offer.pickup_city || offer.city || "";
-  postalInput.value = offer.pickup_postal_code || offer.postal_code || "";
-  pickupNoteInput.value = offer.pickup_note || "";
+
+  const usesCustomPickup = offer.pickup_mode === "custom";
+  pickupStreetInput.value = usesCustomPickup ? (offer.pickup_street || "") : "";
+  cityInput.value = usesCustomPickup ? (offer.pickup_city || offer.city || "") : "";
+  postalInput.value = usesCustomPickup ? (offer.pickup_postal_code || offer.postal_code || "") : "";
+  pickupNoteInput.value = usesCustomPickup ? (offer.pickup_note || "") : "";
   priceInput.value = editValueOrEmpty(offer.price_per_day);
   descriptionInput.value = offer.description || "";
 
-  pickupUseCustom.checked = offer.pickup_mode === "custom";
+  pickupUseCustom.checked = usesCustomPickup;
   pickupCustomFields.classList.toggle("is-visible", pickupUseCustom.checked);
   renderEditProfilePickupAddress();
 
