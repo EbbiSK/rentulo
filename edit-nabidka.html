@@ -933,13 +933,15 @@
 
                   <div class="form-group">
                     <label for="edit-city" data-i18n="offer.cityLabel">Město nebo obec</label>
-                    <input id="edit-city" type="text" placeholder="např. Praha" data-i18n-placeholder="offer.cityPlaceholder" />
+                    <input id="edit-city" type="text" placeholder="např. Praha" list="editCitySuggestions" data-i18n-placeholder="offer.cityPlaceholder" />
                   </div>
 
                   <div class="form-group">
                     <label for="edit-postal-code" data-i18n="offer.postalCodeLabel">PSČ</label>
                     <input id="edit-postal-code" type="text" placeholder="např. 602 00" data-i18n-placeholder="offer.postalCodePlaceholder" />
                   </div>
+
+                  <datalist id="editCitySuggestions"></datalist>
 
                   <div class="form-group">
                     <label for="edit-pickup-note" data-i18n="offer.pickupNoteOptionalLabel">Poznámka k vyzvednutí (nepovinné)</label>

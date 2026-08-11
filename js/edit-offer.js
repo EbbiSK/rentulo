@@ -17,6 +17,77 @@ const EDIT_OFFER_PHOTO_ALLOWED_TYPES = [
   "image/webp"
 ];
 
+const editCityPostalCodes = {
+  "praha": "110 00",
+  "brno": "602 00",
+  "ostrava": "702 00",
+  "plzeň": "301 00",
+  "plzen": "301 00",
+  "liberec": "460 01",
+  "olomouc": "779 00",
+  "české budějovice": "370 01",
+  "ceske budejovice": "370 01",
+  "hradec králové": "500 03",
+  "hradec kralove": "500 03",
+  "pardubice": "530 02",
+  "zlín": "760 01",
+  "zlin": "760 01",
+  "havířov": "736 01",
+  "havirov": "736 01",
+  "kladno": "272 01",
+  "most": "434 01",
+  "opava": "746 01",
+  "frýdek-místek": "738 01",
+  "frydek-mistek": "738 01",
+  "karviná": "733 01",
+  "karvina": "733 01",
+  "jihlava": "586 01",
+  "teplice": "415 01",
+  "děčín": "405 02",
+  "decin": "405 02",
+  "chomutov": "430 01",
+  "karlovy vary": "360 01",
+  "jablonec nad nisou": "466 01",
+  "mladá boleslav": "293 01",
+  "mlada boleslav": "293 01",
+  "prostějov": "796 01",
+  "prostejov": "796 01",
+  "přerov": "750 02",
+  "prerov": "750 02",
+  "třinec": "739 61",
+  "trinec": "739 61",
+  "tábor": "390 01",
+  "tabor": "390 01",
+  "znojmo": "669 02",
+  "kolín": "280 02",
+  "kolin": "280 02",
+  "písek": "397 01",
+  "pisek": "397 01",
+  "cheb": "350 02",
+  "příbram": "261 01",
+  "pribram": "261 01",
+  "orlová": "735 14",
+  "orlova": "735 14",
+  "kroměříž": "767 01",
+  "kromeriz": "767 01",
+  "vsetín": "755 01",
+  "vsetin": "755 01",
+  "šumperk": "787 01",
+  "sumperk": "787 01",
+  "uherské hradiště": "686 01",
+  "uherske hradiste": "686 01",
+  "břeclav": "690 02",
+  "breclav": "690 02",
+  "hodonín": "695 01",
+  "hodonin": "695 01",
+  "česká lípa": "470 01",
+  "ceska lipa": "470 01",
+  "litoměřice": "412 01",
+  "litomerice": "412 01",
+  "krnov": "794 01",
+  "sokolov": "356 01"
+};
+
 function editT(key, fallback) {
   if (typeof window.rentuloTranslate === "function") {
     const translated = window.rentuloTranslate(key);
@@ -116,6 +187,108 @@ function editMoneyToNumber(value) {
 
 function editValueOrEmpty(value) {
   return value === undefined || value === null ? "" : value;
+}
+
+
+function normalizeEditCityName(value) {
+  return String(value || "")
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function setupEditCitySuggestions() {
+  const datalist = document.getElementById("editCitySuggestions");
+
+  if (!datalist) {
+    return;
+  }
+
+  const uniqueCities = [];
+  const seen = {};
+
+  Object.keys(editCityPostalCodes).forEach(function (city) {
+    const displayCity = city
+      .split(" ")
+      .map(function (part) {
+        return part.charAt(0).toUpperCase() + part.slice(1);
+      })
+      .join(" ");
+
+    const normalized = normalizeEditCityName(displayCity);
+
+    if (!seen[normalized]) {
+      seen[normalized] = true;
+      uniqueCities.push(displayCity);
+    }
+  });
+
+  datalist.innerHTML = uniqueCities
+    .sort()
+    .map(function (city) {
+      return `<option value="${city}"></option>`;
+    })
+    .join("");
+}
+
+function fillEditPostalCodeFromCity() {
+  const cityInput = document.getElementById("edit-city");
+  const postalInput = document.getElementById("edit-postal-code");
+
+  if (!cityInput || !postalInput) {
+    return;
+  }
+
+  const city = normalizeEditCityName(cityInput.value);
+  const postalCode = editCityPostalCodes[city];
+
+  if (!postalCode) {
+    if (postalInput.dataset.autoFilled === "true") {
+      postalInput.value = "";
+    }
+
+    return;
+  }
+
+  if (!postalInput.value.trim() || postalInput.dataset.autoFilled === "true") {
+    postalInput.value = postalCode;
+    postalInput.dataset.autoFilled = "true";
+  }
+}
+
+function setupEditPostalCodeAutocomplete() {
+  const cityInput = document.getElementById("edit-city");
+  const postalInput = document.getElementById("edit-postal-code");
+
+  if (!cityInput || !postalInput) {
+    return;
+  }
+
+  const loadedCity = normalizeEditCityName(cityInput.value);
+  postalInput.dataset.autoFilled = "false";
+  postalInput.dataset.manuallyEdited = "false";
+
+  function updatePostalCodeForEditedCity() {
+    const currentCity = normalizeEditCityName(cityInput.value);
+
+    if (
+      currentCity !== loadedCity &&
+      postalInput.dataset.manuallyEdited !== "true"
+    ) {
+      postalInput.dataset.autoFilled = "true";
+    }
+
+    fillEditPostalCodeFromCity();
+  }
+
+  cityInput.addEventListener("input", updatePostalCodeForEditedCity);
+  cityInput.addEventListener("change", updatePostalCodeForEditedCity);
+
+  postalInput.addEventListener("input", function () {
+    postalInput.dataset.autoFilled = "false";
+    postalInput.dataset.manuallyEdited = "true";
+  });
 }
 
 function normalizeEditPickupAddress(pickupAddress) {
@@ -842,6 +1015,8 @@ async function initializeEditOfferPage(supabaseUser) {
     editLockPriceFields(editHasBlockingReservation);
     setupEditOfferPhotoUpload();
     setupEditPickupFields();
+    setupEditCitySuggestions();
+    setupEditPostalCodeAutocomplete();
     setupEditOfferSave();
   } catch (error) {
     console.error(error);

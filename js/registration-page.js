@@ -91,6 +91,8 @@
     function normalizeCityName(value) {
       return String(value || "")
         .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase();
     }
 
@@ -234,6 +236,10 @@
         const postalCode = cityPostalCodes[city];
 
         if (!postalCode) {
+          if (postalCodeInput.dataset.autoFilled === "true") {
+            postalCodeInput.value = "";
+          }
+
           return;
         }
 
