@@ -47,6 +47,36 @@ function historyFormatMoney(value) {
   return historyFormatNumber(value) + " Kč";
 }
 
+let historySuccessNoticeTimer = null;
+
+function historyShowSuccessNotice(message) {
+  const historySwitch = document.querySelector(".history-switch");
+  if (!historySwitch) return;
+
+  let notice = document.getElementById("historySuccessNotice");
+  if (!notice) {
+    notice = document.createElement("div");
+    notice.id = "historySuccessNotice";
+    notice.className = "history-success-notice";
+    notice.setAttribute("role", "status");
+    notice.setAttribute("aria-live", "polite");
+    notice.hidden = true;
+    historySwitch.insertAdjacentElement("afterend", notice);
+  }
+
+  notice.textContent = "✓ " + message;
+  notice.hidden = false;
+
+  if (historySuccessNoticeTimer) {
+    window.clearTimeout(historySuccessNoticeTimer);
+  }
+
+  historySuccessNoticeTimer = window.setTimeout(function () {
+    notice.hidden = true;
+    historySuccessNoticeTimer = null;
+  }, 4500);
+}
+
 const HISTORY_FINISHED_STATUSES = new Set([
   "returned",
   "completed",
@@ -551,12 +581,13 @@ async function historySaveReview(reservationId, role) {
     created_at: new Date().toISOString()
   });
 
-  alert(historyT("history.success.saved", "Hodnocení bylo uloženo."));
   historyRenderAll();
   historyRestoreUiState(uiState);
 
   const detail = document.getElementById("history-detail-" + reservationId + "-" + role);
   if (detail) detail.classList.add("open");
+
+  historyShowSuccessNotice(historyT("history.success.saved", "Hodnocení bylo uloženo."));
 }
 
 document.addEventListener("change", function (event) {

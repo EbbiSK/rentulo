@@ -149,6 +149,21 @@ h1 {
   box-shadow: inset 0 0 0 1px #cfe7c4;
 }
 
+.history-success-notice {
+  margin: 0 0 12px;
+  padding: 11px 14px;
+  border: 1px solid #cfe7c4;
+  border-radius: 12px;
+  background: #eef8e9;
+  color: #2f6f24;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.history-success-notice[hidden] {
+  display: none;
+}
+
 .reservation-section {
   margin: 0;
 }
