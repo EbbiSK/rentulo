@@ -856,20 +856,10 @@ const HOME_CATEGORY_GROUPS = {
           whereInput.value = resultsTranslate("results.myLocation", "Moje poloha");
         }
 
-        const eyebrow = document.getElementById("resultsEyebrow");
         const title = document.getElementById("resultsTitle");
-        const description = document.getElementById("resultsDescription");
-
-        if (eyebrow) {
-          eyebrow.textContent = resultsTranslate("results.nearbyEyebrow", "Výsledky podle polohy");
-        }
 
         if (title) {
-        title.textContent = resultsTranslate("results.nearbyPageTitle", "Věci ve vašem okolí");
-        }
-
-        if (description) {
-          description.textContent = resultsTranslate("results.nearbyDescription", "Nejbližší nabídky s uloženou polohou se zobrazují nahoře.");
+          title.textContent = resultsTranslate("results.nearbyPageTitle", "Věci ve vašem okolí");
         }
       }
     }
