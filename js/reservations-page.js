@@ -815,7 +815,7 @@ const data = Array.isArray(paidReservations)
 
       if (isOpen) {
         detail.classList.remove("open");
-        button.textContent = reservationsTranslate("reservations.detail", "Detail");
+        button.textContent = reservationsTranslate("reservations.detailReservation", "Detail rezervace");
         return;
       }
 
@@ -1206,7 +1206,7 @@ const data = Array.isArray(paidReservations)
 
       const detailAction = `
         <button class="reservation-primary-action" id="detail-toggle-${escapeHtml(reservationId)}" type="button" data-reservations-action="toggle-detail" data-reservation-id="${escapeHtml(reservationId)}">
-          ${escapeHtml(reservationsTranslate("reservations.detail", "Detail"))}
+          ${escapeHtml(reservationsTranslate("reservations.detailReservation", "Detail rezervace"))}
         </button>
       `;
 
