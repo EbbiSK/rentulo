@@ -296,6 +296,32 @@ function initializeHomeMap() {
   }).addTo(homeMap);
 
   homeMapLayer = window.L.layerGroup().addTo(homeMap);
+
+  homeMap.on("moveend", updateHomeMapViewportStatus);
+  homeMap.on("zoomend", updateHomeMapViewportStatus);
+}
+
+function updateHomeMapViewportStatus() {
+  const status = document.getElementById("homeMapStatus");
+
+  if (!status || !homeMap || !homeMapLayer || homeMapLoadState !== "ready") return;
+
+  const visibleBounds = homeMap.getBounds();
+  const hasVisibleOffer = homeMapLayer.getLayers().some(function (layer) {
+    if (!layer || typeof layer.getLatLng !== "function") return false;
+    return visibleBounds.contains(layer.getLatLng());
+  });
+
+  if (hasVisibleOffer) {
+    status.hidden = true;
+    return;
+  }
+
+  status.hidden = false;
+  status.textContent = homeTranslate(
+    "home.mapEmpty",
+    "V zobrazené oblasti zatím nejsou žádné nabídky."
+  );
 }
 
 function createMapMarkerIcon(count) {
@@ -384,7 +410,10 @@ function renderHomeOffersMap() {
   if (!homeMapOffers.length) {
     if (status) {
       status.hidden = false;
-      status.textContent = homeTranslate("home.mapEmpty", "V tomto okolí zatím nejsou žádné nabídky.");
+      status.textContent = homeTranslate(
+        "home.mapEmpty",
+        "V zobrazené oblasti zatím nejsou žádné nabídky."
+      );
     }
     return;
   }
@@ -425,7 +454,10 @@ function renderHomeOffersMap() {
     homeMap.fitBounds(bounds, { padding: [24, 24], maxZoom: 11 });
   }
 
-  window.setTimeout(function () { homeMap.invalidateSize(); }, 50);
+  window.setTimeout(function () {
+    homeMap.invalidateSize();
+    updateHomeMapViewportStatus();
+  }, 50);
 }
 
 function showHomeMapError() {
