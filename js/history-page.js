@@ -173,7 +173,8 @@ function historyRenderReviewForm(reservation, role) {
       <strong>${escapeHtml(title)}</strong>
       <label>
         ${escapeHtml(historyT("history.review.stars", "Počet hvězdiček"))}
-        <select id="history-rating-${escapeHtml(reservationId)}-${escapeHtml(role)}">
+        <select id="history-rating-${escapeHtml(reservationId)}-${escapeHtml(role)}" data-history-rating>
+          <option value="" selected disabled>${escapeHtml(historyT("history.review.select", "Vyberte hodnocení"))}</option>
           <option value="5">${escapeHtml(historyT("history.review.excellent", "★★★★★ - výborné"))}</option>
           <option value="4">${escapeHtml(historyT("history.review.good", "★★★★☆ - dobré"))}</option>
           <option value="3">${escapeHtml(historyT("history.review.average", "★★★☆☆ - průměrné"))}</option>
@@ -185,7 +186,7 @@ function historyRenderReviewForm(reservation, role) {
         ${escapeHtml(historyT("history.review.comment", "Komentář"))}
         <textarea id="history-text-${escapeHtml(reservationId)}-${escapeHtml(role)}" rows="3" placeholder="${escapeHtml(historyT("history.review.placeholder", "Jak proběhlo půjčení?"))}"></textarea>
       </label>
-      <button type="button" class="history-primary-button" data-history-review="${escapeHtml(reservationId)}" data-history-role="${escapeHtml(role)}">
+      <button type="button" class="history-primary-button" data-history-review="${escapeHtml(reservationId)}" data-history-role="${escapeHtml(role)}" disabled>
         ${escapeHtml(historyT("history.review.submit", "Odeslat hodnocení"))}
       </button>
     </div>
@@ -256,7 +257,7 @@ function historyRenderRow(reservation, role) {
         <div class="simple-reservation-date">${escapeHtml(historyFormatDate(startDate))} – ${escapeHtml(historyFormatDate(endDate))}</div>
         <div class="simple-reservation-price">${escapeHtml(historyFormatMoney(price))}</div>
         <div class="simple-reservation-status status-${escapeHtml(normalizedStatus)}">${escapeHtml(status)}</div>
-        <button type="button" class="history-detail-button" data-history-toggle="${escapeHtml(reservationId)}" data-history-role="${escapeHtml(role)}">${escapeHtml(historyT("history.detail.show", "Detail"))}</button>
+        <button type="button" class="history-detail-button" data-history-toggle="${escapeHtml(reservationId)}" data-history-role="${escapeHtml(role)}">${escapeHtml(historyT("history.detail.show", "Detail rezervace"))}</button>
       </div>
       ${historyRenderDetail(reservation, role)}
     </article>
@@ -311,6 +312,17 @@ function historyRenderLoadErrorState() {
   document.getElementById("offerHistoryList").innerHTML = markup;
 }
 
+function historySyncReviewSubmitButton(ratingElement) {
+  if (!ratingElement) return;
+
+  const reviewBox = ratingElement.closest(".history-review-box");
+  const submitButton = reviewBox ? reviewBox.querySelector("[data-history-review]") : null;
+  if (!submitButton || submitButton.dataset.busy === "true") return;
+
+  const rating = Number(ratingElement.value || 0);
+  submitButton.disabled = !(rating >= 1 && rating <= 5);
+}
+
 function historyCaptureUiState() {
   const openDetailIds = Array.from(document.querySelectorAll(".history-detail.open"))
     .map(function (detail) { return detail.id; });
@@ -344,7 +356,7 @@ function historyRestoreUiState(state) {
 
     toggle.textContent = shouldOpen
       ? historyT("history.detail.hide", "Skrýt detail")
-      : historyT("history.detail.show", "Detail");
+      : historyT("history.detail.show", "Detail rezervace");
   });
 
   Object.keys(state.reviewValues || {}).forEach(function (elementId) {
@@ -352,6 +364,10 @@ function historyRestoreUiState(state) {
     if (element) {
       element.value = state.reviewValues[elementId];
     }
+  });
+
+  document.querySelectorAll("[data-history-rating]").forEach(function (ratingElement) {
+    historySyncReviewSubmitButton(ratingElement);
   });
 }
 
@@ -543,6 +559,13 @@ async function historySaveReview(reservationId, role) {
   if (detail) detail.classList.add("open");
 }
 
+document.addEventListener("change", function (event) {
+  const ratingElement = event.target.closest("[data-history-rating]");
+  if (!ratingElement) return;
+
+  historySyncReviewSubmitButton(ratingElement);
+});
+
 document.addEventListener("click", async function (event) {
   const toggle = event.target.closest("[data-history-toggle]");
   if (toggle) {
@@ -553,7 +576,7 @@ document.addEventListener("click", async function (event) {
 
     const willOpen = !detail.classList.contains("open");
     detail.classList.toggle("open", willOpen);
-    toggle.textContent = willOpen ? historyT("history.detail.hide", "Skrýt detail") : historyT("history.detail.show", "Detail");
+    toggle.textContent = willOpen ? historyT("history.detail.hide", "Skrýt detail") : historyT("history.detail.show", "Detail rezervace");
     return;
   }
 

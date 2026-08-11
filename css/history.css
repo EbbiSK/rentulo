@@ -244,6 +244,11 @@ html[data-focus-input="pointer"] .history-primary-button:focus {
 }
 
 .history-primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.history-primary-button[data-busy="true"]:disabled {
   cursor: wait;
   opacity: 0.72;
 }
