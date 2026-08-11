@@ -91,6 +91,26 @@ function getReservationsCountText(count) {
     let supabaseReservations = [];
     let supabaseReviews = [];
     let reservationsLoadState = "idle";
+    let reservationsNoticeTimer = null;
+
+    function showReservationsNotice(message) {
+      const notice = document.getElementById("reservationsNotice");
+
+      if (!notice) {
+        return;
+      }
+
+      if (reservationsNoticeTimer) {
+        window.clearTimeout(reservationsNoticeTimer);
+      }
+
+      notice.textContent = message;
+      notice.hidden = false;
+      reservationsNoticeTimer = window.setTimeout(function () {
+        notice.hidden = true;
+        reservationsNoticeTimer = null;
+      }, 4500);
+    }
 
     async function sendReservationEmailSafely(reservationId, eventType) {
       if (!reservationId || !eventType) {
@@ -825,10 +845,14 @@ return (
       }
 
       await sendReservationEmailSafely(reservationId, "cancelled");
-
-      alert(reservationsTranslate("reservations.success.cancelled", "Rezervace byla zrušena a přesunuta do Historie."));
-
       await retryLoadReservations();
+
+      showReservationsNotice(
+        reservationsTranslate(
+          "reservations.success.cancelled",
+          "Rezervace byla zrušena a přesunuta do Historie."
+        )
+      );
     }
 
     async function payReservation(reservationId) {

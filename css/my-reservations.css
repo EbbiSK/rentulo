@@ -138,6 +138,29 @@
       background: #E85F00;
     }
 
+    .reservation-page-notice {
+      margin: 0 0 12px;
+      padding: 12px 14px;
+      border: 1px solid #c7e8d7;
+      border-radius: 14px;
+      background: #eef8e9;
+      color: #173f35;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+
+    .reservation-page-notice[hidden] {
+      display: none;
+    }
+
+    .reservation-page-notice::before {
+      content: "✓";
+      margin-right: 7px;
+      color: #4f9f2f;
+      font-weight: 900;
+    }
+
     .account-list {
       display: grid;
       gap: 10px;
