@@ -98,61 +98,24 @@
     }
 
     .account-top {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 16px;
-      align-items: stretch;
       margin-bottom: 16px;
     }
 
-    .account-welcome,
     .account-profile-card {
       background: white;
       border: 1px solid #cfe5da;
       border-radius: 16px;
       box-shadow: 0 12px 28px rgba(23, 63, 53, 0.06);
-      padding: 16px;
-    }
-
-    .eyebrow {
-      margin: 0 0 4px;
-      color: #66736e;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    h1 {
-      margin: 0 0 5px;
-      color: #173f35;
-      font-size: 30px;
-      line-height: 1.05;
-    }
-
-    .account-welcome {
-      background: #f4fbf7;
-    }
-
-    .account-welcome h1 {
-      margin-top: 10px;
-    }
-
-    .account-welcome p {
-      margin: 0;
-      color: #4b5f57;
-      font-size: 14px;
-      line-height: 1.35;
-    }
-
-    .account-profile-card {
+      padding: 12px 16px;
       display: grid;
-      grid-template-columns: 52px 1fr;
-      gap: 11px;
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: 14px;
       align-items: center;
     }
 
     .profile-avatar {
-      width: 52px;
-      height: 52px;
+      width: 48px;
+      height: 48px;
       border-radius: 14px;
       background: #e8f6ef;
       color: #173f35;
@@ -164,12 +127,21 @@
       font-weight: 900;
     }
 
+    .profile-info {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(150px, 0.8fr) minmax(210px, 1fr) minmax(260px, 1.35fr);
+      align-items: center;
+    }
+
     .profile-info strong {
       display: block;
+      min-width: 0;
       color: #073f2e;
       font-size: 15px;
       font-weight: 900;
       line-height: 1.2;
+      padding-right: 20px;
     }
 
     .profile-info span {
@@ -182,11 +154,18 @@
 
     .profile-info small {
       display: block;
-      margin-top: 2px;
+      min-width: 0;
+      margin: 0;
+      padding: 3px 20px;
+      border-left: 1px solid #e2eee8;
       color: #66736e;
       font-size: 12px;
       line-height: 1.25;
       word-break: break-word;
+    }
+
+    .profile-info small:last-child {
+      padding-right: 0;
     }
 
     .account-alert-summary {
@@ -677,8 +656,18 @@
         gap: 12px;
       }
 
-      .account-top {
+      .profile-info {
         grid-template-columns: 1fr;
+        gap: 2px;
+      }
+
+      .profile-info strong {
+        padding-right: 0;
+      }
+
+      .profile-info small {
+        padding: 0;
+        border-left: 0;
       }
 
       .account-actions-grid {
@@ -697,7 +686,8 @@
       }
 
       .account-profile-card {
-        grid-template-columns: 44px 1fr;
+        grid-template-columns: 44px minmax(0, 1fr);
+        padding: 12px 14px;
       }
 
       .profile-avatar {
@@ -763,23 +753,6 @@
   <main class="account-page">
 
     <section class="account-top">
-      <div class="account-welcome">
-        <p
-  class="eyebrow"
-  data-i18n="account.eyebrow"
->
-  Můj účet
-</p>
-
-<h1
-  id="accountGreeting"
-  data-i18n="account.greeting"
->
-  Dobrý den
-</h1>
-
-      </div>
-
       <div class="account-profile-card">
         <div class="profile-avatar" id="profileAvatar">U</div>
 
