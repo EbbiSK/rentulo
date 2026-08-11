@@ -120,9 +120,41 @@
     .request-toggle-button:not(.important),
     .history-toggle-button,
     .simple-offer-actions a,
-    .simple-offer-actions .simple-offer-more-menu summary {
+    .simple-offer-actions .simple-offer-more-menu summary,
+    .offer-card-controls .offer-secondary-link {
       background: #edf5f1 !important;
       color: #173f35 !important;
+    }
+
+    .simple-offer-actions,
+    .offer-card-controls {
+      flex-wrap: wrap !important;
+    }
+
+    .offer-card-controls .offer-secondary-link,
+    .offer-card-controls .offer-delete-action {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .simple-offer-actions .offer-delete-action,
+    .offer-card-controls .offer-delete-action {
+      background: #fff8f6 !important;
+      color: #a43b2f !important;
+      border: 1px solid #efc1b7 !important;
+    }
+
+    .simple-offer-actions .offer-delete-action:hover,
+    .offer-card-controls .offer-delete-action:hover {
+      background: #fff0ec !important;
     }
 
     /* Attention states remain orange, but use a softer peach palette. */

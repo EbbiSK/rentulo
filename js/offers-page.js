@@ -1322,6 +1322,12 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
           ? `<button class="offer-primary-button ${ownerActionRequests.length ? "urgent" : ""}" type="button" data-offers-action="open-offer-requests" data-offer-id="${escapeHtml(offerId)}">${ownerActionRequests.length ? offersTranslate("offers.handleRequests", "Vyřídit žádosti") : offersTranslate("offers.showRequests", "Zobrazit žádosti")}</button>`
           : `<button class="offer-primary-button secondary" type="button" data-offers-action="toggle-offer-detail" data-detail-id="${escapeHtml(offerDetailId)}">${offersTranslate("offers.overview", "Přehled nabídky")}</button>`;
 
+      const directOfferActionsHtml = `
+        ${isDraft ? "" : `<a class="offer-secondary-link" href="detail.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.publicDetail", "Detail nabídky")}</a>`}
+        <a class="offer-secondary-link" href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.edit", "Upravit nabídku")}</a>
+        ${openRequests.length ? "" : `<button class="offer-delete-action danger" type="button" data-offers-action="delete-offer" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.delete", "Smazat nabídku")}</button>`}
+      `;
+
       const detailHtml = isDraft
         ? ""
         : `
@@ -1378,16 +1384,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
 
             <div class="offer-card-controls">
               ${primaryActionHtml}
-
-              <details class="offer-more-menu">
-                <summary aria-label="${escapeHtml(offersTranslate("offers.moreActions", "Další akce nabídky"))}">•••</summary>
-                <div class="offer-more-menu-panel">
-                  <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.edit", "Upravit nabídku")}</a>
-                  ${isDraft ? "" : `<a href="detail.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.publicDetail", "Veřejný detail")}</a>`}
-                  ${isDraft ? "" : `<button type="button" data-offers-action="toggle-offer-overview" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.overviewHistory", "Přehled a historie")}</button>`}
-                  <button class="danger" type="button" data-offers-action="delete-offer" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.delete", "Smazat nabídku")}</button>
-                </div>
-              </details>
+              ${directOfferActionsHtml}
             </div>
           </div>
           ${detailHtml}
@@ -1416,6 +1413,34 @@ function renderSimpleOffer(offer, requests) {
     ? openRequests.map(renderRequest).join("")
     : `<p class="request-empty-note">${offersTranslate("offers.noOpenRequests", "U této nabídky teď není žádná otevřená žádost.")}</p>`;
 
+  const primaryActionHtml = isDraft
+    ? `<button
+        type="button"
+        class="offer-primary-button orange"
+        data-offers-action="publish-offer"
+        data-offer-id="${escapeHtml(offerId)}"
+      >
+        ${offersTranslate("offers.publish", "Zveřejnit nabídku")}
+      </button>`
+    : openRequests.length
+      ? `<button
+          type="button"
+          class="offer-primary-button ${ownerActionRequests.length ? "urgent" : ""}"
+          data-offers-action="open-offer-requests"
+          data-offer-id="${escapeHtml(offerId)}"
+        >
+          ${ownerActionRequests.length
+            ? offersTranslate("offers.handleRequests", "Vyřídit žádosti")
+            : offersTranslate("offers.showRequests", "Zobrazit žádosti")}
+        </button>`
+      : "";
+
+  const directOfferActionsHtml = `
+    ${isDraft ? "" : `<a href="detail.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.publicDetail", "Detail nabídky")}</a>`}
+    <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.edit", "Upravit nabídku")}</a>
+    ${openRequests.length ? "" : `<button class="offer-delete-action danger" type="button" data-offers-action="delete-offer" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.delete", "Smazat nabídku")}</button>`}
+  `;
+
   return `
     <div class="simple-offer-record">
       <article class="simple-offer-row">
@@ -1441,46 +1466,8 @@ function renderSimpleOffer(offer, requests) {
         </div>
 
         <div class="simple-offer-actions">
-          ${
-            isDraft
-              ? `<button
-                  type="button"
-                  class="offer-primary-button orange"
-                  data-offers-action="publish-offer"
-                  data-offer-id="${escapeHtml(offerId)}"
-                >
-                  ${offersTranslate("offers.publish", "Zveřejnit nabídku")}
-                </button>`
-              : openRequests.length
-              ? `<button
-                  type="button"
-                  class="offer-primary-button ${ownerActionRequests.length ? "urgent" : ""}"
-                  data-offers-action="open-offer-requests"
-                  data-offer-id="${escapeHtml(offerId)}"
-                >
-                  ${ownerActionRequests.length
-                    ? offersTranslate("offers.handleRequests", "Vyřídit žádosti")
-                    : offersTranslate("offers.showRequests", "Zobrazit žádosti")}
-                </button>`
-              : `<a href="detail.html?id=${encodeURIComponent(offerId)}">
-                  ${offersTranslate("offers.detail.show", "Detail")}
-                </a>`
-          }
-
-          <details class="offer-more-menu simple-offer-more-menu">
-            <summary aria-label="${escapeHtml(offersTranslate("offers.moreActions", "Další akce nabídky"))}">•••</summary>
-            <div class="offer-more-menu-panel">
-              <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">
-                ${offersTranslate("offers.edit", "Upravit nabídku")}
-              </a>
-              <button
-                class="danger"
-                type="button"
-                data-offers-action="delete-offer"
-                data-offer-id="${escapeHtml(offerId)}"
-              >${offersTranslate("offers.delete", "Smazat nabídku")}</button>
-            </div>
-          </details>
+          ${primaryActionHtml}
+          ${directOfferActionsHtml}
         </div>
       </article>
 
