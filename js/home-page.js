@@ -281,11 +281,45 @@ async function loadHomeMapOffers() {
   renderHomeOffersMap();
 }
 
+function updateHomeMapZoomControls() {
+  const zoomInButton = document.getElementById("homeMapZoomIn");
+  const zoomOutButton = document.getElementById("homeMapZoomOut");
+
+  if (!homeMap) return;
+
+  if (zoomInButton) {
+    zoomInButton.disabled = homeMap.getZoom() >= homeMap.getMaxZoom();
+  }
+
+  if (zoomOutButton) {
+    zoomOutButton.disabled = homeMap.getZoom() <= homeMap.getMinZoom();
+  }
+}
+
+function bindHomeMapZoomControls() {
+  const zoomInButton = document.getElementById("homeMapZoomIn");
+  const zoomOutButton = document.getElementById("homeMapZoomOut");
+
+  if (zoomInButton) {
+    zoomInButton.addEventListener("click", function () {
+      if (homeMap) homeMap.zoomIn();
+    });
+  }
+
+  if (zoomOutButton) {
+    zoomOutButton.addEventListener("click", function () {
+      if (homeMap) homeMap.zoomOut();
+    });
+  }
+
+  updateHomeMapZoomControls();
+}
+
 function initializeHomeMap() {
   if (homeMap || typeof window.L === "undefined") return;
 
   homeMap = window.L.map("homeOffersMap", {
-    zoomControl: true,
+    zoomControl: false,
     scrollWheelZoom: false,
     attributionControl: true
   }).setView([49.8, 15.5], 6);
@@ -296,9 +330,13 @@ function initializeHomeMap() {
   }).addTo(homeMap);
 
   homeMapLayer = window.L.layerGroup().addTo(homeMap);
+  bindHomeMapZoomControls();
 
   homeMap.on("moveend", updateHomeMapViewportStatus);
-  homeMap.on("zoomend", updateHomeMapViewportStatus);
+  homeMap.on("zoomend", function () {
+    updateHomeMapViewportStatus();
+    updateHomeMapZoomControls();
+  });
 }
 
 function updateHomeMapViewportStatus() {

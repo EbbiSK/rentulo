@@ -552,6 +552,53 @@
       margin-bottom: 10px;
     }
 
+    .home-map-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .home-map-toolbar .featured-eyebrow {
+      margin-bottom: 0;
+    }
+
+    .home-map-zoom-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+
+    .home-map-zoom-button {
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border: 1px solid #cfe1c5;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.82);
+      color: #173f35;
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .home-map-zoom-button:hover {
+      background: #eef7f2;
+    }
+
+    .home-map-zoom-button:focus-visible {
+      outline: 3px solid rgba(126, 217, 87, 0.35);
+      outline-offset: 2px;
+    }
+
+    .home-map-zoom-button:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
     .home-map-shell {
       position: relative;
       min-height: 300px;
@@ -874,7 +921,13 @@
 
   <aside class="home-side-card home-map-card" aria-labelledby="homeMapTitle">
     <div class="featured-header home-map-header">
-      <span class="featured-eyebrow" data-i18n="home.mapEyebrow">Mapa nabídek</span>
+      <div class="home-map-toolbar">
+        <span class="featured-eyebrow" data-i18n="home.mapEyebrow">Mapa nabídek</span>
+        <div class="home-map-zoom-controls" aria-label="Zoom mapy">
+          <button id="homeMapZoomOut" class="home-map-zoom-button" type="button" aria-label="−">−</button>
+          <button id="homeMapZoomIn" class="home-map-zoom-button" type="button" aria-label="+">+</button>
+        </div>
+      </div>
       <h2 id="homeMapTitle" data-i18n="home.mapTitle">Co si můžete půjčit v okolí</h2>
       <p data-i18n="home.mapText">Body zobrazují jen přibližnou polohu. V každém místě má přednost nejlépe hodnocená nabídka.</p>
     </div>
