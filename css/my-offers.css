@@ -311,8 +311,8 @@
     }
 
     .status-pill.draft {
-      background: #fff2e8;
-      color: #5b3a22;
+      background: #fff3e8;
+      color: #8a4b16;
     }
 
     .request-status {
@@ -811,8 +811,8 @@
     }
 
     .offer-card.has-urgent-request {
-      border-color: #ffb37e;
-      box-shadow: 0 10px 28px rgba(255, 101, 0, 0.11);
+      border-color: #f2c79f;
+      box-shadow: 0 10px 28px rgba(255, 106, 0, 0.09);
     }
 
     .offer-card-main {
@@ -899,8 +899,8 @@
     }
 
     .offer-request-state.draft {
-      background: #fff2e8;
-      color: #725039;
+      background: #fff3e8;
+      color: #8a4b16;
     }
 
     .offer-card-controls {
