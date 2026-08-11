@@ -1,7 +1,14 @@
 let editOfferPhotoDataUrl = "";
+let editOfferPhotoProcessing = false;
+let editOfferPhotoSelectionToken = 0;
 let editCurrentOffer = null;
 let editHasBlockingReservation = false;
 let editSaveInProgress = false;
+let editOwnerProfile = {
+  street: "",
+  city: "",
+  postalCode: ""
+};
 
 const EDIT_OFFER_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 const EDIT_OFFER_PHOTO_ALLOWED_TYPES = [
@@ -111,6 +118,45 @@ function editValueOrEmpty(value) {
   return value === undefined || value === null ? "" : value;
 }
 
+function normalizeEditPickupAddress(pickupAddress) {
+  return [
+    pickupAddress && pickupAddress.street,
+    pickupAddress && pickupAddress.city,
+    pickupAddress && pickupAddress.postalCode
+  ].map(function (value) {
+    return String(value || "").trim().toLowerCase();
+  }).join("|");
+}
+
+function getExistingEditPickupCoordinates(offer) {
+  if (!offer) {
+    return null;
+  }
+
+  const rawLatitude = offer.pickup_latitude;
+  const rawLongitude = offer.pickup_longitude;
+
+  if (
+    rawLatitude === undefined ||
+    rawLatitude === null ||
+    rawLatitude === "" ||
+    rawLongitude === undefined ||
+    rawLongitude === null ||
+    rawLongitude === ""
+  ) {
+    return null;
+  }
+
+  const latitude = Number(rawLatitude);
+  const longitude = Number(rawLongitude);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return null;
+  }
+
+  return { latitude, longitude };
+}
+
 function getEditToolId() {
   const params = new URLSearchParams(window.location.search);
   return params.get("id");
@@ -213,54 +259,84 @@ function resizeEditImageToDataUrl(file, callback) {
   reader.readAsDataURL(file);
 }
 
+function setEditRemovePhotoButtonVisible(button, isVisible) {
+  if (!button) {
+    return;
+  }
+
+  button.hidden = !isVisible;
+}
+
 function setupEditOfferPhotoUpload() {
   const photoInput = document.querySelector("#edit-photo");
   const removePhotoButton = document.querySelector("#removeEditPhotoButton");
 
+  setEditRemovePhotoButtonVisible(removePhotoButton, Boolean(editOfferPhotoDataUrl));
+
   if (photoInput) {
     updateEditPhotoFileName(null);
+
     photoInput.addEventListener("change", function () {
       const file = photoInput.files && photoInput.files[0];
+      const selectionToken = ++editOfferPhotoSelectionToken;
+
       updateEditPhotoFileName(file);
 
       if (!file) {
+        editOfferPhotoProcessing = false;
         updateEditPhotoStatus(editT("editOffer.photoNotSelected", "Fotka nebyla vybraná."), "");
+        setEditRemovePhotoButtonVisible(removePhotoButton, Boolean(editOfferPhotoDataUrl));
         return;
       }
 
       if (!EDIT_OFFER_PHOTO_ALLOWED_TYPES.includes(file.type)) {
+        editOfferPhotoProcessing = false;
         photoInput.value = "";
         updateEditPhotoFileName(null);
         updateEditPhotoStatus(editT("editOffer.invalidPhoto", "Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP."), "error");
+        setEditRemovePhotoButtonVisible(removePhotoButton, Boolean(editOfferPhotoDataUrl));
         return;
       }
 
       if (file.size > EDIT_OFFER_PHOTO_MAX_BYTES) {
+        editOfferPhotoProcessing = false;
         photoInput.value = "";
         updateEditPhotoFileName(null);
         updateEditPhotoStatus(editT("editOffer.photoTooLarge", "Fotka je příliš velká. Maximální velikost je 5 MB."), "error");
+        setEditRemovePhotoButtonVisible(removePhotoButton, Boolean(editOfferPhotoDataUrl));
         return;
       }
 
+      editOfferPhotoProcessing = true;
       updateEditPhotoStatus(editT("editOffer.processingPhoto", "Zpracovávám fotku..."), "");
 
       resizeEditImageToDataUrl(file, function (dataUrl) {
+        if (selectionToken !== editOfferPhotoSelectionToken) {
+          return;
+        }
+
+        editOfferPhotoProcessing = false;
+
         if (!dataUrl) {
           photoInput.value = "";
-        updateEditPhotoFileName(null);
+          updateEditPhotoFileName(null);
           updateEditPhotoStatus(editT("editOffer.photoLoadFailed", "Fotku se nepodařilo načíst. Zkuste jiný obrázek."), "error");
+          setEditRemovePhotoButtonVisible(removePhotoButton, Boolean(editOfferPhotoDataUrl));
           return;
         }
 
         editOfferPhotoDataUrl = dataUrl;
         renderEditPhotoPreview(editOfferPhotoDataUrl);
         updateEditPhotoStatus(editT("editOffer.photoReady", "Nová fotka je připravená k uložení."), "success");
+        setEditRemovePhotoButtonVisible(removePhotoButton, true);
       });
     });
   }
 
   if (removePhotoButton) {
     removePhotoButton.addEventListener("click", function () {
+      editOfferPhotoSelectionToken += 1;
+      editOfferPhotoProcessing = false;
       editOfferPhotoDataUrl = "";
 
       if (photoInput) {
@@ -270,6 +346,7 @@ function setupEditOfferPhotoUpload() {
 
       renderEditPhotoPreview("");
       updateEditPhotoStatus(editT("editOffer.photoWillBeRemoved", "Fotka bude po uložení odstraněná."), "");
+      setEditRemovePhotoButtonVisible(removePhotoButton, false);
     });
   }
 }
@@ -360,6 +437,34 @@ async function loadOfferFromSupabase(offerId) {
   return data;
 }
 
+async function loadEditOwnerProfile(userId) {
+  const supabaseClient = getEditSupabaseClient();
+
+  if (!supabaseClient || !userId) {
+    return;
+  }
+
+  const { data: profile, error } = await supabaseClient
+    .from("profiles")
+    .select("street, city, postal_code")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error || !profile) {
+    if (error) {
+      console.warn("Profilovou adresu se nepodařilo načíst.", error);
+    }
+
+    return;
+  }
+
+  editOwnerProfile = {
+    street: profile.street || "",
+    city: profile.city || "",
+    postalCode: profile.postal_code || ""
+  };
+}
+
 async function offerHasOpenReservationInSupabase(offerId) {
   const supabaseClient = getEditSupabaseClient();
 
@@ -431,9 +536,85 @@ function normalizeEditOfferCategory(category) {
   return legacyMap[value] || value;
 }
 
+function renderEditProfilePickupAddress() {
+  const summary = document.querySelector("#editProfilePickupSummary");
+  const address = document.querySelector("#editProfilePickupAddress");
+  const pickupUseCustom = document.querySelector("#editPickupUseCustom");
+
+  if (!summary || !address) {
+    return;
+  }
+
+  const hasCompleteProfileAddress = Boolean(
+    editOwnerProfile.street &&
+    editOwnerProfile.city &&
+    editOwnerProfile.postalCode
+  );
+
+  if (!hasCompleteProfileAddress) {
+    summary.hidden = true;
+    address.textContent = "";
+    return;
+  }
+
+  address.textContent = [
+    editOwnerProfile.street,
+    editOwnerProfile.city,
+    editOwnerProfile.postalCode
+  ].join(", ");
+  summary.hidden = Boolean(pickupUseCustom && pickupUseCustom.checked);
+}
+
+function setupEditPickupFields() {
+  const pickupUseCustom = document.querySelector("#editPickupUseCustom");
+  const pickupCustomFields = document.querySelector("#editPickupCustomFields");
+
+  if (!pickupUseCustom || !pickupCustomFields) {
+    return;
+  }
+
+  pickupUseCustom.addEventListener("change", function () {
+    pickupCustomFields.classList.toggle("is-visible", pickupUseCustom.checked);
+    renderEditProfilePickupAddress();
+  });
+
+  pickupCustomFields.classList.toggle("is-visible", pickupUseCustom.checked);
+  renderEditProfilePickupAddress();
+}
+
+function getEditedPickupAddress() {
+  const pickupUseCustom = document.querySelector("#editPickupUseCustom");
+  const useCustomPickup = Boolean(pickupUseCustom && pickupUseCustom.checked);
+
+  if (useCustomPickup) {
+    const pickupStreetInput = document.querySelector("#edit-pickup-street");
+    const cityInput = document.querySelector("#edit-city");
+    const postalInput = document.querySelector("#edit-postal-code");
+    const pickupNoteInput = document.querySelector("#edit-pickup-note");
+
+    return {
+      mode: "custom",
+      street: pickupStreetInput ? pickupStreetInput.value.trim() : "",
+      city: cityInput ? cityInput.value.trim() : "",
+      postalCode: postalInput ? postalInput.value.trim() : "",
+      note: pickupNoteInput ? pickupNoteInput.value.trim() : ""
+    };
+  }
+
+  return {
+    mode: "profile",
+    street: editOwnerProfile.street,
+    city: editOwnerProfile.city,
+    postalCode: editOwnerProfile.postalCode,
+    note: ""
+  };
+}
+
 function fillEditForm(offer) {
   const nameInput = document.querySelector("#edit-name");
   const categorySelect = document.querySelector("#edit-category");
+  const pickupUseCustom = document.querySelector("#editPickupUseCustom");
+  const pickupCustomFields = document.querySelector("#editPickupCustomFields");
   const pickupStreetInput = document.querySelector("#edit-pickup-street");
   const cityInput = document.querySelector("#edit-city");
   const postalInput = document.querySelector("#edit-postal-code");
@@ -444,6 +625,8 @@ function fillEditForm(offer) {
   if (
     !nameInput ||
     !categorySelect ||
+    !pickupUseCustom ||
+    !pickupCustomFields ||
     !pickupStreetInput ||
     !cityInput ||
     !postalInput ||
@@ -463,6 +646,10 @@ function fillEditForm(offer) {
   pickupNoteInput.value = offer.pickup_note || "";
   priceInput.value = editValueOrEmpty(offer.price_per_day);
   descriptionInput.value = offer.description || "";
+
+  pickupUseCustom.checked = offer.pickup_mode === "custom";
+  pickupCustomFields.classList.toggle("is-visible", pickupUseCustom.checked);
+  renderEditProfilePickupAddress();
 
   editOfferPhotoDataUrl = getEditOfferPhoto(offer);
   renderEditPhotoPreview(editOfferPhotoDataUrl);
@@ -646,11 +833,13 @@ async function initializeEditOfferPage(supabaseUser) {
     }
 
     editCurrentOffer = offer;
+    await loadEditOwnerProfile(supabaseUser.id);
     editHasBlockingReservation = await offerHasOpenReservationInSupabase(offer.id);
 
     fillEditForm(offer);
     editLockPriceFields(editHasBlockingReservation);
     setupEditOfferPhotoUpload();
+    setupEditPickupFields();
     setupEditOfferSave();
   } catch (error) {
     console.error(error);
@@ -692,6 +881,7 @@ function setupEditOfferSave() {
 
     const nameInput = document.querySelector("#edit-name");
     const categorySelect = document.querySelector("#edit-category");
+    const pickupUseCustom = document.querySelector("#editPickupUseCustom");
     const pickupStreetInput = document.querySelector("#edit-pickup-street");
     const cityInput = document.querySelector("#edit-city");
     const postalInput = document.querySelector("#edit-postal-code");
@@ -702,6 +892,7 @@ function setupEditOfferSave() {
     if (
       !nameInput ||
       !categorySelect ||
+      !pickupUseCustom ||
       !pickupStreetInput ||
       !cityInput ||
       !postalInput ||
@@ -715,7 +906,7 @@ function setupEditOfferSave() {
 
     let hasError = false;
 
-    [nameInput, pickupStreetInput, cityInput, postalInput, descriptionInput].forEach(function (field) {
+    [nameInput, descriptionInput].forEach(function (field) {
       if (editIsEmpty(field.value)) {
         editMarkError(field);
         hasError = true;
@@ -727,8 +918,22 @@ function setupEditOfferSave() {
       hasError = true;
     }
 
-    let priceValue = Number(editCurrentOffer.price_per_day || 0);
+    if (pickupUseCustom.checked) {
+      [pickupStreetInput, cityInput, postalInput].forEach(function (field) {
+        if (editIsEmpty(field.value)) {
+          editMarkError(field);
+          hasError = true;
+        }
+      });
+    } else if (!editOwnerProfile.street || !editOwnerProfile.city || !editOwnerProfile.postalCode) {
+      editShowMessage(editT(
+        "offer.profilePickupMissing",
+        "Ve vašem profilu chybí úplná adresa pro vyzvednutí. Doplňte ji v Nastavení nebo zvolte jiné místo vyzvednutí."
+      ));
+      return;
+    }
 
+    let priceValue = Number(editCurrentOffer.price_per_day || 0);
 
     if (!editHasBlockingReservation) {
       if (editIsEmpty(priceInput.value)) {
@@ -736,21 +941,24 @@ function setupEditOfferSave() {
         hasError = true;
       }
 
-      
-
       priceValue = editMoneyToNumber(priceInput.value);
-      
 
       if (priceValue <= 0) {
         editMarkError(priceInput);
         hasError = true;
       }
-
-      
     }
 
     if (hasError) {
-      editShowMessage(editT("editOffer.validation", "Vyplňte prosím všechna pole. Cena musí být číslo větší než 0."));
+      editShowMessage(editT("editOffer.validation", "Vyplňte prosím všechna povinná pole. Cena musí být číslo větší než 0."));
+      return;
+    }
+
+    if (editOfferPhotoProcessing) {
+      editShowMessage(editT(
+        "offer.photoProcessingWait",
+        "Počkejte prosím, až se dokončí zpracování fotky."
+      ));
       return;
     }
 
@@ -760,30 +968,21 @@ function setupEditOfferSave() {
     let newlyUploadedPhotoPath = "";
 
     try {
-      const pickupAddress = {
-        street: pickupStreetInput.value.trim(),
-        city: cityInput.value.trim(),
-        postalCode: postalInput.value.trim()
+      const pickupAddress = getEditedPickupAddress();
+      const currentPickupAddress = {
+        street: editCurrentOffer.pickup_street || "",
+        city: editCurrentOffer.pickup_city || editCurrentOffer.city || "",
+        postalCode: editCurrentOffer.pickup_postal_code || editCurrentOffer.postal_code || ""
       };
-      const pickupCoordinates = await geocodeEditedPickupAddress(supabaseClient, pickupAddress);
+      const existingPickupCoordinates = getExistingEditPickupCoordinates(editCurrentOffer);
+      const pickupAddressChanged =
+        normalizeEditPickupAddress(currentPickupAddress) !== normalizeEditPickupAddress(pickupAddress);
+      const pickupCoordinates = !pickupAddressChanged && existingPickupCoordinates
+        ? existingPickupCoordinates
+        : await geocodeEditedPickupAddress(supabaseClient, pickupAddress);
       const previousPhotoUrl = getEditOfferPhoto(editCurrentOffer);
       const uploadedPhoto = await uploadEditedOfferPhoto(supabaseClient, supabaseUser.id);
       newlyUploadedPhotoPath = uploadedPhoto.isNew ? uploadedPhoto.path : "";
-
-      const originalPickupAddress = [
-        editCurrentOffer.pickup_street || "",
-        editCurrentOffer.pickup_city || editCurrentOffer.city || "",
-        editCurrentOffer.pickup_postal_code || editCurrentOffer.postal_code || ""
-      ].map(function (value) {
-        return String(value).trim().toLowerCase();
-      }).join("|");
-      const editedPickupAddress = [
-        pickupAddress.street,
-        pickupAddress.city,
-        pickupAddress.postalCode
-      ].map(function (value) {
-        return String(value).trim().toLowerCase();
-      }).join("|");
 
       const updatePayload = {
         name: nameInput.value.trim(),
@@ -792,20 +991,17 @@ function setupEditOfferSave() {
         postal_code: pickupAddress.postalCode,
         description: descriptionInput.value.trim(),
         photo_url: uploadedPhoto.url,
-        pickup_mode: originalPickupAddress === editedPickupAddress
-          ? (editCurrentOffer.pickup_mode || "profile")
-          : "custom",
+        pickup_mode: pickupAddress.mode,
         pickup_street: pickupAddress.street,
         pickup_city: pickupAddress.city,
         pickup_postal_code: pickupAddress.postalCode,
-        pickup_note: pickupNoteInput.value.trim(),
+        pickup_note: pickupAddress.note,
         pickup_latitude: pickupCoordinates.latitude,
         pickup_longitude: pickupCoordinates.longitude
       };
 
       if (!editHasBlockingReservation) {
         updatePayload.price_per_day = priceValue;
-
       }
 
       const { error } = await supabaseClient

@@ -119,7 +119,7 @@
     .edit-page-header {
       position: relative;
       margin-bottom: 18px;
-      padding: 24px 210px 24px 24px;
+      padding: 24px;
       background: #f7fcf9;
       border: 1px solid #cfe4da;
       border-radius: 18px;
@@ -250,27 +250,31 @@
       margin-top: 1px;
     }
 
-    .photo-upload-box {
+    .photo-upload-box,
+    .pickup-options {
       border: 1px solid #cfe4da;
       border-radius: 16px;
       background: #ffffff;
       overflow: hidden;
     }
 
-    .photo-upload-header {
+    .photo-upload-header,
+    .pickup-options-header {
       padding: 12px 14px;
       border-bottom: 1px solid #dbece4;
       background: #f7fcf9;
     }
 
-    .photo-upload-header strong {
+    .photo-upload-header strong,
+    .pickup-options-header strong {
       display: block;
       color: #173f35;
       font-size: 16px;
       font-weight: 900;
     }
 
-    .photo-upload-header p {
+    .photo-upload-header p,
+    .pickup-options-header p {
       margin: 4px 0 0;
       color: #66736e;
       font-size: 13px;
@@ -405,6 +409,66 @@
       color: #c2410c;
     }
 
+    .pickup-options-body {
+      padding: 14px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .profile-pickup-summary {
+      padding: 10px 12px;
+      border: 1px solid #cfe4da;
+      border-radius: 12px;
+      background: #f7fbf9;
+      color: #173f35;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .profile-pickup-summary-label {
+      display: block;
+      margin-bottom: 2px;
+      color: #66736e;
+      font-weight: 700;
+    }
+
+    .profile-pickup-summary-address {
+      font-weight: 900;
+    }
+
+    .pickup-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: #173f35;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+
+    .pickup-checkbox input {
+      width: 18px;
+      height: 18px;
+      margin-top: 1px;
+      accent-color: #7ed957;
+      flex-shrink: 0;
+    }
+
+    html[data-focus-input="pointer"] .pickup-checkbox input:focus {
+      outline: none !important;
+      outline-offset: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .pickup-custom-fields {
+      display: none;
+    }
+
+    .pickup-custom-fields.is-visible {
+      display: block;
+    }
+
     .form-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -472,9 +536,8 @@
     }
 
     .input-error {
-      border-color: #c2410c !important;
-      background: #fff8f2 !important;
-      box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.12) !important;
+      border-color: #c9783b !important;
+      box-shadow: 0 0 0 3px rgba(201, 120, 59, 0.14) !important;
     }
 
     .locked-input {
@@ -651,6 +714,7 @@
     }
 
     .photo-upload-box,
+    .pickup-options,
     .photo-file-control,
     .form-group input,
     .form-group select,
@@ -676,7 +740,7 @@
       }
 
       .edit-page-header {
-        padding-right: 0;
+        padding-right: 24px;
       }
 
       .top-action-button {
@@ -760,11 +824,8 @@
       <h1 data-i18n="editOffer.title">Upravit nabídku</h1>
 
       <p data-i18n="editOffer.description">
-        Změňte fotku, název, cenu, lokalitu nebo popis. Po uložení se změny projeví
-        ve výsledcích vyhledávání i v detailu nabídky.
+        Změňte fotku, název, cenu, místo vyzvednutí nebo popis. Po uložení se aktualizují údaje nabídky.
       </p>
-
-      <a href="moje-nabidky.html" class="top-action-button" data-i18n="editOffer.myListings">Moje nabídky</a>
     </section>
 
     <section class="edit-layout">
@@ -798,7 +859,7 @@
                   <span class="photo-file-name" id="editPhotoFileName" data-i18n="editOffer.noFileChosen">Nebyl vybrán žádný soubor</span>
                 </label>
 
-                <button type="button" class="photo-remove-button" id="removeEditPhotoButton" data-i18n="editOffer.removePhoto">
+                <button type="button" class="photo-remove-button" id="removeEditPhotoButton" data-i18n="editOffer.removePhoto" hidden>
                   Odebrat fotku
                 </button>
 
@@ -810,65 +871,87 @@
           </div>
 
           <div class="form-grid">
-           <div class="form-group">
-  <label for="edit-name" data-i18n="editOffer.name">Název věci</label>
-  <input
-    id="edit-name"
-    type="text"
-    placeholder="např. stan, kočárek nebo Aku vrtačka" data-i18n-placeholder="editOffer.namePlaceholder"
-  />
-</div> 
+            <div class="form-group">
+              <label for="edit-name" data-i18n="editOffer.name">Název věci</label>
+              <input
+                id="edit-name"
+                type="text"
+                placeholder="např. stan, kočárek nebo Aku vrtačka" data-i18n-placeholder="editOffer.namePlaceholder"
+              />
+            </div>
 
             <div class="form-group">
               <label for="edit-category" data-i18n="editOffer.category">Kategorie</label>
               <select id="edit-category">
-              <option value="" data-i18n="editOffer.chooseCategory">Vyberte kategorii</option>
-              <option value="Domácnost" data-i18n="home.category.household">Domácnost</option>
-              <option value="Zahrada" data-i18n="home.category.garden">Zahrada</option>
-              <option value="Stavba" data-i18n="home.category.construction">Stavba</option>
-              <option value="Hobby" data-i18n="home.category.hobby">Hobby</option>
-              <option value="Párty" data-i18n="home.category.party">Párty</option>
-              <option value="Ostatní" data-i18n="home.category.other">Ostatní</option>
-            </select>
-            </div>
-
-            <div class="form-group">
-              <label for="edit-pickup-street" data-i18n="offer.streetLabel">Ulice a číslo</label>
-              <input id="edit-pickup-street" type="text" placeholder="např. Zahradnická 5" data-i18n-placeholder="offer.streetPlaceholder" />
-            </div>
-
-            <div class="form-group">
-              <label for="edit-city" data-i18n="editOffer.city">Město nebo obec</label>
-              <input id="edit-city" type="text" placeholder="např. Brno" data-i18n-placeholder="editOffer.cityPlaceholder" />
-            </div>
-
-            <div class="form-group">
-              <label for="edit-postal-code" data-i18n="editOffer.postalCode">PSČ</label>
-              <input id="edit-postal-code" type="text" placeholder="např. 602 00" data-i18n-placeholder="editOffer.postalCodePlaceholder" />
-            </div>
-
-            <div class="form-group">
-              <label for="edit-pickup-note" data-i18n="offer.pickupNoteLabel">Poznámka k vyzvednutí</label>
-              <input id="edit-pickup-note" type="text" placeholder="např. zvonek Majitel" data-i18n-placeholder="offer.pickupNotePlaceholder" />
+                <option value="" data-i18n="editOffer.chooseCategory">Vyberte kategorii</option>
+                <option value="Domácnost" data-i18n="home.category.household">Domácnost</option>
+                <option value="Zahrada" data-i18n="home.category.garden">Zahrada</option>
+                <option value="Stavba" data-i18n="home.category.construction">Stavba</option>
+                <option value="Hobby" data-i18n="home.category.hobby">Hobby</option>
+                <option value="Párty" data-i18n="home.category.party">Párty</option>
+                <option value="Ostatní" data-i18n="home.category.other">Ostatní</option>
+              </select>
             </div>
 
             <div class="form-group">
               <label for="edit-price" data-i18n="editOffer.pricePerDay">Cena za den</label>
               <input id="edit-price" type="text" placeholder="např. 250 Kč" data-i18n-placeholder="editOffer.pricePlaceholder" />
             </div>
-
-            
+          </div>
 
           <div class="form-group full">
-  <label for="edit-description" data-i18n="editOffer.itemDescription">Popis věci</label>
-  <textarea
-    id="edit-description"
-    placeholder="Napište stav věci, co je součástí půjčení a případné podmínky." data-i18n-placeholder="editOffer.descriptionPlaceholder"
-  ></textarea>
-</div>
+            <label for="edit-description" data-i18n="editOffer.itemDescription">Popis věci</label>
+            <textarea
+              id="edit-description"
+              placeholder="Napište stav věci, co je součástí půjčení a případné podmínky." data-i18n-placeholder="editOffer.descriptionPlaceholder"
+            ></textarea>
+          </div>
+
+          <section class="pickup-options">
+            <div class="pickup-options-header">
+              <strong data-i18n="offer.pickupTitle">Místo vyzvednutí</strong>
+              <p data-i18n="offer.pickupDescription">Místo vyzvednutí určuje také polohu nabídky na mapě. Standardně se použijí údaje z vašeho profilu; jiné místo můžete zadat níže.</p>
+            </div>
+
+            <div class="pickup-options-body">
+              <div class="profile-pickup-summary" id="editProfilePickupSummary" hidden>
+                <span class="profile-pickup-summary-label" data-i18n="offer.profilePickupAddressLabel">Použije se vaše profilová adresa:</span>
+                <span class="profile-pickup-summary-address" id="editProfilePickupAddress"></span>
+              </div>
+
+              <label class="pickup-checkbox">
+                <input type="checkbox" id="editPickupUseCustom" />
+                <span data-i18n="offer.pickupCustomToggle">Použít jiné místo vyzvednutí než údaje z profilu</span>
+              </label>
+
+              <div class="pickup-custom-fields" id="editPickupCustomFields">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="edit-pickup-street" data-i18n="offer.streetLabel">Ulice a číslo</label>
+                    <input id="edit-pickup-street" type="text" placeholder="např. Zahradnická 5" data-i18n-placeholder="offer.streetPlaceholder" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="edit-city" data-i18n="offer.cityLabel">Město nebo obec</label>
+                    <input id="edit-city" type="text" placeholder="např. Praha" data-i18n-placeholder="offer.cityPlaceholder" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="edit-postal-code" data-i18n="offer.postalCodeLabel">PSČ</label>
+                    <input id="edit-postal-code" type="text" placeholder="např. 602 00" data-i18n-placeholder="offer.postalCodePlaceholder" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="edit-pickup-note" data-i18n="offer.pickupNoteOptionalLabel">Poznámka k vyzvednutí (nepovinné)</label>
+                    <input id="edit-pickup-note" type="text" placeholder="např. zvonek Majitel" data-i18n-placeholder="offer.pickupNotePlaceholder" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
           <div class="form-actions">
-            <a href="moje-nabidky.html" class="edit-cancel-button" data-i18n="editOffer.cancel">Zrušit</a>
+            <a href="moje-nabidky.html" class="edit-cancel-button" data-i18n="editOffer.cancel">Zpět bez uložení</a>
             <button type="button" class="btn-primary" id="save-edit-button" data-i18n="editOffer.save">Uložit změny</button>
           </div>
 
@@ -882,7 +965,7 @@
 
         <div class="edit-help-content">
           <p data-i18n="editOffer.helpDescription">
-            Úpravy se projeví na veřejném detailu nabídky a ve výsledcích vyhledávání.
+            Uložené změny aktualizují nabídku. U zveřejněné nabídky se projeví také ve veřejném detailu a výsledcích vyhledávání.
           </p>
 
           <ul class="edit-help-list">
