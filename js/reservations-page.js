@@ -1009,6 +1009,16 @@ const data = Array.isArray(paidReservations)
       const address = getPickupAddress(reservation);
       const phone = getPickupPhone(reservation);
       const city = getPickupCity(reservation);
+      const pickupLatitude = reservation.pickupLatitude;
+      const pickupLongitude = reservation.pickupLongitude;
+      const hasPickupCoordinates =
+        Number.isFinite(pickupLatitude) &&
+        Number.isFinite(pickupLongitude);
+      const pickupMapUrl =
+        isMapUsefulForStatus(status) &&
+        (hasPickupCoordinates || address)
+          ? getMapUrl(address, pickupLatitude, pickupLongitude)
+          : "";
 
       if (!getSafeReservationContactVisible(status)) {
         return `
@@ -1041,6 +1051,12 @@ const data = Array.isArray(paidReservations)
             <span>${escapeHtml(reservationsTranslate("reservations.contact.address", "Adresa"))}: ${escapeHtml(address || reservationsTranslate("reservations.contact.addressMissing", "Adresa není uložená"))}</span>
             ${reservation.pickupNote ? `<span>${escapeHtml(reservationsTranslate("reservations.contact.note", "Poznámka"))}: ${escapeHtml(reservation.pickupNote)}</span>` : ""}
           </div>
+          ${pickupMapUrl ? `
+            <a class="small-button light contact-map-link" href="${escapeHtml(pickupMapUrl)}" target="_blank" rel="noopener noreferrer">
+              <span aria-hidden="true">📍</span>
+              ${escapeHtml(reservationsTranslate("reservations.openPickupMap", "Otevřít mapu vyzvednutí"))}
+            </a>
+          ` : ""}
         </div>
       `;
     }

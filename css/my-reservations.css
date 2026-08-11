@@ -511,6 +511,13 @@
       color: #8a4b16;
     }
 
+    .contact-map-link {
+      gap: 6px;
+      width: fit-content;
+      margin-top: 10px;
+      text-decoration: none;
+    }
+
     .section-empty-note {
       margin: 0;
       padding: 12px;
