@@ -1011,10 +1011,6 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
             </div>
           </div>
 
-          <div class="request-actions">
-            <a class="small-button light" href="moje-nabidky.html?open=actions">${offersTranslate("offers.detail.backToRequests", "Zpět na žádosti")}</a>
-          </div>
-
           ${renderReservationContactBlock(reservation)}
 
           ${renderOwnerReviewForRenterBox(reservation, status)}
@@ -1137,7 +1133,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       }
 
       detail.classList.add("open");
-      button.textContent = offersTranslate("offers.hide", "Skrýt");
+      button.textContent = offersTranslate("offers.hideDetail", "Skrýt detail");
     }
 
     function toggleHistoryRequest(reservationId, button) {
@@ -1156,7 +1152,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       }
 
       detail.classList.add("open");
-      button.textContent = offersTranslate("offers.hide", "Skrýt");
+      button.textContent = offersTranslate("offers.hideDetail", "Skrýt detail");
     }
 
     function toggleRequestPanel(panelId, button) {
@@ -1581,7 +1577,7 @@ function renderSimpleOffer(offer, requests) {
           });
 
           if (detailButton) {
-            detailButton.textContent = offersTranslate("offers.hide", "Skrýt");
+            detailButton.textContent = offersTranslate("offers.hideDetail", "Skrýt detail");
           }
         }
       });
