@@ -590,6 +590,185 @@ return (
       }
     }
 
+    let reservationCancelModalResolve = null;
+    let reservationCancelModalReservation = null;
+    let reservationCancelModalReturnFocus = null;
+
+    function getReservationCancelModalElements() {
+      return {
+        overlay: document.getElementById("reservationCancelModal"),
+        title: document.getElementById("reservationCancelModalTitle"),
+        description: document.getElementById("reservationCancelModalDescription"),
+        keepButton: document.querySelector('[data-reservations-cancel-modal-action="keep"]'),
+        confirmButton: document.querySelector('[data-reservations-cancel-modal-action="confirm"]')
+      };
+    }
+
+    function refreshReservationCancelModalText() {
+      if (!reservationCancelModalReservation) {
+        return;
+      }
+
+      const elements = getReservationCancelModalElements();
+      const startDate = formatReservationsDate(
+        getSafeReservationDateFrom(reservationCancelModalReservation)
+      );
+      const endDate = formatReservationsDate(
+        getSafeReservationDateTo(reservationCancelModalReservation)
+      );
+
+      if (elements.title) {
+        elements.title.textContent = reservationsTranslate(
+          "reservations.cancelModal.title",
+          "Zrušit rezervaci?"
+        );
+      }
+
+      if (elements.description) {
+        elements.description.textContent = reservationsTranslate(
+          "reservations.cancelModal.description",
+          "Opravdu chcete tuto rezervaci zrušit? Termín {startDate} – {endDate} se znovu uvolní.",
+          { startDate: startDate, endDate: endDate }
+        );
+      }
+
+      if (elements.keepButton) {
+        elements.keepButton.textContent = reservationsTranslate(
+          "reservations.cancelModal.keep",
+          "Ponechat rezervaci"
+        );
+      }
+
+      if (elements.confirmButton) {
+        elements.confirmButton.textContent = reservationsTranslate(
+          "reservations.cancel",
+          "Zrušit rezervaci"
+        );
+      }
+    }
+
+    function closeReservationCancelModal(confirmed) {
+      const elements = getReservationCancelModalElements();
+
+      if (!elements.overlay || elements.overlay.hidden) {
+        return;
+      }
+
+      elements.overlay.hidden = true;
+      elements.overlay.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("reservation-modal-open");
+
+      const resolve = reservationCancelModalResolve;
+      const returnFocus = reservationCancelModalReturnFocus;
+
+      reservationCancelModalResolve = null;
+      reservationCancelModalReservation = null;
+      reservationCancelModalReturnFocus = null;
+
+      if (resolve) {
+        resolve(Boolean(confirmed));
+      }
+
+      if (!confirmed && returnFocus && returnFocus.isConnected && typeof returnFocus.focus === "function") {
+        requestAnimationFrame(function () {
+          if (returnFocus.isConnected) {
+            returnFocus.focus();
+          }
+        });
+      }
+    }
+
+    function openReservationCancelModal(reservation) {
+      const elements = getReservationCancelModalElements();
+
+      if (!elements.overlay) {
+        return Promise.resolve(
+          confirm(
+            reservationsTranslate(
+              "reservations.confirm.cancel",
+              "Opravdu chcete tuto rezervaci zrušit? Termín se znovu uvolní."
+            )
+          )
+        );
+      }
+
+      reservationCancelModalReservation = reservation;
+      reservationCancelModalReturnFocus = document.activeElement;
+      refreshReservationCancelModalText();
+
+      elements.overlay.hidden = false;
+      elements.overlay.setAttribute("aria-hidden", "false");
+      document.body.classList.add("reservation-modal-open");
+
+      return new Promise(function (resolve) {
+        reservationCancelModalResolve = resolve;
+
+        requestAnimationFrame(function () {
+          if (elements.keepButton) {
+            elements.keepButton.focus();
+          }
+        });
+      });
+    }
+
+    function initializeReservationCancelModal() {
+      const elements = getReservationCancelModalElements();
+
+      if (!elements.overlay) {
+        return;
+      }
+
+      elements.overlay.addEventListener("click", function (event) {
+        const actionButton = event.target.closest(
+          "[data-reservations-cancel-modal-action]"
+        );
+
+        if (actionButton) {
+          closeReservationCancelModal(
+            actionButton.dataset.reservationsCancelModalAction === "confirm"
+          );
+          return;
+        }
+
+        if (event.target === elements.overlay) {
+          closeReservationCancelModal(false);
+        }
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (elements.overlay.hidden) {
+          return;
+        }
+
+        if (event.key === "Escape") {
+          event.preventDefault();
+          closeReservationCancelModal(false);
+          return;
+        }
+
+        if (event.key !== "Tab") {
+          return;
+        }
+
+        const focusable = [elements.keepButton, elements.confirmButton].filter(Boolean);
+
+        if (focusable.length < 2) {
+          return;
+        }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+    }
+
     async function cancelReservation(reservationId) {
       const supabaseClient = getSupabaseClient();
 
@@ -627,9 +806,7 @@ return (
         return;
       }
 
-      const confirmed = confirm(
-        reservationsTranslate("reservations.confirm.cancel", "Opravdu chcete tuto rezervaci zrušit? Termín se znovu uvolní.")
-      );
+      const confirmed = await openReservationCancelModal(reservation);
 
       if (!confirmed) {
         return;
@@ -1474,11 +1651,13 @@ const data = Array.isArray(paidReservations)
 
     document.addEventListener("click", handleReservationsActionClick);
     document.addEventListener("DOMContentLoaded", function () {
+      initializeReservationCancelModal();
       initializeReservationsPage();
     });
 
     document.addEventListener("rentuloLanguageChanged", function () {
       renderSharedNavigation("muj-ucet");
+      refreshReservationCancelModalText();
 
       if (reservationsLoadState === "loading") {
         renderLoadingState();

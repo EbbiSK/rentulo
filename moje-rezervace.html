@@ -202,6 +202,43 @@
 
     <section class="account-list" id="reservationsList"></section>
 
+    <div
+      class="reservation-confirm-modal"
+      id="reservationCancelModal"
+      aria-hidden="true"
+      hidden
+    >
+      <div
+        class="reservation-confirm-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reservationCancelModalTitle"
+        aria-describedby="reservationCancelModalDescription"
+      >
+        <h2 id="reservationCancelModalTitle">Zrušit rezervaci?</h2>
+        <p id="reservationCancelModalDescription">
+          Opravdu chcete tuto rezervaci zrušit? Termín se znovu uvolní.
+        </p>
+
+        <div class="reservation-confirm-actions">
+          <button
+            type="button"
+            class="reservation-modal-button reservation-modal-keep"
+            data-reservations-cancel-modal-action="keep"
+          >
+            Ponechat rezervaci
+          </button>
+          <button
+            type="button"
+            class="reservation-modal-button reservation-modal-cancel"
+            data-reservations-cancel-modal-action="confirm"
+          >
+            Zrušit rezervaci
+          </button>
+        </div>
+      </div>
+    </div>
+
   </main>
 
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
