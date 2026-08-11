@@ -472,6 +472,27 @@
       gap: 14px;
     }
 
+    .profile-pickup-summary {
+      padding: 10px 12px;
+      border: 1px solid #cfe1d8;
+      border-radius: 12px;
+      background: #f7fbf9;
+      color: #173f35;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .profile-pickup-summary-label {
+      display: block;
+      margin-bottom: 2px;
+      color: #66736e;
+      font-weight: 700;
+    }
+
+    .profile-pickup-summary-address {
+      font-weight: 900;
+    }
+
     .pickup-checkbox {
       display: flex;
       align-items: flex-start;
@@ -805,6 +826,11 @@
             </div>
 
             <div class="pickup-options-body">
+              <div class="profile-pickup-summary" id="profilePickupSummary" hidden>
+                <span class="profile-pickup-summary-label" data-i18n="offer.profilePickupAddressLabel">Použije se vaše profilová adresa:</span>
+                <span class="profile-pickup-summary-address" id="profilePickupAddress"></span>
+              </div>
+
               <label class="pickup-checkbox">
                 <input type="checkbox" id="pickupUseCustom" />
                 <span data-i18n="offer.pickupCustomToggle">Použít jiné místo vyzvednutí než údaje z profilu</span>
@@ -828,7 +854,7 @@
                   </div>
 
                   <div class="form-group">
-                    <label for="pickupNote" data-i18n="offer.pickupNoteLabel">Poznámka k vyzvednutí</label>
+                    <label for="pickupNote" data-i18n="offer.pickupNoteOptionalLabel">Poznámka k vyzvednutí (nepovinné)</label>
                     <input id="pickupNote" type="text" placeholder="např. zvonek Majitel" data-i18n-placeholder="offer.pickupNotePlaceholder" />
                   </div>
                 </div>

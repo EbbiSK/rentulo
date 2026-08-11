@@ -251,6 +251,36 @@ let offerSaveInProgress = false;
         postalCode: userPostalCode
       };
 
+      renderProfilePickupAddress();
+    }
+
+    function renderProfilePickupAddress() {
+      const summary = document.getElementById("profilePickupSummary");
+      const address = document.getElementById("profilePickupAddress");
+      const pickupUseCustom = document.getElementById("pickupUseCustom");
+
+      if (!summary || !address) {
+        return;
+      }
+
+      const hasCompleteProfileAddress = Boolean(
+        offerOwnerProfile.street &&
+        offerOwnerProfile.city &&
+        offerOwnerProfile.postalCode
+      );
+
+      if (!hasCompleteProfileAddress) {
+        summary.hidden = true;
+        address.textContent = "";
+        return;
+      }
+
+      address.textContent = [
+        offerOwnerProfile.street,
+        offerOwnerProfile.city,
+        offerOwnerProfile.postalCode
+      ].join(", ");
+      summary.hidden = Boolean(pickupUseCustom && pickupUseCustom.checked);
     }
 
     function parseMoneyValue(value) {
@@ -891,7 +921,11 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
         } else {
           pickupCustomFields.classList.remove("is-visible");
         }
+
+        renderProfilePickupAddress();
       });
+
+      renderProfilePickupAddress();
     }
 
     function setupOfferForm() {
