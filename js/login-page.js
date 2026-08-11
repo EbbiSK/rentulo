@@ -204,6 +204,20 @@ function loginNormalizeEmail(email) {
       hideLoginError();
       clearLoginErrors();
 
+      const allowedReturnPages = new Set([
+        "detail.html",
+        "edit-nabidka.html",
+        "historie.html",
+        "moje-nabidky.html",
+        "moje-rezervace.html",
+        "muj-ucet.html",
+        "nabidnout.html",
+        "nastaveni.html"
+      ]);
+      const returnTo = new URLSearchParams(window.location.search).get("returnTo") || "";
+      const returnPath = returnTo.split(/[?#]/, 1)[0];
+      const targetPage = allowedReturnPages.has(returnPath) ? returnTo : "index.html";
+
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
@@ -303,20 +317,6 @@ function loginNormalizeEmail(email) {
         const currentUser = loginCreateLocalUserFromSupabase(data.user, profile);
 
         loginSaveCurrentUser(currentUser);
-        const allowedReturnPages = new Set([
-          "detail.html",
-          "edit-nabidka.html",
-          "historie.html",
-          "moje-nabidky.html",
-          "moje-rezervace.html",
-          "muj-ucet.html",
-          "nabidnout.html",
-          "nastaveni.html"
-        ]);
-        const returnTo = new URLSearchParams(window.location.search).get("returnTo") || "";
-        const returnPath = returnTo.split(/[?#]/, 1)[0];
-        const targetPage = allowedReturnPages.has(returnPath) ? returnTo : "index.html";
-
         window.location.href = targetPage;
       } catch (error) {
         console.error(loginTranslate("login.console.failed", "Přihlášení se nepodařilo."), error);
