@@ -316,8 +316,8 @@
     }
 
     .request-status {
-      background: #fff0e5;
-      color: #c95400;
+      background: #fff3e8;
+      color: #8a4b16;
     }
 
     .request-status.paid,
@@ -352,8 +352,8 @@
     }
 
     .count-pill.important {
-      background: #fff0e5;
-      color: #c95400;
+      background: #fff3e8;
+      color: #8a4b16;
     }
 
     .count-pill.success {
@@ -633,11 +633,11 @@
     .request-note {
       margin: 0;
       border-radius: 11px;
-      background: #fff0e5;
+      background: #fff3e8;
       padding: 8px 10px;
       font-size: 13px;
       font-weight: 800;
-      color: #c95400;
+      color: #8a4b16;
     }
 
     .request-note.success {
@@ -884,8 +884,8 @@
     }
 
     .offer-request-state.urgent {
-      background: #fff0e5;
-      color: #c95400;
+      background: #fff3e8;
+      color: #8a4b16;
     }
 
     .offer-request-state.active {
