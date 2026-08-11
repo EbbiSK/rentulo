@@ -302,8 +302,8 @@
       align-items: center;
       justify-content: center;
       border-radius: 999px;
-      background: #fff0e6;
-      color: #df5b00;
+      background: #fff3e8;
+      color: #8a4b16;
       padding: 5px 9px;
       font-size: 12px;
       font-weight: 900;
@@ -321,8 +321,8 @@
     }
 
     .status-rejected {
-      background: #fff0e6;
-      color: #df5b00;
+      background: #fff3e8;
+      color: #8a4b16;
     }
 
     .table-actions {
