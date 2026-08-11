@@ -17,6 +17,8 @@ let homeMap = null;
 let homeMapLayer = null;
 let homeMapOffers = [];
 let homeMapLoadState = "loading";
+let homeMapReturnView = getHomeMapReturnView();
+let homeMapReturnViewPending = Boolean(homeMapReturnView);
 
 function homeTranslate(key, fallback) {
   if (typeof window.rentuloTranslate === "function") {
@@ -130,6 +132,58 @@ function setupNearbySearch() {
 }
 
 
+function getHomeMapReturnView() {
+  try {
+    const state = window.history && window.history.state ? window.history.state : null;
+    const view = state && state.rentuloHomeMapView ? state.rentuloHomeMapView : null;
+    if (!view || typeof view !== "object") return null;
+
+    const latitude = Number(view.latitude);
+    const longitude = Number(view.longitude);
+    const zoom = Number(view.zoom);
+
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || !Number.isFinite(zoom)) {
+      return null;
+    }
+
+    return { latitude: latitude, longitude: longitude, zoom: zoom };
+  } catch (error) {
+    return null;
+  }
+}
+
+function saveHomeMapViewForReturn() {
+  if (!homeMap || !window.history || typeof window.history.replaceState !== "function") return;
+
+  const center = homeMap.getCenter();
+  const zoom = homeMap.getZoom();
+  if (!center || !Number.isFinite(Number(center.lat)) || !Number.isFinite(Number(center.lng)) || !Number.isFinite(Number(zoom))) return;
+
+  const currentState = window.history.state && typeof window.history.state === "object"
+    ? window.history.state
+    : {};
+  const nextState = Object.assign({}, currentState, {
+    rentuloHomeMapView: {
+      latitude: Number(center.lat),
+      longitude: Number(center.lng),
+      zoom: Number(zoom)
+    }
+  });
+
+  window.history.replaceState(nextState, "", window.location.href);
+}
+
+function applyHomeMapReturnView() {
+  if (!homeMap || !homeMapReturnView) return false;
+
+  homeMap.setView(
+    [homeMapReturnView.latitude, homeMapReturnView.longitude],
+    homeMapReturnView.zoom,
+    { animate: false }
+  );
+  return true;
+}
+
 function applyVisitorLocation(position) {
   const location = {
     latitude: Number(position && position.coords ? position.coords.latitude : NaN),
@@ -167,6 +221,11 @@ function requestVisitorLocation() {
 }
 
 function centerHomeMapOnVisitor() {
+  if (homeMapReturnView && homeMap) {
+    applyHomeMapReturnView();
+    return;
+  }
+
   const storedLocation = getStoredUserLocation();
 
   if (storedLocation && homeMap) {
@@ -417,6 +476,9 @@ function buildMapPopup(group) {
   link.className = "home-map-popup-link";
   link.href = "detail.html?id=" + encodeURIComponent(best.id);
   link.textContent = homeTranslate("home.mapOpenDetail", "Zobrazit detail");
+  link.addEventListener("click", function () {
+    saveHomeMapViewForReturn();
+  });
   wrapper.appendChild(link);
 
   return wrapper;
@@ -489,7 +551,10 @@ function renderHomeOffersMap() {
     bounds.push([best.map_latitude, best.map_longitude]);
   });
 
-  if (userLocation) {
+  if (homeMapReturnViewPending && homeMapReturnView) {
+    applyHomeMapReturnView();
+    homeMapReturnViewPending = false;
+  } else if (userLocation) {
     homeMap.setView([userLocation.latitude, userLocation.longitude], 9);
   } else if (bounds.length === 1) {
     homeMap.setView(bounds[0], 11);
