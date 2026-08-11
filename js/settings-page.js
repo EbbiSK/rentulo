@@ -777,6 +777,9 @@
           "Účetní data už byla deaktivována. Potvrďte akci znovu, abychom dokončili odebrání možnosti přihlášení.",
           "success"
         );
+        if (button) {
+          button.hidden = true;
+        }
         setAccountCancellationConfirmationVisible(true);
         updateAccountCancellationButtonState();
         return;
@@ -800,10 +803,13 @@
       setTranslatedMessage(
         message,
         "settings.cancelAccountReady",
-        "Účet lze zrušit. Počet vašich nabídek, které se při zrušení uzavřou: {offers}.",
+        "Účet lze zrušit. Aktivní nabídky, které se při zrušení skryjí: {offers}.",
         "success",
         { offers: status.offers_to_close_count || 0 }
       );
+      if (button) {
+        button.hidden = true;
+      }
       setAccountCancellationConfirmationVisible(true);
       updateAccountCancellationButtonState();
     } catch (error) {
