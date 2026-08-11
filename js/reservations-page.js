@@ -1061,7 +1061,37 @@ const data = Array.isArray(paidReservations)
       `;
     }
 
-    function renderReservationDetailPanel(reservation) {
+    function renderReservationDetailActions(reservation, status, isHistorySection) {
+      if (isHistorySection) {
+        return "";
+      }
+
+      const normalizedStatus = normalizeReservationStatus(status);
+
+      if (
+        normalizedStatus !== RESERVATION_STATUS_PENDING &&
+        normalizedStatus !== RESERVATION_STATUS_APPROVED
+      ) {
+        return "";
+      }
+
+      const reservationId = reservation.id || reservation.reservationId;
+
+      return `
+        <div class="reservation-detail-actions">
+          <button
+            type="button"
+            class="small-button reservation-cancel-action"
+            data-reservations-action="cancel"
+            data-reservation-id="${escapeHtml(reservationId)}"
+          >
+            ${escapeHtml(reservationsTranslate("reservations.cancel", "Zrušit rezervaci"))}
+          </button>
+        </div>
+      `;
+    }
+
+    function renderReservationDetailPanel(reservation, isHistorySection) {
       const status = getSafeReservationStatus(reservation);
 
       const startDate = getSafeReservationDateFrom(reservation);
@@ -1115,6 +1145,8 @@ const data = Array.isArray(paidReservations)
           ${renderOwnerReviewForRenterBox(reservation, status)}
 
           ${renderRenterReviewBox(reservation, status)}
+
+          ${renderReservationDetailActions(reservation, status, isHistorySection)}
         </div>
       `;
     }
@@ -1157,12 +1189,6 @@ const data = Array.isArray(paidReservations)
       const totalPrice = getSafeReservationTotalPrice(reservation);
       const reservationId = reservation.id || reservation.reservationId;
       const offerId = getSafeReservationOfferId(reservation);
-      const pickupAddress = getPickupAddress(reservation);
-const pickupLatitude = reservation.pickupLatitude;
-const pickupLongitude = reservation.pickupLongitude;
-const hasPickupCoordinates =
-  Number.isFinite(pickupLatitude) &&
-  Number.isFinite(pickupLongitude);
       const isPaymentRequired = normalizedStatus === RESERVATION_STATUS_APPROVED;
       const isPriority = !isHistorySection && (
         isPaymentRequired ||
@@ -1170,88 +1196,28 @@ const hasPickupCoordinates =
         normalizedStatus === RESERVATION_STATUS_PICKED_UP
       );
 
-      const primaryAction = isPaymentRequired
+      const paymentAction = isPaymentRequired
         ? `
           <button class="reservation-primary-action orange" type="button" data-reservations-action="pay" data-reservation-id="${escapeHtml(reservationId)}">
             ${escapeHtml(reservationsTranslate("reservations.pay", "Zaplatit"))}
           </button>
         `
-        : `
-          <button class="reservation-primary-action" id="detail-toggle-${escapeHtml(reservationId)}" type="button" data-reservations-action="toggle-detail" data-reservation-id="${escapeHtml(reservationId)}">
-            ${escapeHtml(reservationsTranslate("reservations.detail", "Detail"))}
-          </button>
-        `;
+        : "";
 
-      const useDirectPostPaymentActions =
-        !isHistorySection &&
-        (
-          normalizedStatus === RESERVATION_STATUS_PAID ||
-          normalizedStatus === RESERVATION_STATUS_PICKED_UP
-        );
+      const detailAction = `
+        <button class="reservation-primary-action" id="detail-toggle-${escapeHtml(reservationId)}" type="button" data-reservations-action="toggle-detail" data-reservation-id="${escapeHtml(reservationId)}">
+          ${escapeHtml(reservationsTranslate("reservations.detail", "Detail"))}
+        </button>
+      `;
 
-      const directOfferDetailAction =
-        useDirectPostPaymentActions && offerId
+      const offerDetailAction =
+        !isHistorySection && offerId
           ? `
             <a class="reservation-primary-action offer-detail-link" href="detail.html?id=${encodeURIComponent(offerId)}">
               ${escapeHtml(reservationsTranslate("reservations.offerDetail", "Detail nabídky"))}
             </a>
           `
           : "";
-
-      let menuItems = "";
-
-      if (isPaymentRequired) {
-        menuItems += `
-          <button id="detail-toggle-${escapeHtml(reservationId)}" type="button" data-reservations-action="toggle-detail" data-reservation-id="${escapeHtml(reservationId)}" data-use-primary-toggle="true">
-            ${escapeHtml(reservationsTranslate("reservations.detailReservation", "Detail rezervace"))}
-          </button>
-        `;
-      }
-
-      if (
-        !isHistorySection &&
-        (
-          normalizedStatus === RESERVATION_STATUS_PENDING ||
-          normalizedStatus === RESERVATION_STATUS_APPROVED
-        )
-      ) {
-        menuItems += `
-          <button type="button" class="danger-action" data-reservations-action="cancel" data-reservation-id="${escapeHtml(reservationId)}">
-            ${escapeHtml(reservationsTranslate("reservations.cancel", "Zrušit rezervaci"))}
-          </button>
-        `;
-      }
-
-      if (
-        !useDirectPostPaymentActions &&
-        isMapUsefulForStatus(status) &&
-        (hasPickupCoordinates || pickupAddress)
-      ) {
-        menuItems += `
-          <a href="${escapeHtml(getMapUrl(pickupAddress, pickupLatitude, pickupLongitude))}" target="_blank" rel="noopener noreferrer">
-            ${escapeHtml(reservationsTranslate("reservations.pickupMap", "Mapa vyzvednutí"))}
-          </a>
-        `;
-      }
-
-      if (offerId && !isHistorySection && !useDirectPostPaymentActions) {
-        menuItems += `
-          <a href="detail.html?id=${encodeURIComponent(offerId)}">
-            ${escapeHtml(reservationsTranslate("reservations.itemDetail", "Detail věci"))}
-          </a>
-        `;
-      }
-
-      const secondaryMenu = menuItems
-        ? `
-          <details class="reservation-more-menu">
-            <summary aria-label="${escapeHtml(reservationsTranslate("reservations.moreActions", "Další akce"))}">•••</summary>
-            <div class="reservation-more-menu-panel">
-              ${menuItems}
-            </div>
-          </details>
-        `
-        : "";
 
       return `
   <article class="simple-reservation-row ${isPriority ? "priority" : ""}">
@@ -1277,16 +1243,16 @@ const hasPickupCoordinates =
     </div>
 
     <div class="simple-reservation-actions">
-      ${primaryAction}
-      ${directOfferDetailAction}
-      ${secondaryMenu}
+      ${paymentAction}
+      ${detailAction}
+      ${offerDetailAction}
     </div>
 
     <div
       class="detail-row"
       id="reservation-detail-${escapeHtml(reservationId)}"
     >
-      ${renderReservationDetailPanel(reservation)}
+      ${renderReservationDetailPanel(reservation, isHistorySection)}
     </div>
   </article>
 `;
@@ -1434,32 +1400,12 @@ const hasPickupCoordinates =
       renderReservations();
       restoreReservationsUiState(uiState);
     }
-function closeReservationMoreMenus(exceptMenu = null) {
-  document
-    .querySelectorAll(".reservation-more-menu[open]")
-    .forEach(function (menu) {
-      if (menu !== exceptMenu) {
-        menu.removeAttribute("open");
-      }
-    });
-}
-
-function handleReservationMenuOutsideClick(event) {
-  const clickedMenu = event.target.closest(".reservation-more-menu");
-
-  closeReservationMoreMenus(clickedMenu);
-}
     async function handleReservationsActionClick(event) {
       const actionButton = event.target.closest("[data-reservations-action]");
 
       if (!actionButton) {
         return;
       }
-const actionMenu = actionButton.closest(".reservation-more-menu");
-
-if (actionMenu) {
-  actionMenu.removeAttribute("open");
-}
       const action = actionButton.dataset.reservationsAction;
       const reservationId = actionButton.dataset.reservationId;
 
@@ -1516,11 +1462,7 @@ if (actionMenu) {
         }
 
         if (action === "toggle-detail") {
-          const toggleButton = actionButton.dataset.usePrimaryToggle === "true"
-            ? document.getElementById("detail-toggle-" + reservationId) || actionButton
-            : actionButton;
-
-          toggleReservationDetail(reservationId, toggleButton);
+          toggleReservationDetail(reservationId, actionButton);
         }
       } finally {
         if (isMutationAction && actionButton.isConnected) {
@@ -1531,7 +1473,6 @@ if (actionMenu) {
     }
 
     document.addEventListener("click", handleReservationsActionClick);
-document.addEventListener("click", handleReservationMenuOutsideClick);
     document.addEventListener("DOMContentLoaded", function () {
       initializeReservationsPage();
     });

@@ -518,6 +518,22 @@
       text-decoration: none;
     }
 
+    .reservation-detail-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 2px;
+    }
+
+    .reservation-cancel-action {
+      background: #fff7f5;
+      border: 1px solid #efc7be;
+      color: #9a3f2d;
+    }
+
+    .reservation-cancel-action:hover {
+      background: #fcece8;
+    }
+
     .section-empty-note {
       margin: 0;
       padding: 12px;
@@ -684,6 +700,10 @@
       .small-button {
         width: 100%;
       }
+
+      .reservation-detail-actions {
+        justify-content: stretch;
+      }
     }
   
 
@@ -775,59 +795,6 @@
       align-items: center;
       justify-content: center;
       text-decoration: none;
-    }
-
-    .reservation-more-menu {
-      position: relative;
-    }
-
-    .reservation-more-menu summary {
-      display: grid;
-      place-items: center;
-      width: 46px;
-      height: 44px;
-      border-radius: 12px;
-      background: #eee9e1;
-      font-size: 22px;
-      font-weight: 900;
-      cursor: pointer;
-      list-style: none;
-    }
-
-    .reservation-more-menu summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .reservation-more-menu-panel {
-      position: absolute;
-      z-index: 20;
-      top: calc(100% + 8px);
-      right: 0;
-      min-width: 190px;
-      padding: 8px;
-      background: #ffffff;
-      border: 1px solid #e1e6e8;
-      border-radius: 14px;
-      box-shadow: 0 16px 35px rgba(0, 0, 0, 0.12);
-    }
-
-    .reservation-more-menu-panel a,
-    .reservation-more-menu-panel button {
-      display: block;
-      width: 100%;
-      padding: 10px 11px;
-      border: 0;
-      border-radius: 9px;
-      background: transparent;
-      color: #173f35;
-      text-align: left;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .reservation-more-menu-panel a:hover,
-    .reservation-more-menu-panel button:hover {
-      background: #f4f6f7;
     }
 
     .reservation-card-meta {
