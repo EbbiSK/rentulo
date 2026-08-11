@@ -1120,6 +1120,111 @@ function renderSharedNavigation(
   }
 }
 
+function navGetSameOriginReferrerUrl() {
+  if (!document.referrer) {
+    return null;
+  }
+
+  try {
+    const referrerUrl = new URL(
+      document.referrer,
+      window.location.href
+    );
+    const currentUrl = new URL(
+      window.location.href
+    );
+
+    if (
+      referrerUrl.origin !== currentUrl.origin ||
+      referrerUrl.href === currentUrl.href
+    ) {
+      return null;
+    }
+
+    return referrerUrl.href;
+  } catch (error) {
+    return null;
+  }
+}
+
+function navRememberContextBackUrl() {
+  if (!window.history || typeof window.history.replaceState !== "function") {
+    return;
+  }
+
+  const referrerUrl = navGetSameOriginReferrerUrl();
+  const existingState =
+    window.history.state && typeof window.history.state === "object"
+      ? window.history.state
+      : {};
+
+  if (existingState.rentuloBackUrl || !referrerUrl) {
+    return;
+  }
+
+  try {
+    window.history.replaceState(
+      Object.assign({}, existingState, {
+        rentuloBackUrl: referrerUrl
+      }),
+      document.title,
+      window.location.href
+    );
+  } catch (error) {
+    // The normal href fallback remains available if History state cannot be updated.
+  }
+}
+
+function navCanUseContextBack() {
+  const stateBackUrl =
+    window.history &&
+    window.history.state &&
+    typeof window.history.state === "object"
+      ? window.history.state.rentuloBackUrl
+      : "";
+  const backUrl =
+    stateBackUrl || navGetSameOriginReferrerUrl();
+
+  return Boolean(
+    backUrl &&
+      window.history &&
+      window.history.length > 1
+  );
+}
+
+function navSetupContextBackLinks() {
+  navRememberContextBackUrl();
+
+  document
+    .querySelectorAll('a[data-rentulo-back="true"]')
+    .forEach(function (link) {
+      if (link.dataset.rentuloBackReady === "true") {
+        return;
+      }
+
+      link.dataset.rentuloBackReady = "true";
+      link.addEventListener("click", function (event) {
+        if (
+          event.defaultPrevented ||
+          event.button !== 0 ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey
+        ) {
+          return;
+        }
+
+        if (!navCanUseContextBack()) {
+          return;
+        }
+
+        event.preventDefault();
+        window.history.back();
+      });
+    });
+}
+
 async function initializeSharedNavigation() {
   const page =
     document.body.dataset.navigationPage;
@@ -1129,6 +1234,7 @@ async function initializeSharedNavigation() {
   }
 
   navEnableFocusInputTracking();
+  navSetupContextBackLinks();
   await navGetVerifiedUser();
   renderSharedNavigation(page);
   navLoadNotificationCountFromSupabase(page);
