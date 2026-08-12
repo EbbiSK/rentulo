@@ -66,8 +66,10 @@
     const passwordForm = document.getElementById("setPasswordForm");
     const title = document.getElementById("recoveryTitle");
     const description = document.getElementById("recoveryDescription");
+    const helperBox = document.querySelector(".auth-helper-box");
 
     if (requestForm) requestForm.classList.add("hidden");
+    if (helperBox) helperBox.classList.add("hidden");
     if (passwordForm) passwordForm.classList.remove("hidden");
     if (title) title.textContent = t("passwordRecovery.newTitle", "Nastavit nové heslo");
     if (description) description.textContent = t("passwordRecovery.newDescription", "Použijte alespoň 8 znaků, včetně malého a velkého písmene, číslice a symbolu (např. ! nebo @).");
