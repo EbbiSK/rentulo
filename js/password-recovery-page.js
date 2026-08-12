@@ -74,6 +74,10 @@
       : "prihlaseni.html";
   }
 
+  function getPostResetDestination() {
+    return getSafeReturnTo() || "muj-ucet.html";
+  }
+
   function updateBackToLoginLinks() {
     const loginUrl = getLoginUrl();
     document
@@ -178,6 +182,8 @@
       return;
     }
 
+    let passwordUpdated = false;
+
     if (button) {
       button.disabled = true;
       button.textContent = t("passwordRecovery.saving", "Ukládám...");
@@ -202,14 +208,19 @@
         return;
       }
 
+      passwordUpdated = true;
       if (passwordInput) passwordInput.value = "";
       if (confirmInput) confirmInput.value = "";
-      setMessage(message, t("passwordRecovery.updated", "Heslo bylo změněno. Nyní se můžete přihlásit."), "success");
+      setMessage(message, t("passwordRecovery.updated", "Heslo bylo změněno."), "success");
+
+      window.setTimeout(function () {
+        window.location.replace(getPostResetDestination());
+      }, 900);
     } catch (error) {
       console.error(error);
       setMessage(message, t("passwordRecovery.error.generic", "Obnovu hesla se nepodařilo dokončit. Zkuste to znovu."), "error");
     } finally {
-      if (button) {
+      if (button && !passwordUpdated) {
         button.disabled = false;
         button.textContent = t("passwordRecovery.save", "Uložit nové heslo");
       }
