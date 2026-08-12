@@ -241,7 +241,7 @@
           "passwordRecovery.error.emailRequired": "Zadejte platný e-mail.",
           "passwordRecovery.error.passwordRequirements": "Heslo musí mít alespoň 8 znaků a obsahovat malé písmeno, velké písmeno, číslici a symbol.",
           "passwordRecovery.error.passwordMismatch": "Zadaná hesla se neshodují.",
-          "passwordRecovery.error.invalidLink": "Odkaz pro obnovu hesla je neplatný nebo vypršel. Požádejte o nový odkaz.",
+          "passwordRecovery.error.invalidLink": "Odkaz pro obnovu hesla je neplatný nebo vypršel. Pošlete si nový odkaz.",
           "passwordRecovery.error.generic": "Obnovu hesla se nepodařilo dokončit. Zkuste to znovu.",
           "brand.subtitle": "Půjč si cokoli",
           "results.documentTitle": "Výsledky vyhledávání - Rentulo",

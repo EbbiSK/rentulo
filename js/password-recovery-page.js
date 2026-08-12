@@ -17,6 +17,18 @@
     return String(value || "").trim().toLowerCase();
   }
 
+  function getRecoveryLinkError() {
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(String(window.location.hash || "").replace(/^#/, ""));
+    const error = hashParams.get("error") || searchParams.get("error") || "";
+    const errorCode = hashParams.get("error_code") || searchParams.get("error_code") || "";
+    const errorDescription = hashParams.get("error_description") || searchParams.get("error_description") || "";
+
+    if (errorCode === "otp_expired") return "invalid_link";
+    if (error === "access_denied" && /invalid|expired/i.test(errorDescription)) return "invalid_link";
+    return "";
+  }
+
   function getSafeReturnTo() {
     const allowedReturnPages = new Set([
       "detail.html",
@@ -201,6 +213,18 @@
 
     if (requestForm) requestForm.addEventListener("submit", function (event) { handleRequest(event, client); });
     if (passwordForm) passwordForm.addEventListener("submit", function (event) { handleNewPassword(event, client); });
+
+    if (getRecoveryLinkError() === "invalid_link") {
+      setMessage(
+        requestMessage,
+        t(
+          "passwordRecovery.error.invalidLink",
+          "Odkaz pro obnovu hesla je neplatný nebo vypršel. Pošlete si nový odkaz."
+        ),
+        "error"
+      );
+      return;
+    }
 
     client.auth.onAuthStateChange(function (event) {
       if (event === "PASSWORD_RECOVERY") showPasswordForm();
