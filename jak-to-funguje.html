@@ -139,18 +139,7 @@
     }
 
     .manual-top {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 0.82fr;
-      gap: 18px;
-      align-items: center;
       margin-bottom: 14px;
-    }
-
-    .eyebrow {
-      margin: 0 0 5px;
-      color: #5aa83e;
-      font-size: 13px;
-      font-weight: 900;
     }
 
     h1 {
@@ -168,25 +157,6 @@
       font-size: 15px;
       line-height: 1.4;
       font-weight: 700;
-    }
-
-    .manual-mini-summary {
-      min-width: 260px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: #fafbfb;
-      border: 1px solid #dce4e1;
-      color: #173f35;
-      font-size: 13px;
-      line-height: 1.32;
-      font-weight: 800;
-    }
-
-    .manual-mini-summary strong {
-      display: block;
-      margin-bottom: 4px;
-      color: #4c9637;
-      font-size: 14px;
     }
 
     .manual-choice-grid {
@@ -278,7 +248,7 @@
 
     .manual-note-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr;
       gap: 9px;
       margin-top: 12px;
     }
@@ -314,14 +284,6 @@
       .nav {
         flex-wrap: wrap;
         gap: 12px;
-      }
-
-      .manual-top {
-        grid-template-columns: 1fr;
-      }
-
-      .manual-mini-summary {
-        min-width: 0;
       }
 
       .manual-choice-grid,
@@ -393,7 +355,6 @@
       box-shadow: 0 12px 32px rgba(23, 63, 53, 0.06) !important;
     }
 
-    .manual-mini-summary,
     .manual-choice-card,
     .manual-note {
       background: #f7fcf9 !important;
@@ -424,11 +385,6 @@
     .btn-register:hover,
     .logout-link:hover {
       background: #68c547 !important;
-    }
-
-    .eyebrow,
-    .manual-mini-summary strong {
-      color: #4c9637 !important;
     }
 
     .nav-notification-badge {
@@ -479,21 +435,12 @@
 
     <section class="manual-card">
       <div class="manual-top">
-        <div>
-          <p class="eyebrow" data-i18n="how.eyebrow">Stručný návod</p>
+        <h1 data-i18n="how.title">Jak Rentulo funguje?</h1>
 
-          <h1 data-i18n="how.title">Jak Rentulo funguje?</h1>
-
-          <p class="manual-intro" data-i18n="how.intro">
-            Na jednom místě si můžete půjčit věci od lidí ve svém okolí
-            nebo nabídnout vlastní věci ostatním.
-          </p>
-        </div>
-
-        <div class="manual-mini-summary">
-          <strong data-i18n="how.summaryTitle">Jednoduchý postup</strong>
-          <span data-i18n="how.summaryText">Vyberete věc, pošlete žádost a majitel ji potvrdí nebo odmítne. Další kroky uvidíte ve svém účtu.</span>
-        </div>
+        <p class="manual-intro" data-i18n="how.intro">
+          Na jednom místě si můžete půjčit věci od lidí ve svém okolí
+          nebo nabídnout vlastní věci ostatním.
+        </p>
       </div>
 
       <div class="manual-choice-grid">
@@ -515,7 +462,7 @@
               <span>2</span>
               <div>
                 <strong data-i18n="how.renterStep2Title">Vyberete nabídku</strong>
-                <p data-i18n="how.renterStep2Text">Podíváte se na cenu za den, lokalitu, dostupnost a popis.</p>
+                <p data-i18n="how.renterStep2Text">Podíváte se na cenu za den, lokalitu a popis. Volný termín ověříte v detailu.</p>
               </div>
             </div>
 
@@ -557,7 +504,7 @@
               <span>2</span>
               <div>
                 <strong data-i18n="how.ownerStep2Title">Vyplníte nabídku</strong>
-                <p data-i18n="how.ownerStep2Text">Zadáte název, město, cenu a popis.</p>
+                <p data-i18n="how.ownerStep2Text">Zadáte název, cenu, místo vyzvednutí a popis.</p>
               </div>
             </div>
 
@@ -586,18 +533,8 @@
 
       <div class="manual-note-grid">
         <div class="manual-note">
-          <strong data-i18n="how.note1Title">Majitel rozhoduje o žádosti</strong>
-          <span data-i18n="how.note1Text">Žádost nejprve potvrdí nebo odmítne majitel nabízené věci.</span>
-        </div>
-
-        <div class="manual-note">
           <strong data-i18n="how.note2Title">Kontakty jsou chráněné</strong>
           <span data-i18n="how.note2Text">Telefon a přesná adresa nejsou veřejné a zobrazí se jen účastníkům rezervace.</span>
-        </div>
-
-        <div class="manual-note">
-          <strong data-i18n="how.note3Title">Platby se připravují</strong>
-          <span data-i18n="how.note3Text">Externí platební brána zatím není aktivní. Aktuální platba v účtu je pouze testovací.</span>
         </div>
       </div>
     </section>
