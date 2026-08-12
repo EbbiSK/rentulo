@@ -17,6 +17,27 @@
     return String(value || "").trim().toLowerCase();
   }
 
+  function isEmailRateLimitError(error) {
+    const code = String((error && error.code) || "").toLowerCase();
+    const message = String((error && error.message) || "").toLowerCase();
+
+    return code === "over_email_send_rate_limit" || message.includes("email rate limit exceeded");
+  }
+
+  function getRequestErrorMessage(error) {
+    if (isEmailRateLimitError(error)) {
+      return t(
+        "passwordRecovery.error.rateLimit",
+        "Odkaz pro obnovu teď nelze odeslat. Zkuste to prosím později."
+      );
+    }
+
+    return t(
+      "passwordRecovery.error.generic",
+      "Obnovu hesla se nepodařilo dokončit. Zkuste to znovu."
+    );
+  }
+
   function getRecoveryLinkError() {
     const searchParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(String(window.location.hash || "").replace(/^#/, ""));
@@ -113,7 +134,7 @@
 
       if (error) {
         console.error(error);
-        setMessage(message, t("passwordRecovery.error.generic", "Obnovu hesla se nepodařilo dokončit. Zkuste to znovu."), "error");
+        setMessage(message, getRequestErrorMessage(error), "error");
         return;
       }
 
@@ -121,7 +142,7 @@
       if (emailInput) emailInput.value = "";
     } catch (error) {
       console.error(error);
-      setMessage(message, t("passwordRecovery.error.generic", "Obnovu hesla se nepodařilo dokončit. Zkuste to znovu."), "error");
+      setMessage(message, getRequestErrorMessage(error), "error");
     } finally {
       if (button) {
         button.disabled = false;
