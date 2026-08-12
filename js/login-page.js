@@ -13,6 +13,38 @@ function loginNormalizeEmail(email) {
       return String(email || "").trim().toLowerCase();
     }
 
+    function loginGetSafeReturnTo() {
+      const allowedReturnPages = new Set([
+        "detail.html",
+        "edit-nabidka.html",
+        "historie.html",
+        "moje-nabidky.html",
+        "moje-rezervace.html",
+        "muj-ucet.html",
+        "nabidnout.html",
+        "nastaveni.html"
+      ]);
+      const returnTo = new URLSearchParams(window.location.search).get("returnTo") || "";
+      const returnPath = returnTo.split(/[?#]/, 1)[0];
+
+      return allowedReturnPages.has(returnPath) ? returnTo : "";
+    }
+
+    function loginUpdateRecoveryLink() {
+      const recoveryLink = document.querySelector(
+        'a[data-i18n="login.forgotPassword"]'
+      );
+
+      if (!recoveryLink) {
+        return;
+      }
+
+      const returnTo = loginGetSafeReturnTo();
+      recoveryLink.href = returnTo
+        ? "obnova-hesla.html?returnTo=" + encodeURIComponent(returnTo)
+        : "obnova-hesla.html";
+    }
+
     function loginIsValidEmail(email) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
@@ -204,19 +236,7 @@ function loginNormalizeEmail(email) {
       hideLoginError();
       clearLoginErrors();
 
-      const allowedReturnPages = new Set([
-        "detail.html",
-        "edit-nabidka.html",
-        "historie.html",
-        "moje-nabidky.html",
-        "moje-rezervace.html",
-        "muj-ucet.html",
-        "nabidnout.html",
-        "nastaveni.html"
-      ]);
-      const returnTo = new URLSearchParams(window.location.search).get("returnTo") || "";
-      const returnPath = returnTo.split(/[?#]/, 1)[0];
-      const targetPage = allowedReturnPages.has(returnPath) ? returnTo : "index.html";
+      const targetPage = loginGetSafeReturnTo() || "index.html";
 
       const supabaseClient = getSupabaseClient();
 
@@ -347,6 +367,7 @@ function loginNormalizeEmail(email) {
       }
 
       renderSharedNavigation("prihlaseni");
+      loginUpdateRecoveryLink();
 
       const loginForm = document.getElementById("loginForm");
       const rememberInput = document.getElementById("rememberLogin");

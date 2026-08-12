@@ -17,8 +17,48 @@
     return String(value || "").trim().toLowerCase();
   }
 
+  function getSafeReturnTo() {
+    const allowedReturnPages = new Set([
+      "detail.html",
+      "edit-nabidka.html",
+      "historie.html",
+      "moje-nabidky.html",
+      "moje-rezervace.html",
+      "muj-ucet.html",
+      "nabidnout.html",
+      "nastaveni.html"
+    ]);
+    const returnTo = new URLSearchParams(window.location.search).get("returnTo") || "";
+    const returnPath = returnTo.split(/[?#]/, 1)[0];
+
+    return allowedReturnPages.has(returnPath) ? returnTo : "";
+  }
+
+  function getLoginUrl() {
+    const returnTo = getSafeReturnTo();
+    return returnTo
+      ? "prihlaseni.html?returnTo=" + encodeURIComponent(returnTo)
+      : "prihlaseni.html";
+  }
+
+  function updateBackToLoginLinks() {
+    const loginUrl = getLoginUrl();
+    document
+      .querySelectorAll('a[data-i18n="passwordRecovery.backToLogin"]')
+      .forEach(function (link) {
+        link.href = loginUrl;
+      });
+  }
+
   function getRedirectUrl() {
-    return window.location.origin + window.location.pathname;
+    const returnTo = getSafeReturnTo();
+    const url = new URL(window.location.origin + window.location.pathname);
+
+    if (returnTo) {
+      url.searchParams.set("returnTo", returnTo);
+    }
+
+    return url.toString();
   }
 
   function showPasswordForm() {
@@ -145,6 +185,7 @@
     document.title = t("passwordRecovery.documentTitle", "Obnova hesla - Rentulo");
     if (typeof window.applyRentuloTranslations === "function") window.applyRentuloTranslations();
     if (typeof window.renderSharedNavigation === "function") window.renderSharedNavigation("prihlaseni");
+    updateBackToLoginLinks();
 
     const client = typeof getSupabaseClient === "function" ? getSupabaseClient() : null;
     const requestForm = document.getElementById("requestResetForm");
