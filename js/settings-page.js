@@ -507,7 +507,7 @@
     setButtonLoading(saveButton, true);
 
     try {
-      const { error } = await client
+      const { error: profileError } = await client
         .from("profiles")
         .update({
           preferred_language: preferredLanguage,
@@ -516,8 +516,18 @@
         })
         .eq("id", user.id);
 
-      if (error) {
-        throw error;
+      if (profileError) {
+        throw profileError;
+      }
+
+      const { error: authError } = await client.auth.updateUser({
+        data: {
+          preferred_language: preferredLanguage
+        }
+      });
+
+      if (authError) {
+        throw authError;
       }
 
       applyLanguage(preferredLanguage);

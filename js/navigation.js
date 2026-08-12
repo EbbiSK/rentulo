@@ -262,7 +262,7 @@ async function navSavePreferredLanguage(language) {
     return;
   }
 
-  const { error } = await client
+  const { error: profileError } = await client
     .from("profiles")
     .update({
       preferred_language: language,
@@ -270,8 +270,23 @@ async function navSavePreferredLanguage(language) {
     })
     .eq("id", user.id);
 
-  if (error) {
-    console.warn("Jazyk se nepodařilo uložit do profilu.", error);
+  if (profileError) {
+    console.warn("Jazyk se nepodařilo uložit do profilu.", profileError);
+  }
+
+  const { data: authData, error: authError } = await client.auth.updateUser({
+    data: {
+      preferred_language: language
+    }
+  });
+
+  if (authError) {
+    console.warn("Jazyk se nepodařilo uložit do Auth metadata.", authError);
+    return;
+  }
+
+  if (authData && authData.user) {
+    navVerifiedUser = authData.user;
   }
 }
 function navNormalizeEmail(email) {
