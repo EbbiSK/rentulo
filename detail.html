@@ -148,14 +148,16 @@
     }
 
     .image-box.has-photo {
-      background: #123f32;
+      height: clamp(260px, 32vw, 420px);
+      max-height: 420px;
+      background: #edf8f3;
     }
 
     .image-box img {
       width: 100%;
       height: 100%;
       display: block;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     .image-icon {
@@ -778,7 +780,7 @@
     }
 
     .image-box.has-photo {
-      background: #173f35 !important;
+      background: #edf8f3 !important;
     }
 
     .image-icon {
