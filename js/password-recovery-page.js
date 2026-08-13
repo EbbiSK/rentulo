@@ -24,6 +24,16 @@
     return code === "over_email_send_rate_limit" || message.includes("email rate limit exceeded");
   }
 
+  function isSameAsOldPasswordError(error) {
+    const code = String((error && error.code) || "").toLowerCase();
+    const message = String((error && error.message) || "").toLowerCase();
+
+    return (
+      code === "same_password" ||
+      message.includes("new password should be different from the old password")
+    );
+  }
+
   function getRequestErrorMessage(error) {
     if (isEmailRateLimitError(error)) {
       return t(
@@ -199,6 +209,15 @@
             t(
               "passwordRecovery.error.passwordRequirements",
               "Heslo musí mít alespoň 8 znaků a obsahovat malé písmeno, velké písmeno, číslici a symbol."
+            ),
+            "error"
+          );
+        } else if (isSameAsOldPasswordError(error)) {
+          setMessage(
+            message,
+            t(
+              "passwordRecovery.error.sameAsOldPassword",
+              "Nové heslo musí být jiné než současné heslo."
             ),
             "error"
           );
