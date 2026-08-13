@@ -168,13 +168,12 @@
 
     .offer-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 290px;
+      grid-template-columns: 1fr;
       gap: 16px;
       align-items: start;
     }
 
-    .offer-card,
-    .offer-help-card {
+    .offer-card {
       background: #ffffff;
       border: 1px solid #cfe4da;
       border-radius: 18px;
@@ -182,15 +181,13 @@
       overflow: hidden;
     }
 
-    .offer-card-header,
-    .offer-help-header {
+    .offer-card-header {
       padding: 15px 16px;
       background: #f7fcf9;
       border-bottom: 1px solid #dbece4;
     }
 
-    .offer-card-header h2,
-    .offer-help-header h2 {
+    .offer-card-header h2 {
       margin: 0;
       color: #173f35;
       font-size: 17px;
@@ -201,53 +198,6 @@
       padding: 16px;
       display: grid;
       gap: 14px;
-    }
-
-    .offer-help-content {
-      padding: 14px 16px 16px;
-      background: #fbfefc;
-    }
-
-    .offer-help-content p {
-      margin: 0 0 12px;
-      color: #66736e;
-      font-size: 13px;
-      line-height: 1.5;
-      font-weight: 700;
-    }
-
-    .offer-help-list {
-      display: grid;
-      gap: 10px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .offer-help-list li {
-      display: flex;
-      gap: 9px;
-      align-items: flex-start;
-      color: #173f35;
-      font-size: 13px;
-      line-height: 1.4;
-      font-weight: 800;
-    }
-
-    .offer-help-list li::before {
-      content: "✓";
-      width: 20px;
-      height: 20px;
-      border-radius: 999px;
-      background: #eaf7e2;
-      color: #4f972d;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 12px;
-      font-weight: 900;
-      margin-top: 1px;
     }
 
     .form-message {
@@ -550,6 +500,15 @@
       cursor: pointer;
     }
 
+    .offer-action-note {
+      margin: 0;
+      padding: 2px 2px 0;
+      color: #66736e;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
     .form-actions {
       display: flex;
       justify-content: flex-end;
@@ -689,13 +648,6 @@
         margin-top: 14px;
       }
 
-      .offer-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .offer-help-card {
-        order: -1;
-      }
     }
 
     @media (max-width: 700px) {
@@ -833,7 +785,7 @@
 
               <label class="pickup-checkbox">
                 <input type="checkbox" id="pickupUseCustom" />
-                <span data-i18n="offer.pickupCustomToggle">Použít jiné místo vyzvednutí než údaje z profilu</span>
+                <span data-i18n="offer.pickupCustomToggleCreate">Použít jiné místo vyzvednutí</span>
               </label>
 
               <div class="pickup-custom-fields" id="pickupCustomFields">
@@ -863,30 +815,16 @@
             </div>
           </section>
 
+          <p class="offer-action-note" data-i18n="offer.helpDescription">Po zveřejnění se nabídka zobrazí ve výsledcích vyhledávání. Žádosti vyřídíte v Moje nabídky. Rentulo si z úspěšné platby ponechá provizi 10 %.</p>
+
           <div class="form-actions">
-            <button type="button" class="btn-secondary" id="saveDraftButton" data-i18n="offer.saveDraft">Uložit jako koncept</button>
+            <button type="button" class="btn-secondary" id="saveDraftButton" data-i18n="offer.saveDraft">Uložit bez zveřejnění</button>
             <button type="submit" class="btn-primary" id="publishOfferButton" data-i18n="offer.publish">Zveřejnit nabídku</button>
           </div>
 
         </form>
       </section>
 
-      <aside class="offer-help-card">
-        <div class="offer-help-header">
-          <h2 data-i18n="offer.helpTitle">Jak to bude fungovat?</h2>
-        </div>
-
-        <div class="offer-help-content">
-          <p data-i18n="offer.helpDescription">Po zveřejnění se nabídka zobrazí ve výsledcích vyhledávání. Žádosti potom vyřídíte v části Moje nabídky.</p>
-
-          <ul class="offer-help-list">
-            <li data-i18n="offer.helpStep1">Věc přidáte do nabídky</li>
-            <li data-i18n="offer.helpStep2">Zájemce pošle žádost o půjčení</li>
-            <li data-i18n="offer.helpStep3">Žádost potvrdíte nebo odmítnete</li>
-            <li data-i18n="offer.helpStep4">Po zaplacení si platforma ponechá provizi 10 %</li>
-          </ul>
-        </div>
-      </aside>
 
     </section>
 
