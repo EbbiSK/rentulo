@@ -668,19 +668,23 @@ const hasGps = offerHasGpsLocation(offer);
       document.getElementById("detailContent").innerHTML = `
         <div class="detail-layout">
           <section class="detail-main-card">
-            ${renderDetailImage(offer)}
+            <div class="detail-hero">
+              ${renderDetailImage(offer)}
+
+              <div class="detail-hero-copy">
+                <h1>${escapeHtml(offerName)}</h1>
+
+                <div class="category-line">
+                  ${escapeHtml(offerCategory)} · <strong>${escapeHtml(ownerPublicCity || offerCity || detailTranslate("detail.noCity"))}</strong>
+                </div>
+
+                <div class="badges">
+                  <span class="badge" id="ownerRatingBadge">${detailTranslate("detail.ratingLoading")}</span>
+                </div>
+              </div>
+            </div>
 
             <div class="detail-content">
-              <div class="category-line">
-                ${escapeHtml(offerCategory)} · <strong>${escapeHtml(ownerPublicCity || offerCity || detailTranslate("detail.noCity"))}</strong>
-              </div>
-
-              <h1>${escapeHtml(offerName)}</h1>
-
-              <div class="badges">
-                <span class="badge" id="ownerRatingBadge">${detailTranslate("detail.ratingLoading")}</span>
-              </div>
-
               <div class="availability-panel ${availabilityBadgeClass}" id="detailAvailabilityPanel">
                 <strong>${escapeHtml(availabilityText)}</strong>
                 ${escapeHtml(availabilityPanelText)}
