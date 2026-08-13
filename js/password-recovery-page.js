@@ -13,8 +13,30 @@
     if (text) element.classList.add("active", type || "success");
   }
 
+  const RECOVERY_SESSION_KEY = "rentulo.passwordRecoveryActive";
+
   function normalizeEmail(value) {
     return String(value || "").trim().toLowerCase();
+  }
+
+  function markRecoverySessionActive() {
+    try {
+      window.sessionStorage.setItem(RECOVERY_SESSION_KEY, "1");
+    } catch (_) {}
+  }
+
+  function clearRecoverySessionActive() {
+    try {
+      window.sessionStorage.removeItem(RECOVERY_SESSION_KEY);
+    } catch (_) {}
+  }
+
+  function isRecoverySessionActive() {
+    try {
+      return window.sessionStorage.getItem(RECOVERY_SESSION_KEY) === "1";
+    } catch (_) {
+      return false;
+    }
   }
 
   function isEmailRateLimitError(error) {
@@ -228,6 +250,7 @@
       }
 
       passwordUpdated = true;
+      clearRecoverySessionActive();
       if (passwordInput) passwordInput.value = "";
       if (confirmInput) confirmInput.value = "";
       setMessage(message, t("passwordRecovery.updated", "Heslo bylo změněno."), "success");
@@ -266,6 +289,7 @@
     if (passwordForm) passwordForm.addEventListener("submit", function (event) { handleNewPassword(event, client); });
 
     if (getRecoveryLinkError() === "invalid_link") {
+      clearRecoverySessionActive();
       setMessage(
         requestMessage,
         t(
@@ -278,15 +302,26 @@
     }
 
     client.auth.onAuthStateChange(function (event) {
-      if (event === "PASSWORD_RECOVERY") showPasswordForm();
+      if (event === "PASSWORD_RECOVERY") {
+        markRecoverySessionActive();
+        showPasswordForm();
+      } else if (event === "SIGNED_OUT") {
+        clearRecoverySessionActive();
+      }
     });
 
     const urlText = window.location.href;
     if (urlText.includes("type=recovery") || urlText.includes("access_token=")) {
+      markRecoverySessionActive();
       showPasswordForm();
     } else {
       const { data } = await client.auth.getSession();
-      if (data && data.session && window.location.hash) showPasswordForm();
+      if (data && data.session && (isRecoverySessionActive() || window.location.hash)) {
+        markRecoverySessionActive();
+        showPasswordForm();
+      } else if (!data || !data.session) {
+        clearRecoverySessionActive();
+      }
     }
   });
 })();
