@@ -468,11 +468,16 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
     }
 
     function setRemovePhotoButtonVisible(button, isVisible) {
-      if (!button) {
-        return;
+      const photoPicker = document.querySelector(".photo-file-picker");
+
+      if (photoPicker) {
+        photoPicker.hidden = isVisible;
+        photoPicker.style.display = isVisible ? "none" : "";
       }
 
-      button.hidden = !isVisible;
+      if (button) {
+        button.hidden = !isVisible;
+      }
     }
 
     function setupOfferPhotoUpload() {
