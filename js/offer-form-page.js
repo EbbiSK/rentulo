@@ -475,6 +475,18 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
       button.hidden = !isVisible;
     }
 
+    function setPhotoFileName(fileName) {
+      const fileNameElement = document.getElementById("toolPhotoFileName");
+
+      if (!fileNameElement) {
+        return;
+      }
+
+      const normalizedFileName = String(fileName || "").trim();
+      fileNameElement.textContent = normalizedFileName;
+      fileNameElement.hidden = !normalizedFileName;
+    }
+
     function setupOfferPhotoUpload() {
       const photoInput = document.getElementById("toolPhoto");
       const removePhotoButton = document.getElementById("removeToolPhotoButton");
@@ -484,6 +496,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
       }
 
       setRemovePhotoButtonVisible(removePhotoButton, Boolean(offerPhotoDataUrl));
+      setPhotoFileName(offerPhotoFile ? offerPhotoFile.name : "");
 
       photoInput.addEventListener("change", function () {
         const file = photoInput.files && photoInput.files[0];
@@ -494,6 +507,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           offerPhotoFile = null;
           offerPhotoProcessing = false;
           renderPhotoPreview("");
+          setPhotoFileName("");
           updatePhotoStatusByKey("offer.photoNotSelected", "Fotka nebyla vybraná.", "");
           setRemovePhotoButtonVisible(removePhotoButton, false);
           return;
@@ -505,6 +519,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           offerPhotoProcessing = false;
           photoInput.value = "";
           renderPhotoPreview("");
+          setPhotoFileName("");
           updatePhotoStatusByKey("offer.photoInvalidType", "Vyberte prosím obrázek ve formátu JPG, PNG nebo WEBP.", "error");
           setRemovePhotoButtonVisible(removePhotoButton, false);
           return;
@@ -516,6 +531,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           offerPhotoProcessing = false;
           photoInput.value = "";
           renderPhotoPreview("");
+          setPhotoFileName("");
           updatePhotoStatusByKey("offer.photoTooLarge", "Fotka je příliš velká. Maximální velikost je 5 MB.", "error");
           setRemovePhotoButtonVisible(removePhotoButton, false);
           return;
@@ -523,6 +539,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
 
         offerPhotoFile = file;
         offerPhotoProcessing = true;
+        setPhotoFileName(file.name);
         updatePhotoStatusByKey("offer.photoProcessing", "Zpracovávám fotku...", "");
 
         resizeImageToDataUrl(file, function (dataUrl) {
@@ -537,6 +554,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
             offerPhotoFile = null;
             photoInput.value = "";
             renderPhotoPreview("");
+            setPhotoFileName("");
             updatePhotoStatusByKey("offer.photoLoadFailed", "Fotku se nepodařilo načíst. Zkuste jiný obrázek.", "error");
             setRemovePhotoButtonVisible(removePhotoButton, false);
             return;
@@ -557,6 +575,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           offerPhotoProcessing = false;
           photoInput.value = "";
           renderPhotoPreview("");
+          setPhotoFileName("");
           updatePhotoStatusByKey("offer.photoRemoved", "Fotka byla odebraná.", "");
           setRemovePhotoButtonVisible(removePhotoButton, false);
         });
