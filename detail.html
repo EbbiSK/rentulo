@@ -148,8 +148,8 @@
     }
 
     .image-box.has-photo {
-      height: clamp(260px, 32vw, 420px);
-      max-height: 420px;
+      height: clamp(240px, 24vw, 320px);
+      max-height: 320px;
       background: #edf8f3;
     }
 
@@ -174,19 +174,7 @@
     }
 
     .image-label {
-      position: absolute;
-      left: 12px;
-      bottom: 10px;
-      max-width: calc(100% - 24px);
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.9);
-      font-size: 13px;
-      font-weight: 900;
-      color: #073f2e;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      display: none;
     }
 
     .image-box:not(.has-photo) .image-label {
@@ -653,6 +641,11 @@
         height: 185px;
       }
 
+      .image-box.has-photo {
+        height: clamp(220px, 52vw, 260px);
+        max-height: 260px;
+      }
+
       .detail-content {
         padding: 16px;
       }
@@ -715,6 +708,11 @@
 
       .image-box {
         height: 180px;
+      }
+
+      .image-box.has-photo {
+        height: 220px;
+        max-height: 220px;
       }
 
       .description {
