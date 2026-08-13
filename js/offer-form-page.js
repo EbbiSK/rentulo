@@ -499,7 +499,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           offerPhotoFile = null;
           offerPhotoProcessing = false;
           renderPhotoPreview("");
-          updatePhotoStatusByKey("offer.photoNotSelected", "Fotka nebyla vybraná.", "");
+          updatePhotoStatusByKey("offer.photoRecommendation", "Doporučujeme kvalitní a dobře osvětlenou fotku.", "");
           setRemovePhotoButtonVisible(removePhotoButton, false);
           return;
         }
@@ -549,7 +549,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
 
           offerPhotoDataUrl = dataUrl;
           renderPhotoPreview(offerPhotoDataUrl);
-          updatePhotoStatusByKey("offer.photoRecommendation", "Doporučujeme kvalitní a dobře osvětlenou fotku.", "");
+          updatePhotoStatus("", "", "");
           setRemovePhotoButtonVisible(removePhotoButton, true);
         });
       });
@@ -868,7 +868,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           await removeOfferPhotoFromStorage(supabaseClient, uploadedPhotoPath);
 
           if (offerPhotoDataUrl) {
-            updatePhotoStatusByKey("offer.photoRecommendation", "Doporučujeme kvalitní a dobře osvětlenou fotku.", "");
+            updatePhotoStatus("", "", "");
           }
         }
 
