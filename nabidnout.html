@@ -451,6 +451,14 @@
       box-shadow: 0 0 0 3px rgba(201, 120, 59, 0.14) !important;
     }
 
+    .field-error-message {
+      margin: 0;
+      color: #8a4b16;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
     .pickup-options-body {
       padding: 14px;
       display: grid;
@@ -801,7 +809,8 @@
 
             <div class="form-group">
               <label for="toolPrice" data-i18n="offer.priceLabel">Cena za den</label>
-              <input id="toolPrice" type="text" placeholder="např. 250 Kč" data-i18n-placeholder="offer.pricePlaceholder" />
+              <input id="toolPrice" type="text" placeholder="např. 250 Kč" data-i18n-placeholder="offer.pricePlaceholder" aria-describedby="toolPriceError" />
+              <p class="field-error-message" id="toolPriceError" data-i18n="offer.priceValidationPositive" hidden>Cena za den musí být vyšší než 0 Kč.</p>
             </div>
           </div>
 

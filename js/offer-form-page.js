@@ -314,9 +314,14 @@ let offerSaveInProgress = false;
 
     function clearOfferFormErrors() {
       const fields = document.querySelectorAll("#offerForm input, #offerForm select, #offerForm textarea");
+      const fieldMessages = document.querySelectorAll("#offerForm .field-error-message");
 
       fields.forEach(function (field) {
         field.classList.remove("input-error");
+      });
+
+      fieldMessages.forEach(function (message) {
+        message.hidden = true;
       });
     }
 
@@ -605,22 +610,30 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
       ];
 
       let hasError = false;
+      let hasMissingRequired = false;
+      let hasInvalidPrice = false;
 
       requiredFields.forEach(function (fieldId) {
         if (!getInputValue(fieldId)) {
           markOfferFormError(fieldId);
           hasError = true;
+          hasMissingRequired = true;
         }
       });
 
-      const parsedPrice = parseMoneyValue(getInputValue("toolPrice"));
+      const rawPrice = getInputValue("toolPrice");
+      const parsedPrice = parseMoneyValue(rawPrice);
 
-      if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
+      if (rawPrice && (Number.isNaN(parsedPrice) || parsedPrice <= 0)) {
+        const priceError = document.getElementById("toolPriceError");
         markOfferFormError("toolPrice");
         hasError = true;
-      }
+        hasInvalidPrice = true;
 
-      
+        if (priceError) {
+          priceError.hidden = false;
+        }
+      }
 
       const pickupUseCustom = document.getElementById("pickupUseCustom");
       const useCustomPickup = pickupUseCustom ? pickupUseCustom.checked : false;
@@ -630,6 +643,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           if (!getInputValue(fieldId)) {
             markOfferFormError(fieldId);
             hasError = true;
+            hasMissingRequired = true;
           }
         });
       } else {
@@ -646,7 +660,12 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
       }
 
       if (hasError) {
-        showOfferTranslatedFormMessage("offer.validationRequired", "Vyplňte prosím všechna povinná pole.", "error");
+        if (hasInvalidPrice) {
+          showOfferTranslatedFormMessage("offer.validationCorrectFields", "Opravte prosím označená pole.", "error");
+        } else if (hasMissingRequired) {
+          showOfferTranslatedFormMessage("offer.validationRequired", "Vyplňte prosím všechna povinná pole.", "error");
+        }
+
         return false;
       }
 
