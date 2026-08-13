@@ -140,7 +140,6 @@ async function geocodeWithPhoton(
   url.searchParams.set("postcode", postalCode.replace(/\s+/g, ""));
   url.searchParams.set("countrycode", "CZ");
   url.searchParams.set("limit", "1");
-  url.searchParams.set("lang", "cs");
 
   let response: Response;
 
