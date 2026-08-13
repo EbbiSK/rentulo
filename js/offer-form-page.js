@@ -296,20 +296,19 @@ let offerSaveInProgress = false;
         .replace("kc", "")
         .replace(/\s/g, "")
         .replace(",", ".")
-        .replace(/[^\d.]/g, "")
         .trim();
 
-      if (!cleanedValue) {
+      if (!cleanedValue || !/^\d+(?:\.\d+)?$/.test(cleanedValue)) {
         return NaN;
       }
 
       const number = Number(cleanedValue);
 
-      if (Number.isNaN(number)) {
+      if (!Number.isFinite(number)) {
         return NaN;
       }
 
-      return Math.max(0, Math.round(number));
+      return Math.round(number);
     }
 
     function clearOfferFormErrors() {
