@@ -253,6 +253,13 @@
       font-weight: 900;
     }
 
+    .photo-upload-optional {
+      margin-left: 6px;
+      color: #7b8782;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
     .photo-upload-header p,
     .pickup-options-header p,
     .pickup-location-header p {
@@ -750,8 +757,11 @@
 
           <div class="photo-upload-box">
             <div class="photo-upload-header">
-              <div class="photo-upload-title" data-i18n="offer.photoTitle">Fotka věci (nepovinná)</div>
-              <p data-i18n="offer.photoDescription">Přidejte fotku, aby zájemci hned viděli, co nabízíte.</p>
+              <div class="photo-upload-title">
+                <span data-i18n="offer.photoTitle">Fotka věci</span>
+                <span class="photo-upload-optional" data-i18n="offer.photoOptional">(nepovinná)</span>
+              </div>
+              <p data-i18n="offer.photoDescription">Přidejte fotku, aby zájemci viděli, co nabízíte.</p>
             </div>
 
             <div class="photo-upload-layout">
