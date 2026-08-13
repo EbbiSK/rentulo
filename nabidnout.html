@@ -346,15 +346,6 @@
       outline-offset: 2px;
     }
 
-    .photo-file-name {
-      min-width: 0;
-      color: #52645d;
-      font-size: 12px;
-      font-weight: 800;
-      line-height: 1.4;
-      overflow-wrap: anywhere;
-    }
-
     .photo-remove-button {
       justify-self: start;
       border: 1px solid #cfe1d8;
@@ -770,7 +761,6 @@
                 <div class="photo-file-picker">
                   <input class="photo-file-input" id="toolPhoto" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="toolPhotoStatus" />
                   <label class="photo-file-button" for="toolPhoto" data-i18n="offer.choosePhoto">Vybrat fotku</label>
-                  <span class="photo-file-name" id="toolPhotoFileName" hidden></span>
                 </div>
                 <button type="button" class="photo-remove-button" id="removeToolPhotoButton" data-i18n="offer.removePhoto" hidden>Odebrat fotku</button>
                 <span class="photo-upload-status" id="toolPhotoStatus" data-i18n="offer.photoRecommendation" role="status" aria-live="polite">Doporučeno: kvalitní a dobře osvětlená fotka.</span>
