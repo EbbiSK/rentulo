@@ -87,6 +87,42 @@
       });
     }
 
+    function getReservationCountText(count) {
+      return getOffersPluralText("offers.reservationCount", count, {
+        one: "1 rezervace",
+        few: "{count} rezervace",
+        many: "{count} rezervací",
+        other: "{count} rezervací"
+      });
+    }
+
+    function isReservationPhaseStatus(status) {
+      const normalizedStatus = normalizeReservationStatus(status);
+
+      return [
+        RESERVATION_STATUS_APPROVED,
+        RESERVATION_STATUS_PAID,
+        RESERVATION_STATUS_PICKED_UP
+      ].includes(normalizedStatus);
+    }
+
+    function getRequestPanelCountText(requests) {
+      const reservationCount = requests.filter(function (reservation) {
+        return isReservationPhaseStatus(reservation.status);
+      }).length;
+      const requestCount = requests.length - reservationCount;
+
+      if (requestCount > 0 && reservationCount > 0) {
+        return getRequestCountText(requestCount) + " · " + getReservationCountText(reservationCount);
+      }
+
+      if (reservationCount > 0) {
+        return getReservationCountText(reservationCount);
+      }
+
+      return getRequestCountText(requestCount);
+    }
+
     function getWaitingRequestText(count) {
       const label = getOffersPluralText("offers.waiting", count, {
         one: "žádost čeká",
@@ -1200,8 +1236,8 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       button.textContent = offersTranslate("offers.hide", "Skrýt");
     }
 
-    function renderRequestPanel(panelId, title, count, content) {
-      const countText = getRequestCountText(count);
+    function renderRequestPanel(panelId, title, requests, content) {
+      const countText = getRequestPanelCountText(requests);
 
       return `
         <section class="request-panel" id="${escapeHtml(panelId)}">
@@ -1342,7 +1378,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
                 <strong>${escapeHtml(offerCategory)}</strong>
               </div>
               <div class="mini-stat">
-                <span>${offersTranslate("offers.openRequests", "Otevřené žádosti")}</span>
+                <span>${offersTranslate("offers.openRequests", "Žádosti a rezervace")}</span>
                 <strong>${escapeHtml(openRequests.length)}</strong>
               </div>
             </div>
@@ -1360,7 +1396,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
               >${escapeHtml(openRequestsButtonText)}</button>
             </div>
 
-            ${renderRequestPanel(openPanelId, offersTranslate("offers.openRequests", "Otevřené žádosti"), openRequests.length, openContent)}
+            ${renderRequestPanel(openPanelId, offersTranslate("offers.openRequests", "Žádosti a rezervace"), openRequests, openContent)}
           </div>
         `;
 
@@ -1407,7 +1443,7 @@ function renderSimpleOffer(offer, requests) {
     return isOwnerActionStatus(reservation.status);
   });
 
-  const requestText = getRequestCountText(openRequests.length);
+  const requestText = getRequestPanelCountText(openRequests);
 
   const openContent = openRequests.length
     ? openRequests.map(renderRequest).join("")
@@ -1471,7 +1507,7 @@ function renderSimpleOffer(offer, requests) {
         </div>
       </article>
 
-      ${renderRequestPanel(openPanelId, offersTranslate("offers.openRequests", "Otevřené žádosti"), openRequests.length, openContent)}
+      ${renderRequestPanel(openPanelId, offersTranslate("offers.openRequests", "Žádosti a rezervace"), openRequests, openContent)}
     </div>
   `;
 }
