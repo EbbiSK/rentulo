@@ -1209,7 +1209,6 @@ const data = Array.isArray(paidReservations)
     function renderContactBox(reservation, status) {
       const address = getPickupAddress(reservation);
       const phone = getPickupPhone(reservation);
-      const city = getPickupCity(reservation);
       const pickupLatitude = reservation.pickupLatitude;
       const pickupLongitude = reservation.pickupLongitude;
       const hasPickupCoordinates =
@@ -1224,11 +1223,8 @@ const data = Array.isArray(paidReservations)
       if (!getSafeReservationContactVisible(status)) {
         return `
           <div class="contact-box hidden">
-            <strong>${escapeHtml(reservationsTranslate("reservations.contact.hiddenTitle", "Kontaktní údaje jsou skryté"))}</strong>
-            ${escapeHtml(reservationsTranslate("reservations.contact.hiddenText", "Telefon a přesná adresa se zobrazí až po zaplacení."))}
-            <div class="contact-lines">
-              <span>${escapeHtml(reservationsTranslate("reservations.contact.city", "Město"))}: ${escapeHtml(city)}</span>
-            </div>
+            <strong>${escapeHtml(reservationsTranslate("reservations.contact.hiddenTitle", "Kontaktní údaje budou dostupné po zaplacení"))}</strong>
+            ${escapeHtml(reservationsTranslate("reservations.contact.hiddenText", "Telefon a přesná adresa se zobrazí po zaplacení rezervace."))}
           </div>
         `;
       }
