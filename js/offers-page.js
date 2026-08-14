@@ -838,8 +838,8 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
         actions.push(`
-          <button class="small-button" type="button" data-offers-action="mark-returned" data-reservation-id="${escapeHtml(reservationId)}">
-            ${offersTranslate("offers.action.returned", "Označit jako vráceno")}
+          <button class="small-button orange" type="button" data-offers-action="mark-returned" data-reservation-id="${escapeHtml(reservationId)}">
+            ${offersTranslate("offers.action.returned", "Potvrdit vrácení")}
           </button>
         `);
       }
