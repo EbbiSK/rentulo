@@ -123,6 +123,22 @@
       return getRequestCountText(requestCount);
     }
 
+    function getOfferRequestsButtonText(openRequests, ownerActionRequests) {
+      const hasReservation = openRequests.some(function (reservation) {
+        return isReservationPhaseStatus(reservation.status);
+      });
+
+      if (hasReservation) {
+        return offersTranslate("offers.openRequests", "Žádosti a rezervace");
+      }
+
+      if (ownerActionRequests.length) {
+        return offersTranslate("offers.handleRequests", "Vyřídit žádosti");
+      }
+
+      return offersTranslate("offers.showRequests", "Zobrazit žádosti");
+    }
+
     function getWaitingRequestText(count) {
       const label = getOffersPluralText("offers.waiting", count, {
         one: "žádost čeká",
@@ -1355,7 +1371,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       const primaryActionHtml = isDraft
         ? `<button class="offer-primary-button orange" type="button" data-offers-action="publish-offer" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.publish", "Zveřejnit nabídku")}</button>`
         : openRequests.length
-          ? `<button class="offer-primary-button ${ownerActionRequests.length ? "urgent" : ""}" type="button" data-offers-action="open-offer-requests" data-offer-id="${escapeHtml(offerId)}">${ownerActionRequests.length ? offersTranslate("offers.handleRequests", "Vyřídit žádosti") : offersTranslate("offers.showRequests", "Zobrazit žádosti")}</button>`
+          ? `<button class="offer-primary-button ${ownerActionRequests.length ? "urgent" : ""}" type="button" data-offers-action="open-offer-requests" data-offer-id="${escapeHtml(offerId)}">${getOfferRequestsButtonText(openRequests, ownerActionRequests)}</button>`
           : `<button class="offer-primary-button secondary" type="button" data-offers-action="toggle-offer-detail" data-detail-id="${escapeHtml(offerDetailId)}">${offersTranslate("offers.overview", "Přehled nabídky")}</button>`;
 
       const directOfferActionsHtml = `
@@ -1465,9 +1481,7 @@ function renderSimpleOffer(offer, requests) {
           data-offers-action="open-offer-requests"
           data-offer-id="${escapeHtml(offerId)}"
         >
-          ${ownerActionRequests.length
-            ? offersTranslate("offers.handleRequests", "Vyřídit žádosti")
-            : offersTranslate("offers.showRequests", "Zobrazit žádosti")}
+          ${getOfferRequestsButtonText(openRequests, ownerActionRequests)}
         </button>`
       : "";
 
