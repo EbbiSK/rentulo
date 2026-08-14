@@ -719,7 +719,7 @@ const data = Array.isArray(updatedReservations)
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PAID) {
-        return `<p class="request-note success">${offersTranslate("offers.note.paid", "Rezervace je zaplacena. Po předání věci ji označte jako vyzvednutou.")}</p>`;
+        return `<p class="request-note success">${offersTranslate("offers.note.paid", "Rezervace je zaplacena. Až věc předáte zájemci, potvrďte předání.")}</p>`;
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
@@ -779,7 +779,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PAID) {
         actions.push(`
           <button class="small-button orange" type="button" data-offers-action="mark-picked-up" data-reservation-id="${escapeHtml(reservationId)}">
-            ${offersTranslate("offers.action.pickedUp", "Označit jako vyzvednuto")}
+            ${offersTranslate("offers.action.pickedUp", "Potvrdit předání")}
           </button>
         `);
       }
