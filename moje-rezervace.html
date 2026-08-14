@@ -220,15 +220,16 @@
       background: #e2f0e9 !important;
     }
 
-    /* Payment needs attention, but avoids a loud solid-orange block. */
+    /* Payment is the primary next action; keep the status orange and the action green. */
     .simple-reservation-actions .reservation-primary-action.orange {
-      background: #fff3e8 !important;
-      color: #8a4b16 !important;
-      border: 1px solid #efbd8e !important;
+      background: #73d64f !important;
+      color: #173a22 !important;
+      border: 1px solid #73d64f !important;
     }
 
     .simple-reservation-actions .reservation-primary-action.orange:hover {
-      background: #ffe8d3 !important;
+      background: #63c943 !important;
+      border-color: #63c943 !important;
     }
 
     /* When payment is available, it is the one attention action; detail becomes secondary. */
@@ -315,10 +316,6 @@
     .contact-box.hidden {
       background: rgba(255, 255, 255, 0.86) !important;
       border-color: #d5e7df !important;
-      color: #173f35 !important;
-    }
-
-    .contact-box.hidden > strong {
       color: #173f35 !important;
     }
 
