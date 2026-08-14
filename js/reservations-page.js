@@ -1262,23 +1262,19 @@ const data = Array.isArray(paidReservations)
 
       if (getSafeReservationContactVisible(status)) {
         const paymentTitle =
-  normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED
-          ? reservationsTranslate("reservations.payment.completed", "Platba byla přijata a půjčení je dokončeno")
-          : reservationsTranslate("reservations.payment.accepted", "Platba přijata přes provozovatele platformy");
+          normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED
+            ? reservationsTranslate("reservations.payment.completed", "Platba byla přijata a půjčení je dokončeno")
+            : reservationsTranslate("reservations.payment.accepted", "Platba byla přijata");
+        const paymentStatus =
+          reservation.paymentProviderStatus === "paid_test"
+            ? reservationsTranslate("reservations.payment.statusPaidTest", "Testovací platba")
+            : reservationsTranslate("reservations.payment.statusPaid", "Zaplaceno");
 
         return `
           <div class="payment-box paid">
-            <strong>${paymentTitle}</strong>
-            ${escapeHtml(reservationsTranslate("reservations.payment.feeInfo", "Rentulo si ponechá provizi 10 % a majiteli bude vyplaceno 90 % z půjčovného."))}
+            <strong>${escapeHtml(paymentTitle)}</strong>
             <div class="payment-lines">
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.totalPaid", "Celkem zaplaceno"))}: ${escapeHtml(formatReservationsMoney(totalPrice))}</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.rentuloFee", "Provize Rentulo"))}: ${escapeHtml(formatReservationsMoney(platformFee))}</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.ownerAmount", "Částka pro majitele"))}: ${escapeHtml(formatReservationsMoney(ownerPayout))}</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.statusLabel", "Stav platby"))}: ${escapeHtml(
-                reservation.paymentProviderStatus === "paid_test"
-                  ? reservationsTranslate("reservations.payment.statusPaidTest", "Testovací platba")
-                  : reservationsTranslate("reservations.payment.statusPaid", "Zaplaceno")
-              )}</span>
+              <span>${escapeHtml(paymentStatus)}</span>
               <span>${escapeHtml(reservationsTranslate("reservations.payment.paidAt", "Zaplaceno"))}: ${escapeHtml(formatReservationsDateTime(reservation.paidAt))}</span>
             </div>
           </div>
@@ -1465,7 +1461,11 @@ const data = Array.isArray(paidReservations)
             </div>
 
             <div class="info-box">
-              <span>${escapeHtml(reservationsTranslate("reservations.detail.total", "Celkem k platbě"))}</span>
+              <span>${escapeHtml(
+                getSafeReservationContactVisible(status)
+                  ? reservationsTranslate("reservations.payment.totalPaid", "Celkem zaplaceno")
+                  : reservationsTranslate("reservations.detail.total", "Celkem k platbě")
+              )}</span>
               <strong>${escapeHtml(formatReservationsMoney(totalPrice))}</strong>
             </div>
 
