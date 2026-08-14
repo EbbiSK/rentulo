@@ -232,6 +232,18 @@
       border-color: #63c943 !important;
     }
 
+    /* Test payment confirmation uses the same Rentulo modal, with a green primary action. */
+    .reservation-modal-pay {
+      background: #73d64f !important;
+      border-color: #73d64f !important;
+      color: #173a22 !important;
+    }
+
+    .reservation-modal-pay:hover {
+      background: #63c943 !important;
+      border-color: #63c943 !important;
+    }
+
     /* When payment is available, it is the one attention action; detail becomes secondary. */
     .simple-reservation-actions:has(.reservation-primary-action.orange)
       [data-reservations-action="toggle-detail"],
@@ -555,6 +567,41 @@
             data-reservations-cancel-modal-action="confirm"
           >
             Zrušit rezervaci
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="reservation-confirm-modal"
+      id="reservationPaymentModal"
+      aria-hidden="true"
+      hidden
+    >
+      <div
+        class="reservation-confirm-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reservationPaymentModalTitle"
+        aria-describedby="reservationPaymentModalDescription"
+      >
+        <h2 id="reservationPaymentModalTitle">Potvrdit testovací platbu?</h2>
+        <p id="reservationPaymentModalDescription">
+          Jde o testovací platbu. Po potvrzení bude rezervace označena jako zaplacená.
+        </p>
+        <div class="reservation-confirm-actions">
+          <button
+            type="button"
+            class="reservation-modal-button reservation-modal-keep"
+            data-reservations-payment-modal-action="cancel"
+          >
+            Zpět
+          </button>
+          <button
+            type="button"
+            class="reservation-modal-button reservation-modal-pay"
+            data-reservations-payment-modal-action="confirm"
+          >
+            Potvrdit platbu
           </button>
         </div>
       </div>

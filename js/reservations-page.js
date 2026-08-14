@@ -789,6 +789,165 @@ return (
       });
     }
 
+    let reservationPaymentModalResolve = null;
+    let reservationPaymentModalReturnFocus = null;
+
+    function getReservationPaymentModalElements() {
+      return {
+        overlay: document.getElementById("reservationPaymentModal"),
+        title: document.getElementById("reservationPaymentModalTitle"),
+        description: document.getElementById("reservationPaymentModalDescription"),
+        cancelButton: document.querySelector('[data-reservations-payment-modal-action="cancel"]'),
+        confirmButton: document.querySelector('[data-reservations-payment-modal-action="confirm"]')
+      };
+    }
+
+    function refreshReservationPaymentModalText() {
+      const elements = getReservationPaymentModalElements();
+
+      if (elements.title) {
+        elements.title.textContent = reservationsTranslate(
+          "reservations.paymentModal.title",
+          "Potvrdit testovac\u00ed platbu?"
+        );
+      }
+
+      if (elements.description) {
+        elements.description.textContent = reservationsTranslate(
+          "reservations.paymentModal.description",
+          "Jde o testovac\u00ed platbu. Po potvrzen\u00ed bude rezervace ozna\u010dena jako zaplacen\u00e1."
+        );
+      }
+
+      if (elements.cancelButton) {
+        elements.cancelButton.textContent = reservationsTranslate(
+          "reservations.paymentModal.cancel",
+          "Zp\u011bt"
+        );
+      }
+
+      if (elements.confirmButton) {
+        elements.confirmButton.textContent = reservationsTranslate(
+          "reservations.paymentModal.confirm",
+          "Potvrdit platbu"
+        );
+      }
+    }
+
+    function closeReservationPaymentModal(confirmed) {
+      const elements = getReservationPaymentModalElements();
+
+      if (!elements.overlay || elements.overlay.hidden) {
+        return;
+      }
+
+      elements.overlay.hidden = true;
+      elements.overlay.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("reservation-modal-open");
+
+      const resolve = reservationPaymentModalResolve;
+      const returnFocus = reservationPaymentModalReturnFocus;
+
+      reservationPaymentModalResolve = null;
+      reservationPaymentModalReturnFocus = null;
+
+      if (resolve) {
+        resolve(Boolean(confirmed));
+      }
+
+      if (!confirmed && returnFocus && returnFocus.isConnected && typeof returnFocus.focus === "function") {
+        requestAnimationFrame(function () {
+          if (returnFocus.isConnected) {
+            returnFocus.focus();
+          }
+        });
+      }
+    }
+
+    function openReservationPaymentModal() {
+      const elements = getReservationPaymentModalElements();
+
+      if (!elements.overlay) {
+        console.error("Payment confirmation modal is missing.");
+        return Promise.resolve(false);
+      }
+
+      reservationPaymentModalReturnFocus = document.activeElement;
+      refreshReservationPaymentModalText();
+
+      elements.overlay.hidden = false;
+      elements.overlay.setAttribute("aria-hidden", "false");
+      document.body.classList.add("reservation-modal-open");
+
+      return new Promise(function (resolve) {
+        reservationPaymentModalResolve = resolve;
+
+        requestAnimationFrame(function () {
+          if (elements.cancelButton) {
+            elements.cancelButton.focus();
+          }
+        });
+      });
+    }
+
+    function initializeReservationPaymentModal() {
+      const elements = getReservationPaymentModalElements();
+
+      if (!elements.overlay) {
+        return;
+      }
+
+      elements.overlay.addEventListener("click", function (event) {
+        const actionButton = event.target.closest(
+          "[data-reservations-payment-modal-action]"
+        );
+
+        if (actionButton) {
+          closeReservationPaymentModal(
+            actionButton.dataset.reservationsPaymentModalAction === "confirm"
+          );
+          return;
+        }
+
+        if (event.target === elements.overlay) {
+          closeReservationPaymentModal(false);
+        }
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (elements.overlay.hidden) {
+          return;
+        }
+
+        if (event.key === "Escape") {
+          event.preventDefault();
+          closeReservationPaymentModal(false);
+          return;
+        }
+
+        if (event.key !== "Tab") {
+          return;
+        }
+
+        const focusable = [elements.cancelButton, elements.confirmButton].filter(Boolean);
+
+        if (focusable.length < 2) {
+          return;
+        }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+    }
+
     async function cancelReservation(reservationId) {
       const supabaseClient = getSupabaseClient();
 
@@ -871,9 +1030,7 @@ return (
         return;
       }
 
-      const confirmPayment = confirm(
-        reservationsTranslate("reservations.confirm.testPayment", "Toto je testovací platba. Opravdu chcete označit rezervaci jako zaplacenou?")
-      );
+      const confirmPayment = await openReservationPaymentModal();
 
       if (!confirmPayment) {
         return;
@@ -1667,12 +1824,14 @@ const data = Array.isArray(paidReservations)
     document.addEventListener("click", handleReservationsActionClick);
     document.addEventListener("DOMContentLoaded", function () {
       initializeReservationCancelModal();
+      initializeReservationPaymentModal();
       initializeReservationsPage();
     });
 
     document.addEventListener("rentuloLanguageChanged", function () {
       renderSharedNavigation("muj-ucet");
       refreshReservationCancelModalText();
+      refreshReservationPaymentModalText();
 
       if (reservationsLoadState === "loading") {
         renderLoadingState();
