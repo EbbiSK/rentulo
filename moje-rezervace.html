@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title data-i18n="reservations.pageTitle">Moje rezervace - Rentulo</title>
-<link rel="stylesheet" href="css/account-pages.css" />
+  <link rel="stylesheet" href="css/account-pages.css" />
   <link rel="stylesheet" href="css/my-reservations.css" />
   <link rel="stylesheet" href="css/compact-records.css" />
-
   <style>
-    /* Mint visual refresh for My reservations. Functional behavior stays unchanged. */
+    /* My reservations follows the calmer visual hierarchy used on My offers. */
     body {
       background: #dff7ee !important;
       color: #173f35;
@@ -32,12 +31,25 @@
       color: #173f35 !important;
     }
 
+    .logo-text small {
+      display: none !important;
+    }
+
+    .account-page {
+      padding-top: 18px !important;
+    }
+
+    .back-link {
+      color: #3f8f2d !important;
+    }
+
     .account-page-header {
+      margin-bottom: 16px !important;
+      padding: 20px 190px 20px 20px !important;
       background: rgba(255, 255, 255, 0.72);
-      border: 1px solid #c9e2d6;
-      border-radius: 20px;
-      padding: 22px 185px 22px 22px !important;
-      box-shadow: 0 12px 32px rgba(23, 63, 53, 0.06);
+      border: 1px solid #cde5da;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(23, 63, 53, 0.05);
     }
 
     .account-page-header h1,
@@ -47,129 +59,424 @@
     }
 
     .top-action-button {
-      right: 20px !important;
       top: 50% !important;
+      right: 20px !important;
       transform: translateY(-50%);
-      background: #73d64d !important;
+      background: #73d64f !important;
       color: #173a22 !important;
       box-shadow: none !important;
     }
 
     .top-action-button:hover {
-      background: #68c547 !important;
+      background: #63c943 !important;
     }
 
-    .reservation-section-header,
-    .reservation-table-card,
-    .reservation-card,
-    .account-empty-state,
-    .section-empty-note {
-      border: 1px solid #cfe4da !important;
-      box-shadow: 0 12px 32px rgba(23, 63, 53, 0.055) !important;
+    .reservation-page-notice {
+      background: #eff9f4 !important;
+      border-color: #c9e2d6 !important;
+      box-shadow: 0 10px 26px rgba(23, 63, 53, 0.04);
     }
 
-    .reservation-section-header,
-    .reservation-table th,
-    .detail-row td,
-    .reservation-detail-panel {
-      background: #f7fcf9 !important;
+    .reservation-section {
+      gap: 10px !important;
     }
 
-    .reservation-row:hover {
-      background: #f4fbf7 !important;
+    .reservation-section-header {
+      padding: 10px 12px !important;
+      border: 1px solid #cfe3da !important;
+      border-radius: 14px !important;
+      background: rgba(255, 255, 255, 0.82) !important;
+      box-shadow: 0 10px 26px rgba(23, 63, 53, 0.045) !important;
     }
 
-    .tool-thumb,
-    .info-box {
-      background: #f4fbf7 !important;
-      border-color: #cfe4da !important;
+    .reservation-section-header span {
+      background: #eef8e9 !important;
+      color: #4f9f2f !important;
     }
 
-    .status-pill,
-    .status-rejected,
-    .payment-box.waiting,
-    .contact-box.hidden,
-    .reservation-state-box.rejected {
+    .reservation-card-list {
+      gap: 10px !important;
+    }
+
+    /* Main reservation row: same quiet card rhythm as My offers. */
+    .simple-reservation-row {
+      grid-template-columns:
+        minmax(250px, 1.55fr)
+        minmax(160px, 0.9fr)
+        minmax(80px, 0.42fr)
+        minmax(140px, auto)
+        minmax(230px, auto) !important;
+      gap: 12px 14px !important;
+      min-height: 62px !important;
+      padding: 8px 12px !important;
+      margin-bottom: 0 !important;
+      border: 1px solid #cfe3da !important;
+      border-radius: 15px !important;
+      background: #ffffff !important;
+      box-shadow: 0 10px 26px rgba(23, 63, 53, 0.045) !important;
+      overflow: hidden;
+    }
+
+    .simple-reservation-row.priority {
+      border-color: #cfe3da !important;
+      box-shadow: 0 10px 26px rgba(23, 63, 53, 0.045) !important;
+    }
+
+    .simple-reservation-main {
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      min-width: 0;
+    }
+
+    .simple-reservation-main .tool-thumb,
+    .simple-reservation-main .tool-image {
+      width: 42px !important;
+      height: 42px !important;
+      flex-basis: 42px !important;
+      border-radius: 10px !important;
+      background: #edf7f2 !important;
+      border-color: #d5e7df !important;
+    }
+
+    .simple-reservation-info strong {
+      color: #173f35 !important;
+      font-size: 14px !important;
+      font-weight: 900 !important;
+    }
+
+    .simple-reservation-info span {
+      display: block;
+      margin-top: 2px;
+      color: #65746e !important;
+    }
+
+    .simple-reservation-date,
+    .simple-reservation-price {
+      color: #173f35 !important;
+      font-weight: 800 !important;
+    }
+
+    .simple-reservation-status {
+      min-height: 28px !important;
+      padding: 5px 10px !important;
+      border-radius: 999px !important;
+      border: 1px solid transparent;
+    }
+
+    .status-pending,
+    .status-approved {
       background: #fff3e8 !important;
       border-color: #f2c79f !important;
       color: #8a4b16 !important;
     }
 
-    .payment-box.waiting strong,
-    .contact-box.hidden strong,
-    .reservation-state-box.rejected strong {
-      color: #8a4b16 !important;
+    .status-paid,
+    .status-picked_up {
+      background: #eef8e9 !important;
+      border-color: #c9e2d6 !important;
+      color: #4f9f2f !important;
     }
 
-    .reservation-card.priority {
-      border-color: #f2c79f !important;
-      box-shadow: 0 12px 30px rgba(138, 75, 22, 0.08) !important;
+    .status-returned,
+    .status-completed,
+    .status-cancelled,
+    .status-canceled,
+    .status-rejected,
+    .status-declined {
+      background: #eef1ed !important;
+      border-color: #dce5df !important;
+      color: #334c43 !important;
     }
 
-    .small-button.orange,
-    .reservation-primary-action.orange {
-      background: #ff6a00 !important;
-      color: #ffffff !important;
+    .simple-reservation-actions {
+      gap: 7px !important;
+      flex-wrap: wrap !important;
     }
 
-    .small-button.orange:hover,
-    .reservation-primary-action.orange:hover {
-      background: #e85f00 !important;
+    .simple-reservation-actions .reservation-primary-action {
+      min-height: 36px !important;
+      padding: 8px 12px !important;
+      border-radius: 10px !important;
+      box-shadow: none !important;
     }
 
-    .small-button,
-    .btn-register,
-    .logout-link {
-      background: #73d64d !important;
+    /* Reservation detail is the main navigation action. */
+    .simple-reservation-actions [data-reservations-action="toggle-detail"] {
+      background: #73d64f !important;
       color: #173a22 !important;
     }
 
-    .small-button.light,
-    .reservation-primary-action:not(.orange) {
-      background: #edf6f1 !important;
+    .simple-reservation-actions [data-reservations-action="toggle-detail"]:hover {
+      background: #63c943 !important;
+    }
+
+    .simple-reservation-actions .offer-detail-link {
+      background: #edf5f1 !important;
       color: #173f35 !important;
     }
 
+    .simple-reservation-actions .offer-detail-link:hover {
+      background: #e2f0e9 !important;
+    }
+
+    /* Payment needs attention, but avoids a loud solid-orange block. */
+    .simple-reservation-actions .reservation-primary-action.orange {
+      background: #fff3e8 !important;
+      color: #8a4b16 !important;
+      border: 1px solid #efbd8e !important;
+    }
+
+    .simple-reservation-actions .reservation-primary-action.orange:hover {
+      background: #ffe8d3 !important;
+    }
+
+    /* When payment is available, it is the one attention action; detail becomes secondary. */
+    .simple-reservation-actions:has(.reservation-primary-action.orange)
+      [data-reservations-action="toggle-detail"],
+    .simple-reservation-row:has(.detail-row.open)
+      [data-reservations-action="toggle-detail"] {
+      background: #edf5f1 !important;
+      color: #173f35 !important;
+    }
+
+    .simple-reservation-actions:has(.reservation-primary-action.orange)
+      [data-reservations-action="toggle-detail"]:hover,
+    .simple-reservation-row:has(.detail-row.open)
+      [data-reservations-action="toggle-detail"]:hover {
+      background: #e2f0e9 !important;
+    }
+
+    /* Expanded reservation: one calm block, without repeating the whole row visually. */
+    .simple-reservation-row .detail-row {
+      grid-column: 1 / -1 !important;
+      margin: 2px -12px -8px !important;
+      padding: 0 12px 12px !important;
+      border-top: 1px solid #d5e7df !important;
+      background: #f5fbf8 !important;
+    }
+
+    .simple-reservation-row .detail-row.open {
+      display: block !important;
+    }
+
+    .detail-row .reservation-detail-panel {
+      margin: 0 !important;
+      padding: 14px 0 0 !important;
+      gap: 10px !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .detail-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 9px !important;
+    }
+
+    /* Fee and owner payout are not decision-critical for the renter here. */
+    .detail-grid .info-box:nth-child(4),
+    .detail-grid .info-box:nth-child(5) {
+      display: none !important;
+    }
+
+    .info-box {
+      min-height: 58px !important;
+      padding: 10px 11px !important;
+      background: rgba(255, 255, 255, 0.86) !important;
+      border-color: #d5e7df !important;
+      border-radius: 12px !important;
+    }
+
+    .payment-box,
+    .contact-box,
+    .reservation-state-box,
+    .review-box {
+      padding: 11px 12px !important;
+      border-radius: 12px !important;
+    }
+
+    .reservation-state-box.active,
+    .payment-box.paid,
+    .contact-box.visible {
+      background: #eff9f4 !important;
+      border-color: #c9e2d6 !important;
+      color: #173f35 !important;
+    }
+
+    .reservation-state-box.rejected,
+    .payment-box.waiting,
+    .contact-box.hidden {
+      background: #fff3e8 !important;
+      border-color: #f2c79f !important;
+      color: #8a4b16 !important;
+    }
+
+    .reservation-state-box.finished {
+      background: #f1f4f2 !important;
+      border-color: #dce5df !important;
+      color: #334c43 !important;
+    }
+
+    .review-box {
+      background: rgba(255, 255, 255, 0.86) !important;
+      border-color: #d5e7df !important;
+    }
+
+    /* Keep only renter-relevant payment amounts in the expanded detail. */
+    .payment-lines span:nth-child(2),
+    .payment-lines span:nth-child(3) {
+      display: none !important;
+    }
+
+    .small-button.light,
+    .contact-map-link {
+      background: #edf5f1 !important;
+      color: #173f35 !important;
+    }
+
+    .small-button.light:hover,
+    .contact-map-link:hover {
+      background: #e2f0e9 !important;
+    }
+
     .small-button.reservation-cancel-action {
-      background: #fff7f5 !important;
-      border: 1px solid #efc7be !important;
-      color: #9a3f2d !important;
+      background: #fff8f6 !important;
+      color: #a43b2f !important;
+      border: 1px solid #efc1b7 !important;
     }
 
     .small-button.reservation-cancel-action:hover {
-      background: #fcece8 !important;
+      background: #fff0ec !important;
     }
 
-    /* Keep the global keyboard focus outline, but remove the older double-ring shadow. */
-    .reservation-primary-action:focus {
+    .reservation-detail-actions {
+      padding-top: 1px !important;
+    }
+
+    .reservation-primary-action:focus,
+    .reservation-primary-action:focus-visible {
       outline: none;
       box-shadow: none !important;
     }
 
-    .reservation-primary-action:focus-visible {
-      box-shadow: none !important;
+    .section-empty-note,
+    .account-empty-state {
+      border: 1px solid #cfe3da !important;
+      box-shadow: 0 10px 26px rgba(23, 63, 53, 0.045) !important;
     }
 
-    @media (max-width: 980px) {
+    .account-empty-state a {
+      background: #73d64f !important;
+      color: #173a22 !important;
+    }
+
+    @media (max-width: 1100px) {
+      .simple-reservation-row {
+        grid-template-columns:
+          minmax(230px, 1.45fr)
+          minmax(150px, 0.85fr)
+          minmax(74px, 0.4fr)
+          minmax(130px, auto)
+          minmax(205px, auto) !important;
+        gap: 10px !important;
+      }
+
+      .simple-reservation-actions .reservation-primary-action {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+      }
+    }
+
+    @media (max-width: 900px) {
       .account-page-header {
-        padding: 20px !important;
+        padding: 18px !important;
       }
 
       .top-action-button {
         position: static !important;
         transform: none !important;
         width: 100%;
-        margin-top: 16px !important;
+        justify-content: center;
+        margin-top: 14px !important;
       }
 
-      .reservation-row,
-      .reservation-card {
-        border-color: #cfe4da !important;
+      .simple-reservation-row {
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        gap: 8px 12px !important;
+        padding: 11px 12px !important;
+      }
+
+      .simple-reservation-main {
+        grid-column: 1 / -1 !important;
+      }
+
+      .simple-reservation-date,
+      .simple-reservation-price,
+      .simple-reservation-status {
+        justify-self: start;
+      }
+
+      .simple-reservation-actions {
+        grid-column: 1 / -1 !important;
+        justify-content: flex-start !important;
+        padding-top: 2px;
+      }
+
+      .simple-reservation-row .detail-row {
+        margin: 4px -12px -11px !important;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .account-page {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+      }
+
+      .reservation-section-header {
+        align-items: center !important;
+        flex-direction: row !important;
+      }
+
+      .simple-reservation-row {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      .simple-reservation-date {
+        grid-column: 1 / -1;
+      }
+
+      .simple-reservation-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+      }
+
+      .simple-reservation-actions .reservation-primary-action,
+      .simple-reservation-actions .offer-detail-link {
+        width: 100%;
+      }
+
+      .simple-reservation-actions .reservation-primary-action.orange {
+        grid-column: 1 / -1;
+      }
+
+      .reservation-detail-actions {
+        justify-content: stretch !important;
+      }
+
+      .reservation-detail-actions .reservation-cancel-action {
+        width: 100%;
       }
     }
   </style>
 </head>
-
 <body data-navigation-page="muj-ucet">
 
   <header class="header">
@@ -189,9 +496,8 @@
   <main class="account-page">
 
     <a href="muj-ucet.html" class="back-link" data-rentulo-back="true" data-i18n="reservations.back">← Zpět</a>
-
     <section class="account-page-header">
-      
+
 
       <h1 data-i18n="reservations.heading">Moje rezervace</h1>
 
@@ -207,9 +513,7 @@
       aria-live="polite"
       hidden
     ></div>
-
     <section class="account-list" id="reservationsList"></section>
-
     <div
       class="reservation-confirm-modal"
       id="reservationCancelModal"
@@ -227,7 +531,6 @@
         <p id="reservationCancelModalDescription">
           Opravdu chcete tuto rezervaci zrušit? Termín se znovu uvolní.
         </p>
-
         <div class="reservation-confirm-actions">
           <button
             type="button"
@@ -246,20 +549,18 @@
         </div>
       </div>
     </div>
-
   </main>
-
- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase-config.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/reservation-utils.js"></script>
-<script src="js/api.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/storage.js"></script>
-<script src="js/navigation.js"></script>
-<script src="js/auth-guard.js"></script>
-<script src="js/reservation-status.js"></script>
-<script src="js/reservations.js"></script>
-<script src="js/reservations-page.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/reservation-utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/reservation-status.js"></script>
+  <script src="js/reservations.js"></script>
+  <script src="js/reservations-page.js"></script>
 </body>
 </html>
