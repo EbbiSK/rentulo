@@ -1099,11 +1099,6 @@ const data = Array.isArray(paidReservations)
           <div class="payment-box waiting">
             <strong>${escapeHtml(reservationsTranslate("reservations.payment.platformTitle", "Platba přes provozovatele platformy"))}</strong>
             ${escapeHtml(reservationsTranslate("reservations.payment.testInfo", "Kliknutím na tlačítko Zaplatit provedete testovací platbu."))}
-            <div class="payment-lines">
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.totalToPay", "Celkem zaplatíte"))}: ${escapeHtml(formatReservationsMoney(totalPrice))}</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.fee", "Provize Rentulo 10 %"))}: ${escapeHtml(formatReservationsMoney(platformFee))}</span>
-              <span>${escapeHtml(reservationsTranslate("reservations.payment.ownerGets", "Majitel dostane"))}: ${escapeHtml(formatReservationsMoney(ownerPayout))}</span>
-            </div>
           </div>
         `;
       }
