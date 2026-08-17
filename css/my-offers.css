@@ -1128,8 +1128,9 @@
     }
 
     .offers-modal-button:focus-visible {
-      outline: 3px solid rgba(255, 106, 0, 0.28);
+      outline: 2px solid rgba(64, 127, 101, 0.32);
       outline-offset: 2px;
+      box-shadow: none;
     }
 
     @media (max-width: 520px) {
