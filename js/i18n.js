@@ -165,7 +165,7 @@
           "registration.passwordLabel": "Heslo",
           "registration.passwordPlaceholder": "Zadejte heslo",
           "registration.passwordNote": "Použijte alespoň 8 znaků, včetně malého a velkého písmene, číslice a symbolu (např. ! nebo @).",
-          "registration.streetLabel": "Ulice a číslo popisné",
+          "registration.streetLabel": "Ulice a číslo",
           "registration.streetPlaceholder": "např. Dlouhá 12",
           "registration.cityLabel": "Město",
           "registration.cityPlaceholder": "např. Praha",
