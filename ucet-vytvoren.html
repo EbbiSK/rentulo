@@ -155,33 +155,22 @@
     .summary-row span { color: #66736e; }
     .summary-row strong { color: #173f35; }
 
-    .confirmation-actions {
-      gap: 10px;
-    }
-
-    .btn-home,
-    .btn-light {
-      min-height: 46px;
-      height: auto;
-      border-radius: 12px;
-      padding: 11px 18px;
-      font-size: 14px;
-      font-weight: 900;
-    }
-
-    .btn-home {
-      background: #7ed957;
-      color: #173a22;
-    }
-
-    .btn-home:hover {
-      background: #6fd249;
-    }
-
-    .btn-light {
+    .confirmation-note {
+      margin: 0;
+      padding: 18px 20px;
       background: #f4f8f6;
-      color: #173f35;
       border: 1px solid #cfe0d8;
+      border-radius: 14px;
+      color: #53645e;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .confirmation-note strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #173f35;
+      font-size: 16px;
     }
 
     @media (max-width: 760px) {
@@ -217,9 +206,6 @@
         text-align: left;
       }
 
-      .confirmation-actions {
-        flex-direction: column;
-      }
     }
   </style>
 </head>
@@ -265,24 +251,15 @@
         </div>
 
         <div class="summary-row">
-          <span data-i18n="accountCreated.listLabel">2. Potvrďte adresu</span>
-          <strong data-i18n="accountCreated.listDescription">Klikněte na odkaz v e-mailu</strong>
-        </div>
-
-        <div class="summary-row">
-          <span data-i18n="accountCreated.accountLabel">3. Přihlaste se</span>
-          <strong data-i18n="accountCreated.accountDescription">Použijte svůj e-mail a heslo</strong>
+          <span data-i18n="accountCreated.listLabel">2. Potvrďte e-mail</span>
+          <strong data-i18n="accountCreated.listDescription">Klikněte na potvrzovací odkaz ve zprávě</strong>
         </div>
       </div>
 
-      <div class="confirmation-actions">
-        <a href="index.html" class="btn-home" data-i18n="accountCreated.homeButton">
-          Pokračovat na úvod
-        </a>
-        <a href="prihlaseni.html" class="btn-light" data-i18n="accountCreated.accountButton">
-          Přejít k přihlášení
-        </a>
-      </div>
+      <p class="confirmation-note">
+        <strong data-i18n="accountCreated.doneTitle">Na této stránce už není potřeba nic dělat.</strong>
+        <span data-i18n="accountCreated.doneDescription">Po kliknutí na potvrzovací odkaz v e-mailu se otevře stránka Rentulo. Tuto kartu můžete zavřít.</span>
+      </p>
     </section>
   </main>
 
