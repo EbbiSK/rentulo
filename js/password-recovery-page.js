@@ -130,6 +130,38 @@
     return url.toString();
   }
 
+  function showRequestSentState() {
+    const requestForm = document.getElementById("requestResetForm");
+    const title = document.getElementById("recoveryTitle");
+    const description = document.getElementById("recoveryDescription");
+    const message = document.getElementById("requestMessage");
+
+    if (requestForm) {
+      requestForm
+        .querySelectorAll(".form-group, .auth-button, .auth-note")
+        .forEach(function (element) {
+          element.classList.add("hidden");
+        });
+    }
+
+    if (title) {
+      title.dataset.i18n = "passwordRecovery.sentTitle";
+      title.textContent = t("passwordRecovery.sentTitle", "Zkontrolujte e-mail");
+    }
+
+    if (description) {
+      description.dataset.i18n = "passwordRecovery.sentDescription";
+      description.textContent = t(
+        "passwordRecovery.sentDescription",
+        "Další krok najdete v e-mailu. Na této stránce už není potřeba nic dalšího dělat."
+      );
+    }
+
+    if (message) {
+      message.dataset.i18n = "passwordRecovery.sent";
+    }
+  }
+
   function showPasswordForm() {
     const requestForm = document.getElementById("requestResetForm");
     const passwordForm = document.getElementById("setPasswordForm");
@@ -181,6 +213,7 @@
       }
 
       setMessage(message, t("passwordRecovery.sent", "Pokud je e-mail registrovaný, poslali jsme na něj odkaz pro obnovu hesla."), "success");
+      showRequestSentState();
       if (emailInput) emailInput.value = "";
     } catch (error) {
       console.error(error);
