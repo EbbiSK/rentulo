@@ -236,7 +236,7 @@ function loginNormalizeEmail(email) {
       hideLoginError();
       clearLoginErrors();
 
-      const targetPage = loginGetSafeReturnTo() || "index.html";
+      const targetPage = loginGetSafeReturnTo() || "muj-ucet.html";
 
       const supabaseClient = getSupabaseClient();
 
