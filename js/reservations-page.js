@@ -195,6 +195,10 @@ function getReservationsCountText(count) {
     }
 
     function getSafeReservationStatusText(status) {
+      if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
+        return reservationsTranslate("reservations.status.pickedUp", "Převzato");
+      }
+
       if (typeof getReservationStatusText === "function") {
         return getReservationStatusText(status);
       }
@@ -1315,7 +1319,7 @@ const data = Array.isArray(paidReservations)
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
         return `
           <div class="reservation-state-box active">
-            <strong>${escapeHtml(reservationsTranslate("reservations.state.pickedTitle", "Věc byla označena jako vyzvednutá"))}</strong>
+            <strong>${escapeHtml(reservationsTranslate("reservations.state.pickedTitle", "Věc byla převzata"))}</strong>
             ${escapeHtml(reservationsTranslate("reservations.state.pickedText", "Půjčení právě probíhá."))}
           </div>
         `;
