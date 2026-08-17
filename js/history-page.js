@@ -555,11 +555,15 @@ async function historySaveReview(reservationId, role) {
     return;
   }
 
-  const result = await client.from("reviews").insert({
-    reservation_id: reservationId,
-    rating: rating,
-    text: text
-  });
+  const result = await client
+    .from("reviews")
+    .insert({
+      reservation_id: reservationId,
+      rating: rating,
+      text: text
+    })
+    .select("reservation_id, reviewer_id, reviewed_user_id, rating, text, created_at")
+    .single();
 
   if (result.error) {
     console.error("Chyba při ukládání hodnocení:", result.error);
@@ -572,14 +576,7 @@ async function historySaveReview(reservationId, role) {
   }
 
   const uiState = historyCaptureUiState();
-  historyReviews.unshift({
-    reservation_id: reservationId,
-    reviewer_id: currentUserId,
-    reviewed_user_id: reviewedUserId,
-    rating: rating,
-    text: text,
-    created_at: new Date().toISOString()
-  });
+  historyReviews.unshift(result.data);
 
   historyRenderAll();
   historyRestoreUiState(uiState);
