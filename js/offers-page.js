@@ -775,7 +775,7 @@ const data = Array.isArray(updatedReservations)
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP) {
-return `<p class="request-note success">${offersTranslate("offers.note.pickedUp", "Věc byla označena jako vyzvednutá. Po vrácení dokončete půjčení.")}</p>`;
+return `<p class="request-note success">${offersTranslate("offers.note.pickedUp", "Věc byla předána zájemci. Až ji dostanete zpět, potvrďte vrácení.")}</p>`;
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED) {
