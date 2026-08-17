@@ -140,8 +140,14 @@
     if (requestForm) requestForm.classList.add("hidden");
     if (helperBox) helperBox.classList.add("hidden");
     if (passwordForm) passwordForm.classList.remove("hidden");
-    if (title) title.textContent = t("passwordRecovery.newTitle", "Nastavit nové heslo");
-    if (description) description.textContent = t("passwordRecovery.newDescription", "Použijte alespoň 8 znaků, včetně malého a velkého písmene, číslice a symbolu (např. ! nebo @).");
+    if (title) {
+      title.dataset.i18n = "passwordRecovery.newTitle";
+      title.textContent = t("passwordRecovery.newTitle", "Nastavit nové heslo");
+    }
+    if (description) {
+      description.dataset.i18n = "passwordRecovery.newDescription";
+      description.textContent = t("passwordRecovery.newDescription", "Použijte alespoň 8 znaků, včetně malého a velkého písmene, číslice a symbolu (např. ! nebo @).");
+    }
   }
 
   async function handleRequest(event, client) {
