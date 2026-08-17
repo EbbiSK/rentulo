@@ -270,6 +270,40 @@
 
     <section class="account-list" id="offersList"></section>
 
+    <div
+      class="offers-confirm-modal"
+      id="offerDeleteModal"
+      aria-hidden="true"
+      hidden
+    >
+      <div
+        class="offers-confirm-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="offerDeleteModalTitle"
+        aria-describedby="offerDeleteModalDescription"
+      >
+        <h2 id="offerDeleteModalTitle">Smazat nabídku?</h2>
+        <p id="offerDeleteModalDescription">Opravdu chcete tuto nabídku smazat?</p>
+        <div class="offers-confirm-actions">
+          <button
+            type="button"
+            class="offers-modal-button offers-modal-keep"
+            data-offers-delete-modal-action="cancel"
+          >
+            Ponechat nabídku
+          </button>
+          <button
+            type="button"
+            class="offers-modal-button offers-modal-delete"
+            data-offers-delete-modal-action="confirm"
+          >
+            Smazat nabídku
+          </button>
+        </div>
+      </div>
+    </div>
+
   </main>
 
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

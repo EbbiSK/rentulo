@@ -1048,6 +1048,104 @@
     }
 
 
+    body.offers-modal-open {
+      overflow: hidden;
+    }
+
+    .offers-confirm-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(23, 63, 53, 0.48);
+    }
+
+    .offers-confirm-modal[hidden] {
+      display: none;
+    }
+
+    .offers-confirm-dialog {
+      width: min(100%, 470px);
+      padding: 22px;
+      border: 1px solid #cfe4da;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: 0 24px 70px rgba(18, 48, 40, 0.22);
+    }
+
+    .offers-confirm-dialog h2 {
+      margin: 0 0 8px;
+      color: #173f35;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .offers-confirm-dialog p {
+      margin: 0;
+      color: #51615b;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .offers-confirm-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .offers-modal-button {
+      min-height: 42px;
+      padding: 9px 15px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .offers-modal-keep {
+      border-color: #cfe4da;
+      background: #edf6f1;
+      color: #173f35;
+    }
+
+    .offers-modal-keep:hover {
+      background: #e2f0e9;
+    }
+
+    .offers-modal-delete {
+      border-color: #efc7be;
+      background: #fff7f5;
+      color: #9a3f2d;
+    }
+
+    .offers-modal-delete:hover {
+      background: #fcece8;
+    }
+
+    .offers-modal-button:focus-visible {
+      outline: 3px solid rgba(255, 106, 0, 0.28);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 520px) {
+      .offers-confirm-dialog {
+        padding: 18px;
+      }
+
+      .offers-confirm-actions {
+        flex-direction: column-reverse;
+      }
+
+      .offers-modal-button {
+        width: 100%;
+      }
+    }
+
     .nav-notification-badge {
       background: #FF6A00 !important;
       color: white !important;

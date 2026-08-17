@@ -166,7 +166,6 @@
 
     let ownerOffers = [];
     let ownerReservations = [];
-    let ownerReviews = [];
     let ownerOffersLoadState = "idle";
     let accountMessageState = null;
 
@@ -346,34 +345,6 @@
       };
     }
 
-    function normalizeReview(row) {
-      return {
-        id: row.id,
-        reservationId: row.reservation_id,
-        reviewerId: row.reviewer_id,
-        reviewedUserId: row.reviewed_user_id,
-        offerId: row.offer_id,
-        rating: Number(row.rating || 0),
-        text: row.text || "",
-        createdAt: row.created_at || ""
-      };
-    }
-
-    function findOwnerReviewForRenter(reservation) {
-      if (!reservation) {
-        return null;
-      }
-
-      return ownerReviews.find(function (review) {
-        const sameReservation = String(review.reservationId || "") === String(reservation.id || "");
-        const sameReviewer = String(review.reviewerId || "") === String(reservation.ownerId || "");
-        const sameReviewedUser = !reservation.renterId ||
-          String(review.reviewedUserId || "") === String(reservation.renterId || "");
-
-        return sameReservation && sameReviewer && sameReviewedUser;
-      }) || null;
-    }
-
     async function loadOwnerData() {
       ownerOffersLoadState = "loading";
       const supabaseClient = getSupabaseClient();
@@ -425,28 +396,12 @@ if (!reservationsResult.error) {
         return false;
       }
 
-      const reviewsResult = await supabaseClient
-        .from("reviews")
-        .select("*")
-        .or("reviewer_id.eq." + supabaseUser.id + ",reviewed_user_id.eq." + supabaseUser.id)
-        .order("created_at", {
-          ascending: false
-        });
-
-      if (reviewsResult.error) {
-        console.warn("Hodnocení se nepodařilo načíst ze Supabase.", reviewsResult.error);
-      }
-
       ownerOffers = Array.isArray(offersResult.data)
         ? offersResult.data.map(normalizeOffer)
         : [];
 
       ownerReservations = Array.isArray(reservationsResult.data)
         ? reservationsResult.data.map(normalizeReservation)
-        : [];
-
-      ownerReviews = reviewsResult && Array.isArray(reviewsResult.data)
-        ? reviewsResult.data.map(normalizeReview)
         : [];
 
       ownerOffersLoadState = "ready";
@@ -649,6 +604,163 @@ const data = Array.isArray(updatedReservations)
       await initializeOwnerOffersPage();
     }
 
+    let offerDeleteModalResolve = null;
+    let offerDeleteModalReturnFocus = null;
+
+    function getOfferDeleteModalElements() {
+      return {
+        overlay: document.getElementById("offerDeleteModal"),
+        title: document.getElementById("offerDeleteModalTitle"),
+        description: document.getElementById("offerDeleteModalDescription"),
+        cancelButton: document.querySelector('[data-offers-delete-modal-action="cancel"]'),
+        confirmButton: document.querySelector('[data-offers-delete-modal-action="confirm"]')
+      };
+    }
+
+    function refreshOfferDeleteModalText() {
+      const elements = getOfferDeleteModalElements();
+
+      if (elements.title) {
+        elements.title.textContent = offersTranslate(
+          "offers.deleteModal.title",
+          "Smazat nabídku?"
+        );
+      }
+
+      if (elements.description) {
+        elements.description.textContent = offersTranslate(
+          "offers.confirmDelete",
+          "Opravdu chcete tuto nabídku smazat?"
+        );
+      }
+
+      if (elements.cancelButton) {
+        elements.cancelButton.textContent = offersTranslate(
+          "offers.deleteModal.keep",
+          "Ponechat nabídku"
+        );
+      }
+
+      if (elements.confirmButton) {
+        elements.confirmButton.textContent = offersTranslate(
+          "offers.delete",
+          "Smazat nabídku"
+        );
+      }
+    }
+
+    function closeOfferDeleteModal(confirmed) {
+      const elements = getOfferDeleteModalElements();
+
+      if (!elements.overlay || elements.overlay.hidden) {
+        return;
+      }
+
+      elements.overlay.hidden = true;
+      elements.overlay.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("offers-modal-open");
+
+      const resolve = offerDeleteModalResolve;
+      const returnFocus = offerDeleteModalReturnFocus;
+
+      offerDeleteModalResolve = null;
+      offerDeleteModalReturnFocus = null;
+
+      if (resolve) {
+        resolve(Boolean(confirmed));
+      }
+
+      if (!confirmed && returnFocus && returnFocus.isConnected && typeof returnFocus.focus === "function") {
+        requestAnimationFrame(function () {
+          if (returnFocus.isConnected) {
+            returnFocus.focus();
+          }
+        });
+      }
+    }
+
+    function openOfferDeleteModal() {
+      const elements = getOfferDeleteModalElements();
+
+      if (!elements.overlay) {
+        console.error("Offer delete confirmation modal is missing.");
+        return Promise.resolve(false);
+      }
+
+      offerDeleteModalReturnFocus = document.activeElement;
+      refreshOfferDeleteModalText();
+
+      elements.overlay.hidden = false;
+      elements.overlay.setAttribute("aria-hidden", "false");
+      document.body.classList.add("offers-modal-open");
+
+      return new Promise(function (resolve) {
+        offerDeleteModalResolve = resolve;
+
+        requestAnimationFrame(function () {
+          if (elements.cancelButton) {
+            elements.cancelButton.focus();
+          }
+        });
+      });
+    }
+
+    function initializeOfferDeleteModal() {
+      const elements = getOfferDeleteModalElements();
+
+      if (!elements.overlay) {
+        return;
+      }
+
+      elements.overlay.addEventListener("click", function (event) {
+        const actionButton = event.target.closest("[data-offers-delete-modal-action]");
+
+        if (actionButton) {
+          closeOfferDeleteModal(
+            actionButton.dataset.offersDeleteModalAction === "confirm"
+          );
+          return;
+        }
+
+        if (event.target === elements.overlay) {
+          closeOfferDeleteModal(false);
+        }
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (elements.overlay.hidden) {
+          return;
+        }
+
+        if (event.key === "Escape") {
+          event.preventDefault();
+          closeOfferDeleteModal(false);
+          return;
+        }
+
+        if (event.key !== "Tab") {
+          return;
+        }
+
+        const focusable = [elements.cancelButton, elements.confirmButton].filter(Boolean);
+
+        if (focusable.length < 2) {
+          return;
+        }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+    }
+
     async function deleteOffer(offerId) {
       const blockingReservations = ownerReservations.filter(function (reservation) {
         return String(reservation.offerId) === String(offerId) && isOpenStatus(reservation.status);
@@ -659,7 +771,7 @@ const data = Array.isArray(updatedReservations)
         return;
       }
 
-      const reallyDelete = confirm(offersTranslate("offers.confirmDelete", "Opravdu chcete tuto nabídku smazat?"));
+      const reallyDelete = await openOfferDeleteModal();
 
       if (!reallyDelete) {
         return;
@@ -881,168 +993,10 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
         </div>
       `;
     }
-    function renderOwnerReviewForRenterBox(reservation, status) {
-      if (
-  normalizeReservationStatus(status) !==
-  RESERVATION_STATUS_RETURNED
-) {
-        return "";
-      }
-
-      const reservationId = reservation.id;
-      const existingReview = findOwnerReviewForRenter(reservation);
-
-      if (existingReview) {
-        return `
-          <div class="request-contact-box">
-            <strong>${offersTranslate("offers.review.sentTitle", "Hodnocení zákazníka bylo odesláno")}</strong>
-            <div style="margin-top: 6px; color: #006b45; font-size: 15px;">
-              ${escapeHtml(getStars(existingReview.rating))}
-            </div>
-            <div style="margin-top: 6px;">
-              ${escapeHtml(existingReview.text || offersTranslate("offers.review.noComment", "Bez komentáře"))}
-            </div>
-            <div style="margin-top: 6px; color: #5b6862; font-size: 12px;">
-              ${offersTranslate("offers.review.sentAt", "Odesláno")}: ${escapeHtml(formatOffersDate(existingReview.createdAt))}
-            </div>
-          </div>
-        `;
-      }
-
-      return `
-        <div class="request-contact-box">
-          <strong>${offersTranslate("offers.review.title", "Ohodnotit zákazníka")}</strong>
-          <div style="margin-top: 10px;">
-            <label>
-              ${offersTranslate("offers.review.rating", "Počet hvězdiček")}
-              <select
-  id="owner-review-rating-${escapeHtml(reservationId)}"
-  class="owner-review-select"
->
-                <option value="5">★★★★★ - ${offersTranslate("offers.review.excellent", "výborné")}</option>
-                <option value="4">★★★★☆ - ${offersTranslate("offers.review.good", "dobré")}</option>
-                <option value="3">★★★☆☆ - ${offersTranslate("offers.review.average", "průměrné")}</option>
-                <option value="2">★★☆☆☆ - ${offersTranslate("offers.review.weak", "slabé")}</option>
-                <option value="1">★☆☆☆☆ - ${offersTranslate("offers.review.bad", "špatné")}</option>
-              </select>
-            </label>
-          </div>
-
-          <div style="margin-top: 10px;">
-            <label>
-              ${offersTranslate("offers.review.comment", "Komentář")}
-              <textarea
-  id="owner-review-text-${escapeHtml(reservationId)}"
-  class="owner-review-textarea"
-  rows="3"
-  placeholder="${offersTranslate("offers.review.placeholder", "Jak proběhlo půjčení?")}"
-></textarea>
-          </div>
-
-          <button class="small-button" type="button" data-offers-action="save-owner-review" data-reservation-id="${escapeHtml(reservationId)}">
-            ${offersTranslate("offers.review.submit", "Odeslat hodnocení")}
-          </button>
-        </div>
-      `;
-    }
-
-    async function saveOwnerReviewForRenter(reservationId) {
-      const reservation = ownerReservations.find(function (item) {
-        return String(item.id) === String(reservationId);
-      });
-
-      if (!reservation) {
-        alert(offersTranslate("offers.error.reservationNotFound", "Rezervace nebyla nalezena."));
-        return;
-      }
-
-      if (
-  normalizeReservationStatus(reservation.status) !==
-  RESERVATION_STATUS_RETURNED
-) {
-        alert(offersTranslate("offers.error.reviewTooEarly", "Zákazníka můžete ohodnotit až po dokončení půjčení."));
-        return;
-      }
-
-      const existingReview = findOwnerReviewForRenter(reservation);
-
-      if (existingReview) {
-        alert(offersTranslate("offers.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
-        return;
-      }
-
-      const supabaseClient = getSupabaseClient();
-
-      if (!supabaseClient) {
-        alert(offersTranslate("offers.error.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku."));
-        return;
-      }
-
-      const supabaseUser = await getCurrentSupabaseUser();
-
-      if (!supabaseUser) {
-        window.location.href = "prihlaseni.html";
-        return;
-      }
-
-      const ratingElement = document.getElementById("owner-review-rating-" + reservationId);
-      const textElement = document.getElementById("owner-review-text-" + reservationId);
-
-      const rating = Number(ratingElement ? ratingElement.value : 5);
-      const text = textElement ? textElement.value.trim() : "";
-
-      if (!reservation.renterId) {
-        alert(offersTranslate("offers.error.renterIdMissing", "Chybí ID zákazníka pro hodnocení."));
-        return;
-      }
-
-      const reviewToInsert = {
-  reservation_id: reservation.id,
-  rating: rating,
-  text: text
-};
-
-      const { error } = await supabaseClient
-        .from("reviews")
-        .insert(reviewToInsert);
-
-      if (error) {
-        console.error("Chyba při ukládání hodnocení:", error);
-
-        if (String(error.message || "").toLowerCase().includes("duplicate")) {
-          alert(offersTranslate("offers.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
-        } else {
-          alert(offersTranslate("offers.error.reviewSave", "Hodnocení se nepodařilo uložit."));
-        }
-
-        return;
-      }
-
-      alert(offersTranslate("offers.review.saved", "Hodnocení bylo uloženo."));
-      await loadOwnerData();
-      renderOffers();
-
-      setTimeout(function () {
-        reopenReservationAfterRender(reservationId, "history");
-
-        const historyDetail = document.getElementById("history-request-detail-" + reservationId);
-        const openDetail = document.getElementById("request-detail-" + reservationId);
-
-        if (historyDetail) {
-          historyDetail.classList.add("open");
-        }
-
-        if (openDetail) {
-          openDetail.classList.add("open");
-        }
-      }, 0);
-    }
-
     function renderRequestDetailContent(reservation, status) {
       const price = reservation.totalPrice;
       const platformFee = reservation.platformFeeAmount || Math.round(price * PLATFORM_FEE_PERCENT / 100);
       const ownerPayout = reservation.ownerPayout || price - platformFee;
-      const reservationId = reservation.id;
 
       return `
         <div class="request-detail-inner">
@@ -1064,8 +1018,6 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
           </div>
 
           ${renderReservationContactBlock(reservation)}
-
-          ${renderOwnerReviewForRenterBox(reservation, status)}
 
           ${renderRequestNote(status)}
         </div>
@@ -1563,18 +1515,8 @@ function renderSimpleOffer(offer, requests) {
       ).map(function (element) {
         return element.id;
       });
-      const reviewValues = {};
-
-      document.querySelectorAll("#offersList .owner-review-select, #offersList .owner-review-textarea")
-        .forEach(function (element) {
-          if (element.id) {
-            reviewValues[element.id] = element.value;
-          }
-        });
-
       return {
-        openElementIds: openElementIds,
-        reviewValues: reviewValues
+        openElementIds: openElementIds
       };
     }
 
@@ -1616,14 +1558,6 @@ function renderSimpleOffer(offer, requests) {
           if (detailButton) {
             detailButton.textContent = offersTranslate("offers.hideDetail", "Skrýt detail");
           }
-        }
-      });
-
-      Object.keys(state.reviewValues).forEach(function (elementId) {
-        const element = document.getElementById(elementId);
-
-        if (element) {
-          element.value = state.reviewValues[elementId];
         }
       });
     }
@@ -1719,7 +1653,6 @@ return [
         "reject-reservation",
         "mark-picked-up",
         "mark-returned",
-        "save-owner-review",
         "publish-offer",
         "delete-offer"
       ]);
@@ -1747,9 +1680,6 @@ return [
             break;
           case "mark-returned":
             await markReservationReturned(reservationId);
-            break;
-          case "save-owner-review":
-            await saveOwnerReviewForRenter(reservationId);
             break;
           case "toggle-request-detail":
             toggleRequestDetail(reservationId, actionButton);
@@ -1812,11 +1742,13 @@ return [
     document.addEventListener("click", handleOffersActionClick);
 
     document.addEventListener("DOMContentLoaded", function () {
+      initializeOfferDeleteModal();
       initializeOwnerOffersPage();
     });
 
     document.addEventListener("rentuloLanguageChanged", function () {
       renderSharedNavigation("muj-ucet");
+      refreshOfferDeleteModalText();
 
       if (ownerOffersLoadState === "loading") {
         renderLoadingState();
