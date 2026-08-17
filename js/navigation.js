@@ -254,7 +254,10 @@ function navEnsureLanguageStyles() {
   `;
   document.head.appendChild(style);
 }
-async function navSavePreferredLanguage(language) {
+let navPreferredLanguageSaveRunning = false;
+let navPendingPreferredLanguage = null;
+
+async function navPersistPreferredLanguage(language) {
   const client = navGetSupabaseClient();
   const user = navGetCurrentUser();
 
@@ -262,32 +265,63 @@ async function navSavePreferredLanguage(language) {
     return;
   }
 
-  const { error: profileError } = await client
-    .from("profiles")
-    .update({
-      preferred_language: language,
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", user.id);
+  try {
+    const { error: profileError } = await client
+      .from("profiles")
+      .update({
+        preferred_language: language,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", user.id);
 
-  if (profileError) {
-    console.warn("Jazyk se nepodařilo uložit do profilu.", profileError);
-  }
-
-  const { data: authData, error: authError } = await client.auth.updateUser({
-    data: {
-      preferred_language: language
+    if (profileError) {
+      console.warn("Jazyk se nepodařilo uložit do profilu.", profileError);
     }
-  });
 
-  if (authError) {
-    console.warn("Jazyk se nepodařilo uložit do Auth metadata.", authError);
+    const { data: authData, error: authError } = await client.auth.updateUser({
+      data: {
+        preferred_language: language
+      }
+    });
+
+    if (authError) {
+      console.warn("Jazyk se nepodařilo uložit do Auth metadata.", authError);
+      return;
+    }
+
+    if (authData && authData.user) {
+      navVerifiedUser = authData.user;
+    }
+  } catch (error) {
+    console.warn("Jazyk se nepodařilo uložit do profilu.", error);
+  }
+}
+
+async function navFlushPreferredLanguageSaveQueue() {
+  if (navPreferredLanguageSaveRunning) {
     return;
   }
 
-  if (authData && authData.user) {
-    navVerifiedUser = authData.user;
+  navPreferredLanguageSaveRunning = true;
+
+  try {
+    while (navPendingPreferredLanguage) {
+      const language = navPendingPreferredLanguage;
+      navPendingPreferredLanguage = null;
+      await navPersistPreferredLanguage(language);
+    }
+  } finally {
+    navPreferredLanguageSaveRunning = false;
+
+    if (navPendingPreferredLanguage) {
+      void navFlushPreferredLanguageSaveQueue();
+    }
   }
+}
+
+function navSavePreferredLanguage(language) {
+  navPendingPreferredLanguage = language;
+  void navFlushPreferredLanguageSaveQueue();
 }
 function navNormalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
