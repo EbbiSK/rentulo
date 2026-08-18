@@ -1,0 +1,117 @@
+name: Rentulo CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rentulo-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  technical-checks:
+    name: Technical checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(git ls-files -z '*.js')
+
+          if (( ${#files[@]} == 0 )); then
+            echo "::error::No tracked JavaScript files were found."
+            exit 1
+          fi
+
+          for file in "${files[@]}"; do
+            echo "Checking $file"
+            node --check "$file"
+          done
+
+      - name: Validate tracked JSON files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(git ls-files -z '*.json')
+
+          if (( ${#files[@]} == 0 )); then
+            echo "::error::No tracked JSON files were found."
+            exit 1
+          fi
+
+          for file in "${files[@]}"; do
+            echo "Validating $file"
+            node -e "JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'))" "$file"
+          done
+
+      - name: Reject unresolved merge-conflict markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git grep -n -E '^(<<<<<<< |>>>>>>> |\|\|\|\|\|\|\| )' -- .; then
+            echo "::error::Unresolved merge-conflict markers were found in tracked files."
+            exit 1
+          fi
+
+          echo "No unresolved merge-conflict markers found."
+
+      - name: Reject tracked local, secret, backup and temporary files
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const { execFileSync } = require('child_process');
+
+          const output = execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8' });
+          const files = output.split('\0').filter(Boolean);
+
+          const forbidden = files.filter((file) => {
+            const parts = file.split('/');
+            const base = parts[parts.length - 1];
+
+            if (base === '.env.example' || (base.startsWith('.env.') && base.endsWith('.example'))) {
+              return false;
+            }
+
+            if (parts.includes('node_modules')) return true;
+            if (base === '.env' || base.startsWith('.env.')) return true;
+            if (/\.(zip|bak|backup|tmp|orig|swp)$/i.test(base)) return true;
+            if (base === '.DS_Store' || base === 'Thumbs.db') return true;
+
+            return false;
+          });
+
+          if (forbidden.length > 0) {
+            console.error('Forbidden tracked files found:');
+            for (const file of forbidden) console.error(` - ${file}`);
+            process.exit(1);
+          }
+
+          console.log('No forbidden tracked local/backup files found.');
+          NODE
+
+      - name: Audit high-severity npm vulnerabilities
+        run: npm audit --audit-level=high
