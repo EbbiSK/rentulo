@@ -14,20 +14,55 @@ function loginNormalizeEmail(email) {
     }
 
     function loginGetSafeReturnTo() {
-      const allowedReturnPages = new Set([
-        "detail.html",
-        "edit-nabidka.html",
-        "historie.html",
-        "moje-nabidky.html",
-        "moje-rezervace.html",
-        "muj-ucet.html",
-        "nabidnout.html",
-        "nastaveni.html"
-      ]);
-      const returnTo = new URLSearchParams(window.location.search).get("returnTo") || "";
-      const returnPath = returnTo.split(/[?#]/, 1)[0];
+      const rawReturnTo = new URLSearchParams(window.location.search).get("returnTo") || "";
 
-      return allowedReturnPages.has(returnPath) ? returnTo : "";
+      if (!rawReturnTo) {
+        return "";
+      }
+
+      let returnUrl;
+
+      try {
+        returnUrl = new URL(rawReturnTo, window.location.origin + "/");
+      } catch (_error) {
+        return "";
+      }
+
+      if (returnUrl.origin !== window.location.origin) {
+        return "";
+      }
+
+      const returnPath = returnUrl.pathname.replace(/^\/+/, "");
+
+      if (returnPath === "detail.html" || returnPath === "edit-nabidka.html") {
+        const id = returnUrl.searchParams.get("id") || "";
+        const isSafeId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+
+        if (!isSafeId) {
+          return "";
+        }
+
+        return returnPath === "detail.html"
+          ? "detail.html?id=" + encodeURIComponent(id)
+          : "edit-nabidka.html?id=" + encodeURIComponent(id);
+      }
+
+      switch (returnPath) {
+        case "historie.html":
+          return "historie.html";
+        case "moje-nabidky.html":
+          return "moje-nabidky.html";
+        case "moje-rezervace.html":
+          return "moje-rezervace.html";
+        case "muj-ucet.html":
+          return "muj-ucet.html";
+        case "nabidnout.html":
+          return "nabidnout.html";
+        case "nastaveni.html":
+          return "nastaveni.html";
+        default:
+          return "";
+      }
     }
 
     function loginUpdateRecoveryLink() {
