@@ -11,3 +11,16 @@ supabase/.branches/
 credentials*
 secrets*
 .vercel/
+
+# Local backups and temporary editor/system files
+*.zip
+*.bak
+*.backup
+*.tmp
+*.temp
+*.orig
+*~
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
