@@ -116,6 +116,14 @@
       return params.get("okoli") === "1";
     }
 
+    function clearLegacyStoredVisitorLocation() {
+      try {
+        localStorage.removeItem("rentuloUserLocation");
+      } catch (error) {
+        // Úložiště může být v některých režimech prohlížeče nedostupné.
+      }
+    }
+
     function getSearchLatitude() {
       const params = getResultsParams();
       const latitudeFromUrl = Number(params.get("lat"));
@@ -127,16 +135,6 @@
         params.get("lat") !== null
       ) {
         return latitudeFromUrl;
-      }
-
-      const storedLocation = loadJson("rentuloUserLocation", null);
-
-      if (storedLocation && storedLocation.latitude !== undefined && storedLocation.latitude !== null) {
-        const storedLatitude = Number(storedLocation.latitude);
-
-        if (Number.isFinite(storedLatitude) && storedLatitude >= -90 && storedLatitude <= 90) {
-          return storedLatitude;
-        }
       }
 
       return null;
@@ -153,16 +151,6 @@
         params.get("lng") !== null
       ) {
         return longitudeFromUrl;
-      }
-
-      const storedLocation = loadJson("rentuloUserLocation", null);
-
-      if (storedLocation && storedLocation.longitude !== undefined && storedLocation.longitude !== null) {
-        const storedLongitude = Number(storedLocation.longitude);
-
-        if (Number.isFinite(storedLongitude) && storedLongitude >= -180 && storedLongitude <= 180) {
-          return storedLongitude;
-        }
       }
 
       return null;
@@ -217,7 +205,6 @@
 
         city: row.city,
         mesto: row.city,
-
         postalCode: row.postal_code,
         psc: row.postal_code,
 
@@ -1059,6 +1046,7 @@ const HOME_CATEGORY_GROUPS = {
     }
 
     async function initializeResultsPage() {
+      clearLegacyStoredVisitorLocation();
       document.title = resultsTranslate("results.documentTitle", "Výsledky vyhledávání - Rentulo");
       renderSharedNavigation("vysledky");
       setupResultsFromUrl();

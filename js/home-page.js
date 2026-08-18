@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  clearLegacyStoredVisitorLocation();
   renderSharedNavigation("");
   setupHomeSearch();
   setupCategorySearch();
@@ -17,6 +18,7 @@ let homeMap = null;
 let homeMapLayer = null;
 let homeMapOffers = [];
 let homeMapLoadState = "loading";
+let homeVisitorLocation = null;
 let homeMapReturnView = getHomeMapReturnView();
 let homeMapReturnViewPending = Boolean(homeMapReturnView);
 
@@ -113,12 +115,6 @@ function setupNearbySearch() {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
 
-        localStorage.setItem("rentuloUserLocation", JSON.stringify({
-          latitude: latitude,
-          longitude: longitude,
-          savedAt: new Date().toISOString()
-        }));
-
         window.location.href = "vysledky.html?okoli=1&lat=" + encodeURIComponent(latitude) + "&lng=" + encodeURIComponent(longitude);
       },
       function () {
@@ -192,11 +188,7 @@ function applyVisitorLocation(position) {
 
   if (!Number.isFinite(location.latitude) || !Number.isFinite(location.longitude)) return;
 
-  localStorage.setItem("rentuloUserLocation", JSON.stringify({
-    latitude: location.latitude,
-    longitude: location.longitude,
-    savedAt: new Date().toISOString()
-  }));
+  homeVisitorLocation = location;
 
   if (homeMap) {
     homeMap.setView([location.latitude, location.longitude], 9, { animate: true });
@@ -226,12 +218,6 @@ function centerHomeMapOnVisitor() {
     return;
   }
 
-  const storedLocation = getStoredUserLocation();
-
-  if (storedLocation && homeMap) {
-    homeMap.setView([storedLocation.latitude, storedLocation.longitude], 9);
-  }
-
   requestVisitorLocation();
 
   if (navigator.permissions && typeof navigator.permissions.query === "function") {
@@ -247,16 +233,13 @@ function centerHomeMapOnVisitor() {
   }
 }
 
-function getStoredUserLocation() {
+function clearLegacyStoredVisitorLocation() {
   try {
-    const stored = JSON.parse(localStorage.getItem("rentuloUserLocation") || "null");
-    if (!stored || !Number.isFinite(Number(stored.latitude)) || !Number.isFinite(Number(stored.longitude))) return null;
-    return { latitude: Number(stored.latitude), longitude: Number(stored.longitude) };
+    localStorage.removeItem("rentuloUserLocation");
   } catch (error) {
-    return null;
+    // Úložiště může být v některých režimech prohlížeče nedostupné.
   }
 }
-
 function distanceInKm(firstLat, firstLng, secondLat, secondLng) {
   const toRadians = function (value) { return value * Math.PI / 180; };
   const earthRadius = 6371;
@@ -525,7 +508,7 @@ function renderHomeOffersMap() {
   if (status) status.hidden = true;
   if (emptyStatus) emptyStatus.hidden = true;
 
-  const userLocation = getStoredUserLocation();
+  const userLocation = homeVisitorLocation;
   const groups = new Map();
 
   homeMapOffers.forEach(function (offer) {
