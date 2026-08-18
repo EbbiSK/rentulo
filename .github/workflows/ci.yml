@@ -115,3 +115,6 @@ jobs:
 
       - name: Audit high-severity npm vulnerabilities
         run: npm audit --audit-level=high
+
+      - name: Run automated tests
+        run: npm test
