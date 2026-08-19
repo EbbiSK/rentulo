@@ -172,7 +172,7 @@
       z-index: 5;
       min-width: 0;
       padding: 12px 4px 18px;
-      transform: translateY(-64px);
+      transform: translateY(-36px);
     }
 
     .home-kicker {
@@ -452,14 +452,14 @@
     .home-map-zoom-controls {
       position: absolute;
       top: 21%;
-      right: 3.5%;
+      right: 1.2%;
       z-index: 2;
       display: flex;
       flex-direction: column;
       gap: 0;
       overflow: hidden;
       border: 1px solid rgba(218, 226, 220, 0.92);
-      border-radius: 9px;
+      border-radius: 7px;
       background: rgba(255, 255, 255, 0.96);
       box-shadow: 0 6px 16px rgba(16, 32, 25, 0.10);
       backdrop-filter: blur(10px);
@@ -467,14 +467,14 @@
     }
 
     .home-map-zoom-button {
-      width: 30px;
-      height: 30px;
+      width: 26px;
+      height: 26px;
       padding: 0;
       border: 0;
       border-radius: 0;
       background: transparent;
       color: var(--ink);
-      font-size: 16px;
+      font-size: 14px;
       line-height: 1;
       font-weight: 700;
       cursor: pointer;
@@ -502,7 +502,7 @@
     .home-map-status,
     .home-map-empty-status {
       position: absolute;
-      left: 50%;
+      left: calc(50% + 76px);
       bottom: 13.5%;
       z-index: 2;
       width: max-content;
@@ -824,6 +824,7 @@
 
       .home-map-status,
       .home-map-empty-status {
+        left: 50%;
         bottom: 12%;
         max-width: 68%;
       }
