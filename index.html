@@ -454,29 +454,29 @@
 
     .home-map-zoom-controls {
       position: absolute;
-      top: 28px;
-      right: 28px;
+      top: 24px;
+      right: 24px;
       z-index: 620;
       display: flex;
       flex-direction: column;
       gap: 0;
       overflow: hidden;
       border: 1px solid rgba(218, 226, 220, 0.92);
-      border-radius: 13px;
+      border-radius: 10px;
       background: rgba(255, 255, 255, 0.95);
-      box-shadow: 0 9px 24px rgba(16, 32, 25, 0.11);
+      box-shadow: 0 7px 18px rgba(16, 32, 25, 0.10);
       backdrop-filter: blur(10px);
     }
 
     .home-map-zoom-button {
-      width: 39px;
-      height: 39px;
+      width: 31px;
+      height: 31px;
       padding: 0;
       border: 0;
       border-radius: 0;
       background: transparent;
       color: var(--ink);
-      font-size: 20px;
+      font-size: 17px;
       line-height: 1;
       font-weight: 700;
       cursor: pointer;
@@ -505,21 +505,21 @@
     .home-map-empty-status {
       position: absolute;
       left: 50%;
-      bottom: 18px;
+      bottom: 32px;
       z-index: 630;
       width: max-content;
-      max-width: calc(100% - 96px);
+      max-width: calc(100% - 120px);
       transform: translateX(-50%);
-      padding: 7px 12px;
+      padding: 6px 11px;
       border: 1px solid rgba(225, 232, 227, 0.96);
-      border-radius: 12px;
+      border-radius: 11px;
       background: rgba(255, 255, 255, 0.96);
       color: #57645f;
       text-align: center;
       font-size: 10px;
       line-height: 1.35;
       font-weight: 700;
-      box-shadow: 0 8px 20px rgba(16, 32, 25, 0.10);
+      box-shadow: 0 7px 18px rgba(16, 32, 25, 0.09);
       backdrop-filter: blur(8px);
       white-space: normal;
     }
@@ -810,14 +810,21 @@
       }
 
       .home-map-zoom-controls {
-        top: 14px;
-        right: 14px;
-        border-radius: 11px;
+        top: 16px;
+        right: 16px;
+        border-radius: 9px;
       }
 
       .home-map-zoom-button {
-        width: 35px;
-        height: 35px;
+        width: 29px;
+        height: 29px;
+        font-size: 16px;
+      }
+
+      .home-map-status,
+      .home-map-empty-status {
+        bottom: 24px;
+        max-width: calc(100% - 84px);
       }
     }
 
@@ -1000,11 +1007,6 @@
       </div>
 
       <aside class="home-map-card">
-        <div class="home-map-zoom-controls" aria-label="Zoom mapy">
-          <button id="homeMapZoomIn" class="home-map-zoom-button" type="button" aria-label="+">+</button>
-          <button id="homeMapZoomOut" class="home-map-zoom-button" type="button" aria-label="−">−</button>
-        </div>
-
         <div class="home-map-shell">
           <div
             id="homeOffersMap"
@@ -1012,10 +1014,15 @@
             aria-label="Mapa dostupných nabídek"
             data-i18n-aria-label="home.mapAriaLabel"
           ></div>
-        </div>
 
-        <div id="homeMapStatus" class="home-map-status" aria-live="polite" data-i18n="home.mapLoading">Načítám nabídky do mapy...</div>
-        <div id="homeMapEmptyStatus" class="home-map-empty-status" aria-live="polite" data-i18n="home.mapEmpty" hidden>V zobrazené oblasti zatím nejsou žádné nabídky.</div>
+          <div class="home-map-zoom-controls" aria-label="Zoom mapy">
+            <button id="homeMapZoomIn" class="home-map-zoom-button" type="button" aria-label="+">+</button>
+            <button id="homeMapZoomOut" class="home-map-zoom-button" type="button" aria-label="−">−</button>
+          </div>
+
+          <div id="homeMapStatus" class="home-map-status" aria-live="polite" data-i18n="home.mapLoading">Načítám nabídky do mapy...</div>
+          <div id="homeMapEmptyStatus" class="home-map-empty-status" aria-live="polite" data-i18n="home.mapEmpty" hidden>V zobrazené oblasti zatím nejsou žádné nabídky.</div>
+        </div>
       </aside>
     </section>
   </main>
