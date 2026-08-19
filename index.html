@@ -13,18 +13,18 @@
 
   <style>
     :root {
-      --page: #dff7ee;
+      --page: #fbfaf7;
       --surface: #ffffff;
-      --surface-soft: #f5f7f3;
-      --ink: #112821;
-      --muted: #66726d;
+      --ink: #102019;
+      --muted: #64706b;
       --green: #176747;
-      --green-dark: #0f5138;
-      --green-soft: #eaf4ee;
+      --green-dark: #0e5037;
+      --green-soft: #e9f4ee;
+      --mint: #dff7ee;
       --orange: #ff6a00;
       --orange-hover: #e85f00;
-      --line: #e4e8e4;
-      --shadow: 0 18px 48px rgba(17, 40, 33, 0.08);
+      --line: #e5e9e5;
+      --shadow: 0 22px 60px rgba(16, 32, 25, 0.10);
     }
 
     * {
@@ -39,7 +39,9 @@
       margin: 0;
       min-height: 100vh;
       font-family: "Manrope", Arial, sans-serif;
-      background: var(--page);
+      background:
+        radial-gradient(circle at 77% 20%, rgba(223, 247, 238, 0.70), transparent 28%),
+        var(--page);
       color: var(--ink);
     }
 
@@ -58,9 +60,11 @@
     }
 
     .header {
-      width: min(1440px, calc(100% - 48px));
+      position: relative;
+      z-index: 1000;
+      width: min(1480px, calc(100% - 64px));
       margin: 0 auto;
-      padding: 10px 0 8px;
+      padding: 14px 0 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -92,17 +96,17 @@
     .logo-text strong {
       display: block;
       color: #101c18;
-      font-size: 26px;
+      font-size: 27px;
       line-height: 1;
       font-weight: 800;
-      letter-spacing: -0.035em;
+      letter-spacing: -0.04em;
     }
 
     .nav {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 10px 18px;
+      gap: 10px 22px;
       min-width: 0;
       color: #17251f;
       font-size: 14px;
@@ -110,7 +114,7 @@
     }
 
     .nav > a:not(.btn-register):not(.logout-link) {
-      padding: 9px 2px;
+      padding: 10px 1px;
       border-bottom: 2px solid transparent;
       transition: color 0.16s ease, border-color 0.16s ease;
     }
@@ -135,13 +139,13 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 44px;
-      padding: 0 18px;
-      border-radius: 13px;
+      min-height: 46px;
+      padding: 0 20px;
+      border-radius: 14px;
       background: var(--orange);
       color: #ffffff !important;
       font-weight: 800;
-      box-shadow: 0 10px 22px rgba(255, 106, 0, 0.17);
+      box-shadow: 0 10px 24px rgba(255, 106, 0, 0.16);
       transition: transform 0.16s ease, background 0.16s ease;
     }
 
@@ -152,82 +156,73 @@
     }
 
     main {
-      width: min(1440px, calc(100% - 48px));
+      width: min(1480px, calc(100% - 64px));
       margin: 0 auto;
-      padding: 8px 0 12px;
+      padding: 6px 0 14px;
     }
 
     .home-hero {
       display: grid;
-      grid-template-columns: minmax(0, 1.08fr) minmax(430px, 0.92fr);
-      gap: 28px;
-      align-items: stretch;
-      min-height: 440px;
+      grid-template-columns: minmax(0, 0.96fr) minmax(560px, 1.04fr);
+      gap: 34px;
+      align-items: center;
+      min-height: calc(100vh - 92px);
     }
 
     .home-copy {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      position: relative;
+      z-index: 5;
       min-width: 0;
-      padding: 12px 4px 4px;
+      padding: 12px 4px 18px;
     }
 
     .home-kicker {
-      display: inline-flex;
-      align-items: center;
-      align-self: flex-start;
-      gap: 8px;
-      margin-bottom: 14px;
-      padding: 8px 12px;
-      border: 1px solid #e4e7e0;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.76);
-      color: #304239;
-      font-size: 13px;
-      font-weight: 800;
-      box-shadow: 0 8px 24px rgba(17, 40, 33, 0.035);
-    }
-
-    .home-kicker-icon {
-      color: var(--orange);
-      font-size: 17px;
-      line-height: 1;
+      display: none;
     }
 
     .home-copy h1 {
-      max-width: 650px;
+      max-width: 700px;
       margin: 0;
-      color: #0f1d18;
-      font-size: clamp(46px, 4.5vw, 72px);
-      line-height: 0.98;
-      letter-spacing: -0.055em;
+      font-size: clamp(58px, 5vw, 88px);
+      line-height: 0.96;
+      letter-spacing: -0.06em;
       font-weight: 800;
       text-wrap: balance;
+      color: var(--ink);
+      background: linear-gradient(
+        to bottom,
+        #101c18 0%,
+        #101c18 46%,
+        var(--green) 46%,
+        var(--green) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .home-text {
-      max-width: 620px;
-      margin: 14px 0 14px;
-      color: #56635e;
+      max-width: 640px;
+      margin: 24px 0 26px;
+      color: #58645f;
       font-size: 17px;
-      line-height: 1.62;
+      line-height: 1.58;
       font-weight: 500;
     }
 
     .search-box {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) 58px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr) 66px;
       align-items: stretch;
       gap: 0;
-      width: min(100%, 670px);
-      min-height: 78px;
-      margin: 0 0 12px;
+      width: min(100%, 760px);
+      min-height: 82px;
+      margin: 0 0 18px;
       padding: 7px;
       border: 1px solid var(--line);
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.96);
-      box-shadow: 0 16px 38px rgba(17, 40, 33, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.97);
+      box-shadow: 0 18px 42px rgba(16, 32, 25, 0.075);
     }
 
     .search-field {
@@ -236,21 +231,21 @@
       align-content: center;
       gap: 4px;
       min-width: 0;
-      padding: 7px 16px;
+      padding: 7px 18px;
     }
 
     .search-field + .search-field::before {
       content: "";
       position: absolute;
       left: 0;
-      top: 15px;
-      bottom: 15px;
+      top: 16px;
+      bottom: 16px;
       width: 1px;
       background: #e7e9e6;
     }
 
     .search-field label {
-      color: #15251e;
+      color: #16251f;
       font-size: 11px;
       line-height: 1.2;
       font-weight: 800;
@@ -272,7 +267,7 @@
     }
 
     .search-field input::placeholder {
-      color: #8a938f;
+      color: #8b9490;
       opacity: 1;
       font-weight: 500;
     }
@@ -282,15 +277,15 @@
       justify-self: end;
       display: grid;
       place-items: center;
-      width: 54px;
-      height: 54px;
+      width: 58px;
+      height: 58px;
       padding: 0;
       border: 0;
       border-radius: 50%;
       background: var(--orange);
       color: white;
       cursor: pointer;
-      box-shadow: 0 10px 22px rgba(255, 106, 0, 0.22);
+      box-shadow: 0 11px 24px rgba(255, 106, 0, 0.22);
       transition: background 0.16s ease, transform 0.16s ease;
     }
 
@@ -300,8 +295,8 @@
     }
 
     .search-button svg {
-      width: 23px;
-      height: 23px;
+      width: 24px;
+      height: 24px;
       fill: none;
       stroke: currentColor;
       stroke-width: 2;
@@ -323,41 +318,42 @@
 
     .home-points {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 10px;
-      width: min(100%, 670px);
+      width: min(100%, 760px);
     }
 
     .home-point-button {
       display: grid;
-      grid-template-columns: 38px minmax(0, 1fr);
-      align-items: center;
-      gap: 9px;
-      min-height: 56px;
-      padding: 9px 11px;
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      background: rgba(255, 255, 255, 0.82);
+      justify-items: center;
+      align-content: center;
+      gap: 7px;
+      min-width: 0;
+      min-height: 88px;
+      padding: 10px 7px 9px;
+      border: 1px solid #e4e8e4;
+      border-radius: 17px;
+      background: rgba(255, 255, 255, 0.92);
       color: var(--ink);
-      text-align: left;
+      text-align: center;
       cursor: pointer;
-      box-shadow: 0 8px 24px rgba(17, 40, 33, 0.035);
-      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+      box-shadow: 0 10px 26px rgba(16, 32, 25, 0.045);
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
     }
 
     .home-point-button:hover {
-      transform: translateY(-2px);
-      border-color: #c7d9cf;
-      background: #ffffff;
+      transform: translateY(-3px);
+      border-color: #c9dcd1;
+      box-shadow: 0 14px 30px rgba(16, 32, 25, 0.08);
     }
 
     .home-category-icon {
-      width: 38px;
-      height: 38px;
+      width: 39px;
+      height: 39px;
       display: grid;
       place-items: center;
       border: 1px solid #d8e5dc;
-      border-radius: 11px;
+      border-radius: 13px;
       background: var(--green-soft);
       color: var(--green);
     }
@@ -375,93 +371,105 @@
 
     .home-point-button span {
       min-width: 0;
-      font-size: 12px;
-      line-height: 1.25;
+      font-size: 11px;
+      line-height: 1.22;
       font-weight: 800;
     }
 
     .home-map-card {
       position: relative;
       min-width: 0;
-      min-height: 440px;
-      overflow: hidden;
-      border: 1px solid #e0e6e1;
-      border-radius: 42px 42px 42px 120px;
-      background: #edf2ee;
-      box-shadow: var(--shadow);
+      height: clamp(455px, 64vh, 610px);
+      overflow: visible;
       isolation: isolate;
     }
 
     .home-map-card::before {
       content: "";
       position: absolute;
-      inset: 0;
-      z-index: 3;
-      pointer-events: none;
-      border-radius: inherit;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.34);
+      z-index: 0;
+      inset: 2% -1% -2% 8%;
+      border-radius: 46% 54% 38% 62% / 30% 32% 68% 70%;
+      background: rgba(223, 247, 238, 0.95);
+      transform: rotate(4deg);
     }
 
     .home-map-accent {
       position: absolute;
-      left: -72px;
-      top: -70px;
-      z-index: 4;
-      width: 190px;
-      height: 210px;
-      border-radius: 50%;
-      background: linear-gradient(145deg, rgba(23, 103, 71, 0.96), rgba(47, 132, 93, 0.82));
-      transform: rotate(22deg);
+      z-index: 1;
+      left: -24px;
+      top: 6px;
+      width: 42%;
+      height: 44%;
+      border-radius: 48% 52% 65% 35% / 42% 35% 65% 58%;
+      background: linear-gradient(145deg, #2d8762, #176747);
+      transform: rotate(-10deg);
       pointer-events: none;
-      opacity: 0.95;
+      box-shadow: 0 18px 45px rgba(23, 103, 71, 0.14);
+    }
+
+    .home-map-shell {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border: 1px solid rgba(221, 228, 223, 0.95);
+      border-radius: 38% 62% 30% 70% / 25% 22% 78% 75%;
+      background: #eef2ef;
+      box-shadow: var(--shadow);
+    }
+
+    .home-offers-map {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      z-index: 1;
+      background: #eef2ef;
     }
 
     .home-map-overlay {
       position: absolute;
-      left: 24px;
-      top: 24px;
+      left: 30px;
+      top: 30px;
       z-index: 620;
-      width: min(320px, calc(100% - 130px));
-      padding: 16px 18px;
-      border: 1px solid rgba(255, 255, 255, 0.82);
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.92);
-      box-shadow: 0 14px 34px rgba(17, 40, 33, 0.12);
-      backdrop-filter: blur(12px);
+      width: min(255px, calc(100% - 130px));
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.80);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.93);
+      box-shadow: 0 12px 30px rgba(16, 32, 25, 0.11);
+      backdrop-filter: blur(10px);
     }
 
     .featured-eyebrow {
       display: inline-flex;
-      margin-bottom: 7px;
+      margin-bottom: 4px;
       color: var(--green);
-      font-size: 11px;
+      font-size: 9px;
       line-height: 1.2;
       font-weight: 800;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
     }
 
     .home-map-overlay h2 {
-      margin: 0 0 6px;
+      margin: 0;
       color: #12241d;
-      font-size: 20px;
-      line-height: 1.15;
+      font-size: 16px;
+      line-height: 1.18;
       font-weight: 800;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.025em;
     }
 
     .home-map-overlay p {
-      margin: 0;
-      color: #64716c;
-      font-size: 11px;
-      line-height: 1.45;
-      font-weight: 600;
+      display: none;
     }
 
     .home-map-zoom-controls {
       position: absolute;
-      top: 24px;
-      right: 24px;
+      top: 30px;
+      right: 30px;
       z-index: 620;
       display: grid;
       gap: 7px;
@@ -479,7 +487,7 @@
       line-height: 1;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 8px 22px rgba(17, 40, 33, 0.10);
+      box-shadow: 0 8px 22px rgba(16, 32, 25, 0.10);
       backdrop-filter: blur(10px);
     }
 
@@ -497,122 +505,31 @@
       cursor: default;
     }
 
-    .home-map-shell,
-    .home-offers-map {
-      width: 100%;
-      height: 100%;
-      min-height: 440px;
-    }
-
-    .home-offers-map {
-      z-index: 1;
-      background: #edf2ee;
-    }
-
-    .home-map-status {
-      position: absolute;
-      left: 50%;
-      bottom: 16px;
-      z-index: 620;
-      width: max-content;
-      max-width: calc(100% - 36px);
-      transform: translateX(-50%);
-      padding: 7px 11px;
-      border: 1px solid rgba(225, 232, 227, 0.95);
-      border-radius: 11px;
-      background: rgba(255, 255, 255, 0.94);
-      color: #57645f;
-      text-align: center;
-      font-size: 11px;
-      line-height: 1.3;
-      font-weight: 700;
-      box-shadow: 0 8px 20px rgba(17, 40, 33, 0.10);
-      backdrop-filter: blur(8px);
-    }
-
-    .home-map-status[hidden] {
-      display: none;
-    }
-
+    .home-map-status,
     .home-map-empty-status {
       position: absolute;
       left: 50%;
-      bottom: 16px;
+      bottom: 15px;
       z-index: 620;
       width: max-content;
-      max-width: calc(100% - 36px);
+      max-width: calc(100% - 38px);
       transform: translateX(-50%);
       padding: 7px 11px;
-      border: 1px solid rgba(225, 232, 227, 0.95);
+      border: 1px solid rgba(225, 232, 227, 0.96);
       border-radius: 11px;
       background: rgba(255, 255, 255, 0.94);
       color: #57645f;
       text-align: center;
-      font-size: 11px;
+      font-size: 10px;
       line-height: 1.3;
       font-weight: 700;
-      box-shadow: 0 8px 20px rgba(17, 40, 33, 0.10);
+      box-shadow: 0 8px 20px rgba(16, 32, 25, 0.09);
+      backdrop-filter: blur(8px);
     }
 
+    .home-map-status[hidden],
     .home-map-empty-status[hidden] {
       display: none;
-    }
-
-    .home-mini-info {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background: rgba(255, 255, 255, 0.72);
-      box-shadow: 0 14px 40px rgba(17, 40, 33, 0.045);
-    }
-
-    .mini-info-box {
-      position: relative;
-      min-width: 0;
-      padding: 10px 14px 10px 44px;
-      border-right: 1px solid #e7e9e6;
-    }
-
-    .mini-info-box:last-child {
-      border-right: 0;
-    }
-
-    .mini-info-box::before {
-      content: "✓";
-      position: absolute;
-      left: 9px;
-      top: 15px;
-      display: grid;
-      place-items: center;
-      width: 28px;
-      height: 28px;
-      border: 1px solid #cae0d2;
-      border-radius: 50%;
-      background: var(--green-soft);
-      color: var(--green);
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .mini-info-box strong {
-      display: block;
-      margin-bottom: 4px;
-      color: #18372c;
-      font-size: 14px;
-      line-height: 1.35;
-      font-weight: 800;
-    }
-
-    .mini-info-box span {
-      display: block;
-      color: #66726d;
-      font-size: 12px;
-      line-height: 1.5;
-      font-weight: 500;
     }
 
     .home-map-popup {
@@ -663,7 +580,7 @@
       border-radius: 50% 50% 50% 10%;
       background: var(--orange);
       color: white;
-      box-shadow: 0 5px 14px rgba(17, 40, 33, 0.25);
+      box-shadow: 0 5px 14px rgba(16, 32, 25, 0.25);
       font-size: 12px;
       font-weight: 800;
       transform: rotate(-45deg);
@@ -682,14 +599,10 @@
       font-family: "Manrope", Arial, sans-serif;
     }
 
-    @media (max-width: 1160px) {
+    @media (max-width: 1220px) {
       .header,
       main {
-        width: min(100% - 32px, 1180px);
-      }
-
-      .header {
-        align-items: flex-start;
+        width: min(100% - 36px, 1180px);
       }
 
       .nav {
@@ -697,37 +610,46 @@
       }
 
       .home-hero {
-        grid-template-columns: minmax(0, 0.92fr) minmax(440px, 1.08fr);
+        grid-template-columns: minmax(0, 0.92fr) minmax(470px, 1.08fr);
         gap: 24px;
-        min-height: 570px;
-      }
-
-      .home-map-card,
-      .home-map-shell,
-      .home-offers-map {
-        min-height: 570px;
       }
 
       .home-copy h1 {
-        font-size: clamp(46px, 5.2vw, 64px);
+        font-size: clamp(52px, 5.5vw, 72px);
       }
 
       .home-points {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .home-point-button {
+        grid-template-columns: 38px minmax(0, 1fr);
+        justify-items: stretch;
+        text-align: left;
+        align-content: center;
+        min-height: 58px;
+        padding: 9px 10px;
       }
     }
 
     @media (max-width: 900px) {
+      body {
+        background:
+          radial-gradient(circle at 78% 43%, rgba(223, 247, 238, 0.72), transparent 23%),
+          var(--page);
+      }
+
       .header {
-        padding-top: 16px;
+        padding-top: 15px;
         flex-direction: column;
-        gap: 14px;
+        align-items: flex-start;
+        gap: 12px;
       }
 
       .nav {
         width: 100%;
         justify-content: flex-start;
-        gap: 8px 14px;
+        gap: 7px 14px;
       }
 
       .home-hero {
@@ -736,12 +658,15 @@
       }
 
       .home-copy {
-        padding: 20px 0 4px;
+        padding-top: 24px;
       }
 
       .home-copy h1 {
-        max-width: 760px;
-        font-size: clamp(46px, 9vw, 68px);
+        max-width: 780px;
+        font-size: clamp(48px, 9vw, 72px);
+        background: none;
+        color: var(--ink);
+        -webkit-text-fill-color: currentColor;
       }
 
       .home-text,
@@ -752,13 +677,8 @@
       }
 
       .home-map-card {
-        min-height: 470px;
-        border-radius: 34px 34px 34px 82px;
-      }
-
-      .home-map-shell,
-      .home-offers-map {
-        min-height: 470px;
+        height: 470px;
+        margin-top: 6px;
       }
     }
 
@@ -766,10 +686,6 @@
       .header,
       main {
         width: min(100% - 28px, 640px);
-      }
-
-      .header {
-        padding-top: 14px;
       }
 
       .logo-icon {
@@ -794,16 +710,11 @@
       }
 
       main {
-        padding-top: 0;
-        padding-bottom: 28px;
+        padding-bottom: 24px;
       }
 
       .home-copy {
         padding-top: 18px;
-      }
-
-      .home-kicker {
-        margin-bottom: 18px;
       }
 
       .home-copy h1 {
@@ -863,6 +774,7 @@
         grid-template-columns: 34px minmax(0, 1fr);
         min-height: 58px;
         padding: 8px 9px;
+        text-align: left;
       }
 
       .home-category-icon {
@@ -876,29 +788,35 @@
       }
 
       .home-map-card {
-        min-height: 410px;
-        border-radius: 28px 28px 28px 64px;
+        height: 410px;
       }
 
-      .home-map-shell,
-      .home-offers-map {
-        min-height: 410px;
+      .home-map-shell {
+        border-radius: 30px 30px 30px 62px;
+      }
+
+      .home-map-card::before {
+        inset: 3% 0 -2% 5%;
+        border-radius: 34px 34px 34px 70px;
+      }
+
+      .home-map-accent {
+        left: -14px;
+        top: -6px;
+        width: 38%;
+        height: 36%;
       }
 
       .home-map-overlay {
         left: 14px;
         top: 14px;
-        width: calc(100% - 84px);
-        padding: 12px 14px;
-        border-radius: 15px;
+        width: calc(100% - 82px);
+        padding: 10px 12px;
+        border-radius: 14px;
       }
 
       .home-map-overlay h2 {
-        font-size: 17px;
-      }
-
-      .home-map-overlay p {
-        display: none;
+        font-size: 15px;
       }
 
       .home-map-zoom-controls {
@@ -911,91 +829,45 @@
         height: 34px;
         border-radius: 10px;
       }
-
-      .home-map-accent {
-        width: 145px;
-        height: 160px;
-        left: -64px;
-        top: -62px;
-      }
-
-      .home-mini-info {
-        grid-template-columns: 1fr;
-        gap: 0;
-        padding: 8px 16px;
-        border-radius: 20px;
-      }
-
-      .mini-info-box {
-        padding: 14px 8px 14px 46px;
-        border-right: 0;
-        border-bottom: 1px solid #e7e9e6;
-      }
-
-      .mini-info-box:last-child {
-        border-bottom: 0;
-      }
     }
 
-    @media (min-width: 921px) and (max-height: 900px) {
+    @media (min-width: 901px) and (max-height: 780px) {
       .header {
-        padding-top: 6px;
-        padding-bottom: 5px;
-      }
-
-      main {
-        padding-top: 4px;
+        padding-top: 8px;
         padding-bottom: 6px;
       }
 
+      main {
+        padding-top: 2px;
+      }
+
       .home-hero {
-        min-height: 390px;
-      }
-
-      .home-copy {
-        padding-top: 6px;
-      }
-
-      .home-kicker {
-        margin-bottom: 10px;
+        min-height: calc(100vh - 76px);
       }
 
       .home-copy h1 {
-        font-size: clamp(42px, 4vw, 64px);
+        font-size: clamp(50px, 4.6vw, 72px);
       }
 
       .home-text {
-        margin-top: 10px;
-        margin-bottom: 10px;
+        margin-top: 16px;
+        margin-bottom: 18px;
         font-size: 15px;
       }
 
       .search-box {
-        min-height: 68px;
-        margin-bottom: 9px;
+        min-height: 72px;
+        margin-bottom: 12px;
       }
 
       .home-point-button {
-        min-height: 50px;
+        min-height: 78px;
       }
 
-      .home-map-card,
-      .home-offers-map {
-        min-height: 390px;
-      }
-
-      .home-mini-info {
-        margin-top: 8px;
-        padding-top: 9px;
-        padding-bottom: 9px;
-      }
-
-      .mini-info-box {
-        padding-top: 7px;
-        padding-bottom: 7px;
+      .home-map-card {
+        height: clamp(420px, 62vh, 520px);
       }
     }
-
   </style>
 </head>
 
@@ -1162,21 +1034,6 @@
           <div id="homeMapEmptyStatus" class="home-map-empty-status" aria-live="polite" data-i18n="home.mapEmpty" hidden>V zobrazené oblasti zatím nejsou žádné nabídky.</div>
         </div>
       </aside>
-    </section>
-
-    <section class="home-mini-info" aria-label="Rentulo">
-      <div class="mini-info-box">
-        <strong data-i18n="home.step1Title">1. Najdeš věc</strong>
-        <span data-i18n="home.step1Text">Vyhledáš nabídku podle názvu, kategorie nebo lokality.</span>
-      </div>
-      <div class="mini-info-box">
-        <strong data-i18n="home.step2Title">2. Pošleš žádost</strong>
-        <span data-i18n="home.step2Text">Majitel žádost potvrdí a společně domluvíte podrobnosti.</span>
-      </div>
-      <div class="mini-info-box">
-        <strong data-i18n="home.step3Title">3. Převezmeš a vrátíš</strong>
-        <span data-i18n="home.step3Text">Věc si převezmeš, použiješ a po skončení rezervace vrátíš.</span>
-      </div>
     </section>
   </main>
 
