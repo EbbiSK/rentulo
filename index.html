@@ -599,34 +599,19 @@
       font-family: "Manrope", Arial, sans-serif;
     }
 
-    .home-offers-map .leaflet-control-attribution {
-      display: none;
-    }
-
-    .home-map-attribution {
-      position: absolute;
+    .home-offers-map .leaflet-bottom.leaflet-right {
+      top: 12px;
+      bottom: auto;
       left: 50%;
-      bottom: 0;
-      z-index: 2;
+      right: auto;
       transform: translateX(-50%);
-      max-width: calc(100% - 28px);
-      padding: 0 5px;
-      border-radius: 2px;
-      background: rgba(255, 255, 255, 0.82);
-      color: #333333;
-      font-size: 10px;
-      line-height: 14px;
+    }
+
+    .home-offers-map .leaflet-control-attribution {
+      float: none;
+      margin: 0;
+      max-width: calc(100% - 32px);
       white-space: nowrap;
-      pointer-events: auto;
-    }
-
-    .home-map-attribution a {
-      color: #0078a8;
-      text-decoration: none;
-    }
-
-    .home-map-attribution a:hover {
-      text-decoration: underline;
     }
 
 
@@ -1275,11 +1260,6 @@
 
           <div id="homeMapStatus" class="home-map-status" aria-live="polite" data-i18n="home.mapLoading">Načítám nabídky do mapy...</div>
           <div id="homeMapEmptyStatus" class="home-map-empty-status" aria-live="polite" data-i18n="home.mapEmpty" hidden>V zobrazené oblasti zatím nejsou žádné nabídky.</div>
-          <div class="home-map-attribution">
-            <a href="https://leafletjs.com/" target="_blank" rel="noopener noreferrer">Leaflet</a>
-            <span aria-hidden="true"> | </span>
-            &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
-          </div>
         </div>
       </aside>
     </section>
