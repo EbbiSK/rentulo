@@ -5,18 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title data-i18n="home.documentTitle">Rentulo - půjčovna věcí</title>
-<link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
+  <link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+
   <style>
+    :root {
+      --page: #F5F8F6;
+      --surface: #ffffff;
+      --ink: #102019;
+      --muted: #64706b;
+      --green: #176747;
+      --green-dark: #0e5037;
+      --green-soft: #e9f4ee;
+      --mint: #dff7ee;
+      --orange: #ff6a00;
+      --orange-hover: #e85f00;
+      --line: #e5e9e5;
+      --shadow: 0 22px 60px rgba(16, 32, 25, 0.10);
+    }
+
     * {
       box-sizing: border-box;
     }
 
+    html {
+      background: var(--page);
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #dff7ee;
-      color: #173f35;
+      min-height: 100vh;
+      font-family: "Manrope", Arial, sans-serif;
+      background: var(--page);
+      color: var(--ink);
     }
 
     a {
@@ -26,32 +50,38 @@
 
     button,
     input {
-      font-family: inherit;
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
     }
 
     .header {
-      max-width: 1240px;
+      position: relative;
+      z-index: 1000;
+      width: min(1480px, calc(100% - 64px));
       margin: 0 auto;
-      padding: 10px 20px;
+      padding: 14px 0 10px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 16px;
+      justify-content: space-between;
+      gap: 28px;
     }
 
     .logo {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 12px;
+      flex: 0 0 auto;
     }
 
     .logo-icon {
-      width: 48px;
-      height: 48px;
-      flex: 0 0 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
+      display: grid;
+      place-items: center;
     }
 
     .logo-icon img {
@@ -63,40 +93,43 @@
 
     .logo-text strong {
       display: block;
-      font-size: 25px;
+      color: #101c18;
+      font-size: 27px;
       line-height: 1;
-      color: #173f35;
-    }
-
-    .logo-text small {
-      display: block;
-      margin-top: 3px;
-      font-size: 13px;
-      color: #66736e;
+      font-weight: 800;
+      letter-spacing: -0.04em;
     }
 
     .nav {
       display: flex;
       align-items: center;
-      gap: 18px;
-      font-size: 15px;
+      justify-content: flex-end;
+      gap: 10px 22px;
+      min-width: 0;
+      color: #17251f;
+      font-size: 14px;
+      font-weight: 700;
     }
 
-    .nav a {
-      font-weight: 500;
+    .nav > a:not(.btn-register):not(.logout-link) {
+      padding: 10px 1px;
+      border-bottom: 2px solid transparent;
+      transition: color 0.16s ease, border-color 0.16s ease;
     }
 
-    .nav .active-link {
-      font-weight: 900;
+    .nav > a:not(.btn-register):not(.logout-link):hover,
+    .nav > a.active-link:not(.btn-register):not(.logout-link) {
+      color: var(--green);
+      border-bottom-color: rgba(23, 103, 71, 0.22);
     }
 
     .nav-notification-badge {
-      background: #FF6A00 !important;
-      color: white !important;
+      background: var(--orange) !important;
+      color: #ffffff !important;
     }
 
     .nav-account-link:hover .nav-notification-badge {
-      background: #E85F00 !important;
+      background: var(--orange-hover) !important;
     }
 
     .btn-register,
@@ -104,573 +137,401 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: #6FCF65;
-      color: #123F34 !important;
-      padding: 10px 20px;
-      border-radius: 999px;
-      font-weight: 900;
-      cursor: pointer;
+      min-height: 46px;
+      padding: 0 20px;
+      border-radius: 14px;
+      background: var(--orange);
+      color: #ffffff !important;
+      font-weight: 800;
+      box-shadow: 0 10px 24px rgba(255, 106, 0, 0.16);
+      transition: transform 0.16s ease, background 0.16s ease;
     }
 
     .btn-register:hover,
     .logout-link:hover {
-      background: #5DBA55;
+      background: var(--orange-hover);
+      transform: translateY(-1px);
     }
 
     main {
-      max-width: 1240px;
+      width: min(1480px, calc(100% - 64px));
       margin: 0 auto;
-      padding: 16px 20px 34px;
+      padding: 6px 0 14px;
     }
 
-    .home-landing {
+    .home-hero {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
-      gap: 16px;
-      align-items: start;
+      grid-template-columns: minmax(0, 0.96fr) minmax(560px, 1.04fr);
+      gap: 34px;
+      align-items: center;
+      min-height: calc(100vh - 92px);
     }
 
-    .home-content,
-    .home-side-card {
-      background: white;
-      border: 1px solid #e1e6e8;
-      border-radius: 18px;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+    .home-copy {
+      position: relative;
+      z-index: 5;
+      min-width: 0;
+      padding: 12px 4px 18px;
+      transform: translateY(-36px);
     }
 
-    .home-content {
-      padding: 24px;
+    .home-kicker {
+      display: none;
     }
 
-    .home-content h1 {
-      max-width: 780px;
-      margin: 0 0 10px;
-      color: #173f35;
-      font-size: 42px;
-      line-height: 1.04;
-      letter-spacing: -0.04em;
+    .home-copy h1 {
+      max-width: 700px;
+      margin: 0;
+      font-size: clamp(58px, 5vw, 88px);
+      line-height: 0.96;
+      letter-spacing: -0.06em;
+      font-weight: 800;
+      text-wrap: balance;
+      color: var(--ink);
+      background: linear-gradient(
+        to bottom,
+        #101c18 0%,
+        #101c18 46%,
+        var(--green) 46%,
+        var(--green) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .home-text {
-      max-width: 820px;
-      margin: 0 0 18px;
-      color: #4b5f57;
+      max-width: 640px;
+      margin: 36px 0 36px;
+      color: #58645f;
       font-size: 17px;
-      line-height: 1.42;
-      font-weight: 700;
+      line-height: 1.58;
+      font-weight: 500;
     }
 
     .search-box {
       display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 10px;
-      align-items: end;
-      padding: 13px;
-      border-radius: 16px;
-      background: #fafbfb;
-      border: 1px solid #e1e6e8;
-      margin-bottom: 11px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr) 66px;
+      align-items: stretch;
+      gap: 0;
+      width: min(100%, 760px);
+      min-height: 82px;
+      margin: 18px 0 20px;
+      padding: 7px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.97);
+      box-shadow: 0 18px 42px rgba(16, 32, 25, 0.075);
     }
 
     .search-field {
+      position: relative;
       display: grid;
-      gap: 5px;
+      align-content: center;
+      gap: 4px;
+      min-width: 0;
+      padding: 7px 18px;
+    }
+
+    .search-field + .search-field::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 16px;
+      bottom: 16px;
+      width: 1px;
+      background: #e7e9e6;
     }
 
     .search-field label {
-      color: #173e33;
-      font-size: 13px;
-      font-weight: 900;
+      color: #16251f;
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: 0.055em;
+      text-transform: uppercase;
     }
 
     .search-field input {
       width: 100%;
-      height: 44px;
-      border: 1px solid #d7dee1;
-      border-radius: 11px;
-      background: white;
-      padding: 0 13px;
-      font-size: 15px;
-      color: #173f35;
-      font-weight: 700;
+      min-width: 0;
+      height: 30px;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 600;
     }
 
-    .search-field input:focus {
-      outline: none;
+    .search-field input::placeholder {
+      color: #8b9490;
+      opacity: 1;
+      font-weight: 500;
     }
 
     .search-button {
-      min-height: 44px;
-      border: none;
-      border-radius: 11px;
-      background: #6FCF65;
-      color: #123F34;
-      padding: 0 20px;
-      font-size: 15px;
-      font-weight: 900;
+      align-self: center;
+      justify-self: end;
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: var(--orange);
+      color: white;
       cursor: pointer;
-      white-space: nowrap;
+      box-shadow: 0 11px 24px rgba(255, 106, 0, 0.22);
+      transition: background 0.16s ease, transform 0.16s ease;
     }
 
     .search-button:hover {
-      background: #5DBA55;
+      background: var(--orange-hover);
+      transform: translateX(2px);
     }
 
-    .home-points {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .home-point-button {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      min-height: 108px;
-      border: 1px solid #e5eaec;
-      border-radius: 18px;
-      background: #ffffff;
-      color: #173f35;
-      padding: 16px 12px 14px;
-      cursor: pointer;
-      text-align: center;
-      box-shadow: 0 10px 24px rgba(20, 63, 53, 0.04);
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background-color .18s ease;
-    }
-
-    .home-point-button:hover {
-      background: #fbfcfc;
-      border-color: #d9e8df;
-      box-shadow: 0 14px 28px rgba(20, 63, 53, 0.07);
-      transform: translateY(-1px);
-    }
-
-    .home-point-button strong {
-      width: auto;
-      height: auto;
-      border-radius: 0;
-      background: transparent;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-    }
-
-    .home-category-icon {
-      color: #176747;
-    }
-
-    .home-category-icon svg {
-      width: 42px;
-      height: 42px;
-      display: block;
+    .search-button svg {
+      width: 24px;
+      height: 24px;
       fill: none;
       stroke: currentColor;
-      stroke-width: 1.9;
+      stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
 
-    .home-category-icon .icon-accent {
-      stroke: #ff6a00;
+    .search-button-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .home-points {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      width: min(100%, 760px);
+      margin-top: 20px;
+    }
+
+    .home-point-button {
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 7px;
+      min-width: 0;
+      min-height: 88px;
+      padding: 10px 7px 9px;
+      border: 1px solid #e4e8e4;
+      border-radius: 17px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 10px 26px rgba(16, 32, 25, 0.045);
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .home-point-button:hover {
+      transform: translateY(-3px);
+      border-color: #c9dcd1;
+      box-shadow: 0 14px 30px rgba(16, 32, 25, 0.08);
+    }
+
+    .home-category-icon {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #d8e5dc;
+      border-radius: 13px;
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .home-category-icon svg {
+      width: 23px;
+      height: 23px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .home-point-button span {
-      font-size: 15px;
-      font-weight: 900;
-      line-height: 1.25;
-    }
-
-    .home-side-card {
-      width: 100%;
-      border-color: #CBEAB8;
-      background: #F0FAEA;
-      color: #173f35;
-      padding: 16px;
-      text-align: left;
-      align-self: start;
-    }
-
-    .featured-header {
-      margin-bottom: 11px;
-    }
-
-    .featured-eyebrow {
-      display: inline-flex;
-      margin-bottom: 6px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: white;
-      border: 1px solid #CBEAB8;
-      color: #68C547;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .featured-header h2 {
-      margin: 0 0 5px;
-      color: #173f35;
-      font-size: 22px;
-      line-height: 1.1;
-    }
-
-    .featured-header p {
-      margin: 0;
-      color: #4b5f57;
-      font-size: 13px;
-      line-height: 1.35;
-      font-weight: 700;
-    }
-
-    .featured-list {
-      display: grid;
-      gap: 9px;
-    }
-
-    .featured-offer {
-      display: grid;
-      grid-template-columns: 56px minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
-      min-height: 68px;
-      padding: 8px;
-      border: 1px solid #dce8d5;
-      border-radius: 13px;
-      background: white;
-      color: #173f35;
-      cursor: pointer;
-      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .featured-offer:hover {
-      transform: translateY(-1px);
-      border-color: #7ED957;
-      box-shadow: 0 7px 18px rgba(23, 63, 53, 0.08);
-    }
-
-    .featured-photo {
-      width: 56px;
-      height: 54px;
-      border-radius: 10px;
-      object-fit: cover;
-      background: #f4f6f7;
-      border: 1px solid #e1e6e8;
-    }
-
-    .featured-photo-placeholder {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 56px;
-      height: 54px;
-      border-radius: 10px;
-      background: #f4f6f7;
-      border: 1px solid #e1e6e8;
-      font-size: 22px;
-    }
-
-    .featured-details {
       min-width: 0;
+      font-size: 11px;
+      line-height: 1.22;
+      font-weight: 800;
     }
-
-    .featured-name {
-      display: block;
-      overflow: hidden;
-      margin-bottom: 3px;
-      color: #173f35;
-      font-size: 14px;
-      font-weight: 900;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .featured-meta,
-    .featured-rating {
-      display: block;
-      color: #5f706a;
-      font-size: 12px;
-      line-height: 1.3;
-      font-weight: 700;
-    }
-
-    .featured-rating {
-      margin-top: 3px;
-      color: #173f35;
-    }
-
-    .featured-loading,
-    .featured-empty {
-      padding: 18px 10px;
-      border: 1px dashed #c8d8c0;
-      border-radius: 13px;
-      background: rgba(255, 255, 255, 0.66);
-      color: #5f706a;
-      text-align: center;
-      font-size: 13px;
-      line-height: 1.4;
-      font-weight: 700;
-    }
-
-    .featured-footer {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #CBEAB8;
-    }
-
-    .featured-all-link,
-    .nearby-link {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 34px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .featured-all-link {
-      background: #7ED957;
-      color: #173A22;
-    }
-
-    .featured-all-link:hover {
-      background: #68C547;
-    }
-
-    .nearby-link {
-      border: 1px solid #bfdcae;
-      background: white;
-      color: #315c45;
-    }
-
-    .nearby-link:hover {
-      border-color: #7ED957;
-      background: #f8fff4;
-    }
-
-    .nearby-link:disabled {
-      cursor: wait;
-      opacity: 0.68;
-    }
-
-    .home-mini-info {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .mini-info-box {
-      padding: 12px;
-      border-radius: 15px;
-      background: #fafbfb;
-      border: 1px solid #e5eaec;
-    }
-
-    .mini-info-box strong {
-      display: block;
-      margin-bottom: 4px;
-      color: #173f35;
-      font-size: 14px;
-    }
-
-    .mini-info-box span {
-      display: block;
-      color: #66736e;
-      font-size: 13px;
-      line-height: 1.35;
-      font-weight: 700;
-    }
-
-    @media (max-width: 920px) {
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .nav {
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-
-      .home-landing {
-        grid-template-columns: 1fr;
-      }
-
-      .search-box {
-        grid-template-columns: 1fr 1fr auto;
-      }
-
-      .featured-header h2 {
-        font-size: 23px;
-      }
-    }
-
-    @media (max-width: 700px) {
-      main,
-      .header {
-        padding-left: 14px;
-        padding-right: 14px;
-      }
-
-      main {
-        padding-top: 10px;
-      }
-
-      .home-content {
-        padding: 16px;
-      }
-
-      .home-content h1 {
-        font-size: 31px;
-      }
-
-      .home-text {
-        font-size: 15px;
-      }
-
-      .search-box {
-        grid-template-columns: 1fr;
-      }
-
-      .home-points {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-      }
-
-      .home-mini-info {
-        grid-template-columns: 1fr;
-      }
-
-      .search-button {
-        width: 100%;
-      }
-    }
-  
 
     .home-map-card {
-      min-height: 420px;
-      padding: 14px;
-    }
-
-    .home-map-header {
-      margin-bottom: 10px;
-    }
-
-    .home-map-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 6px;
-    }
-
-    .home-map-toolbar .featured-eyebrow {
-      margin-bottom: 0;
-    }
-
-    .home-map-zoom-controls {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      flex: 0 0 auto;
-    }
-
-    .home-map-zoom-button {
-      width: 30px;
-      height: 30px;
-      padding: 0;
-      border: 1px solid #cfe1c5;
-      border-radius: 9px;
-      background: rgba(255, 255, 255, 0.82);
-      color: #173f35;
-      font-size: 20px;
-      line-height: 1;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .home-map-zoom-button:hover {
-      background: #eef7f2;
-    }
-
-    .home-map-zoom-button:focus-visible {
-      outline: 3px solid rgba(126, 217, 87, 0.35);
-      outline-offset: 2px;
-    }
-
-    .home-map-zoom-button:disabled {
-      opacity: 0.45;
-      cursor: default;
+      position: relative;
+      min-width: 0;
+      height: clamp(455px, 64vh, 610px);
+      overflow: visible;
+      isolation: isolate;
     }
 
     .home-map-shell {
       position: relative;
-      min-height: 300px;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
-      border: 1px solid #cfe1c5;
-      border-radius: 15px;
-      background: #eef3ef;
+      border: 1px solid rgba(221, 228, 223, 0.95);
+      border-radius: 38% 62% 30% 70% / 25% 22% 78% 75%;
+      background: #eef2ef;
+      box-shadow: var(--shadow);
     }
 
     .home-offers-map {
       width: 100%;
-      height: 300px;
+      height: 100%;
+      min-height: 0;
       z-index: 1;
+      background: #eef2ef;
     }
 
-    .home-map-status {
+    .home-map-overlay {
       position: absolute;
-      left: 50%;
-      bottom: 7px;
-      z-index: 500;
-      width: max-content;
-      max-width: calc(100% - 24px);
-      transform: translateX(-50%);
-      padding: 5px 9px;
-      border: 1px solid rgba(207, 225, 197, 0.95);
-      border-radius: 9px;
-      background: rgba(255, 255, 255, 0.9);
-      color: #4b5f57;
-      text-align: center;
-      font-size: 11px;
-      line-height: 1.25;
-      font-weight: 800;
-      box-shadow: 0 3px 9px rgba(23, 63, 53, 0.08);
-      backdrop-filter: blur(4px);
+      left: 30px;
+      top: 30px;
+      z-index: 620;
+      width: min(255px, calc(100% - 130px));
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.80);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.93);
+      box-shadow: 0 12px 30px rgba(16, 32, 25, 0.11);
+      backdrop-filter: blur(10px);
     }
 
-    .home-map-status[hidden] {
+    .featured-eyebrow {
+      display: inline-flex;
+      margin-bottom: 4px;
+      color: var(--green);
+      font-size: 9px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .home-map-overlay h2 {
+      margin: 0;
+      color: #12241d;
+      font-size: 16px;
+      line-height: 1.18;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+    }
+
+    .home-map-overlay p {
       display: none;
     }
 
-    .home-map-empty-status {
-      margin: 8px 2px 0;
-      padding: 7px 10px;
-      border: 1px solid #cfe1c5;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.72);
-      color: #4b5f57;
-      text-align: center;
-      font-size: 11px;
-      line-height: 1.35;
-      font-weight: 800;
+    .home-map-ui {
+      position: absolute;
+      inset: 0;
+      z-index: 620;
+      pointer-events: none;
     }
 
+    .home-map-zoom-controls {
+      position: absolute;
+      top: 21%;
+      right: 1.2%;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      overflow: hidden;
+      border: 1px solid rgba(218, 226, 220, 0.92);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 6px 16px rgba(16, 32, 25, 0.10);
+      backdrop-filter: blur(10px);
+      pointer-events: auto;
+    }
+
+    .home-map-zoom-button {
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: none;
+    }
+
+    .home-map-zoom-button + .home-map-zoom-button {
+      border-top: 1px solid #e5e9e5;
+    }
+
+    .home-map-zoom-button:hover {
+      background: #f7faf8;
+    }
+
+    .home-map-zoom-button:focus-visible {
+      outline: 3px solid rgba(255, 106, 0, 0.22);
+      outline-offset: 2px;
+    }
+
+    .home-map-zoom-button:disabled {
+      opacity: 0.42;
+      cursor: default;
+    }
+
+    .home-map-status,
+    .home-map-empty-status {
+      position: absolute;
+      left: calc(50% + 76px);
+      bottom: 13.5%;
+      z-index: 2;
+      width: max-content;
+      max-width: 56%;
+      transform: translateX(-50%);
+      padding: 5px 10px;
+      border: 1px solid rgba(225, 232, 227, 0.96);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.96);
+      color: #57645f;
+      text-align: center;
+      font-size: 9px;
+      line-height: 1.3;
+      font-weight: 700;
+      box-shadow: 0 6px 16px rgba(16, 32, 25, 0.09);
+      backdrop-filter: blur(8px);
+      white-space: normal;
+      pointer-events: none;
+    }
+
+    .home-map-status[hidden],
     .home-map-empty-status[hidden] {
       display: none;
     }
 
     .home-map-popup {
       min-width: 190px;
-      color: #173f35;
+      color: var(--ink);
+      font-family: "Manrope", Arial, sans-serif;
     }
 
     .home-map-popup strong,
@@ -681,17 +542,17 @@
     .home-map-popup-name {
       margin-bottom: 4px;
       font-size: 14px;
-      font-weight: 900;
+      font-weight: 800;
     }
 
     .home-map-popup-meta,
     .home-map-popup-rating,
     .home-map-popup-more {
       margin-top: 3px;
-      color: #5f706a;
+      color: #66726d;
       font-size: 12px;
       line-height: 1.35;
-      font-weight: 700;
+      font-weight: 600;
     }
 
     .home-map-popup-link {
@@ -699,10 +560,10 @@
       margin-top: 9px;
       padding: 7px 10px;
       border-radius: 9px;
-      background: #7ED957;
-      color: #173A22 !important;
+      background: var(--orange);
+      color: #ffffff !important;
       font-size: 12px;
-      font-weight: 900;
+      font-weight: 800;
     }
 
     .home-map-marker {
@@ -713,11 +574,11 @@
       height: 34px;
       border: 3px solid white;
       border-radius: 50% 50% 50% 10%;
-      background: #FF6A00;
+      background: var(--orange);
       color: white;
-      box-shadow: 0 5px 14px rgba(23, 63, 53, 0.28);
+      box-shadow: 0 5px 14px rgba(16, 32, 25, 0.25);
       font-size: 12px;
-      font-weight: 900;
+      font-weight: 800;
       transform: rotate(-45deg);
     }
 
@@ -730,29 +591,291 @@
       background: white;
     }
 
-    @media (max-width: 920px) {
-      .home-map-card {
-        min-height: 380px;
+    .leaflet-container {
+      font-family: "Manrope", Arial, sans-serif;
+    }
+
+
+    @media (min-width: 901px) {
+      .search-box {
+        margin-top: 38px;
+        margin-bottom: 0;
       }
 
-      .home-offers-map,
-      .home-map-shell {
-        min-height: 280px;
-        height: 280px;
+      .home-points {
+        margin-top: 38px;
       }
     }
 
+    @media (max-width: 1220px) {
+      .header,
+      main {
+        width: min(100% - 36px, 1180px);
+      }
+
+      .nav {
+        flex-wrap: wrap;
+      }
+
+      .home-hero {
+        grid-template-columns: minmax(0, 0.92fr) minmax(470px, 1.08fr);
+        gap: 24px;
+      }
+
+      .home-copy h1 {
+        font-size: clamp(52px, 5.5vw, 72px);
+      }
+
+      .home-points {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .home-point-button {
+        grid-template-columns: 38px minmax(0, 1fr);
+        justify-items: stretch;
+        text-align: left;
+        align-content: center;
+        min-height: 58px;
+        padding: 9px 10px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .header {
+        padding-top: 15px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .nav {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 7px 14px;
+      }
+
+      .home-hero {
+        grid-template-columns: 1fr;
+        min-height: 0;
+      }
+
+      .home-copy {
+        padding-top: 24px;
+        transform: none;
+      }
+
+      .home-copy h1 {
+        max-width: 780px;
+        font-size: clamp(48px, 9vw, 72px);
+        background: none;
+        color: var(--ink);
+        -webkit-text-fill-color: currentColor;
+      }
+
+      .home-text,
+      .search-box,
+      .home-points {
+        width: 100%;
+        max-width: none;
+      }
+
+      .home-map-card {
+        height: 470px;
+        margin-top: 6px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header,
+      main {
+        width: min(100% - 28px, 640px);
+      }
+
+      .logo-icon {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+      }
+
+      .logo-text strong {
+        font-size: 24px;
+      }
+
+      .nav {
+        font-size: 13px;
+      }
+
+      .btn-register,
+      .logout-link {
+        min-height: 40px;
+        padding: 0 15px;
+        border-radius: 11px;
+      }
+
+      main {
+        padding-bottom: 24px;
+      }
+
+      .home-copy {
+        padding-top: 18px;
+      }
+
+      .home-copy h1 {
+        font-size: clamp(42px, 13vw, 58px);
+        line-height: 1;
+      }
+
+      .home-text {
+        margin: 18px 0 20px;
+        font-size: 15px;
+      }
+
+      .search-box {
+        grid-template-columns: 1fr;
+        gap: 0;
+        min-height: 0;
+        padding: 7px;
+        border-radius: 18px;
+      }
+
+      .search-field {
+        padding: 10px 12px;
+      }
+
+      .search-field + .search-field::before {
+        left: 12px;
+        right: 12px;
+        top: 0;
+        bottom: auto;
+        width: auto;
+        height: 1px;
+      }
+
+      .search-button {
+        width: 100%;
+        height: 48px;
+        margin-top: 4px;
+        border-radius: 13px;
+      }
+
+      .search-button-label {
+        position: static;
+        width: auto;
+        height: auto;
+        margin-right: 7px;
+        clip: auto;
+        overflow: visible;
+        white-space: normal;
+      }
+
+      .home-points {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .home-point-button {
+        grid-template-columns: 34px minmax(0, 1fr);
+        min-height: 58px;
+        padding: 8px 9px;
+        text-align: left;
+      }
+
+      .home-category-icon {
+        width: 34px;
+        height: 34px;
+      }
+
+      .home-category-icon svg {
+        width: 21px;
+        height: 21px;
+      }
+
+      .home-map-card {
+        height: 410px;
+      }
+
+      .home-map-shell {
+        border-radius: 30px 30px 30px 62px;
+      }
+
+      .home-map-overlay {
+        left: 14px;
+        top: 14px;
+        width: calc(100% - 82px);
+        padding: 10px 12px;
+        border-radius: 14px;
+      }
+
+      .home-map-overlay h2 {
+        font-size: 15px;
+      }
+
+      .home-map-zoom-controls {
+        top: 18%;
+        right: 4.5%;
+        border-radius: 8px;
+      }
+
+      .home-map-zoom-button {
+        width: 28px;
+        height: 28px;
+        font-size: 15px;
+      }
+
+      .home-map-status,
+      .home-map-empty-status {
+        left: 50%;
+        bottom: 12%;
+        max-width: 68%;
+      }
+    }
+
+    @media (min-width: 901px) and (max-height: 780px) {
+      .header {
+        padding-top: 8px;
+        padding-bottom: 6px;
+      }
+
+      main {
+        padding-top: 2px;
+      }
+
+      .home-hero {
+        min-height: calc(100vh - 76px);
+      }
+
+      .home-copy h1 {
+        font-size: clamp(50px, 4.6vw, 72px);
+      }
+
+      .home-text {
+        margin-top: 16px;
+        margin-bottom: 18px;
+        font-size: 15px;
+      }
+
+      .search-box {
+        min-height: 72px;
+        margin-bottom: 12px;
+      }
+
+      .home-point-button {
+        min-height: 78px;
+      }
+
+      .home-map-card {
+        height: clamp(420px, 62vh, 520px);
+      }
+    }
   </style>
 </head>
 
 <body data-navigation-page="uvod">
-
   <header class="header">
     <a href="index.html" class="logo">
       <div class="logo-icon">
-        <img src="assets/rentulo-logo-mark.png" alt="" width="48" height="48" aria-hidden="true" />
+        <img src="assets/rentulo-logo-mark.png" alt="" width="46" height="46" aria-hidden="true" />
       </div>
-
       <div class="logo-text">
         <strong>Rentulo</strong>
       </div>
@@ -762,210 +885,156 @@
   </header>
 
   <main>
+    <section class="home-hero">
+      <div class="home-copy">
+        <div class="home-kicker" aria-hidden="true">
+          <span class="home-kicker-icon">♡</span>
+          <span>Rentulo</span>
+        </div>
 
-    <section class="home-landing">
+        <h1 data-i18n="home.title">Půjč si cokoli ve svém okolí.</h1>
 
-  <div class="home-content">
+        <p class="home-text" data-i18n="home.description">
+          Najdi věci, které právě potřebuješ, přímo od lidí ve svém okolí.
+          Nebo nabídni vlastní věci a vydělávej, když je zrovna nepoužíváš.
+        </p>
 
-    <h1 data-i18n="home.title">Půjč si cokoli ve svém okolí.</h1>
+        <form class="search-box" id="homeSearchForm">
+          <div class="search-field">
+            <label for="home-search-what" data-i18n="home.searchWhatLabel">Co hledáš?</label>
+            <input
+              id="home-search-what"
+              type="text"
+              placeholder="např. vysavač, gril nebo reproduktor"
+              data-i18n-placeholder="home.searchWhatPlaceholder"
+            />
+          </div>
 
-    <p class="home-text" data-i18n="home.description">
-      Najdi věci, které právě potřebuješ, přímo od lidí ve svém okolí.
-      Nebo nabídni vlastní věci a vydělávej, když je zrovna nepoužíváš.
-    </p>
+          <div class="search-field">
+            <label for="home-search-where" data-i18n="home.searchWhereLabel">Kde?</label>
+            <input
+              id="home-search-where"
+              type="text"
+              placeholder="město nebo PSČ"
+              data-i18n-placeholder="home.searchWherePlaceholder"
+            />
+          </div>
 
-    <form class="search-box" id="homeSearchForm">
-      <div class="search-field">
-        <label for="home-search-what" data-i18n="home.searchWhatLabel">Co hledáš?</label>
-        <input
-          id="home-search-what"
-          type="text"
-          placeholder="např. vysavač, gril nebo reproduktor"
-          data-i18n-placeholder="home.searchWhatPlaceholder"
-        />
-      </div>
+          <button type="submit" class="search-button">
+            <span class="search-button-label" data-i18n="home.searchButton">Vyhledat</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M5 12h13" />
+              <path d="m14 7 5 5-5 5" />
+            </svg>
+          </button>
+        </form>
 
-      <div class="search-field">
-        <label for="home-search-where" data-i18n="home.searchWhereLabel">Kde?</label>
-        <input
-          id="home-search-where"
-          type="text"
-          placeholder="město nebo PSČ"
-          data-i18n-placeholder="home.searchWherePlaceholder"
-        />
-      </div>
+        <div class="home-points">
+          <button type="button" class="home-point-button" data-category="Domácnost">
+            <strong class="home-category-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M9 7.5h5.8a3.7 3.7 0 0 1 3.7 3.7v5.3H14a4 4 0 0 1-4-4v-5z" />
+                <path d="M10 7.5V6.3A2.3 2.3 0 0 1 12.3 4H16" />
+                <path d="M10 12.5H7.5L5 16" />
+                <path d="M13.5 16.5V20" />
+              </svg>
+            </strong>
+            <span data-i18n="home.category.household">Domácnost</span>
+          </button>
 
-      <button type="submit" class="search-button" data-i18n="home.searchButton">
-        Vyhledat
-      </button>
-    </form>
+          <button type="button" class="home-point-button" data-category="Zahrada">
+            <strong class="home-category-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M4.5 15h11l2.2-5h2.3" />
+                <path d="M6 15 7.2 11h7.4l1.4 4" />
+                <circle cx="7.5" cy="18" r="1.7" />
+                <circle cx="16" cy="18" r="1.7" />
+                <path d="M8.5 11V8.5H13" />
+                <path d="M17.7 10 19 7.5" />
+              </svg>
+            </strong>
+            <span data-i18n="home.category.garden">Zahrada</span>
+          </button>
 
-    <div class="home-points">
+          <button type="button" class="home-point-button" data-category="Stavba">
+            <strong class="home-category-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M5 7h8.5l3 3-3 3H10l-2-2H5z" />
+                <path d="M10 13 6.5 19" />
+                <path d="M16.5 10H20" />
+                <path d="M18.5 8v4" />
+              </svg>
+            </strong>
+            <span data-i18n="home.category.construction">Stavba</span>
+          </button>
 
-      <button
-        type="button"
-        class="home-point-button"
-        data-category="Domácnost"
-      >
-        <strong class="home-category-icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" focusable="false">
-            <path d="M15 17h12.5c4.4 0 8 3.6 8 8v9.5h-8.5c-4.7 0-8.5-3.8-8.5-8.5V17z" />
-            <path d="M18.5 17v-2.8c0-2.3 1.9-4.2 4.2-4.2h7.5" />
-            <path d="M18.5 26.5H14l-3.5 5.2" />
-            <path d="M24.5 34.5v4.5" />
-            <path class="icon-accent" d="M35.5 22.5h3" />
-          </svg>
-        </strong>
-        <span data-i18n="home.category.household">Domácnost</span>
-      </button>
+          <button type="button" class="home-point-button" data-category="Hobby">
+            <strong class="home-category-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M5 8h3.2l1.3-2h5l1.3 2H19a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z" />
+                <circle cx="12" cy="13.5" r="3.3" />
+                <path d="M17.5 10.5h.1" />
+              </svg>
+            </strong>
+            <span data-i18n="home.category.hobby">Hobby</span>
+          </button>
 
-      <button
-        type="button"
-        class="home-point-button"
-        data-category="Zahrada"
-      >
-        <strong class="home-category-icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" focusable="false">
-            <path d="M11 28h21l3.5-9H18.5" />
-            <path d="M17 19.5h-4.5" />
-            <path d="M20 19.5v-5.2c0-1.6 1.3-2.8 2.8-2.8h4.7" />
-            <circle cx="18" cy="33.5" r="3.5" />
-            <circle cx="31" cy="33.5" r="3.5" />
-            <path class="icon-accent" d="M35.5 19.5h2.5" />
-          </svg>
-        </strong>
-        <span data-i18n="home.category.garden">Zahrada</span>
-      </button>
+          <button type="button" class="home-point-button" data-category="Párty">
+            <strong class="home-category-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <rect x="7" y="3.5" width="10" height="17" rx="2" />
+                <circle cx="12" cy="15" r="3.2" />
+                <circle cx="12" cy="8.2" r="1.2" />
+                <path d="M9.5 11.5h5" />
+              </svg>
+            </strong>
+            <span data-i18n="home.category.party">Párty</span>
+          </button>
 
-      <button
-        type="button"
-        class="home-point-button"
-        data-category="Stavba"
-      >
-        <strong class="home-category-icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" focusable="false">
-            <path d="M15.5 17.5h10l3 3-5 5-3-3h-5z" />
-            <path d="M23.5 25.5 16 33" />
-            <path d="m14.5 34.5 2.2-1.5 2.4 2.4-1.5 2.2H13z" />
-            <path d="M29.5 16.5 34 21" />
-            <path class="icon-accent" d="M33 15l2.5-2.5" />
-          </svg>
-        </strong>
-        <span data-i18n="home.category.construction">Stavba</span>
-      </button>
-
-      <button
-        type="button"
-        class="home-point-button"
-        data-category="Hobby"
-      >
-        <strong class="home-category-icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" focusable="false">
-            <path d="M12 18.5h7l2.2-3.5h11.6l2.2 3.5h1c2.2 0 4 1.8 4 4V32c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4v-9.5c0-2.2 1.8-4 4-4z" />
-            <circle cx="24" cy="27" r="6" />
-            <path class="icon-accent" d="M33.8 21.5h.2" />
-          </svg>
-        </strong>
-        <span data-i18n="home.category.hobby">Hobby</span>
-      </button>
-
-      <button
-        type="button"
-        class="home-point-button"
-        data-category="Párty"
-      >
-        <strong class="home-category-icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" focusable="false">
-            <path d="M18 15h12v18H18z" />
-            <path d="M21 33h6" />
-            <path d="M24 15V9" />
-            <path d="M14 19.5v10" />
-            <path d="M34 19.5v10" />
-            <path d="M12 22.5h2M12 26.5h2M34 22.5h2M34 26.5h2" />
-            <circle class="icon-accent" cx="24" cy="24" r="2.6" />
-          </svg>
-        </strong>
-        <span data-i18n="home.category.party">Párty</span>
-      </button>
-
-      <button
-        type="button"
-        class="home-point-button"
-        data-category="Ostatní"
-      >
-        <strong class="home-category-icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" focusable="false">
-            <rect x="12" y="12" width="9" height="9" rx="2" />
-            <rect x="27" y="12" width="9" height="9" rx="2" />
-            <rect x="12" y="27" width="9" height="9" rx="2" />
-            <rect x="27" y="27" width="9" height="9" rx="2" />
-            <path class="icon-accent" d="M31.5 16.5h0" />
-          </svg>
-        </strong>
-        <span data-i18n="home.category.other">Ostatní</span>
-      </button>
-
-    </div>
-
-    <div class="home-mini-info">
-
-      <div class="mini-info-box">
-        <strong data-i18n="home.step1Title">1. Najdeš věc</strong>
-        <span data-i18n="home.step1Text">
-          Vyhledáš nabídku podle názvu, kategorie nebo lokality.
-        </span>
-      </div>
-
-      <div class="mini-info-box">
-        <strong data-i18n="home.step2Title">2. Pošleš žádost</strong>
-        <span data-i18n="home.step2Text">
-          Majitel žádost potvrdí a společně domluvíte podrobnosti.
-        </span>
-      </div>
-
-      <div class="mini-info-box">
-        <strong data-i18n="home.step3Title">3. Převezmeš a vrátíš</strong>
-        <span data-i18n="home.step3Text">
-          Věc si převezmeš, použiješ a po skončení rezervace vrátíš.
-        </span>
-      </div>
-
-    </div>
-
-  </div>
-
-  <aside class="home-side-card home-map-card" aria-labelledby="homeMapTitle">
-    <div class="featured-header home-map-header">
-      <div class="home-map-toolbar">
-        <span class="featured-eyebrow" data-i18n="home.mapEyebrow">Mapa nabídek</span>
-        <div class="home-map-zoom-controls" aria-label="Zoom mapy">
-          <button id="homeMapZoomOut" class="home-map-zoom-button" type="button" aria-label="−">−</button>
-          <button id="homeMapZoomIn" class="home-map-zoom-button" type="button" aria-label="+">+</button>
+          <button type="button" class="home-point-button" data-category="Ostatní">
+            <strong class="home-category-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <rect x="5" y="5" width="5" height="5" rx="1.2" />
+                <rect x="14" y="5" width="5" height="5" rx="1.2" />
+                <rect x="5" y="14" width="5" height="5" rx="1.2" />
+                <rect x="14" y="14" width="5" height="5" rx="1.2" />
+              </svg>
+            </strong>
+            <span data-i18n="home.category.other">Ostatní</span>
+          </button>
         </div>
       </div>
-      <h2 id="homeMapTitle" data-i18n="home.mapTitle">Co si můžete půjčit v okolí</h2>
-      <p data-i18n="home.mapText">Body zobrazují jen přibližnou polohu. V každém místě má přednost nejlépe hodnocená nabídka.</p>
-    </div>
 
-    <div class="home-map-shell">
-      <div id="homeOffersMap" class="home-offers-map" aria-label="Mapa dostupných nabídek" data-i18n-aria-label="home.mapAriaLabel"></div>
-      <div id="homeMapStatus" class="home-map-status" aria-live="polite" data-i18n="home.mapLoading">Načítám nabídky do mapy...</div>
-    </div>
-    <div id="homeMapEmptyStatus" class="home-map-empty-status" aria-live="polite" data-i18n="home.mapEmpty" hidden>V zobrazené oblasti zatím nejsou žádné nabídky.</div>
+      <aside class="home-map-card">
+        <div class="home-map-shell">
+          <div
+            id="homeOffersMap"
+            class="home-offers-map"
+            aria-label="Mapa dostupných nabídek"
+            data-i18n-aria-label="home.mapAriaLabel"
+          ></div>
+        </div>
 
-  </aside>
+        <div class="home-map-ui">
+          <div class="home-map-zoom-controls" aria-label="Zoom mapy">
+            <button id="homeMapZoomIn" class="home-map-zoom-button" type="button" aria-label="+">+</button>
+            <button id="homeMapZoomOut" class="home-map-zoom-button" type="button" aria-label="−">−</button>
+          </div>
 
-</section>
-
+          <div id="homeMapStatus" class="home-map-status" aria-live="polite" data-i18n="home.mapLoading">Načítám nabídky do mapy...</div>
+          <div id="homeMapEmptyStatus" class="home-map-empty-status" aria-live="polite" data-i18n="home.mapEmpty" hidden>V zobrazené oblasti zatím nejsou žádné nabídky.</div>
+        </div>
+      </aside>
+    </section>
   </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="js/supabase-config.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/api.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/navigation.js"></script>
-<script src="js/home-page.js"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/home-page.js"></script>
 </body>
 </html>
