@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   clearLegacyStoredVisitorLocation();
   renderSharedNavigation("");
-  setupHomeMobileNavigation();
   setupHomeSearch();
   setupCategorySearch();
   applyHomeDynamicTranslations();
@@ -48,53 +47,6 @@ function goToResults(what, where) {
 
   const queryString = searchParams.toString();
   window.location.href = queryString ? "vysledky.html?" + queryString : "vysledky.html";
-}
-
-function setupHomeMobileNavigation() {
-  const button = document.getElementById("homeMobileMenuButton");
-  const nav = document.getElementById("mainNav");
-  const mobileQuery = window.matchMedia("(max-width: 1100px)");
-
-  if (!button || !nav) return;
-
-  function setMenuOpen(isOpen) {
-    nav.classList.toggle("is-mobile-open", isOpen);
-    button.setAttribute("aria-expanded", isOpen ? "true" : "false");
-  }
-
-  button.addEventListener("click", function () {
-    const isOpen = button.getAttribute("aria-expanded") === "true";
-    setMenuOpen(!isOpen);
-  });
-
-  nav.addEventListener("click", function (event) {
-    if (!mobileQuery.matches) return;
-
-    const link = event.target.closest("a");
-    if (link) {
-      setMenuOpen(false);
-    }
-  });
-
-  document.addEventListener("click", function (event) {
-    if (!mobileQuery.matches || !nav.classList.contains("is-mobile-open")) return;
-    if (nav.contains(event.target) || button.contains(event.target)) return;
-
-    setMenuOpen(false);
-  });
-
-  document.addEventListener("keydown", function (event) {
-    if (event.key !== "Escape" || !nav.classList.contains("is-mobile-open")) return;
-
-    setMenuOpen(false);
-    button.focus();
-  });
-
-  mobileQuery.addEventListener("change", function (event) {
-    if (!event.matches) {
-      setMenuOpen(false);
-    }
-  });
 }
 
 function setupHomeSearch() {

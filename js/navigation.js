@@ -625,6 +625,117 @@ function navInjectStyles() {
     .logout-link:hover {
       background: #00563a;
     }
+
+    .shared-mobile-menu-button {
+      display: none;
+    }
+
+    @media (max-width: 1100px) {
+      .header,
+      .header-inner {
+        position: relative;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .shared-mobile-menu-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 13px;
+        border: 1px solid #dbe4de;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.94);
+        color: #102019;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 7px 18px rgba(16, 32, 25, 0.06);
+        flex: 0 0 auto;
+      }
+
+      .shared-mobile-menu-button:hover {
+        border-color: #c9d9cf;
+        background: #ffffff;
+      }
+
+      .shared-mobile-menu-button:focus-visible {
+        outline: 1px solid rgba(20, 82, 62, 0.72) !important;
+        outline-offset: 2px !important;
+      }
+
+      .shared-mobile-menu-icon {
+        display: grid;
+        gap: 3px;
+        width: 16px;
+      }
+
+      .shared-mobile-menu-icon span {
+        display: block;
+        width: 16px;
+        height: 2px;
+        border-radius: 999px;
+        background: currentColor;
+      }
+
+      .header #mainNav,
+      .header-inner #mainNav {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        z-index: 1200;
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 4px;
+        padding: 10px;
+        border: 1px solid #dde5df;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 18px 42px rgba(16, 32, 25, 0.13);
+      }
+
+      .header #mainNav.is-mobile-open,
+      .header-inner #mainNav.is-mobile-open {
+        display: flex;
+      }
+
+      #mainNav > a {
+        width: 100%;
+        padding: 11px 12px;
+        border-radius: 10px;
+      }
+
+      #mainNav > a:not(.btn-register):not(.logout-link) {
+        border-bottom: 0;
+      }
+
+      #mainNav > a:not(.btn-register):not(.logout-link):hover,
+      #mainNav > a.active-link:not(.btn-register):not(.logout-link) {
+        border-bottom-color: transparent;
+        background: #e9f4ee;
+      }
+
+      #mainNav .btn-register,
+      #mainNav .logout-link {
+        width: 100%;
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 10px;
+      }
+
+      #mainNav .nav-language-control {
+        align-self: flex-start;
+        margin-top: 2px;
+      }
+    }
 /* Shared focus states across Rentulo */
 :where(
   a[href],
@@ -730,6 +841,222 @@ html[data-focus-input="keyboard"] .switch input:focus-visible + .switch-slider,
     }
   `;
   document.head.appendChild(style);
+}
+
+function navGetMobileMenuLabel() {
+  const translated = navTranslate(
+    "nav.menu",
+    ""
+  );
+
+  if (translated && translated !== "nav.menu") {
+    return translated;
+  }
+
+  return {
+    cs: "Menu",
+    en: "Menu",
+    de: "Menü",
+    pl: "Menu"
+  }[navGetLanguage()] || "Menu";
+}
+
+function navSetMobileMenuOpen(
+  nav,
+  button,
+  isOpen
+) {
+  nav.classList.toggle(
+    "is-mobile-open",
+    isOpen
+  );
+  button.setAttribute(
+    "aria-expanded",
+    isOpen ? "true" : "false"
+  );
+}
+
+function navEnsureMobileMenuButton(nav) {
+  const headerContainer = nav.closest(
+    ".header, .header-inner"
+  );
+
+  if (!headerContainer) {
+    return null;
+  }
+
+  let button = headerContainer.querySelector(
+    ".shared-mobile-menu-button"
+  );
+
+  if (!button) {
+    button = document.createElement("button");
+    button.type = "button";
+    button.className =
+      "shared-mobile-menu-button";
+    button.setAttribute(
+      "aria-controls",
+      nav.id || "mainNav"
+    );
+    button.setAttribute(
+      "aria-expanded",
+      "false"
+    );
+    button.innerHTML = `
+      <span class="shared-mobile-menu-icon" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+      <span class="shared-mobile-menu-label"></span>
+    `;
+
+    headerContainer.insertBefore(
+      button,
+      nav
+    );
+  }
+
+  const label = button.querySelector(
+    ".shared-mobile-menu-label"
+  );
+
+  if (label) {
+    label.textContent =
+      navGetMobileMenuLabel();
+  }
+
+  return button;
+}
+
+function navSetupSharedMobileNavigation(nav) {
+  const button = navEnsureMobileMenuButton(nav);
+
+  if (!button) {
+    return;
+  }
+
+  if (
+    button.dataset.mobileNavigationBound ===
+    "true"
+  ) {
+    return;
+  }
+
+  const headerContainer = button.closest(
+    ".header, .header-inner"
+  );
+  const mobileQuery = window.matchMedia(
+    "(max-width: 1100px)"
+  );
+
+  function closeMobileMenu() {
+    navSetMobileMenuOpen(
+      nav,
+      button,
+      false
+    );
+  }
+
+  button.addEventListener(
+    "click",
+    function (event) {
+      event.stopPropagation();
+
+      const isOpen =
+        button.getAttribute(
+          "aria-expanded"
+        ) === "true";
+
+      navSetMobileMenuOpen(
+        nav,
+        button,
+        !isOpen
+      );
+    }
+  );
+
+  nav.addEventListener(
+    "click",
+    function (event) {
+      if (!mobileQuery.matches) {
+        return;
+      }
+
+      if (event.target.closest("a")) {
+        closeMobileMenu();
+      }
+    }
+  );
+
+  document.addEventListener(
+    "click",
+    function (event) {
+      if (
+        !mobileQuery.matches ||
+        !nav.classList.contains(
+          "is-mobile-open"
+        )
+      ) {
+        return;
+      }
+
+      if (
+        headerContainer &&
+        headerContainer.contains(
+          event.target
+        )
+      ) {
+        return;
+      }
+
+      closeMobileMenu();
+    }
+  );
+
+  document.addEventListener(
+    "keydown",
+    function (event) {
+      if (
+        event.key !== "Escape" ||
+        !nav.classList.contains(
+          "is-mobile-open"
+        )
+      ) {
+        return;
+      }
+
+      closeMobileMenu();
+      button.focus();
+    }
+  );
+
+  const handleViewportChange =
+    function (event) {
+      if (!event.matches) {
+        closeMobileMenu();
+      }
+    };
+
+  if (
+    typeof mobileQuery.addEventListener ===
+    "function"
+  ) {
+    mobileQuery.addEventListener(
+      "change",
+      handleViewportChange
+    );
+  } else if (
+    typeof mobileQuery.addListener ===
+    "function"
+  ) {
+    mobileQuery.addListener(
+      handleViewportChange
+    );
+  }
+
+  button.dataset.mobileNavigationBound =
+    "true";
 }
 
 function navEnableFocusInputTracking() {
@@ -1111,6 +1438,8 @@ function renderSharedNavigation(
       ${navLanguageControl()}
     `;
   }
+
+  navSetupSharedMobileNavigation(nav);
 
   const logoutButton =
     document.getElementById(
