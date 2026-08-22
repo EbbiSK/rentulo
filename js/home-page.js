@@ -53,7 +53,7 @@ function goToResults(what, where) {
 function setupHomeMobileNavigation() {
   const button = document.getElementById("homeMobileMenuButton");
   const nav = document.getElementById("mainNav");
-  const mobileQuery = window.matchMedia("(max-width: 900px)");
+  const mobileQuery = window.matchMedia("(max-width: 1100px)");
 
   if (!button || !nav) return;
 
