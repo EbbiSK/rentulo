@@ -411,7 +411,7 @@ function initializeHomeMap() {
   homeMap = window.L.map("homeOffersMap", {
     zoomControl: false,
     scrollWheelZoom: false,
-    attributionControl: true
+    attributionControl: false
   }).setView([49.8, 15.5], 6);
 
   window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
