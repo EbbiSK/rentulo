@@ -100,6 +100,10 @@
       letter-spacing: -0.04em;
     }
 
+    .home-mobile-menu-button {
+      display: none;
+    }
+
     .nav {
       display: flex;
       align-items: center;
@@ -691,6 +695,106 @@
         width: min(100% - 28px, 640px);
       }
 
+      .header {
+        padding: 12px 0 8px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .home-mobile-menu-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 13px;
+        border: 1px solid #dbe4de;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.94);
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 7px 18px rgba(16, 32, 25, 0.06);
+      }
+
+      .home-mobile-menu-button:hover {
+        border-color: #c9d9cf;
+        background: #ffffff;
+      }
+
+      .home-mobile-menu-button:focus-visible {
+        outline: 1px solid rgba(20, 82, 62, 0.72);
+        outline-offset: 2px;
+      }
+
+      .home-mobile-menu-icon {
+        display: grid;
+        gap: 3px;
+        width: 16px;
+      }
+
+      .home-mobile-menu-icon span {
+        display: block;
+        width: 16px;
+        height: 2px;
+        border-radius: 999px;
+        background: currentColor;
+      }
+
+      .header .nav {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 4px;
+        padding: 10px;
+        border: 1px solid #dde5df;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 18px 42px rgba(16, 32, 25, 0.13);
+      }
+
+      .header .nav.is-mobile-open {
+        display: flex;
+      }
+
+      .header .nav > a {
+        width: 100%;
+        padding: 11px 12px;
+        border-radius: 10px;
+      }
+
+      .header .nav > a:not(.btn-register):not(.logout-link) {
+        border-bottom: 0;
+      }
+
+      .header .nav > a:not(.btn-register):not(.logout-link):hover,
+      .header .nav > a.active-link:not(.btn-register):not(.logout-link) {
+        border-bottom-color: transparent;
+        background: var(--green-soft);
+      }
+
+      .header .nav .btn-register,
+      .header .nav .logout-link {
+        width: 100%;
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 10px;
+      }
+
+      .header .nav .nav-language-control {
+        align-self: flex-start;
+        margin-top: 2px;
+      }
+
       .logo-icon {
         width: 42px;
         height: 42px;
@@ -880,6 +984,21 @@
         <strong>Rentulo</strong>
       </div>
     </a>
+
+    <button
+      type="button"
+      id="homeMobileMenuButton"
+      class="home-mobile-menu-button"
+      aria-controls="mainNav"
+      aria-expanded="false"
+    >
+      <span class="home-mobile-menu-icon" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+      <span data-i18n="nav.menu">Menu</span>
+    </button>
 
     <nav class="nav" id="mainNav"></nav>
   </header>
