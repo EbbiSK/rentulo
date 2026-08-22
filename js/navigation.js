@@ -711,6 +711,8 @@ function navInjectStyles() {
         width: 100%;
         padding: 11px 12px;
         border-radius: 10px;
+        color: #17251f !important;
+        font-weight: 700 !important;
       }
 
       #mainNav > a:not(.btn-register):not(.logout-link) {
@@ -720,7 +722,8 @@ function navInjectStyles() {
       #mainNav > a:not(.btn-register):not(.logout-link):hover,
       #mainNav > a.active-link:not(.btn-register):not(.logout-link) {
         border-bottom-color: transparent;
-        background: #e9f4ee;
+        background: #e9f4ee !important;
+        color: #102019 !important;
       }
 
       #mainNav .btn-register,
@@ -729,6 +732,16 @@ function navInjectStyles() {
         min-height: 42px;
         padding: 0 14px;
         border-radius: 10px;
+        background: #FF6A00 !important;
+        color: #ffffff !important;
+        font-weight: 800 !important;
+        box-shadow: 0 10px 24px rgba(255, 106, 0, 0.16) !important;
+      }
+
+      #mainNav .btn-register:hover,
+      #mainNav .logout-link:hover {
+        background: #E85F00 !important;
+        color: #ffffff !important;
       }
 
       #mainNav .nav-language-control {
