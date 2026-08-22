@@ -1,5 +1,5 @@
 /* Shared Rentulo visual foundation.
-   Keep this file limited to global theme tokens and safe page-level defaults. */
+   Keep this file limited to global theme tokens and safe shared UI defaults. */
 
 :root {
   --rentulo-page: #F5F8F6;
@@ -30,4 +30,152 @@ input,
 select,
 textarea {
   font-family: inherit;
+}
+
+/* Desktop header is shared across the project.
+   Mobile/tablet navigation remains controlled by navigation.js. */
+@media (min-width: 1101px) {
+  .header {
+    position: relative !important;
+    z-index: 1000;
+    width: min(1480px, calc(100% - 64px)) !important;
+    max-width: none !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    padding: 14px 0 10px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 28px !important;
+    background: transparent !important;
+  }
+
+  .logo {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex: 0 0 auto !important;
+    color: var(--rentulo-ink) !important;
+    text-decoration: none !important;
+  }
+
+  .logo-icon {
+    width: 46px !important;
+    height: 46px !important;
+    flex: 0 0 46px !important;
+    display: grid !important;
+    place-items: center !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    transform: none !important;
+  }
+
+  .logo-icon::before,
+  .logo-icon::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  .logo-icon img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+
+  .logo-dot {
+    display: none !important;
+  }
+
+  .logo-text {
+    display: block !important;
+    line-height: 1 !important;
+  }
+
+  .logo-text strong {
+    display: block !important;
+    font-family: var(--rentulo-font) !important;
+    font-size: 27px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.04em !important;
+    color: #101c18 !important;
+  }
+
+  .logo-text small {
+    font-family: var(--rentulo-font) !important;
+    color: var(--rentulo-muted) !important;
+  }
+
+  .nav {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 10px 22px !important;
+    min-width: 0;
+    color: #17251f !important;
+    font-family: var(--rentulo-font) !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+  }
+
+  .nav > a:not(.btn-register):not(.logout-link) {
+    padding: 10px 1px !important;
+    border-bottom: 2px solid transparent !important;
+    color: #17251f !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    transition: color 0.16s ease, border-color 0.16s ease;
+  }
+
+  .nav > a:not(.btn-register):not(.logout-link):hover,
+  .nav > a.active-link:not(.btn-register):not(.logout-link) {
+    color: var(--rentulo-green) !important;
+    border-bottom-color: rgba(23, 103, 71, 0.22) !important;
+  }
+
+  .btn-register,
+  .logout-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 46px !important;
+    padding: 0 20px !important;
+    border: 0 !important;
+    border-radius: 14px !important;
+    background: var(--rentulo-orange) !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    text-decoration: none !important;
+    box-shadow: 0 10px 24px rgba(255, 106, 0, 0.16) !important;
+    transition: transform 0.16s ease, background 0.16s ease !important;
+  }
+
+  .btn-register:hover,
+  .logout-link:hover,
+  .active-register:hover {
+    background: var(--rentulo-orange-hover) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+  }
+
+  .active-register {
+    background: var(--rentulo-orange) !important;
+    color: #ffffff !important;
+  }
+
+  .nav-notification-badge {
+    background: var(--rentulo-orange) !important;
+    color: #ffffff !important;
+  }
+
+  .nav-account-link:hover .nav-notification-badge {
+    background: var(--rentulo-orange-hover) !important;
+  }
 }
