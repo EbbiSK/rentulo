@@ -516,8 +516,10 @@
       z-index: 620;
       display: grid;
       justify-items: center;
+      align-content: start;
       gap: 3px;
       width: max-content;
+      min-height: 39px;
       max-width: min(78%, 360px);
       transform: translateX(-50%);
       pointer-events: none;
@@ -548,6 +550,10 @@
     }
 
     .home-map-attribution {
+      position: absolute;
+      right: 14%;
+      bottom: 14%;
+      z-index: 620;
       padding: 1px 5px;
       border-radius: 6px;
       background: rgba(255, 255, 255, 0.84);
@@ -960,6 +966,11 @@
         font-size: 15px;
       }
 
+      .home-map-attribution {
+        right: 12px;
+        bottom: 10px;
+      }
+
     }
 
     @media (min-width: 641px) {
@@ -1275,8 +1286,8 @@
             <div class="home-map-notice">
               <div id="homeMapStatus" class="home-map-status" aria-live="polite" data-i18n="home.mapLoading">Načítám nabídky do mapy...</div>
               <div id="homeMapEmptyStatus" class="home-map-empty-status" aria-live="polite" data-i18n="home.mapEmpty" hidden>V zobrazené oblasti zatím nejsou žádné nabídky.</div>
-              <a class="home-map-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>
             </div>
+            <a class="home-map-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>
           </div>
 
           <div class="home-map-ui">
