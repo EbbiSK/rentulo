@@ -1,0 +1,33 @@
+/* Shared Rentulo visual foundation.
+   Keep this file limited to global theme tokens and safe page-level defaults. */
+
+:root {
+  --rentulo-page: #F5F8F6;
+  --rentulo-surface: #ffffff;
+  --rentulo-ink: #102019;
+  --rentulo-muted: #64706b;
+  --rentulo-green: #176747;
+  --rentulo-green-dark: #0e5037;
+  --rentulo-green-soft: #e9f4ee;
+  --rentulo-orange: #ff6a00;
+  --rentulo-orange-hover: #e85f00;
+  --rentulo-line: #e5e9e5;
+  --rentulo-font: "Manrope", Arial, sans-serif;
+}
+
+html,
+body {
+  background-color: var(--rentulo-page) !important;
+}
+
+body {
+  color: var(--rentulo-ink);
+  font-family: var(--rentulo-font);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}

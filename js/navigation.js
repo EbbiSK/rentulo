@@ -1,3 +1,27 @@
+function navEnsureSharedTheme() {
+  if (!document.getElementById("rentuloSharedTheme")) {
+    const theme = document.createElement("link");
+    theme.id = "rentuloSharedTheme";
+    theme.rel = "stylesheet";
+    theme.href = "css/rentulo-theme.css";
+    document.head.appendChild(theme);
+  }
+
+  if (
+    !document.querySelector(
+      'link[href*="fonts.googleapis.com/css2?family=Manrope"]'
+    )
+  ) {
+    const font = document.createElement("link");
+    font.rel = "stylesheet";
+    font.href =
+      "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap";
+    document.head.appendChild(font);
+  }
+}
+
+navEnsureSharedTheme();
+
 function navLoadJson(key, fallback) {
   if (typeof loadJson === "function") {
     return loadJson(key, fallback);
