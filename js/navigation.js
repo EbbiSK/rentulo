@@ -698,7 +698,7 @@ function navInjectStyles() {
         padding: 10px;
         border: 1px solid #dde5df;
         border-radius: 16px;
-        background: rgba(255, 255, 255, 0.98);
+        background: #ffffff;
         box-shadow: 0 18px 42px rgba(16, 32, 25, 0.13);
       }
 
