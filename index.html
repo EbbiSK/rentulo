@@ -509,23 +509,24 @@
       cursor: default;
     }
 
-    .home-map-info {
-      display: flex;
-      justify-content: flex-end;
-      min-width: 0;
-      padding: 0 8px;
-      text-align: right;
+    .home-map-notice {
+      position: absolute;
+      left: 50%;
+      bottom: 10px;
+      z-index: 620;
+      display: grid;
+      justify-items: center;
+      gap: 3px;
+      width: max-content;
+      max-width: min(78%, 360px);
+      transform: translateX(-50%);
+      pointer-events: none;
     }
 
     .home-map-status,
     .home-map-empty-status {
-      position: absolute;
-      left: 50%;
-      bottom: 28px;
-      z-index: 2;
       width: max-content;
-      max-width: min(78%, 360px);
-      transform: translateX(-50%);
+      max-width: 100%;
       padding: 5px 10px;
       border: 1px solid rgba(225, 232, 227, 0.96);
       border-radius: 10px;
@@ -547,11 +548,15 @@
     }
 
     .home-map-attribution {
+      padding: 1px 5px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.84);
       color: #6f7a75;
-      font-size: 9px;
-      line-height: 1.35;
+      font-size: 8px;
+      line-height: 1.25;
       font-weight: 600;
       white-space: nowrap;
+      pointer-events: auto;
     }
 
     .home-map-attribution:hover {
@@ -958,8 +963,7 @@
     }
 
     @media (min-width: 641px) {
-      .home-map-status,
-      .home-map-empty-status {
+      .home-map-notice {
         top: 78%;
         bottom: auto;
         max-width: min(52%, 340px);
@@ -1268,8 +1272,11 @@
               aria-label="Mapa dostupných nabídek"
               data-i18n-aria-label="home.mapAriaLabel"
             ></div>
-            <div id="homeMapStatus" class="home-map-status" aria-live="polite" data-i18n="home.mapLoading">Načítám nabídky do mapy...</div>
-            <div id="homeMapEmptyStatus" class="home-map-empty-status" aria-live="polite" data-i18n="home.mapEmpty" hidden>V zobrazené oblasti zatím nejsou žádné nabídky.</div>
+            <div class="home-map-notice">
+              <div id="homeMapStatus" class="home-map-status" aria-live="polite" data-i18n="home.mapLoading">Načítám nabídky do mapy...</div>
+              <div id="homeMapEmptyStatus" class="home-map-empty-status" aria-live="polite" data-i18n="home.mapEmpty" hidden>V zobrazené oblasti zatím nejsou žádné nabídky.</div>
+              <a class="home-map-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>
+            </div>
           </div>
 
           <div class="home-map-ui">
@@ -1278,10 +1285,6 @@
               <button id="homeMapZoomOut" class="home-map-zoom-button" type="button" aria-label="−">−</button>
             </div>
           </div>
-        </div>
-
-        <div class="home-map-info">
-          <a class="home-map-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>
         </div>
       </aside>
     </section>
