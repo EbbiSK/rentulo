@@ -1290,12 +1290,7 @@ const data = Array.isArray(paidReservations)
 
     function renderReservationStateBox(reservation, status) {
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING) {
-        return `
-          <div class="reservation-state-box rejected">
-            <strong>${escapeHtml(reservationsTranslate("reservations.state.pendingTitle", "Žádost čeká na potvrzení"))}</strong>
-            ${escapeHtml(reservationsTranslate("reservations.state.pendingText", "Majitel zatím vaši žádost nepotvrdil."))}
-          </div>
-        `;
+        return "";
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
@@ -1627,6 +1622,14 @@ const data = Array.isArray(paidReservations)
       const content = reservations.length
         ? renderReservationList(reservations, isHistorySection)
         : `<p class="section-empty-note">${escapeHtml(emptyText)}</p>`;
+
+      if (sectionClass === "active") {
+        return `
+          <section class="reservation-section ${escapeHtml(sectionClass)}">
+            ${content}
+          </section>
+        `;
+      }
 
       return `
         <section class="reservation-section ${escapeHtml(sectionClass)}">
