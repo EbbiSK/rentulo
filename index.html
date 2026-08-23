@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-gesture-handling@1.2.2/dist/leaflet-gesture-handling.min.css" />
 
   <style>
     :root {
@@ -632,6 +633,30 @@
       font-family: "Manrope", Arial, sans-serif;
     }
 
+    .home-offers-map.leaflet-container::after {
+      top: 50%;
+      left: 50%;
+      right: auto;
+      bottom: auto;
+      width: max-content;
+      max-width: min(82%, 360px);
+      min-height: 0;
+      transform: translate(-50%, -50%);
+      padding: 10px 14px;
+      border: 1px solid rgba(213, 227, 219, 0.96);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--ink);
+      font-family: "Manrope", Arial, sans-serif;
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 800;
+      text-align: center;
+      box-shadow: 0 10px 26px rgba(16, 32, 25, 0.14);
+      backdrop-filter: blur(8px);
+      white-space: normal;
+    }
+
     @media (min-width: 1101px) {
       .search-box {
         margin-top: 38px;
@@ -1102,6 +1127,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-gesture-handling@1.2.2/dist/leaflet-gesture-handling.min.js"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/api.js"></script>

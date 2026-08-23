@@ -34,6 +34,47 @@ function homeTranslate(key, fallback) {
   return fallback || key;
 }
 
+function isMacLikePlatform() {
+  const platform = String(
+    (navigator.userAgentData && navigator.userAgentData.platform) ||
+    navigator.platform ||
+    navigator.userAgent ||
+    ""
+  ).toLowerCase();
+
+  return platform.includes("mac") || platform.includes("iphone") || platform.includes("ipad");
+}
+
+function getHomeMapGestureTexts() {
+  return {
+    touch: homeTranslate("home.mapGestureTouch", "Mapu posunete dvěma prsty."),
+    scroll: homeTranslate(
+      "home.mapGestureScroll",
+      "Pro přiblížení mapy podržte Ctrl a posouvejte kolečkem."
+    ),
+    scrollMac: homeTranslate(
+      "home.mapGestureScrollMac",
+      "Pro přiblížení mapy podržte ⌘ a posouvejte kolečkem."
+    )
+  };
+}
+
+function applyHomeMapGestureTranslations() {
+  const mapElement = document.getElementById("homeOffersMap");
+  if (!mapElement) return;
+
+  const texts = getHomeMapGestureTexts();
+  mapElement.setAttribute("data-gesture-handling-touch-content", texts.touch);
+  mapElement.setAttribute(
+    "data-gesture-handling-scroll-content",
+    isMacLikePlatform() ? texts.scrollMac : texts.scroll
+  );
+
+  if (homeMap && homeMap.options && homeMap.options.gestureHandlingOptions) {
+    homeMap.options.gestureHandlingOptions.text = texts;
+  }
+}
+
 function goToResults(what, where) {
   const searchParams = new URLSearchParams();
 
@@ -90,6 +131,8 @@ function applyHomeDynamicTranslations() {
       homeTranslate("home.mapAriaLabel", "Mapa dostupných nabídek")
     );
   }
+
+  applyHomeMapGestureTranslations();
 }
 
 function setupNearbySearch() {
@@ -360,11 +403,21 @@ function bindHomeMapZoomControls() {
 function initializeHomeMap() {
   if (homeMap || typeof window.L === "undefined") return;
 
+  const gestureTexts = getHomeMapGestureTexts();
+
   homeMap = window.L.map("homeOffersMap", {
     zoomControl: false,
     scrollWheelZoom: false,
-    attributionControl: false
+    touchZoom: true,
+    attributionControl: false,
+    gestureHandling: true,
+    gestureHandlingOptions: {
+      duration: 1400,
+      text: gestureTexts
+    }
   }).setView([49.8, 15.5], 6);
+
+  applyHomeMapGestureTranslations();
 
   window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 18,
