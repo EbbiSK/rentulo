@@ -179,3 +179,25 @@ textarea {
     background: var(--rentulo-orange-hover) !important;
   }
 }
+
+/* Shared action-color semantics for My offers / My reservations.
+   Orange = attention/action required, green = positive state change,
+   soft mint = neutral navigation/detail action. */
+.simple-reservation-actions
+  .reservation-primary-action[data-reservations-action="toggle-detail"],
+.simple-offer-record:has(> .request-panel.open)
+  .simple-offer-actions > .offer-primary-button.urgent {
+  background: #edf5f1 !important;
+  color: #173f35 !important;
+  border-color: #edf5f1 !important;
+  box-shadow: none !important;
+}
+
+.simple-reservation-actions
+  .reservation-primary-action[data-reservations-action="toggle-detail"]:hover,
+.simple-offer-record:has(> .request-panel.open)
+  .simple-offer-actions > .offer-primary-button.urgent:hover {
+  background: #e2f0e9 !important;
+  color: #173f35 !important;
+  border-color: #e2f0e9 !important;
+}
