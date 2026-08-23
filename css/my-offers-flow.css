@@ -1,0 +1,438 @@
+/* Clear owner workflow for My listings. Loaded after the existing page styles. */
+.simple-offer-record {
+  position: relative;
+}
+
+.simple-offer-record .simple-offer-row {
+  grid-template-columns: minmax(0, 1.65fr) 150px 110px minmax(270px, auto) !important;
+  gap: 16px !important;
+  min-height: 70px !important;
+  padding: 10px 14px !important;
+}
+
+.simple-offer-record .simple-offer-main {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.simple-offer-record .simple-offer-info {
+  min-width: 0;
+}
+
+.simple-offer-record .offer-request-count-source {
+  display: none !important;
+}
+
+.simple-offer-record .offer-flow-price-summary {
+  font-size: 13px !important;
+}
+
+.offer-flow-attention {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 5px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 900;
+  white-space: normal;
+}
+
+.offer-flow-attention[hidden] {
+  display: none !important;
+}
+
+.offer-flow-attention.urgent {
+  background: #fff3e8;
+  color: #8a4b16;
+  border: 1px solid #f2c79f;
+}
+
+.offer-flow-attention.active {
+  background: #edf7f2;
+  color: #176747;
+  border: 1px solid #cfe3da;
+}
+
+.simple-offer-record .simple-offer-actions {
+  position: relative;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+}
+
+.simple-offer-record .simple-offer-actions > .offer-primary-button,
+.simple-offer-record .simple-offer-actions > .offer-flow-primary,
+.offer-flow-manage-summary {
+  min-height: 36px !important;
+  padding: 8px 12px !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+  line-height: 1.15 !important;
+  font-weight: 900 !important;
+  white-space: nowrap;
+}
+
+.simple-offer-record .simple-offer-actions > .offer-primary-button.urgent {
+  background: #ff6a00 !important;
+  color: #fff !important;
+}
+
+.simple-offer-record .simple-offer-actions > .offer-primary-button.urgent:hover {
+  background: #e85f00 !important;
+}
+
+.simple-offer-record .simple-offer-actions > .offer-flow-primary {
+  border: 0 !important;
+  background: #73d64f !important;
+  color: #173a22 !important;
+  cursor: pointer;
+}
+
+.simple-offer-record .simple-offer-actions > .offer-flow-primary:hover {
+  background: #63c943 !important;
+}
+
+.offer-flow-manage {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.offer-flow-manage-summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 132px;
+  border: 0;
+  background: #edf5f1;
+  color: #173f35;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.offer-flow-manage-summary::-webkit-details-marker {
+  display: none;
+}
+
+.offer-flow-manage-summary::after {
+  content: "⌄";
+  margin-left: 7px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.offer-flow-manage[open] .offer-flow-manage-summary {
+  background: #e2efe9;
+}
+
+.offer-flow-manage[open] .offer-flow-manage-summary::after {
+  content: "⌃";
+}
+
+.offer-flow-manage-panel {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 7px);
+  right: 0;
+  width: 225px;
+  padding: 7px;
+  border: 1px solid #cfe3da;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(23, 63, 53, 0.16);
+}
+
+.offer-flow-manage-panel:empty {
+  display: none;
+}
+
+.simple-offer-actions .offer-flow-manage-panel a,
+.simple-offer-actions .offer-flow-manage-panel button {
+  display: flex !important;
+  width: 100% !important;
+  min-height: 40px !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  margin: 0 !important;
+  padding: 0 11px !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+  background: transparent !important;
+  color: #173f35 !important;
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+  font-weight: 800 !important;
+  text-align: left !important;
+  box-shadow: none !important;
+}
+
+.simple-offer-actions .offer-flow-manage-panel a:hover,
+.simple-offer-actions .offer-flow-manage-panel button:hover {
+  background: #f3f8f5 !important;
+}
+
+.simple-offer-actions .offer-flow-manage-panel .offer-delete-action {
+  color: #a43b2f !important;
+}
+
+.simple-offer-actions .offer-flow-manage-panel .offer-delete-action:hover {
+  background: #fff3f0 !important;
+}
+
+/* The request belongs visually to its listing and reads as the next step. */
+.simple-offer-record > .request-panel {
+  margin: 0 0 12px !important;
+  border: 1px solid #cfe3da !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  box-shadow: 0 10px 26px rgba(23, 63, 53, 0.045);
+}
+
+.simple-offer-record > .request-panel.offer-flow-needs-action {
+  border-color: #efc69f !important;
+  box-shadow: 0 10px 28px rgba(255, 106, 0, 0.07);
+}
+
+.simple-offer-record .request-panel-header {
+  padding: 12px 14px !important;
+  background: #f7fbf9 !important;
+  border-bottom: 1px solid #dbe9e3 !important;
+}
+
+.simple-offer-record .request-panel-header h3 {
+  font-size: 15px !important;
+  line-height: 1.25;
+}
+
+.simple-offer-record .request-panel-header span {
+  background: #fff !important;
+  border: 1px solid #dbe9e3;
+  color: #52645d !important;
+}
+
+.simple-offer-record .request-row {
+  grid-template-columns: minmax(190px, 1.15fr) 185px 105px minmax(145px, auto) minmax(250px, auto) !important;
+  gap: 12px !important;
+  align-items: end !important;
+  min-height: 76px !important;
+  padding: 12px 14px !important;
+  background: #fff !important;
+}
+
+.offer-flow-field {
+  min-width: 0;
+}
+
+.offer-flow-field-label {
+  display: block;
+  margin-bottom: 5px;
+  color: #6a7973;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.035em;
+}
+
+.offer-flow-field .request-main,
+.offer-flow-field .request-date,
+.offer-flow-field .table-value,
+.offer-flow-field .row-actions {
+  min-width: 0;
+}
+
+.offer-flow-field .request-name {
+  font-size: 14px !important;
+}
+
+.offer-flow-field .request-email {
+  margin-top: 3px !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  line-height: 1.3 !important;
+}
+
+.offer-flow-field .request-date,
+.offer-flow-field .table-value {
+  color: #173f35 !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+.offer-flow-field .request-status {
+  max-width: 100%;
+  white-space: normal !important;
+  text-align: center;
+  line-height: 1.2 !important;
+}
+
+.offer-flow-actions .row-actions {
+  justify-content: flex-start !important;
+  gap: 7px !important;
+  flex-wrap: wrap !important;
+}
+
+.offer-flow-actions .small-button,
+.offer-flow-actions .history-toggle-button {
+  min-height: 34px !important;
+  padding: 8px 11px !important;
+}
+
+.offer-flow-actions .small-button:first-child {
+  background: #73d64f !important;
+  color: #173a22 !important;
+}
+
+.offer-flow-actions .small-button.light,
+.offer-flow-actions .history-toggle-button {
+  background: #edf5f1 !important;
+  color: #173f35 !important;
+}
+
+.simple-offer-record .request-detail {
+  padding: 0 14px 14px !important;
+  background: #f7fbf9 !important;
+}
+
+.offer-flow-manage-summary:focus-visible,
+.offer-flow-manage-panel a:focus-visible,
+.offer-flow-manage-panel button:focus-visible {
+  outline: 1px solid rgba(64, 127, 101, 0.52) !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 1100px) {
+  .simple-offer-record .simple-offer-row {
+    grid-template-columns: minmax(0, 1fr) 125px 100px minmax(245px, auto) !important;
+    gap: 10px !important;
+  }
+
+  .simple-offer-record .request-row {
+    grid-template-columns: minmax(170px, 1fr) 160px 90px minmax(135px, auto) minmax(220px, auto) !important;
+    gap: 9px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .simple-offer-record .simple-offer-row {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 9px 12px !important;
+    padding: 12px !important;
+  }
+
+  .simple-offer-record .simple-offer-main {
+    grid-column: 1 / -1 !important;
+  }
+
+  .simple-offer-record .offer-flow-price-summary {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .simple-offer-record .simple-offer-status {
+    grid-column: 2;
+    justify-self: end;
+  }
+
+  .simple-offer-record .simple-offer-actions {
+    grid-column: 1 / -1 !important;
+    justify-content: flex-start !important;
+    width: 100%;
+  }
+
+  .simple-offer-record .simple-offer-actions > .offer-primary-button,
+  .simple-offer-record .simple-offer-actions > .offer-flow-primary,
+  .simple-offer-record .offer-flow-manage {
+    flex: 1 1 0;
+  }
+
+  .offer-flow-manage-summary {
+    width: 100%;
+  }
+
+  .simple-offer-record .request-row {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+    align-items: start !important;
+  }
+
+  .offer-flow-party,
+  .offer-flow-status,
+  .offer-flow-actions {
+    grid-column: 1 / -1;
+  }
+
+  .offer-flow-term {
+    grid-column: 1;
+  }
+
+  .offer-flow-price {
+    grid-column: 2;
+  }
+
+  .offer-flow-status .request-status {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 560px) {
+  .offer-flow-attention {
+    font-size: 11px;
+  }
+
+  .simple-offer-record .simple-offer-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px !important;
+  }
+
+  .simple-offer-record .simple-offer-actions > .offer-primary-button,
+  .simple-offer-record .simple-offer-actions > .offer-flow-primary,
+  .simple-offer-record .offer-flow-manage {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .simple-offer-record .simple-offer-actions > .offer-primary-button:only-child,
+  .simple-offer-record .simple-offer-actions > .offer-flow-primary:only-child {
+    grid-column: 1 / -1;
+  }
+
+  .offer-flow-manage-panel {
+    right: 0;
+    width: min(270px, calc(100vw - 54px));
+  }
+
+  .simple-offer-record .request-panel-header {
+    align-items: flex-start !important;
+  }
+
+  .simple-offer-record .request-panel-header h3 {
+    font-size: 14px !important;
+  }
+
+  .simple-offer-record .request-row {
+    grid-template-columns: 1fr 1fr !important;
+    padding: 12px !important;
+  }
+
+  .offer-flow-actions .row-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .offer-flow-actions .row-actions .small-button,
+  .offer-flow-actions .row-actions .history-toggle-button {
+    width: 100% !important;
+  }
+
+  .offer-flow-actions .row-actions .history-toggle-button {
+    grid-column: 1 / -1;
+  }
+}
