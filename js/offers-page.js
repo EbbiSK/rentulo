@@ -199,7 +199,7 @@
       ].includes(normalizedStatus);
     }
 
-    function showAccountMessage(title, text) {
+    function showAccountMessage(title, text, tone) {
       const messageBox = document.getElementById("accountMessage");
 
       if (!messageBox) {
@@ -211,15 +211,17 @@
         ${escapeHtml(text)}
       `;
 
+      messageBox.classList.toggle("error", tone === "error");
       messageBox.classList.add("active");
     }
 
-    function setAccountMessage(titleKey, titleFallback, textKey, textFallback) {
+    function setAccountMessage(titleKey, titleFallback, textKey, textFallback, tone) {
       accountMessageState = {
         titleKey: titleKey,
         titleFallback: titleFallback,
         textKey: textKey,
-        textFallback: textFallback
+        textFallback: textFallback,
+        tone: tone || "success"
       };
 
       renderAccountMessage();
@@ -232,7 +234,8 @@
 
       showAccountMessage(
         offersTranslate(accountMessageState.titleKey, accountMessageState.titleFallback),
-        offersTranslate(accountMessageState.textKey, accountMessageState.textFallback)
+        offersTranslate(accountMessageState.textKey, accountMessageState.textFallback),
+        accountMessageState.tone
       );
     }
 
@@ -457,7 +460,7 @@ function getOfferStatus(offer) {
       }
 
       if (offer.status === "hidden") {
-        return offersTranslate("offers.status.hidden", "Skryté");
+        return offersTranslate("offers.status.hidden", "Neaktivní");
       }
 
       if (offer.status === "deleted") {
@@ -471,8 +474,16 @@ function getOfferStatus(offer) {
       return offer.status === "draft";
     }
 
+    function isOfferHidden(offer) {
+      return offer.status === "hidden";
+    }
+
+    function isOfferActive(offer) {
+      return offer.status === "active";
+    }
+
     function getOfferStatusClass(offer) {
-      return isOfferDraft(offer) ? "draft" : "";
+      return isOfferDraft(offer) ? "draft" : isOfferHidden(offer) ? "hidden" : "";
     }
 
     function getOfferPhoto(offer) {
@@ -601,6 +612,58 @@ const data = Array.isArray(updatedReservations)
         "offers.message.draftPublishedText",
         "Nabídka je teď aktivní a viditelná ve výsledcích."
       );
+      await initializeOwnerOffersPage();
+    }
+
+    async function changeOfferVisibility(offerId, newStatus) {
+      const supabaseClient = getSupabaseClient();
+
+      if (!supabaseClient) {
+        setAccountMessage(
+          "offers.message.statusChangeErrorTitle",
+          "Změnu stavu se nepodařilo uložit.",
+          "offers.message.statusChangeErrorText",
+          "Nabídka zůstala beze změny. Obnovte stránku a zkuste to prosím znovu.",
+          "error"
+        );
+        return;
+      }
+
+      const { data: updatedOffer, error } = await supabaseClient
+        .from("offers")
+        .update({ status: newStatus })
+        .eq("id", offerId)
+        .select("id, status")
+        .maybeSingle();
+
+      if (error || !updatedOffer || updatedOffer.status !== newStatus) {
+        console.error(error);
+        setAccountMessage(
+          "offers.message.statusChangeErrorTitle",
+          "Změnu stavu se nepodařilo uložit.",
+          "offers.message.statusChangeErrorText",
+          "Nabídka zůstala beze změny. Obnovte stránku a zkuste to prosím znovu.",
+          "error"
+        );
+        return;
+      }
+
+      if (newStatus === "hidden") {
+        setAccountMessage(
+          "offers.message.deactivatedTitle",
+          "Nabídka byla deaktivována.",
+          "offers.message.deactivatedText",
+          "Nabídka už není viditelná ve výsledcích. Kdykoli ji můžete znovu aktivovat."
+        );
+      } else {
+        setAccountMessage(
+          "offers.message.activatedTitle",
+          "Nabídka byla aktivována.",
+          "offers.message.activatedText",
+          "Nabídka je znovu viditelná ve výsledcích."
+        );
+      }
+
       await initializeOwnerOffersPage();
     }
 
@@ -1402,6 +1465,8 @@ function renderSimpleOffer(offer, requests) {
   const offerPrice = getOfferPrice(offer);
   const openPanelId = "open-panel-" + offerId;
   const isDraft = isOfferDraft(offer);
+  const isHidden = isOfferHidden(offer);
+  const isActive = isOfferActive(offer);
 
   const openRequests = requests.filter(function (reservation) {
     return isOpenStatus(reservation.status);
@@ -1437,8 +1502,15 @@ function renderSimpleOffer(offer, requests) {
         </button>`
       : "";
 
+  const visibilityActionHtml = isActive
+    ? `<button class="offer-visibility-action deactivate" type="button" data-offers-action="deactivate-offer" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.deactivate", "Deaktivovat nabídku")}</button>`
+    : isHidden
+      ? `<button class="offer-visibility-action activate" type="button" data-offers-action="activate-offer" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.activate", "Aktivovat nabídku")}</button>`
+      : "";
+
   const directOfferActionsHtml = `
-    ${isDraft ? "" : `<a href="detail.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.publicDetail", "Detail nabídky")}</a>`}
+    ${isActive ? `<a href="detail.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.publicDetail", "Detail nabídky")}</a>` : ""}
+    ${visibilityActionHtml}
     <a href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.edit", "Upravit nabídku")}</a>
     ${openRequests.length ? "" : `<button class="offer-delete-action danger" type="button" data-offers-action="delete-offer" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.delete", "Smazat nabídku")}</button>`}
   `;
@@ -1654,6 +1726,8 @@ return [
         "mark-picked-up",
         "mark-returned",
         "publish-offer",
+        "activate-offer",
+        "deactivate-offer",
         "delete-offer"
       ]);
       const isMutationAction = mutationActions.has(action);
@@ -1689,6 +1763,12 @@ return [
             break;
           case "publish-offer":
             await publishOffer(offerId);
+            break;
+          case "activate-offer":
+            await changeOfferVisibility(offerId, "active");
+            break;
+          case "deactivate-offer":
+            await changeOfferVisibility(offerId, "hidden");
             break;
           case "open-offer-requests":
             toggleOfferRequests(offerId);
