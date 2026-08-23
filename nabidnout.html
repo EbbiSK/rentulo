@@ -7,16 +7,13 @@
   <title data-i18n="offer.pageTitle">Nabídnout cokoli - Rentulo</title>
 
   <link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link id="rentuloSharedTheme" rel="stylesheet" href="css/rentulo-theme.css" />
   <style>
     * {
       box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #dff7ee;
-      color: #173f35;
     }
 
     a {
@@ -28,32 +25,38 @@
     input,
     select,
     textarea {
-      font-family: inherit;
+      font: inherit;
     }
 
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--rentulo-ink, #102019);
+      font-family: var(--rentulo-font, "Manrope", Arial, sans-serif);
+    }
+
+    /* Structural header host. Shared navigation.js and rentulo-theme.css control the navigation UI. */
     .header {
-      max-width: 1240px;
+      width: min(1320px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 10px 20px;
+      padding: 14px 0 10px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 14px;
+      justify-content: space-between;
+      gap: 16px;
     }
 
     .logo {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 12px;
+      flex: 0 0 auto;
     }
 
     .logo-icon {
       width: 48px;
       height: 48px;
       flex: 0 0 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .logo-icon img {
@@ -63,152 +66,111 @@
       object-fit: contain;
     }
 
-    .logo-dot {
-      display: none;
-    }
-
     .logo-text strong {
       display: block;
+      color: var(--rentulo-ink, #102019);
       font-size: 25px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
       line-height: 1;
-      color: #173f35;
-    }
-
-    .logo-text small {
-      display: none;
     }
 
     .nav {
       display: flex;
       align-items: center;
       gap: 18px;
-      font-size: 15px;
-    }
-
-    .nav .active-link {
-      font-weight: 800;
-    }
-
-    .btn-register,
-    .logout-link {
-      background: #7ed957;
-      color: #173a22 !important;
-      padding: 10px 20px;
-      border-radius: 999px;
-      font-weight: 800;
-      cursor: pointer;
     }
 
     .offer-page {
-      max-width: 1240px;
+      width: min(1320px, calc(100% - 64px));
       margin: 0 auto;
-      padding: 16px 20px 32px;
+      padding: 34px 0 64px;
     }
 
     .back-link {
-      display: inline-block;
-      margin-bottom: 10px;
-      color: #4f972d;
-      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 24px;
+      color: var(--rentulo-green, #176747);
+      font-size: 15px;
       font-weight: 800;
+      line-height: 1.2;
     }
 
     .back-link:hover {
-      text-decoration: underline;
+      color: var(--rentulo-green-dark, #0e5037);
     }
 
     .offer-page-header {
-      position: relative;
-      margin-bottom: 18px;
-      padding: 24px 210px 24px 24px;
-      background: #f7fcf9;
-      border: 1px solid #cfe4da;
-      border-radius: 18px;
-      box-shadow: 0 12px 32px rgba(23, 63, 53, 0.055);
+      margin: 0 0 28px;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
     }
 
-    .eyebrow {
-      margin: 0 0 4px;
-      font-size: 13px;
+    .offer-page-header h1 {
+      margin: 0;
+      color: var(--rentulo-ink, #102019);
+      font-size: clamp(40px, 4.2vw, 60px);
       font-weight: 800;
-      color: #4f972d;
-    }
-
-    h1 {
-      margin: 0 0 8px;
-      font-size: 34px;
-      line-height: 1.08;
-      color: #173f35;
+      letter-spacing: -0.045em;
+      line-height: 0.98;
     }
 
     .offer-page-header p {
-      margin: 0;
-      font-size: 14px;
-      color: #66736e;
-      line-height: 1.45;
-      max-width: 760px;
-    }
-
-    .top-action-button {
-      position: absolute;
-      right: 22px;
-      top: 50%;
-      transform: translateY(-50%);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      padding: 10px 18px;
-      border-radius: 14px;
-      background: #eef7f2;
-      color: #173f35;
-      font-size: 14px;
-      font-weight: 900;
-      white-space: nowrap;
+      max-width: 720px;
+      margin: 14px 0 0;
+      color: var(--rentulo-muted, #64706b);
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.55;
     }
 
     .offer-layout {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
+      grid-template-columns: minmax(0, 1fr);
       align-items: start;
     }
 
     .offer-card {
-      background: #ffffff;
-      border: 1px solid #cfe4da;
-      border-radius: 18px;
-      box-shadow: 0 12px 32px rgba(23, 63, 53, 0.055);
       overflow: hidden;
+      background: var(--rentulo-surface, #ffffff);
+      border: 1px solid var(--rentulo-line, #e5e9e5);
+      border-radius: 24px;
+      box-shadow: 0 16px 38px rgba(16, 32, 25, 0.055);
     }
 
     .offer-card-header {
-      padding: 15px 16px;
-      background: #f7fcf9;
-      border-bottom: 1px solid #dbece4;
+      padding: 26px 28px 0;
+      background: transparent;
+      border: 0;
     }
 
     .offer-card-header h2 {
       margin: 0;
-      color: #173f35;
-      font-size: 17px;
-      line-height: 1.3;
+      color: var(--rentulo-ink, #102019);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.25;
     }
 
     .offer-card-body {
-      padding: 16px;
       display: grid;
-      gap: 14px;
+      gap: 22px;
+      padding: 22px 28px 28px;
     }
 
     .form-message {
       display: none;
       margin: 0;
-      padding: 12px 14px;
-      border-radius: 12px;
+      padding: 13px 15px;
+      border-radius: 14px;
       font-size: 13px;
       font-weight: 800;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     .form-message.active {
@@ -224,88 +186,86 @@
     .form-message.success {
       background: #edf9f2;
       border: 1px solid #c6e4d5;
-      color: #173f35;
+      color: var(--rentulo-ink, #102019);
     }
 
     .photo-upload-box,
-    .pickup-location-box,
     .pickup-options {
-      border: 1px solid #cfe4da;
-      border-radius: 16px;
-      background: #ffffff;
       overflow: hidden;
+      border: 1px solid var(--rentulo-line, #e5e9e5);
+      border-radius: 18px;
+      background: #fbfcfb;
     }
 
     .photo-upload-header,
-    .pickup-options-header,
-    .pickup-location-header {
-      padding: 12px 14px;
-      border-bottom: 1px solid #dbece4;
-      background: #f5fbf8;
+    .pickup-options-header {
+      padding: 18px 18px 0;
+      background: transparent;
+      border: 0;
     }
 
     .photo-upload-header strong,
     .photo-upload-header .photo-upload-title,
-    .pickup-options-header strong,
-    .pickup-location-header strong {
+    .pickup-options-header strong {
       display: block;
-      color: #173f35;
-      font-size: 16px;
-      font-weight: 900;
+      color: var(--rentulo-ink, #102019);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.015em;
+      line-height: 1.3;
     }
 
     .photo-upload-optional {
       margin-left: 6px;
-      color: #7b8782;
+      color: var(--rentulo-muted, #64706b);
       font-size: 12px;
       font-weight: 600;
     }
 
     .photo-upload-header p,
-    .pickup-options-header p,
-    .pickup-location-header p {
-      margin: 4px 0 0;
-      color: #66736e;
+    .pickup-options-header p {
+      margin: 5px 0 0;
+      color: var(--rentulo-muted, #64706b);
       font-size: 13px;
-      line-height: 1.45;
-      font-weight: 700;
+      font-weight: 600;
+      line-height: 1.5;
     }
 
     .photo-upload-layout {
       display: grid;
-      grid-template-columns: 140px 1fr;
-      gap: 14px;
+      grid-template-columns: 160px minmax(0, 1fr);
+      gap: 18px;
       align-items: center;
-      padding: 14px;
+      padding: 16px 18px 18px;
     }
 
     .photo-preview {
-      width: 140px;
-      height: 110px;
-      border-radius: 14px;
-      background: #f3faf6;
-      border: 1px solid #cfe4da;
+      width: 160px;
+      height: 124px;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      color: #66736e;
-      font-size: 13px;
-      font-weight: 800;
-      text-align: center;
       padding: 12px;
+      border: 1px solid #d9e1dd;
+      border-radius: 15px;
+      background: var(--rentulo-green-soft, #e9f4ee);
+      color: var(--rentulo-muted, #64706b);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
     }
 
     .photo-preview img {
+      display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      display: block;
     }
 
     .photo-upload-actions {
       display: grid;
-      gap: 8px;
+      gap: 9px;
       align-items: start;
     }
 
@@ -328,55 +288,57 @@
       border: 0;
     }
 
-    .photo-file-button {
+    .photo-file-button,
+    .photo-remove-button,
+    .pickup-location-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       min-height: 42px;
       padding: 0 14px;
-      border: 1px solid #cfe1d8;
-      border-radius: 10px;
-      background: #eef7f2;
-      color: #173f35;
+      border: 1px solid #d9e1dd;
+      border-radius: 12px;
+      background: #ffffff;
+      color: var(--rentulo-ink, #102019);
       font-size: 13px;
-      font-weight: 900;
+      font-weight: 800;
       line-height: 1;
       cursor: pointer;
       user-select: none;
     }
 
-    .photo-file-button:hover {
-      background: #e4f2eb;
+    .photo-file-button:hover,
+    .photo-remove-button:hover,
+    .pickup-location-button:hover {
+      background: var(--rentulo-green-soft, #e9f4ee);
     }
 
-    .photo-file-input:focus-visible + .photo-file-button {
-      outline: 3px solid rgba(126, 217, 87, 0.25);
+    .photo-file-input:focus-visible + .photo-file-button,
+    .photo-remove-button:focus-visible,
+    .pickup-location-button:focus-visible,
+    .btn-primary:focus-visible,
+    .btn-secondary:focus-visible {
+      outline: 1px solid rgba(64, 127, 101, 0.58);
       outline-offset: 2px;
     }
 
     .photo-remove-button {
       justify-self: start;
-      border: 1px solid #cfe1d8;
-      border-radius: 10px;
-      padding: 8px 12px;
-      background: #eef7f2;
-      color: #173f35;
+      min-height: 38px;
       font-size: 12px;
-      font-weight: 900;
-      cursor: pointer;
     }
 
     .photo-upload-status,
     .pickup-location-status {
-      color: #66736e;
+      color: var(--rentulo-muted, #64706b);
       font-size: 12px;
-      font-weight: 700;
-      line-height: 1.45;
+      font-weight: 600;
+      line-height: 1.5;
     }
 
     .photo-upload-status.success,
     .pickup-location-status.success {
-      color: #2f7f2b;
+      color: var(--rentulo-green, #176747);
     }
 
     .photo-upload-status.error,
@@ -387,12 +349,13 @@
     .form-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      gap: 16px;
     }
 
     .form-group {
       display: grid;
-      gap: 7px;
+      gap: 8px;
+      min-width: 0;
     }
 
     .form-group.full {
@@ -400,48 +363,55 @@
     }
 
     .form-group label {
-      color: #173f35;
-      font-size: 14px;
-      font-weight: 900;
+      color: var(--rentulo-ink, #102019);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.3;
     }
 
     .form-group input,
     .form-group select,
     .form-group textarea {
       width: 100%;
-      min-height: 44px;
-      border: 1px solid #cfe1d8;
-      border-radius: 12px;
-      background: #ffffff;
-      padding: 10px 12px;
+      min-height: 48px;
+      padding: 11px 13px;
+      border: 1px solid #d9e1dd;
+      border-radius: 13px;
+      background: #fbfcfb;
+      color: var(--rentulo-ink, #102019);
       font-size: 14px;
-      color: #173f35;
-      font-family: Arial, sans-serif;
-      font-weight: 700;
+      font-weight: 600;
       outline: none;
     }
 
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: #8a9690;
+      opacity: 1;
+    }
+
     .form-group textarea {
-      min-height: 110px;
+      min-height: 126px;
       resize: none;
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
-      border-color: #cfe1d8;
+      border-color: #b9cfc4;
       box-shadow: none;
     }
 
     .form-group input:focus-visible,
     .form-group select:focus-visible,
     .form-group textarea:focus-visible {
-      outline: 1px solid rgba(64, 127, 101, 0.52) !important;
+      outline: 1px solid rgba(64, 127, 101, 0.58) !important;
       outline-offset: 1px !important;
     }
 
-    html[data-focus-input="pointer"] .form-group select:focus {
+    html[data-focus-input="pointer"] .form-group select:focus,
+    html[data-focus-input="pointer"] .pickup-checkbox input:focus {
       outline: none !important;
       outline-offset: 0 !important;
       box-shadow: none !important;
@@ -461,40 +431,40 @@
     }
 
     .pickup-options-body {
-      padding: 14px;
       display: grid;
-      gap: 14px;
+      gap: 16px;
+      padding: 16px 18px 18px;
     }
 
     .profile-pickup-summary {
-      padding: 10px 12px;
-      border: 1px solid #cfe1d8;
-      border-radius: 12px;
-      background: #f7fbf9;
-      color: #173f35;
+      padding: 12px 14px;
+      border: 1px solid #d9e1dd;
+      border-radius: 13px;
+      background: #ffffff;
+      color: var(--rentulo-ink, #102019);
       font-size: 13px;
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
     .profile-pickup-summary-label {
       display: block;
-      margin-bottom: 2px;
-      color: #66736e;
-      font-weight: 700;
+      margin-bottom: 3px;
+      color: var(--rentulo-muted, #64706b);
+      font-weight: 600;
     }
 
     .profile-pickup-summary-address {
-      font-weight: 900;
+      font-weight: 800;
     }
 
     .pickup-checkbox {
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      color: #173f35;
+      color: var(--rentulo-ink, #102019);
       font-size: 14px;
-      font-weight: 900;
-      line-height: 1.4;
+      font-weight: 800;
+      line-height: 1.45;
       cursor: pointer;
     }
 
@@ -502,18 +472,13 @@
       width: 18px;
       height: 18px;
       margin-top: 1px;
-      accent-color: #7ed957;
+      accent-color: var(--rentulo-green, #176747);
       flex-shrink: 0;
-    }
-
-    html[data-focus-input="pointer"] .pickup-checkbox input:focus {
-      outline: none !important;
-      outline-offset: 0 !important;
-      box-shadow: none !important;
     }
 
     .pickup-custom-fields {
       display: none;
+      padding-top: 2px;
     }
 
     .pickup-custom-fields.is-visible {
@@ -521,7 +486,10 @@
     }
 
     .pickup-location-box {
-      background: #ffffff;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      overflow: visible;
     }
 
     .pickup-location-actions {
@@ -529,35 +497,23 @@
       gap: 10px;
       flex-wrap: wrap;
       align-items: center;
-      padding: 14px;
-    }
-
-    .pickup-location-button {
-      min-height: 42px;
-      padding: 0 14px;
-      border: 1px solid #cfe1d8;
-      border-radius: 12px;
-      background: #eef7f2;
-      color: #173f35;
-      font-size: 13px;
-      font-weight: 900;
-      cursor: pointer;
+      padding: 0;
     }
 
     .offer-action-note {
       margin: 0;
-      padding: 2px 2px 0;
-      color: #66736e;
+      padding: 0 2px;
+      color: var(--rentulo-muted, #64706b);
       font-size: 13px;
-      line-height: 1.45;
-      font-weight: 700;
+      font-weight: 600;
+      line-height: 1.55;
     }
 
     .form-actions {
       display: flex;
       justify-content: flex-end;
       gap: 10px;
-      padding-top: 4px;
+      padding-top: 2px;
     }
 
     .btn-primary,
@@ -565,84 +521,73 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border: none;
-      cursor: pointer;
-      border-radius: 12px;
-      padding: 11px 18px;
-      min-height: 44px;
+      min-height: 48px;
+      padding: 0 19px;
+      border-radius: 13px;
       font-size: 14px;
-      font-weight: 900;
+      font-weight: 800;
       text-align: center;
       white-space: nowrap;
+      cursor: pointer;
     }
 
     .btn-primary {
-      background: #7ed957;
-      color: #173a22;
+      border: 1px solid var(--rentulo-orange, #ff6a00);
+      background: var(--rentulo-orange, #ff6a00);
+      color: #ffffff;
+      box-shadow: 0 10px 22px rgba(255, 106, 0, 0.14);
+    }
+
+    .btn-primary:hover {
+      border-color: var(--rentulo-orange-hover, #e85f00);
+      background: var(--rentulo-orange-hover, #e85f00);
     }
 
     .btn-secondary {
-      background: #eef7f2;
-      color: #173f35;
-      border: 1px solid #cfe1d8;
+      border: 1px solid #d9e1dd;
+      background: #ffffff;
+      color: var(--rentulo-ink, #102019);
+    }
+
+    .btn-secondary:hover {
+      background: var(--rentulo-green-soft, #e9f4ee);
     }
 
     .btn-primary:disabled,
     .btn-secondary:disabled {
-      opacity: 0.65;
+      opacity: 0.62;
       cursor: not-allowed;
-    }
-
-
-    .btn-primary:hover,
-    .logout-link:hover,
-    .btn-register:hover {
-      background: #70ce4a;
-    }
-
-    .btn-secondary:hover,
-    .top-action-button:hover,
-    .photo-remove-button:hover,
-    .pickup-location-button:hover {
-      background: #e4f2eb;
-    }
-
-    .btn-primary:focus-visible,
-    .btn-secondary:focus-visible,
-    .top-action-button:focus-visible,
-    .photo-remove-button:focus-visible,
-    .pickup-location-button:focus-visible {
-      outline: 3px solid rgba(126, 217, 87, 0.25);
-      outline-offset: 2px;
     }
 
     .login-required-box {
       max-width: 760px;
       margin: 44px auto;
-      padding: 24px;
-      border-radius: 18px;
-      background: #ffffff;
-      border: 1px solid #cfe4da;
-      box-shadow: 0 12px 32px rgba(23, 63, 53, 0.055);
+      padding: 26px;
+      border: 1px solid var(--rentulo-line, #e5e9e5);
+      border-radius: 22px;
+      background: var(--rentulo-surface, #ffffff);
+      box-shadow: 0 16px 38px rgba(16, 32, 25, 0.055);
     }
 
     .login-required-box h1 {
       margin: 0 0 8px;
-      color: #173f35;
-      font-size: 28px;
-      line-height: 1.1;
+      color: var(--rentulo-ink, #102019);
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
     }
 
     .login-required-box p {
-      margin: 0 0 16px;
-      color: #66736e;
+      margin: 0 0 18px;
+      color: var(--rentulo-muted, #64706b);
       font-size: 14px;
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
     .login-required-actions {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
@@ -650,58 +595,83 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 42px;
-      padding: 0 16px;
-      border-radius: 12px;
-      background: #7ed957;
-      color: #173a22;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 13px;
+      background: var(--rentulo-orange, #ff6a00);
+      color: #ffffff;
       font-size: 14px;
-      font-weight: 900;
+      font-weight: 800;
       text-decoration: none;
     }
 
     .login-required-actions .secondary-action {
-      background: #eef7f2;
-      color: #173f35;
-      border: 1px solid #cfe1d8;
+      border: 1px solid #d9e1dd;
+      background: #ffffff;
+      color: var(--rentulo-ink, #102019);
     }
 
-    @media (max-width: 980px) {
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
+    @media (max-width: 1100px) {
+      .offer-page {
+        width: min(100% - 48px, 980px);
+        padding-top: 28px;
       }
 
-      .nav {
-        flex-wrap: wrap;
-        gap: 12px;
+      .offer-page-header h1 {
+        font-size: clamp(42px, 7vw, 58px);
       }
-
-      .offer-page-header {
-        padding-right: 0;
-      }
-
-      .offer-page-header {
-        padding: 22px;
-      }
-
-      .top-action-button {
-        position: static;
-        transform: none;
-        display: inline-flex;
-        margin-top: 14px;
-      }
-
     }
 
     @media (max-width: 700px) {
       .offer-page {
-        padding-left: 14px;
-        padding-right: 14px;
+        width: calc(100% - 32px);
+        padding: 24px 0 46px;
+      }
+
+      .back-link {
+        margin-bottom: 20px;
+        font-size: 14px;
       }
 
       .offer-page-header {
-        padding: 20px;
+        margin-bottom: 22px;
+      }
+
+      .offer-page-header h1 {
+        font-size: clamp(38px, 12vw, 52px);
+        line-height: 1;
+      }
+
+      .offer-page-header p {
+        margin-top: 12px;
+        font-size: 14px;
+      }
+
+      .offer-card {
+        border-radius: 20px;
+      }
+
+      .offer-card-header {
+        padding: 22px 18px 0;
+      }
+
+      .offer-card-header h2 {
+        font-size: 20px;
+      }
+
+      .offer-card-body {
+        gap: 18px;
+        padding: 18px;
+      }
+
+      .photo-upload-box,
+      .pickup-options {
+        border-radius: 16px;
+      }
+
+      .photo-upload-header,
+      .pickup-options-header {
+        padding: 16px 15px 0;
       }
 
       .photo-upload-layout,
@@ -709,9 +679,18 @@
         grid-template-columns: 1fr;
       }
 
+      .photo-upload-layout {
+        gap: 14px;
+        padding: 14px 15px 16px;
+      }
+
       .photo-preview {
         width: 100%;
-        height: 180px;
+        height: 190px;
+      }
+
+      .pickup-options-body {
+        padding: 14px 15px 16px;
       }
 
       .form-actions {
@@ -720,9 +699,24 @@
 
       .btn-primary,
       .btn-secondary,
-      .pickup-location-button,
-      .top-action-button {
+      .pickup-location-button {
         width: 100%;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .offer-page {
+        width: calc(100% - 28px);
+      }
+
+      .offer-page-header h1 {
+        font-size: 40px;
+      }
+
+      .offer-card-header,
+      .offer-card-body {
+        padding-left: 16px;
+        padding-right: 16px;
       }
     }
   </style>
