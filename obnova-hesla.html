@@ -5,362 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title data-i18n="passwordRecovery.documentTitle">Obnova hesla - Rentulo</title>
   <link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #dff7ee;
-      color: #173f35;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button,
-    input {
-      font-family: inherit;
-    }
-
-    .header {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo-icon {
-      width: 48px;
-      height: 48px;
-      flex: 0 0 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .logo-icon img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .logo-text strong {
-      display: block;
-      font-size: 25px;
-      line-height: 1;
-      color: #173f35;
-    }
-
-    .logo-text small {
-      display: block;
-      margin-top: 3px;
-      font-size: 13px;
-      color: #66736e;
-    }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      font-size: 15px;
-    }
-
-    .nav a {
-      font-weight: 500;
-    }
-
-    .nav .active-link {
-      font-weight: 900;
-    }
-
-    .btn-register,
-    .logout-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: #6FCF65;
-      color: #123F34 !important;
-      padding: 10px 20px;
-      border-radius: 999px;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .auth-page {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 26px 20px 40px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .auth-card {
-      width: 100%;
-      max-width: 820px;
-      display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 0;
-      background: #ffffff;
-      border: 1px solid #e1e6e8;
-      border-radius: 18px;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
-      overflow: hidden;
-    }
-
-    .auth-intro {
-      padding: 26px;
-      background: #f0faea;
-      border-right: 1px solid #d4e9c8;
-    }
-
-    .eyebrow {
-      margin: 0 0 6px;
-      color: #4f972d;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .auth-intro h1 {
-      margin: 0 0 12px;
-      color: #173f35;
-      font-size: 36px;
-      line-height: 1.05;
-      letter-spacing: -0.035em;
-    }
-
-    .auth-intro p {
-      margin: 0;
-      color: #4d5b55;
-      font-size: 15px;
-      line-height: 1.45;
-      font-weight: 700;
-    }
-
-    .auth-form {
-      padding: 26px;
-      display: grid;
-      gap: 13px;
-      align-content: start;
-    }
-
-    .auth-error-message {
-      display: none;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: #fff5ef;
-      border: 1px solid #ffd7bf;
-      color: #7a4321;
-      font-size: 13px;
-      font-weight: 800;
-      line-height: 1.35;
-    }
-
-    .auth-error-message.active {
-      display: block;
-    }
-
-    .form-group {
-      display: grid;
-      gap: 7px;
-    }
-
-    .form-group label {
-      color: #173f35;
-      font-size: 14px;
-      font-weight: 900;
-    }
-
-    .form-group input {
-      width: 100%;
-      min-height: 44px;
-      border: 1px solid #d9e0e3;
-      border-radius: 12px;
-      background: #ffffff;
-      padding: 10px 12px;
-      font-size: 14px;
-      color: #173f35;
-      font-weight: 700;
-      outline: none;
-    }
-
-    .form-group input:focus {
-      border-color: #d9e0e3;
-      box-shadow: none;
-    }
-
-    .form-group input:focus-visible {
-      outline: 1px solid rgba(64, 127, 101, 0.52);
-      outline-offset: 1px;
-    }
-
-    .form-group input.input-error {
-      border-color: #c2410c;
-      box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.12);
-    }
-
-    .terms-check {
-      display: grid;
-      grid-template-columns: 18px 1fr;
-      gap: 8px;
-      align-items: start;
-      padding: 10px 11px;
-      border-radius: 12px;
-      background: #f7fbf9;
-      border: 1px solid #dce9e3;
-      color: #4d5b55;
-      font-size: 13px;
-      line-height: 1.35;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .terms-check input {
-      width: 16px;
-      height: 16px;
-      margin: 1px 0 0;
-      accent-color: #7ed957;
-    }
-
-    .auth-button {
-      min-height: 44px;
-      border: none;
-      border-radius: 12px;
-      background: #6FCF65;
-      color: #123F34;
-      padding: 0 18px;
-      font-size: 15px;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .auth-button:hover {
-      filter: brightness(0.97);
-    }
-
-    .auth-button:disabled {
-      opacity: 0.65;
-      cursor: not-allowed;
-    }
-
-    .auth-note {
-      margin: 0;
-      padding-top: 2px;
-      color: #4d5b55;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.35;
-    }
-
-    .auth-note a {
-      color: #3f7f2d;
-      font-weight: 900;
-      text-decoration: none;
-    }
-
-    .auth-note a:hover {
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-
-    .auth-note-right {
-      margin-top: -3px;
-      text-align: right;
-    }
-
-    @media (max-width: 820px) {
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-        background: transparent;
-      }
-
-      .nav {
-        width: 100%;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        gap: 10px 14px;
-      }
-
-      .auth-card {
-        grid-template-columns: 1fr;
-      }
-
-      .auth-intro {
-        border-right: none;
-        border-bottom: 1px solid #d4e9c8;
-      }
-    }
-
-    @media (max-width: 620px) {
-      .header,
-      .auth-page {
-        padding-left: 14px;
-        padding-right: 14px;
-      }
-
-      .auth-page {
-        padding-top: 12px;
-      }
-
-      .auth-intro,
-      .auth-form {
-        padding: 18px;
-      }
-
-      .auth-intro h1 {
-        font-size: 30px;
-      }
-
-      .auth-button {
-        width: 100%;
-      }
-    }
-  
-    .status-message {
-      display: none;
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 800;
-      line-height: 1.35;
-    }
-
-    .status-message.active {
-      display: block;
-    }
-
-    .status-message.success {
-      background: #eef7ea;
-      border: 1px solid #d4e9c8;
-      color: #173f35;
-    }
-
-    .status-message.error {
-      background: #fff5ef;
-      border: 1px solid #ffd7bf;
-      color: #7a4321;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-  </style>
+  <link id="rentuloSharedTheme" rel="stylesheet" href="css/rentulo-theme.css" />
+  <link rel="stylesheet" href="css/auth.css" />
 </head>
+
 <body data-navigation-page="prihlaseni">
   <header class="header">
     <a href="index.html" class="logo">
@@ -377,31 +25,73 @@
       <div class="auth-intro">
         <p class="eyebrow" data-i18n="passwordRecovery.eyebrow">Bezpečné obnovení</p>
         <h1 id="recoveryTitle" data-i18n="passwordRecovery.title">Obnova hesla</h1>
-        <p id="recoveryDescription" data-i18n="passwordRecovery.description">Zadejte e-mail použitý při registraci. Pošleme vám odkaz pro nastavení nového hesla.</p>
+        <p id="recoveryDescription" data-i18n="passwordRecovery.description">
+          Zadejte e-mail použitý při registraci. Pošleme vám odkaz pro nastavení nového hesla.
+        </p>
       </div>
 
       <form class="auth-form" id="requestResetForm" novalidate>
         <div class="status-message" id="requestMessage" role="status" aria-live="polite"></div>
+
         <div class="form-group full">
           <label for="recoveryEmail" data-i18n="passwordRecovery.emailLabel">E-mail</label>
-          <input id="recoveryEmail" type="email" autocomplete="email" data-i18n-placeholder="passwordRecovery.emailPlaceholder" placeholder="např. jan@email.cz" required />
+          <input
+            id="recoveryEmail"
+            type="email"
+            autocomplete="email"
+            inputmode="email"
+            autocapitalize="none"
+            spellcheck="false"
+            maxlength="254"
+            data-i18n-placeholder="passwordRecovery.emailPlaceholder"
+            placeholder="např. jan@email.cz"
+            required
+          />
         </div>
-        <button type="submit" class="auth-button" id="requestResetButton" data-i18n="passwordRecovery.send">Poslat odkaz pro obnovu</button>
-        <p class="auth-note"><a href="prihlaseni.html" data-i18n="passwordRecovery.backToLogin">Zpět na přihlášení</a></p>
+
+        <button type="submit" class="auth-button" id="requestResetButton" data-i18n="passwordRecovery.send">
+          Poslat odkaz pro obnovu
+        </button>
+
+        <p class="auth-note">
+          <a href="prihlaseni.html" data-i18n="passwordRecovery.backToLogin">Zpět na přihlášení</a>
+        </p>
       </form>
 
       <form class="auth-form hidden" id="setPasswordForm" novalidate>
         <div class="status-message" id="passwordMessage" role="status" aria-live="polite"></div>
+
         <div class="form-group full">
           <label for="newPassword" data-i18n="passwordRecovery.newPassword">Nové heslo</label>
-          <input id="newPassword" type="password" autocomplete="new-password" minlength="8" aria-describedby="recoveryDescription" required />
+          <input
+            id="newPassword"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+            aria-describedby="recoveryDescription"
+            required
+          />
         </div>
+
         <div class="form-group full">
           <label for="confirmPassword" data-i18n="passwordRecovery.confirmPassword">Potvrzení nového hesla</label>
-          <input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" aria-describedby="recoveryDescription" required />
+          <input
+            id="confirmPassword"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+            aria-describedby="recoveryDescription"
+            required
+          />
         </div>
-        <button type="submit" class="auth-button" id="savePasswordButton" data-i18n="passwordRecovery.save">Uložit nové heslo</button>
-        <p class="auth-note"><a href="prihlaseni.html" data-i18n="passwordRecovery.backToLogin">Zpět na přihlášení</a></p>
+
+        <button type="submit" class="auth-button" id="savePasswordButton" data-i18n="passwordRecovery.save">
+          Uložit nové heslo
+        </button>
+
+        <p class="auth-note">
+          <a href="prihlaseni.html" data-i18n="passwordRecovery.backToLogin">Zpět na přihlášení</a>
+        </p>
       </form>
     </section>
   </main>
