@@ -32,8 +32,92 @@ textarea {
   font-family: inherit;
 }
 
-/* Desktop header is shared across the project.
-   Mobile/tablet navigation remains controlled by navigation.js. */
+/* Mobile/tablet header is shared across the project.
+   Keep the brand and shared Menu control on one row even when a page
+   does not provide its own mobile header styling. */
+@media (max-width: 1100px) {
+  .header,
+  .header-inner {
+    position: relative !important;
+    z-index: 1000;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+  }
+
+  .header > .logo,
+  .header-inner > .logo {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex: 0 1 auto !important;
+    min-width: 0;
+    color: var(--rentulo-ink) !important;
+    text-decoration: none !important;
+  }
+
+  .header .logo-icon,
+  .header-inner .logo-icon {
+    width: 48px !important;
+    height: 48px !important;
+    flex: 0 0 48px !important;
+    display: grid !important;
+    place-items: center !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    transform: none !important;
+  }
+
+  .header .logo-icon::before,
+  .header .logo-icon::after,
+  .header-inner .logo-icon::before,
+  .header-inner .logo-icon::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  .header .logo-icon img,
+  .header-inner .logo-icon img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+
+  .header .logo-text,
+  .header-inner .logo-text {
+    display: block !important;
+    line-height: 1 !important;
+  }
+
+  .header .logo-text strong,
+  .header-inner .logo-text strong {
+    display: block !important;
+    font-family: var(--rentulo-font) !important;
+    font-size: 25px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.04em !important;
+    color: #101c18 !important;
+    text-decoration: none !important;
+  }
+
+  .header .logo-text small,
+  .header-inner .logo-text small,
+  .header .logo-dot,
+  .header-inner .logo-dot {
+    display: none !important;
+  }
+
+  .shared-mobile-menu-button {
+    margin-left: auto !important;
+  }
+}
+
+/* Desktop header is shared across the project. */
 @media (min-width: 1101px) {
   .header {
     position: relative !important;
