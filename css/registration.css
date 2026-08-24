@@ -358,3 +358,61 @@ input {
   font-size: 10px;
   text-align: right;
 }
+
+@media (min-width: 901px) {
+  .registration-page {
+    width: min(1120px, calc(100% - 40px));
+    padding: 24px 0 42px;
+  }
+
+  .registration-shell {
+    grid-template-columns: minmax(270px, 0.72fr) minmax(0, 1.28fr);
+  }
+
+  .registration-intro {
+    padding: 30px;
+  }
+
+  .registration-intro h1 {
+    margin-bottom: 12px;
+    font-size: clamp(36px, 3.2vw, 48px);
+  }
+
+  .registration-description {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .registration-helper {
+    margin-top: 18px;
+    padding: 13px 14px;
+  }
+
+  .registration-form {
+    padding: 26px 28px;
+  }
+
+  .registration-grid {
+    gap: 14px;
+  }
+
+  .registration-field {
+    gap: 6px;
+  }
+
+  .registration-field input {
+    height: 46px;
+  }
+
+  .registration-terms {
+    gap: 8px;
+  }
+
+  .registration-check {
+    padding: 10px 11px;
+  }
+
+  .registration-submit {
+    min-height: 46px;
+  }
+}
