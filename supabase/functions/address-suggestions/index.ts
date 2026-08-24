@@ -242,7 +242,6 @@ Deno.serve(async (req) => {
   url.searchParams.set("countrycode", "CZ");
   url.searchParams.append("layer", "house");
   url.searchParams.append("layer", "street");
-  url.searchParams.set("lang", language);
 
   try {
     const response = await fetchWithTimeout(url.toString());
