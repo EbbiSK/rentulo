@@ -61,6 +61,16 @@
       <form class="auth-form hidden" id="setPasswordForm" novalidate>
         <div class="status-message" id="passwordMessage" role="status" aria-live="polite"></div>
 
+        <input
+          id="recoveryUsername"
+          name="username"
+          type="email"
+          autocomplete="username"
+          hidden
+          aria-hidden="true"
+          tabindex="-1"
+        />
+
         <div class="form-group full">
           <label for="newPassword" data-i18n="passwordRecovery.newPassword">Nové heslo</label>
           <input
