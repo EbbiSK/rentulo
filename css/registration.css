@@ -1,0 +1,360 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.registration-page {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 30px 0 48px;
+}
+
+.registration-shell {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+  overflow: visible;
+  background: var(--rentulo-surface);
+  border: 1px solid var(--rentulo-line);
+  border-radius: 20px;
+  box-shadow: 0 14px 34px rgba(16, 32, 25, 0.05);
+}
+
+.registration-intro {
+  padding: 34px;
+  background: var(--rentulo-green-soft);
+  border-right: 1px solid var(--rentulo-line);
+  border-radius: 20px 0 0 20px;
+}
+
+.registration-eyebrow {
+  margin: 0 0 8px;
+  color: var(--rentulo-green);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.registration-intro h1 {
+  margin: 0 0 14px;
+  color: var(--rentulo-green-dark);
+  font-size: clamp(38px, 4vw, 54px);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+
+.registration-description {
+  margin: 0;
+  color: var(--rentulo-muted);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.registration-helper {
+  display: grid;
+  gap: 4px;
+  margin-top: 22px;
+  padding: 15px 16px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(23, 103, 71, 0.14);
+  border-radius: 14px;
+  color: var(--rentulo-ink);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.registration-helper strong {
+  color: var(--rentulo-green-dark);
+  font-weight: 800;
+}
+
+.registration-form {
+  min-width: 0;
+  padding: 30px 32px;
+}
+
+.registration-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 17px 16px;
+}
+
+.registration-field {
+  position: relative;
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.registration-field-full,
+.registration-terms,
+.registration-submit,
+.registration-signin-note {
+  grid-column: 1 / -1;
+}
+
+.registration-field label {
+  color: var(--rentulo-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.registration-field input {
+  width: 100%;
+  min-width: 0;
+  height: 50px;
+  padding: 0 14px;
+  color: var(--rentulo-ink);
+  background: var(--rentulo-surface);
+  border: 1px solid #cfdad4;
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.registration-field input::placeholder {
+  color: #8a958f;
+}
+
+.registration-field input:hover {
+  border-color: #b9c9c1;
+}
+
+.registration-field input:focus-visible {
+  border-color: rgba(23, 103, 71, 0.55);
+  box-shadow: 0 0 0 3px rgba(23, 103, 71, 0.09);
+}
+
+.registration-field input.input-error,
+.registration-check input.input-error {
+  border-color: #d95c45;
+  box-shadow: 0 0 0 3px rgba(217, 92, 69, 0.1);
+}
+
+.registration-note {
+  margin: 0;
+  color: var(--rentulo-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.registration-error {
+  display: none;
+  margin-bottom: 17px;
+  padding: 12px 14px;
+  color: #884321;
+  background: #fff6ef;
+  border: 1px solid #f5c6a6;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.registration-error.active {
+  display: block;
+}
+
+.address-autocomplete {
+  z-index: 4;
+}
+
+.address-suggestions {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 6px;
+  background: var(--rentulo-surface);
+  border: 1px solid #cfdad4;
+  border-radius: 12px;
+  box-shadow: 0 14px 30px rgba(16, 32, 25, 0.12);
+}
+
+.address-suggestions[hidden] {
+  display: none;
+}
+
+.address-suggestion {
+  display: block;
+  width: 100%;
+  padding: 11px 12px;
+  color: var(--rentulo-ink);
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  text-align: left;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.address-suggestion:hover,
+.address-suggestion.is-active,
+.address-suggestion:focus-visible {
+  background: var(--rentulo-green-soft);
+  outline: none;
+}
+
+.address-suggestion-main {
+  display: block;
+  font-weight: 800;
+}
+
+.address-suggestion-meta {
+  display: block;
+  margin-top: 2px;
+  color: var(--rentulo-muted);
+  font-size: 12px;
+}
+
+.registration-terms {
+  display: grid;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.registration-check {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 11px 12px;
+  color: var(--rentulo-muted);
+  background: #fbfcfb;
+  border: 1px solid var(--rentulo-line);
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.registration-check input {
+  width: 17px;
+  height: 17px;
+  margin: 1px 0 0;
+  accent-color: var(--rentulo-green);
+}
+
+.registration-check a,
+.registration-signin-note a {
+  color: var(--rentulo-green);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.registration-check a:hover,
+.registration-signin-note a:hover {
+  text-decoration: underline;
+}
+
+.registration-submit {
+  min-height: 50px;
+  padding: 0 20px;
+  color: #102019;
+  background: #70d84b;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.registration-submit:hover:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+.registration-submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.registration-submit:focus-visible {
+  outline: 2px solid rgba(23, 103, 71, 0.38);
+  outline-offset: 2px;
+}
+
+.registration-submit:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+
+.registration-signin-note {
+  margin: -2px 0 0;
+  color: var(--rentulo-muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .registration-page {
+    width: min(760px, calc(100% - 28px));
+    padding-top: 18px;
+  }
+
+  .registration-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .registration-intro {
+    padding: 26px;
+    border-right: 0;
+    border-bottom: 1px solid var(--rentulo-line);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .registration-intro h1 {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 620px) {
+  .registration-page {
+    width: calc(100% - 28px);
+    padding: 14px 0 36px;
+  }
+
+  .registration-intro,
+  .registration-form {
+    padding: 20px 18px;
+  }
+
+  .registration-intro h1 {
+    font-size: 36px;
+  }
+
+  .registration-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .registration-field-full,
+  .registration-terms,
+  .registration-submit,
+  .registration-signin-note {
+    grid-column: auto;
+  }
+
+  .registration-field input,
+  .registration-submit {
+    min-height: 48px;
+  }
+
+  .address-suggestions {
+    max-height: 220px;
+  }
+}
+
+.address-attribution {
+  padding: 6px 12px 5px;
+  color: var(--rentulo-muted);
+  font-size: 10px;
+  text-align: right;
+}

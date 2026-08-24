@@ -6,347 +6,16 @@
 
   <title data-i18n="registration.documentTitle">Registrace - Rentulo</title>
   <link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #dff7ee;
-      color: #173f35;
-    }
-
-    a { color: inherit; text-decoration: none; }
-    button, input { font-family: inherit; }
-
-    .header {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo-icon {
-      width: 48px;
-      height: 48px;
-      flex: 0 0 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .logo-icon img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .logo-dot { display: none; }
-
-    .logo-text strong {
-      display: block;
-      font-size: 25px;
-      line-height: 1;
-      color: #173f35;
-    }
-
-    .logo-text small { display: none; }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      font-size: 15px;
-    }
-
-    .nav a { font-weight: 500; }
-    .nav .active-link { font-weight: 900; }
-
-    .btn-register,
-    .logout-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: #7ed957;
-      color: #173a22 !important;
-      padding: 10px 20px;
-      border-radius: 999px;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .auth-page {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 26px 20px 40px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .auth-card {
-      width: 100%;
-      max-width: 940px;
-      display: grid;
-      grid-template-columns: 0.86fr 1.14fr;
-      background: #ffffff;
-      border: 1px solid #d6e9df;
-      border-radius: 18px;
-      box-shadow: 0 12px 30px rgba(23, 63, 53, 0.07);
-      overflow: hidden;
-    }
-
-    .auth-intro {
-      padding: 28px;
-      background: #f0faea;
-      border-right: 1px solid #d6e9df;
-    }
-
-    .eyebrow {
-      margin: 0 0 6px;
-      color: #5f7d71;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .auth-intro h1 {
-      margin: 0 0 12px;
-      color: #173f35;
-      font-size: 36px;
-      line-height: 1.05;
-      letter-spacing: -0.035em;
-    }
-
-    .auth-intro p {
-      margin: 0;
-      color: #4d5b55;
-      font-size: 15px;
-      line-height: 1.45;
-      font-weight: 700;
-    }
-
-    .auth-helper-box {
-      margin-top: 16px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: #f4fbef;
-      border: 1px solid #cbeab8;
-      color: #173f35;
-      font-size: 13px;
-      line-height: 1.4;
-      font-weight: 800;
-    }
-
-    .auth-helper-box strong {
-      display: block;
-      margin-bottom: 3px;
-      color: #4f972d;
-    }
-
-    #registrationForm {
-      padding: 24px 26px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .auth-error-message {
-      display: none;
-      grid-column: 1 / -1;
-      padding: 11px 12px;
-      border-radius: 12px;
-      background: #fff5ef;
-      border: 1px solid #ffd7bf;
-      color: #7a4321;
-      font-size: 13px;
-      font-weight: 800;
-      line-height: 1.35;
-    }
-
-    .auth-error-message.active { display: block; }
-
-    .form-group {
-      display: grid;
-      gap: 7px;
-      min-width: 0;
-    }
-
-    .form-group.full { grid-column: 1 / -1; }
-
-    .form-group label {
-      color: #173f35;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .form-group input {
-      display: block;
-      width: 100%;
-      height: 44px;
-      border: 1px solid #d6e2dd;
-      border-radius: 12px;
-      background: #ffffff;
-      padding: 0 12px;
-      font-size: 14px;
-      color: #173f35;
-      font-weight: 700;
-      outline: none;
-    }
-
-    .form-group input:focus {
-      border-color: #d6e2dd;
-      box-shadow: none;
-    }
-
-    .form-group input:focus-visible {
-      outline: 1px solid rgba(64, 127, 101, 0.52);
-      outline-offset: 1px;
-    }
-
-    .form-group input.input-error,
-    .terms-check input.input-error {
-      border-color: #c2410c;
-      box-shadow: 0 0 0 3px rgba(194,65,12,.12);
-    }
-
-    .registration-note {
-      margin: 0;
-      font-size: 12px;
-      color: #4d5b55;
-      line-height: 1.35;
-      font-weight: 700;
-    }
-
-    .terms-list {
-      grid-column: 1 / -1;
-      display: grid;
-      gap: 8px;
-      margin: 2px 0;
-    }
-
-    .terms-check {
-      display: grid;
-      grid-template-columns: 18px 1fr;
-      gap: 9px;
-      align-items: start;
-      padding: 9px 10px;
-      border-radius: 12px;
-      background: #f7fbf8;
-      border: 1px solid #dce9e2;
-      color: #4d5f58;
-      font-size: 12px;
-      line-height: 1.4;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .terms-check input {
-      width: 16px;
-      height: 16px;
-      margin: 1px 0 0;
-      accent-color: #7ed957;
-    }
-
-    .terms-check a {
-      color: #4f972d;
-      font-weight: 900;
-      text-decoration: none;
-    }
-
-    .terms-check a:hover,
-    .auth-note a:hover { text-decoration: underline; }
-
-    .auth-button {
-      grid-column: 1 / -1;
-      min-height: 44px;
-      border: none;
-      border-radius: 12px;
-      background: #7ed957;
-      color: #173a22;
-      padding: 0 18px;
-      font-size: 15px;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .auth-button:disabled {
-      opacity: .65;
-      cursor: not-allowed;
-    }
-
-    .auth-note {
-      grid-column: 1 / -1;
-      margin: 0;
-      color: #4d5b55;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.35;
-    }
-
-    .auth-note a {
-      color: #4f972d;
-      font-weight: 900;
-      text-decoration: none;
-    }
-
-    @media (max-width: 900px) {
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .nav { flex-wrap: wrap; gap: 12px; }
-      .auth-card {
-        grid-template-columns: 1fr;
-        max-width: 760px;
-      }
-      .auth-intro {
-        border-right: none;
-        border-bottom: 1px solid #d6e9df;
-      }
-    }
-
-    @media (max-width: 700px) {
-      .header,
-      .auth-page {
-        padding-left: 14px;
-        padding-right: 14px;
-      }
-      .auth-page { padding-top: 14px; }
-      .auth-intro,
-      #registrationForm { padding: 18px; }
-      .auth-intro h1 { font-size: 30px; }
-      .form-grid { grid-template-columns: 1fr; }
-      .form-group.full,
-      .auth-error-message,
-      .terms-list,
-      .auth-button,
-      .auth-note { grid-column: auto; }
-      .auth-button { width: 100%; }
-    }
-  </style>
+  <link id="rentuloSharedTheme" rel="stylesheet" href="css/rentulo-theme.css" />
+  <link rel="stylesheet" href="css/registration.css" />
 </head>
 
 <body data-navigation-page="registrace">
-
   <header class="header">
     <a href="index.html" class="logo">
       <div class="logo-icon">
-        <img src="assets/rentulo-logo-mark.png" alt="" aria-hidden="true" />
+        <img src="assets/rentulo-logo-mark.png" alt="" width="40" height="40" aria-hidden="true" />
       </div>
-
       <div class="logo-text">
         <strong>Rentulo</strong>
       </div>
@@ -355,37 +24,33 @@
     <nav class="nav" id="mainNav"></nav>
   </header>
 
-  <main class="auth-page">
-
-    <section class="auth-card">
-
-      <div class="auth-intro">
-        <p class="eyebrow" data-i18n="registration.eyebrow">Nový účet</p>
-
+  <main class="registration-page">
+    <section class="registration-shell">
+      <div class="registration-intro">
+        <p class="registration-eyebrow" data-i18n="registration.eyebrow">Nový účet</p>
         <h1 data-i18n="registration.title">Registrace</h1>
+        <p class="registration-description" data-i18n="registration.description">
+          Vytvořte si jeden účet. Se stejným účtem si můžete věci půjčovat i nabízet vlastní věci ostatním.
+        </p>
 
-        <p data-i18n="registration.description">
-  Vytvořte si jeden účet. Se stejným účtem si můžete věci půjčovat
-  i nabízet vlastní věci ostatním.
-</p>
-
-        <div class="auth-helper-box">
+        <div class="registration-helper">
           <strong data-i18n="registration.helperTitle">Účet Rentulo</strong>
-          <span data-i18n="registration.helperText">Telefon a přesná adresa se druhé straně zobrazí až po zaplacení rezervace.</span>
+          <span data-i18n="registration.helperText">
+            Telefon a přesná adresa se druhé straně zobrazí až po zaplacení rezervace.
+          </span>
         </div>
       </div>
 
-      <form id="registrationForm" autocomplete="on" novalidate>
-        <div class="form-grid">
+      <form id="registrationForm" class="registration-form" autocomplete="on" novalidate>
+        <div
+          class="registration-error"
+          id="registrationError"
+          role="alert"
+          aria-live="assertive"
+        ></div>
 
-          <div
-            class="auth-error-message"
-            id="registrationError"
-            role="alert"
-            aria-live="assertive"
-          ></div>
-
-          <div class="form-group">
+        <div class="registration-grid">
+          <div class="registration-field">
             <label for="fullName" data-i18n="registration.fullNameLabel">Jméno a příjmení</label>
             <input
               type="text"
@@ -400,7 +65,7 @@
             />
           </div>
 
-          <div class="form-group">
+          <div class="registration-field">
             <label for="email" data-i18n="registration.emailLabel">E-mail</label>
             <input
               type="email"
@@ -418,7 +83,7 @@
             />
           </div>
 
-          <div class="form-group">
+          <div class="registration-field">
             <label for="phone" data-i18n="registration.phoneLabel">Telefon</label>
             <input
               type="tel"
@@ -436,7 +101,7 @@
             </p>
           </div>
 
-          <div class="form-group">
+          <div class="registration-field">
             <label for="password" data-i18n="registration.passwordLabel">Heslo</label>
             <input
               type="password"
@@ -455,7 +120,7 @@
             </p>
           </div>
 
-          <div class="form-group full">
+          <div class="registration-field registration-field-full address-autocomplete">
             <label for="street" data-i18n="registration.streetLabel">Ulice a číslo</label>
             <input
               type="text"
@@ -464,13 +129,23 @@
               autocomplete="street-address"
               maxlength="160"
               aria-describedby="registrationError"
+              aria-autocomplete="list"
+              aria-controls="addressSuggestions"
+              aria-expanded="false"
+              role="combobox"
               data-i18n-placeholder="registration.streetPlaceholder"
               placeholder="např. Dlouhá 12"
               required
             />
+            <div
+              class="address-suggestions"
+              id="addressSuggestions"
+              role="listbox"
+              hidden
+            ></div>
           </div>
 
-          <div class="form-group">
+          <div class="registration-field">
             <label for="city" data-i18n="registration.cityLabel">Město</label>
             <input
               type="text"
@@ -486,7 +161,7 @@
             />
           </div>
 
-          <div class="form-group">
+          <div class="registration-field">
             <label for="postalCode" data-i18n="registration.postalCodeLabel">PSČ</label>
             <input
               type="text"
@@ -503,12 +178,13 @@
 
           <datalist id="citySuggestions"></datalist>
 
-          <div class="terms-list">
-            <label class="terms-check">
+          <div class="registration-terms">
+            <label class="registration-check">
               <input
                 type="checkbox"
                 id="termsBusiness"
                 name="termsBusiness"
+                autocomplete="off"
                 aria-describedby="registrationError"
               />
               <span>
@@ -517,11 +193,12 @@
               </span>
             </label>
 
-            <label class="terms-check">
+            <label class="registration-check">
               <input
                 type="checkbox"
                 id="termsPrivacy"
                 name="termsPrivacy"
+                autocomplete="off"
                 aria-describedby="registrationError"
               />
               <span>
@@ -531,20 +208,17 @@
             </label>
           </div>
 
-          <button type="submit" class="auth-button" id="registrationSubmitButton" data-i18n="registration.submit">
+          <button type="submit" class="registration-submit" id="registrationSubmitButton" data-i18n="registration.submit">
             Vytvořit účet
           </button>
 
-          <p class="auth-note">
+          <p class="registration-signin-note">
             <span data-i18n="registration.haveAccount">Už máte účet?</span>
             <a href="prihlaseni.html" data-i18n="registration.signIn">Přihlaste se</a>
           </p>
-
         </div>
       </form>
-
     </section>
-
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
