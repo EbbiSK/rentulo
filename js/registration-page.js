@@ -1,74 +1,3 @@
-const cityPostalCodes = {
-  "praha": "110 00",
-  "brno": "602 00",
-  "ostrava": "702 00",
-  "plzeň": "301 00",
-  "plzen": "301 00",
-  "liberec": "460 01",
-  "olomouc": "779 00",
-  "české budějovice": "370 01",
-  "ceske budejovice": "370 01",
-  "hradec králové": "500 03",
-  "hradec kralove": "500 03",
-  "pardubice": "530 02",
-  "zlín": "760 01",
-  "zlin": "760 01",
-  "havířov": "736 01",
-  "havirov": "736 01",
-  "kladno": "272 01",
-  "most": "434 01",
-  "opava": "746 01",
-  "frýdek-místek": "738 01",
-  "frydek-mistek": "738 01",
-  "karviná": "733 01",
-  "karvina": "733 01",
-  "jihlava": "586 01",
-  "teplice": "415 01",
-  "děčín": "405 02",
-  "decin": "405 02",
-  "chomutov": "430 01",
-  "karlovy vary": "360 01",
-  "jablonec nad nisou": "466 01",
-  "mladá boleslav": "293 01",
-  "mlada boleslav": "293 01",
-  "prostějov": "796 01",
-  "prostejov": "796 01",
-  "přerov": "750 02",
-  "prerov": "750 02",
-  "třinec": "739 61",
-  "trinec": "739 61",
-  "tábor": "390 01",
-  "tabor": "390 01",
-  "znojmo": "669 02",
-  "kolín": "280 02",
-  "kolin": "280 02",
-  "písek": "397 01",
-  "pisek": "397 01",
-  "cheb": "350 02",
-  "příbram": "261 01",
-  "pribram": "261 01",
-  "orlová": "735 14",
-  "orlova": "735 14",
-  "kroměříž": "767 01",
-  "kromeriz": "767 01",
-  "vsetín": "755 01",
-  "vsetin": "755 01",
-  "šumperk": "787 01",
-  "sumperk": "787 01",
-  "uherské hradiště": "686 01",
-  "uherske hradiste": "686 01",
-  "břeclav": "690 02",
-  "breclav": "690 02",
-  "hodonín": "695 01",
-  "hodonin": "695 01",
-  "česká lípa": "470 01",
-  "ceska lipa": "470 01",
-  "litoměřice": "412 01",
-  "litomerice": "412 01",
-  "krnov": "794 01",
-  "sokolov": "356 01"
-};
-
 const ADDRESS_SUGGESTION_MIN_LENGTH = 3;
 const ADDRESS_SUGGESTION_DELAY_MS = 450;
 
@@ -103,14 +32,6 @@ function registrationNormalizeEmail(email) {
 
 function registrationIsValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function normalizeCityName(value) {
-  return String(value || "")
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
 }
 
 function registrationRenderError() {
@@ -204,74 +125,6 @@ function registrationGetSupabaseClient() {
   }
 
   return null;
-}
-
-function setupCitySuggestions() {
-  const datalist = document.getElementById("citySuggestions");
-
-  if (!datalist) {
-    return;
-  }
-
-  const uniqueCities = [];
-  const seen = {};
-
-  Object.keys(cityPostalCodes).forEach(function (city) {
-    const displayCity = city
-      .split(" ")
-      .map(function (part) {
-        return part.charAt(0).toUpperCase() + part.slice(1);
-      })
-      .join(" ");
-
-    const normalized = normalizeCityName(displayCity);
-
-    if (!seen[normalized]) {
-      seen[normalized] = true;
-      uniqueCities.push(displayCity);
-    }
-  });
-
-  datalist.innerHTML = uniqueCities
-    .sort()
-    .map(function (city) {
-      return `<option value="${city}"></option>`;
-    })
-    .join("");
-}
-
-function setupPostalCodeAutocomplete() {
-  const cityInput = document.getElementById("city");
-  const postalCodeInput = document.getElementById("postalCode");
-
-  if (!cityInput || !postalCodeInput) {
-    return;
-  }
-
-  function updatePostalCode() {
-    const city = normalizeCityName(cityInput.value);
-    const postalCode = cityPostalCodes[city];
-
-    if (!postalCode) {
-      if (postalCodeInput.dataset.autoFilled === "true") {
-        postalCodeInput.value = "";
-      }
-
-      return;
-    }
-
-    if (!postalCodeInput.value.trim() || postalCodeInput.dataset.autoFilled === "true") {
-      postalCodeInput.value = postalCode;
-      postalCodeInput.dataset.autoFilled = "true";
-    }
-  }
-
-  cityInput.addEventListener("input", updatePostalCode);
-  cityInput.addEventListener("change", updatePostalCode);
-
-  postalCodeInput.addEventListener("input", function () {
-    postalCodeInput.dataset.autoFilled = "false";
-  });
 }
 
 function registrationCloseAddressSuggestions() {
@@ -386,15 +239,12 @@ function registrationSelectAddress(index) {
   streetInput.value = String(item.street || "").trim();
   cityInput.value = String(item.city || "").trim();
   postalCodeInput.value = String(item.postalCode || "").trim();
-  postalCodeInput.dataset.autoFilled = "true";
-
   [streetInput, cityInput, postalCodeInput].forEach(function (field) {
     field.classList.remove("input-error");
     field.removeAttribute("aria-invalid");
   });
 
   registrationCloseAddressSuggestions();
-  cityInput.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 async function registrationLoadAddressSuggestions(query, requestId) {
@@ -795,8 +645,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   renderSharedNavigation("registrace");
-  setupCitySuggestions();
-  setupPostalCodeAutocomplete();
   setupAddressAutocomplete();
   resetRegistrationConsentCheckboxes();
 
