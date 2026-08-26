@@ -433,18 +433,13 @@ function renderDetailImage(offer) {
       `;
     }
 
-    function renderUnavailableSidebar(price, ownerPublicCity, messageTitle, messageText) {
+    function renderUnavailableSidebar(price, messageTitle, messageText) {
       return `
         <aside class="sidebar">
           <div class="price">${escapeHtml(formatDetailNumber(price))}</div>
           <div class="price-small">${detailTranslate("detail.currencyPerDay")}</div>
 
           <div class="info-list">
-            <div class="info-row">
-              <span>${detailTranslate("detail.location")}</span>
-              <span>${escapeHtml(ownerPublicCity || "-")}</span>
-            </div>
-
             <div class="info-row">
               <span>${detailTranslate("detail.availability")}</span>
               <span>${detailTranslate("detail.unavailable")}</span>
@@ -467,18 +462,12 @@ function renderDetailImage(offer) {
       `;
     }
 
-    function renderBookingSidebar(offer, price, ownerPublicCity, ownerGetsPerDay, platformFeePerDay) {
+    function renderBookingSidebar(price) {
       return `
         <aside class="sidebar">
           <div class="price">${escapeHtml(formatDetailNumber(price))}</div>
           <div class="price-small">${detailTranslate("detail.currencyPerDay")}</div>
 
-          <div class="info-list">
-            <div class="info-row">
-              <span>${detailTranslate("detail.location")}</span>
-              <span>${escapeHtml(ownerPublicCity || getOfferCity(offer) || "-")}</span>
-            </div>
-          </div>
 
           <div class="booking-box">
             <h2>${detailTranslate("detail.chooseDates")}</h2>
@@ -584,8 +573,6 @@ const data = Array.isArray(blockingReservations)
       const offerStatus = detailStatusLabel(getOfferStatus(offer));
 
       const price = getOfferPrice(offer);
-      const platformFeePerDay = Math.round(price * PLATFORM_FEE_PERCENT / 100);
-      const ownerGetsPerDay = price - platformFeePerDay;
 
       const currentUserId = currentUser ? String(currentUser.id || "") : "";
 const ownerId = String(offer.ownerId || offer.owner_id || "");
@@ -631,18 +618,11 @@ const hasGps = offerHasGpsLocation(offer);
 } else if (!isActive) {
         sidebarContent = renderUnavailableSidebar(
           price,
-          ownerPublicCity,
           detailTranslate("detail.inactiveTitle"),
           detailTranslate("detail.inactiveText")
         );
       } else {
-        sidebarContent = renderBookingSidebar(
-          offer,
-          price,
-          ownerPublicCity,
-          ownerGetsPerDay,
-          platformFeePerDay
-        );
+        sidebarContent = renderBookingSidebar(price);
       }
 
       document.getElementById("detailContent").innerHTML = `
