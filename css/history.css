@@ -27,12 +27,12 @@ textarea {
 }
 
 .account-page-header {
-  margin-bottom: 14px;
-  padding: 22px 24px;
-  border: 1px solid #cfe4da;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: 0 12px 32px rgba(23, 63, 53, 0.055);
+  margin-bottom: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .account-page-header h1 {
@@ -51,17 +51,19 @@ textarea {
 }
 
 .history-switch {
-  display: inline-flex;
-  gap: 4px;
-  margin: 0 0 14px;
-  padding: 4px;
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  margin: 0 0 16px;
+  padding: 3px;
   border: 1px solid var(--rentulo-line, #e5e9e5);
-  border-radius: 13px;
+  border-radius: 12px;
   background: var(--rentulo-surface, #fff);
-  box-shadow: 0 8px 24px rgba(23, 63, 53, 0.045);
+  box-shadow: none;
 }
 
 .history-switch-button {
+  min-width: 150px;
   min-height: 38px;
   border: 0;
   border-radius: 9px;
@@ -203,7 +205,7 @@ textarea {
 
 .history-detail-button {
   justify-self: end;
-  min-width: 100px;
+  min-width: 108px;
   border: 1px solid #d4e3dc;
   background: #edf5f1;
   color: var(--rentulo-green-dark, #0e5037);
@@ -266,7 +268,7 @@ html[data-focus-input="pointer"] .history-star-button:focus {
 
 .history-detail {
   display: none;
-  padding: 12px;
+  padding: 0 12px 12px;
   border-top: 1px solid #dbece4;
   background: #f5fbf8;
 }
@@ -276,12 +278,22 @@ html[data-focus-input="pointer"] .history-star-button:focus {
 }
 
 .history-detail-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  display: block;
 }
 
-.history-detail-grid > div,
+.history-detail-grid > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 44px;
+  padding: 9px 2px;
+  border: 0;
+  border-bottom: 1px solid #dbece4;
+  border-radius: 0;
+  background: transparent;
+}
+
 .history-review-box {
   padding: 12px;
   border: 1px solid #d5e8df;
@@ -298,8 +310,9 @@ html[data-focus-input="pointer"] .history-star-button:focus {
 
 .history-detail-grid strong {
   display: block;
-  margin-top: 4px;
+  margin: 0;
   color: var(--rentulo-ink, #102019);
+  text-align: right;
 }
 
 .history-review-grid {
@@ -436,7 +449,6 @@ html[data-focus-input="pointer"] .history-review-box textarea:focus {
     grid-column: 1 / -1 !important;
   }
 
-  .history-detail-grid,
   .history-review-grid {
     grid-template-columns: 1fr;
   }
@@ -453,7 +465,7 @@ html[data-focus-input="pointer"] .history-review-box textarea:focus {
   }
 
   .account-page-header {
-    padding: 18px;
+    padding: 0;
   }
 
   .account-page-header h1 {
@@ -465,13 +477,12 @@ html[data-focus-input="pointer"] .history-review-box textarea:focus {
   }
 
   .history-switch {
-    display: grid;
-    grid-template-columns: 1fr;
     width: 100%;
   }
 
   .history-switch-button {
     width: 100%;
+    min-width: 0;
   }
 }
 
@@ -487,6 +498,16 @@ html[data-focus-input="pointer"] .history-review-box textarea:focus {
     flex-basis: 42px;
   }
 
+  .history-detail-grid > div {
+    gap: 14px;
+    padding: 9px 0;
+  }
+
+  .history-detail-grid strong {
+    max-width: 62%;
+    overflow-wrap: anywhere;
+  }
+
   .history-star-picker {
     width: auto;
     justify-content: flex-start;
@@ -499,5 +520,12 @@ html[data-focus-input="pointer"] .history-review-box textarea:focus {
 
   .history-primary-button {
     width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .history-switch-button {
+    padding-inline: 8px;
+    font-size: 12px;
   }
 }
