@@ -285,3 +285,21 @@ textarea {
   color: #173f35 !important;
   border-color: #e2f0e9 !important;
 }
+
+/* Homepage mobile readability: strengthen search labels and category names. */
+@media (max-width: 640px) {
+  body[data-navigation-page="uvod"] .search-field label {
+    font-size: 14px !important;
+    letter-spacing: 0.045em;
+  }
+
+  body[data-navigation-page="uvod"] .search-field input {
+    font-size: 15px !important;
+  }
+
+  body[data-navigation-page="uvod"] .home-point-button span {
+    font-size: 14px !important;
+    line-height: 1.2;
+    font-weight: 800 !important;
+  }
+}
