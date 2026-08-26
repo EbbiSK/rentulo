@@ -324,6 +324,7 @@ body {
 
 .edit-basics-grid {
   grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(170px, 0.65fr);
+  align-items: start;
 }
 
 .form-group {
