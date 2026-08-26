@@ -488,26 +488,6 @@ function renderDetailImage(offer) {
               <span>${detailTranslate("detail.location")}</span>
               <span>${escapeHtml(ownerPublicCity || getOfferCity(offer) || "-")}</span>
             </div>
-
-            <div class="info-row">
-              <span>${detailTranslate("detail.ownerReceives")}</span>
-              <span>${escapeHtml(formatDetailMoneyPerDay(ownerGetsPerDay))}</span>
-            </div>
-
-            <div class="info-row">
-              <span>${detailTranslate("detail.platformFee")}</span>
-              <span>${escapeHtml(formatDetailMoneyPerDay(platformFeePerDay))}</span>
-            </div>
-          </div>
-
-          <div class="availability-box available" id="bookingAvailabilityBox">
-            <strong>${detailTranslate("detail.availableTitle")}</strong>
-            ${detailTranslate("detail.availableText")}
-          </div>
-
-          <div class="privacy-box">
-            <strong>${detailTranslate("detail.contactsHiddenTitle")}</strong>
-            ${detailTranslate("detail.contactsHiddenText")}
           </div>
 
           <div class="booking-box">
@@ -538,15 +518,14 @@ function renderDetailImage(offer) {
                 <strong>${escapeHtml(formatDetailMoney(price))}</strong>
               </div>
 
-              <div class="calc-row">
-                <span>${detailTranslate("detail.platformFee")}</span>
-                <strong>${PLATFORM_FEE_PERCENT} %</strong>
-              </div>
-
               <div class="calc-row calc-total">
                 <span>${detailTranslate("detail.total")}</span>
                 <strong id="calcTotal">-</strong>
               </div>
+            </div>
+
+            <div class="platform-fee-note">
+              ${detailTranslate("detail.platformFee")}: ${PLATFORM_FEE_PERCENT} %
             </div>
 
             <button class="primary-button disabled" id="rentButton" type="button" disabled>
