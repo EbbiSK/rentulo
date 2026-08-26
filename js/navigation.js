@@ -1453,7 +1453,7 @@ function navProfileControl(notificationCount) {
           </div>
         </div>
         <a href="moje-rezervace.html" role="menuitem">${navProfileText("reservations")}</a>
-        <a href="moje-nabidky.html?open=actions" role="menuitem">${navProfileText("offers")}</a>
+        <a href="moje-nabidky.html" role="menuitem">${navProfileText("offers")}</a>
         <a href="historie.html" role="menuitem">${navProfileText("history")}</a>
         <a href="nastaveni.html" role="menuitem">${navProfileText("settings")}</a>
         <div class="nav-profile-menu-divider" aria-hidden="true"></div>
@@ -1485,7 +1485,7 @@ function navMobileAccountMenu() {
   return `
     <div class="nav-profile-menu nav-mobile-account-menu">
       <a href="moje-rezervace.html">${navProfileText("reservations")}</a>
-      <a href="moje-nabidky.html?open=actions">${navProfileText("offers")}</a>
+      <a href="moje-nabidky.html">${navProfileText("offers")}</a>
       <a href="historie.html">${navProfileText("history")}</a>
       <a href="nastaveni.html">${navProfileText("settings")}</a>
       <div class="nav-profile-menu-divider" aria-hidden="true"></div>
