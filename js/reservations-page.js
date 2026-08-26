@@ -1297,7 +1297,7 @@ const data = Array.isArray(paidReservations)
         return `
           <div class="reservation-state-box active">
             <strong>${escapeHtml(reservationsTranslate("reservations.state.approvedTitle", "Žádost je potvrzená"))}</strong>
-            ${escapeHtml(reservationsTranslate("reservations.state.approvedText", "Teď můžete dokončit platbu. Po zaplacení se zobrazí telefon a přesná adresa."))}
+            ${escapeHtml(reservationsTranslate("reservations.state.approvedText", "Teď můžete dokončit platbu. Po zaplacení se zobrazí jméno majitele, telefon a přesná adresa."))}
           </div>
         `;
       }
@@ -1371,7 +1371,7 @@ const data = Array.isArray(paidReservations)
         return `
           <div class="contact-box hidden">
             <strong>${escapeHtml(reservationsTranslate("reservations.contact.hiddenTitle", "Kontaktní údaje budou dostupné po zaplacení"))}</strong>
-            ${escapeHtml(reservationsTranslate("reservations.contact.hiddenText", "Telefon a přesná adresa se zobrazí po zaplacení rezervace."))}
+            ${escapeHtml(reservationsTranslate("reservations.contact.hiddenText", "Jméno majitele, telefon a přesná adresa se zobrazí po zaplacení rezervace."))}
           </div>
         `;
       }
