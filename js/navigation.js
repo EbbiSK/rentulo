@@ -23,6 +23,7 @@ let navAuthListenerRegistered = false;
 let navPreferredLanguageSaveRunning = false;
 let navPendingPreferredLanguage = null;
 let navGlobalDropdownDismissalBound = false;
+let navProfileSummary = null;
 
 function navIsLoggedIn() {
   return Boolean(navVerifiedUser);
@@ -94,49 +95,177 @@ function navProfileText(key) {
   const translations = {
     cs: {
       open: "Otevřít uživatelské menu",
-      myAccount: "Můj účet",
+      user: "Uživatel",
       reservations: "Moje rezervace",
       offers: "Moje nabídky",
       history: "Historie",
       settings: "Nastavení",
       logout: "Odhlásit se",
-      notifications: "upozornění"
+      notifications: "upozornění",
+      ratingNone: "Hodnocení: zatím bez hodnocení",
+      rating: "Hodnocení: {average} / 5 ({count})"
     },
     en: {
       open: "Open user menu",
-      myAccount: "My account",
+      user: "User",
       reservations: "My reservations",
       offers: "My listings",
       history: "History",
       settings: "Settings",
       logout: "Log out",
-      notifications: "notifications"
+      notifications: "notifications",
+      ratingNone: "Rating: no ratings yet",
+      rating: "Rating: {average} / 5 ({count})"
     },
     de: {
       open: "Benutzermenü öffnen",
-      myAccount: "Mein Konto",
+      user: "Benutzer",
       reservations: "Meine Reservierungen",
       offers: "Meine Angebote",
       history: "Verlauf",
       settings: "Einstellungen",
       logout: "Abmelden",
-      notifications: "Benachrichtigungen"
+      notifications: "Benachrichtigungen",
+      ratingNone: "Bewertung: noch keine Bewertungen",
+      rating: "Bewertung: {average} / 5 ({count})"
     },
     pl: {
       open: "Otwórz menu użytkownika",
-      myAccount: "Moje konto",
+      user: "Użytkownik",
       reservations: "Moje rezerwacje",
       offers: "Moje oferty",
       history: "Historia",
       settings: "Ustawienia",
       logout: "Wyloguj się",
-      notifications: "powiadomienia"
+      notifications: "powiadomienia",
+      ratingNone: "Ocena: jeszcze bez ocen",
+      rating: "Ocena: {average} / 5 ({count})"
     }
   };
 
   const language = navGetLanguage();
   const map = translations[language] || translations.cs;
   return map[key] || translations.cs[key] || key;
+}
+
+function navEscapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function navGetProfileFallbackName(user) {
+  const metadata = user && user.user_metadata ? user.user_metadata : {};
+  const email = navGetUserEmail(user);
+
+  return (
+    metadata.full_name ||
+    metadata.name ||
+    (email ? email.split("@")[0] : "") ||
+    navProfileText("user")
+  );
+}
+
+function navEnsureProfileSummary(user) {
+  const userId = user && user.id ? String(user.id) : "";
+
+  if (!navProfileSummary || navProfileSummary.userId !== userId) {
+    navProfileSummary = {
+      userId: userId,
+      name: navGetProfileFallbackName(user),
+      email: navGetUserEmail(user),
+      averageRating: null,
+      ratingCount: 0
+    };
+  }
+
+  return navProfileSummary;
+}
+
+function navProfileLocale() {
+  return {
+    cs: "cs-CZ",
+    en: "en-GB",
+    de: "de-DE",
+    pl: "pl-PL"
+  }[navGetLanguage()] || "cs-CZ";
+}
+
+function navFormatProfileRating(summary) {
+  if (!summary || Number(summary.ratingCount) <= 0) {
+    return navProfileText("ratingNone");
+  }
+
+  const average = Number(summary.averageRating);
+  const averageText = Number.isFinite(average)
+    ? average.toLocaleString(navProfileLocale(), { maximumFractionDigits: 1 })
+    : "-";
+  const countText = Number(summary.ratingCount).toLocaleString(navProfileLocale());
+
+  return navProfileText("rating")
+    .replace("{average}", averageText)
+    .replace("{count}", countText);
+}
+
+function navRefreshProfileSummaryView() {
+  const summary = navEnsureProfileSummary(navGetCurrentUser());
+  const name = document.getElementById("sharedProfileName");
+  const email = document.getElementById("sharedProfileEmail");
+  const rating = document.getElementById("sharedProfileRating");
+  const avatar = document.getElementById("sharedProfileAvatar");
+  const mobileLabel = document.querySelector(".nav-profile-mobile-label");
+
+  if (name) name.textContent = summary.name;
+  if (email) email.textContent = summary.email;
+  if (rating) rating.textContent = navFormatProfileRating(summary);
+  if (avatar) avatar.textContent = String(summary.name || "U").trim().charAt(0).toUpperCase() || "U";
+  if (mobileLabel) mobileLabel.textContent = summary.name;
+}
+
+async function navLoadProfileSummary(user) {
+  const client = navGetSupabaseClient();
+  const summary = navEnsureProfileSummary(user);
+
+  if (!client || !user || !user.id) {
+    navRefreshProfileSummaryView();
+    return;
+  }
+
+  try {
+    const [profileResult, ratingResult] = await Promise.all([
+      client
+        .from("profiles")
+        .select("full_name, email")
+        .eq("id", user.id)
+        .maybeSingle(),
+      client
+        .from("user_rating_summary")
+        .select("average_rating, rating_count")
+        .eq("user_id", user.id)
+        .maybeSingle()
+    ]);
+
+    if (!navVerifiedUser || String(navVerifiedUser.id || "") !== String(user.id)) {
+      return;
+    }
+
+    if (!profileResult.error && profileResult.data) {
+      summary.name = profileResult.data.full_name || summary.name;
+      summary.email = profileResult.data.email || summary.email;
+    }
+
+    if (!ratingResult.error && ratingResult.data) {
+      summary.averageRating = ratingResult.data.average_rating;
+      summary.ratingCount = Number(ratingResult.data.rating_count) || 0;
+    }
+
+    navRefreshProfileSummaryView();
+  } catch (error) {
+    console.warn("Profil v uživatelském menu se nepodařilo načíst.", error);
+  }
 }
 
 function navFlagMarkup(language) {
@@ -518,7 +647,7 @@ function navInjectStyles() {
       top: calc(100% + 8px);
       right: 0;
       z-index: 1300;
-      width: 238px;
+      width: 280px;
       padding: 7px;
       border: 1px solid #dce5df;
       border-radius: 16px;
@@ -528,6 +657,66 @@ function navInjectStyles() {
 
     .nav-profile-menu[hidden] {
       display: none;
+    }
+
+    .nav-profile-summary {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      margin: 0 4px 6px;
+      padding: 10px 8px 12px;
+      border-bottom: 1px solid #e8ece9;
+    }
+
+    .nav-profile-summary-avatar {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border: 1px solid #c8e0d3;
+      border-radius: 12px;
+      background: #e9f4ee;
+      color: #0e5037;
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .nav-profile-summary-copy {
+      min-width: 0;
+    }
+
+    .nav-profile-summary-copy strong,
+    .nav-profile-summary-copy span,
+    .nav-profile-summary-copy small {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .nav-profile-summary-copy strong {
+      color: #102019;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .nav-profile-summary-copy span {
+      margin-top: 2px;
+      color: #64706b;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .nav-profile-summary-copy small {
+      margin-top: 4px;
+      color: #176747;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.35;
     }
 
     .nav-profile-menu a,
@@ -687,10 +876,14 @@ function navInjectStyles() {
       }
 
       #mainNav .nav-profile-mobile-label {
-        display: inline;
+        display: block;
+        min-width: 0;
         margin-left: 8px;
+        overflow: hidden;
         font-size: 14px;
         font-weight: 800;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       #mainNav .nav-profile-chevron {
@@ -1087,6 +1280,11 @@ function navProfileControl(activePage, notificationCount) {
     : "";
 
   const isAccountActive = activePage === "muj-ucet";
+  const summary = navEnsureProfileSummary(navGetCurrentUser());
+  const profileName = navEscapeHtml(summary.name);
+  const profileEmail = navEscapeHtml(summary.email);
+  const profileRating = navEscapeHtml(navFormatProfileRating(summary));
+  const profileInitial = navEscapeHtml(String(summary.name || "U").trim().charAt(0).toUpperCase() || "U");
 
   return `
     <div class="nav-profile-control">
@@ -1103,13 +1301,20 @@ function navProfileControl(activePage, notificationCount) {
           <circle cx="12" cy="8" r="3.5"></circle>
           <path d="M5.5 20c.8-4 3-6 6.5-6s5.7 2 6.5 6"></path>
         </svg>
-        <span class="nav-profile-mobile-label">${navProfileText("myAccount")}</span>
+        <span class="nav-profile-mobile-label">${profileName}</span>
         <span class="nav-profile-chevron" aria-hidden="true">⌄</span>
         ${badge}
       </button>
 
       <div id="sharedProfileMenu" class="nav-profile-menu" role="menu" hidden>
-        <a href="muj-ucet.html" role="menuitem" class="${isAccountActive ? "is-current" : ""}">${navProfileText("myAccount")}</a>
+        <div class="nav-profile-summary">
+          <div class="nav-profile-summary-avatar" id="sharedProfileAvatar" aria-hidden="true">${profileInitial}</div>
+          <div class="nav-profile-summary-copy">
+            <strong id="sharedProfileName">${profileName}</strong>
+            <span id="sharedProfileEmail">${profileEmail}</span>
+            <small id="sharedProfileRating">${profileRating}</small>
+          </div>
+        </div>
         <a href="moje-rezervace.html" role="menuitem">${navProfileText("reservations")}</a>
         <a href="moje-nabidky.html?open=actions" role="menuitem">${navProfileText("offers")}</a>
         <a href="historie.html" role="menuitem">${navProfileText("history")}</a>
@@ -1324,6 +1529,11 @@ async function initializeSharedNavigation() {
   navSetupContextBackLinks();
   await navGetVerifiedUser();
   renderSharedNavigation(page);
+
+  if (navVerifiedUser) {
+    void navLoadProfileSummary(navVerifiedUser);
+  }
+
   void navLoadNotificationCountFromSupabase(page);
 
   const supabaseClient = navGetSupabaseClient();
@@ -1339,9 +1549,11 @@ async function initializeSharedNavigation() {
       navVerifiedUser = session && session.user ? session.user : null;
       navAuthPromise = Promise.resolve(navVerifiedUser);
       window.rentuloAccountNotificationCount = 0;
+      navProfileSummary = null;
       renderSharedNavigation(page);
 
       if (navVerifiedUser) {
+        void navLoadProfileSummary(navVerifiedUser);
         void navLoadNotificationCountFromSupabase(page);
       }
     });
