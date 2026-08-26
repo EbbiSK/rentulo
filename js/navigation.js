@@ -916,8 +916,8 @@ function navInjectStyles() {
         flex-direction: column;
         align-items: stretch;
         justify-content: flex-start;
-        gap: 4px;
-        padding: 10px;
+        gap: 2px;
+        padding: 7px 8px 8px;
         border: 1px solid #dde5df;
         border-radius: 16px;
         background: #ffffff;
@@ -931,7 +931,7 @@ function navInjectStyles() {
 
       #mainNav > a {
         width: 100%;
-        padding: 11px 12px;
+        padding: 9px 10px;
         border-radius: 10px;
         color: #17251f !important;
         font-weight: 700 !important;
@@ -979,15 +979,15 @@ function navInjectStyles() {
         align-items: center;
         width: 100%;
         margin: 0;
-        padding: 8px 10px 14px;
+        padding: 4px 8px 9px;
         text-align: center;
       }
 
       #mainNav.is-user-navigation .nav-mobile-profile-summary .nav-profile-summary-avatar {
-        width: 48px;
-        height: 48px;
-        margin-bottom: 8px;
-        font-size: 15px;
+        width: 44px;
+        height: 44px;
+        margin-bottom: 6px;
+        font-size: 14px;
       }
 
       #mainNav.is-user-navigation .nav-mobile-profile-summary .nav-profile-summary-copy {
@@ -1002,8 +1002,8 @@ function navInjectStyles() {
         position: static;
         display: block;
         width: 100%;
-        margin-top: 6px;
-        padding: 6px 0 0;
+        margin-top: 4px;
+        padding: 4px 0 0;
         border: 0;
         border-top: 1px solid #e8ece9;
         border-radius: 0;
@@ -1011,9 +1011,19 @@ function navInjectStyles() {
         box-shadow: none;
       }
 
+      #mainNav.is-user-navigation .nav-mobile-account-menu a,
+      #mainNav.is-user-navigation .nav-mobile-account-menu button {
+        min-height: 40px;
+        padding: 0 10px;
+      }
+
+      #mainNav.is-user-navigation .nav-mobile-account-menu .nav-profile-menu-divider {
+        margin: 4px;
+      }
+
       #mainNav .nav-language-control {
         align-self: flex-start;
-        margin-top: 2px;
+        margin-top: 0;
       }
     }
 
