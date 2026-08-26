@@ -1177,7 +1177,7 @@ const data = Array.isArray(paidReservations)
 
       if (isOpen) {
         detail.classList.remove("open");
-        button.textContent = reservationsTranslate("reservations.detailReservation", "Detail rezervace");
+        button.textContent = reservationsTranslate("home.mapOpenDetail", "Zobrazit detail");
         return;
       }
 
@@ -1254,7 +1254,7 @@ const data = Array.isArray(paidReservations)
       `;
     }
 
-    function renderPaymentBox(reservation, status, totalPrice, platformFee, ownerPayout) {
+    function renderPaymentBox(reservation, status) {
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
         return `
           <div class="payment-box waiting">
@@ -1438,12 +1438,7 @@ const data = Array.isArray(paidReservations)
     function renderReservationDetailPanel(reservation, isHistorySection) {
       const status = getSafeReservationStatus(reservation);
 
-      const startDate = getSafeReservationDateFrom(reservation);
-      const endDate = getSafeReservationDateTo(reservation);
-
       const totalPrice = getSafeReservationTotalPrice(reservation);
-      const platformFee = getSafeReservationPlatformFee(reservation, PLATFORM_FEE_PERCENT);
-      const ownerPayout = getSafeReservationOwnerPayout(reservation, PLATFORM_FEE_PERCENT);
       const normalizedStatus = normalizeReservationStatus(status);
       const paymentStatusText = getSafeReservationContactVisible(status)
         ? reservationsTranslate("reservations.payment.paidLower", "zaplaceno")
@@ -1454,11 +1449,6 @@ const data = Array.isArray(paidReservations)
       return `
         <div class="reservation-detail-panel">
           <div class="detail-grid">
-            <div class="info-box">
-              <span>${escapeHtml(reservationsTranslate("reservations.detail.term", "Termín"))}</span>
-              <strong>${escapeHtml(formatReservationsDate(startDate))} – ${escapeHtml(formatReservationsDate(endDate))}</strong>
-            </div>
-
             <div class="info-box">
               <span>${escapeHtml(
                 getSafeReservationContactVisible(status)
@@ -1472,21 +1462,11 @@ const data = Array.isArray(paidReservations)
               <span>${escapeHtml(reservationsTranslate("reservations.detail.payment", "Platba"))}</span>
               <strong>${escapeHtml(paymentStatusText)}</strong>
             </div>
-
-            <div class="info-box">
-              <span>${escapeHtml(reservationsTranslate("reservations.detail.fee", "Provize 10 %"))}</span>
-              <strong>${escapeHtml(formatReservationsMoney(platformFee))}</strong>
-            </div>
-
-            <div class="info-box">
-              <span>${escapeHtml(reservationsTranslate("reservations.detail.ownerGets", "Majitel dostane"))}</span>
-              <strong>${escapeHtml(formatReservationsMoney(ownerPayout))}</strong>
-            </div>
           </div>
 
           ${renderReservationStateBox(reservation, status)}
 
-          ${renderPaymentBox(reservation, status, totalPrice, platformFee, ownerPayout)}
+          ${renderPaymentBox(reservation, status)}
 
           ${renderContactBox(reservation, status)}
 
@@ -1554,7 +1534,7 @@ const data = Array.isArray(paidReservations)
 
       const detailAction = `
         <button class="reservation-primary-action" id="detail-toggle-${escapeHtml(reservationId)}" type="button" data-reservations-action="toggle-detail" data-reservation-id="${escapeHtml(reservationId)}">
-          ${escapeHtml(reservationsTranslate("reservations.detailReservation", "Detail rezervace"))}
+          ${escapeHtml(reservationsTranslate("home.mapOpenDetail", "Zobrazit detail"))}
         </button>
       `;
 

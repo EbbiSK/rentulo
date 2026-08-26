@@ -45,12 +45,12 @@
     }
 
     .account-page-header {
-      margin-bottom: 16px !important;
-      padding: 20px 190px 20px 20px !important;
-      background: rgba(255, 255, 255, 0.72);
-      border: 1px solid #cde5da;
-      border-radius: 18px;
-      box-shadow: 0 12px 30px rgba(23, 63, 53, 0.05);
+      margin-bottom: 20px !important;
+      padding: 6px 190px 6px 0 !important;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
     }
 
     .account-page-header h1,
@@ -61,15 +61,15 @@
 
     .top-action-button {
       top: 50% !important;
-      right: 20px !important;
+      right: 0 !important;
       transform: translateY(-50%);
-      background: #73d64f !important;
-      color: #173a22 !important;
+      background: #ff6a00 !important;
+      color: #ffffff !important;
       box-shadow: none !important;
     }
 
     .top-action-button:hover {
-      background: #63c943 !important;
+      background: #e85f00 !important;
     }
 
     .reservation-page-notice {
@@ -285,22 +285,25 @@
     }
 
     .detail-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-      gap: 9px !important;
-    }
-
-    /* Fee and owner payout are not decision-critical for the renter here. */
-    .detail-grid .info-box:nth-child(4),
-    .detail-grid .info-box:nth-child(5) {
-      display: none !important;
+      display: block !important;
+      border-top: 1px solid #d5e7df;
     }
 
     .info-box {
-      min-height: 58px !important;
-      padding: 10px 11px !important;
-      background: rgba(255, 255, 255, 0.86) !important;
-      border-color: #d5e7df !important;
-      border-radius: 12px !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 0 !important;
+      padding: 10px 0 !important;
+      background: transparent !important;
+      border: 0 !important;
+      border-bottom: 1px solid #d5e7df !important;
+      border-radius: 0 !important;
+    }
+
+    .info-box strong {
+      text-align: right;
     }
 
     .payment-box,
@@ -327,12 +330,16 @@
     }
 
     .contact-box.hidden {
-      background: rgba(255, 255, 255, 0.86) !important;
-      border-color: #d5e7df !important;
+      padding: 10px 0 !important;
+      background: transparent !important;
+      border: 0 !important;
+      border-radius: 0 !important;
       color: #173f35 !important;
     }
 
     .contact-box.hidden strong {
+      display: block;
+      margin-bottom: 3px;
       color: #173f35 !important;
     }
 
@@ -408,7 +415,7 @@
 
     @media (max-width: 900px) {
       .account-page-header {
-        padding: 18px !important;
+        padding: 0 !important;
       }
 
       .top-action-button {
