@@ -633,16 +633,16 @@ function navInjectStyles() {
 
     .nav-profile-button-initials {
       display: inline-flex;
-      width: 38px;
-      height: 38px;
-      flex: 0 0 38px;
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
       align-items: center;
       justify-content: center;
       border: 1px solid #c8e0d3;
       border-radius: 50%;
       background: #e9f4ee;
       color: #0e5037;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 800;
       line-height: 1;
       letter-spacing: -0.04em;
@@ -650,7 +650,7 @@ function navInjectStyles() {
     }
 
     .nav-profile-button-initials.is-three-characters {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: -0.07em;
     }
 
