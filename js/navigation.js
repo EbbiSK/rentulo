@@ -621,11 +621,11 @@ function navInjectStyles() {
       position: relative;
       display: inline-flex;
       width: auto;
-      height: 42px;
+      height: 48px;
       align-items: center;
       justify-content: center;
-      gap: 5px;
-      padding: 2px 4px 2px 2px;
+      gap: 6px;
+      padding: 1px 5px 1px 1px;
       border: 0;
       border-radius: 999px;
       background: transparent;
@@ -653,25 +653,26 @@ function navInjectStyles() {
 
     .nav-profile-button-initials {
       display: inline-flex;
-      width: 40px;
-      height: 40px;
-      flex: 0 0 40px;
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
       align-items: center;
       justify-content: center;
-      border: 1px solid #c8e0d3;
+      border: 1px solid #9fcab7;
       border-radius: 50%;
-      background: #e9f4ee;
-      color: #0e5037;
-      font-size: 14px;
+      background: #deeee6;
+      color: #0b563a;
+      font-size: 15px;
       font-weight: 800;
       line-height: 1;
-      letter-spacing: -0.04em;
+      letter-spacing: -0.045em;
       white-space: nowrap;
+      box-shadow: 0 5px 14px rgba(18, 76, 57, 0.11);
     }
 
     .nav-profile-button-initials.is-three-characters {
-      font-size: 12px;
-      letter-spacing: -0.07em;
+      font-size: 13px;
+      letter-spacing: -0.065em;
     }
 
     .nav-profile-mobile-label {
@@ -684,13 +685,14 @@ function navInjectStyles() {
       font-size: 12px;
       line-height: 1;
       transform: translateY(1px);
+      opacity: 0.9;
     }
 
     .nav-notification-badge {
       position: absolute;
-      top: -5px;
+      top: -4px;
       right: auto;
-      left: 29px;
+      left: 34px;
       display: inline-flex;
       min-width: 20px;
       height: 20px;
@@ -875,7 +877,7 @@ function navInjectStyles() {
       .shared-mobile-menu-button.is-profile-trigger {
         position: relative;
         gap: 4px;
-        min-height: 44px;
+        min-height: 50px;
         padding: 1px 2px;
         border: 0;
         border-radius: 999px;
@@ -894,14 +896,14 @@ function navInjectStyles() {
       }
 
       .shared-mobile-menu-button.is-profile-trigger .nav-profile-button-initials {
-        width: 42px;
-        height: 42px;
-        flex-basis: 42px;
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
       }
 
       .shared-mobile-menu-button.is-profile-trigger .nav-notification-badge {
-        top: -4px;
-        left: 31px;
+        top: -3px;
+        left: 37px;
       }
 
       .header #mainNav,
