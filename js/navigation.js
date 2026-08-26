@@ -169,6 +169,32 @@ function navGetProfileFallbackName(user) {
   );
 }
 
+function navGetProfileInitials(name) {
+  const parts = String(name || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  function initialPart(part) {
+    const normalized = String(part || "").trim();
+    if (!normalized) return "";
+
+    if (normalized.toLocaleLowerCase("cs-CZ").startsWith("ch")) {
+      return "Ch";
+    }
+
+    return normalized.charAt(0).toLocaleUpperCase("cs-CZ");
+  }
+
+  if (!parts.length) {
+    return "U";
+  }
+
+  const first = initialPart(parts[0]);
+  const last = parts.length > 1 ? initialPart(parts[parts.length - 1]) : "";
+  return (first + last) || "U";
+}
+
 function navEnsureProfileSummary(user) {
   const userId = user && user.id ? String(user.id) : "";
 
@@ -216,12 +242,18 @@ function navRefreshProfileSummaryView() {
   const email = document.getElementById("sharedProfileEmail");
   const rating = document.getElementById("sharedProfileRating");
   const avatar = document.getElementById("sharedProfileAvatar");
+  const buttonInitials = document.getElementById("sharedProfileButtonInitials");
   const mobileLabel = document.querySelector(".nav-profile-mobile-label");
+  const initials = navGetProfileInitials(summary.name);
 
   if (name) name.textContent = summary.name;
   if (email) email.textContent = summary.email;
   if (rating) rating.textContent = navFormatProfileRating(summary);
-  if (avatar) avatar.textContent = String(summary.name || "U").trim().charAt(0).toUpperCase() || "U";
+  if (avatar) avatar.textContent = initials;
+  if (buttonInitials) {
+    buttonInitials.textContent = initials;
+    buttonInitials.classList.toggle("is-three-characters", initials.length > 2);
+  }
   if (mobileLabel) mobileLabel.textContent = summary.name;
 }
 
@@ -600,14 +632,22 @@ function navInjectStyles() {
       transform: translateY(-1px);
     }
 
-    .nav-profile-button svg {
-      width: 21px;
-      height: 21px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+    .nav-profile-button-initials {
+      display: inline-flex;
+      min-width: 23px;
+      align-items: center;
+      justify-content: center;
+      color: #0e5037;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+
+    .nav-profile-button-initials.is-three-characters {
+      font-size: 12px;
+      letter-spacing: -0.07em;
     }
 
     .nav-profile-mobile-label {
@@ -1284,7 +1324,9 @@ function navProfileControl(activePage, notificationCount) {
   const profileName = navEscapeHtml(summary.name);
   const profileEmail = navEscapeHtml(summary.email);
   const profileRating = navEscapeHtml(navFormatProfileRating(summary));
-  const profileInitial = navEscapeHtml(String(summary.name || "U").trim().charAt(0).toUpperCase() || "U");
+  const profileInitials = navGetProfileInitials(summary.name);
+  const escapedProfileInitials = navEscapeHtml(profileInitials);
+  const initialsClass = profileInitials.length > 2 ? " is-three-characters" : "";
 
   return `
     <div class="nav-profile-control">
@@ -1297,10 +1339,11 @@ function navProfileControl(activePage, notificationCount) {
         aria-expanded="false"
         aria-controls="sharedProfileMenu"
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="8" r="3.5"></circle>
-          <path d="M5.5 20c.8-4 3-6 6.5-6s5.7 2 6.5 6"></path>
-        </svg>
+        <span
+          class="nav-profile-button-initials${initialsClass}"
+          id="sharedProfileButtonInitials"
+          aria-hidden="true"
+        >${escapedProfileInitials}</span>
         <span class="nav-profile-mobile-label">${profileName}</span>
         <span class="nav-profile-chevron" aria-hidden="true">⌄</span>
         ${badge}
@@ -1308,7 +1351,7 @@ function navProfileControl(activePage, notificationCount) {
 
       <div id="sharedProfileMenu" class="nav-profile-menu" role="menu" hidden>
         <div class="nav-profile-summary">
-          <div class="nav-profile-summary-avatar" id="sharedProfileAvatar" aria-hidden="true">${profileInitial}</div>
+          <div class="nav-profile-summary-avatar" id="sharedProfileAvatar" aria-hidden="true">${escapedProfileInitials}</div>
           <div class="nav-profile-summary-copy">
             <strong id="sharedProfileName">${profileName}</strong>
             <span id="sharedProfileEmail">${profileEmail}</span>
