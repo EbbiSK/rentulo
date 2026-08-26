@@ -117,6 +117,8 @@
         </div>
 
         <form id="passwordForm" novalidate>
+          <input type="email" name="username" autocomplete="username" hidden />
+
           <div class="settings-grid">
             <div class="field field-full">
               <label for="currentPassword" data-i18n="settings.currentPassword">Současné heslo</label>
@@ -171,7 +173,9 @@
           <span class="message" id="accountCancellationMessage" role="status" aria-live="polite"></span>
         </div>
 
-        <div class="danger-confirmation" id="accountCancellationConfirmation" hidden>
+        <form class="danger-confirmation" id="accountCancellationConfirmation" hidden>
+          <input type="email" name="username" autocomplete="username" hidden />
+
           <p data-i18n="settings.cancelAccountConfirmIntro">
             Pro dokončení zrušení potvrďte, že rozumíte následkům, a zadejte své současné heslo.
           </p>
@@ -194,7 +198,7 @@
               <span class="button-label-loading" data-i18n="settings.cancelAccountCancelling">Ruším účet…</span>
             </button>
           </div>
-        </div>
+        </form>
       </section>
     </div>
   </main>
