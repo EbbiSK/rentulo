@@ -936,7 +936,10 @@ function navInjectStyles() {
         padding: 9px 10px;
         border-radius: 10px;
         color: #17251f !important;
+        font-size: 14px !important;
         font-weight: 700 !important;
+        line-height: 1.25;
+        text-decoration: none !important;
       }
 
       #mainNav > a:not(.btn-register) {
