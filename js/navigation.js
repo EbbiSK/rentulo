@@ -631,6 +631,13 @@ function navInjectStyles() {
       transform: translateY(-1px);
     }
 
+    html[data-focus-input="pointer"] .nav-profile-button:focus,
+    html[data-focus-input="pointer"] .nav-profile-button:focus-visible {
+      outline: none !important;
+      outline-offset: 0 !important;
+      box-shadow: none !important;
+    }
+
     .nav-profile-button-initials {
       display: inline-flex;
       width: 40px;
