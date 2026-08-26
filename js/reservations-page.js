@@ -1391,6 +1391,7 @@ const data = Array.isArray(paidReservations)
           <strong>${contactTitle}</strong>
           <div class="contact-lines">
             ${returnedNote}
+            <span>${escapeHtml(reservationsTranslate("reservations.ownerLabel", "Majitel"))}: ${escapeHtml(getReservationOwnerName(reservation))}</span>
             <span>${escapeHtml(reservationsTranslate("reservations.contact.phone", "Telefon"))}: ${escapeHtml(phone || reservationsTranslate("reservations.contact.phoneMissing", "Telefon není uložen"))}</span>
             <span>${escapeHtml(reservationsTranslate("reservations.contact.address", "Adresa"))}: ${escapeHtml(address || reservationsTranslate("reservations.contact.addressMissing", "Adresa není uložená"))}</span>
             ${reservation.pickupNote ? `<span>${escapeHtml(reservationsTranslate("reservations.contact.note", "Poznámka"))}: ${escapeHtml(reservation.pickupNote)}</span>` : ""}
@@ -1510,7 +1511,6 @@ const data = Array.isArray(paidReservations)
 
       const toolName = getSafeReservationToolName(reservation);
       const city = getPickupCity(reservation);
-      const ownerName = getReservationOwnerName(reservation);
 
       const startDate = getSafeReservationDateFrom(reservation);
       const endDate = getSafeReservationDateTo(reservation);
@@ -1554,7 +1554,7 @@ const data = Array.isArray(paidReservations)
 
       <div class="simple-reservation-info">
         <strong>${escapeHtml(toolName)}</strong>
-        <span>${escapeHtml(city)} · ${escapeHtml(reservationsTranslate("reservations.ownerLabel", "Majitel"))}: ${escapeHtml(ownerName)}</span>
+        <span>${escapeHtml(city)}</span>
       </div>
     </div>
 

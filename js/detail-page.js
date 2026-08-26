@@ -433,18 +433,13 @@ function renderDetailImage(offer) {
       `;
     }
 
-    function renderUnavailableSidebar(price, ownerPublicName, ownerPublicCity, messageTitle, messageText) {
+    function renderUnavailableSidebar(price, ownerPublicCity, messageTitle, messageText) {
       return `
         <aside class="sidebar">
           <div class="price">${escapeHtml(formatDetailNumber(price))}</div>
           <div class="price-small">${detailTranslate("detail.currencyPerDay")}</div>
 
           <div class="info-list">
-            <div class="info-row">
-              <span>${detailTranslate("detail.owner")}</span>
-              <span>${escapeHtml(ownerPublicName)}</span>
-            </div>
-
             <div class="info-row">
               <span>${detailTranslate("detail.location")}</span>
               <span>${escapeHtml(ownerPublicCity || "-")}</span>
@@ -472,18 +467,13 @@ function renderDetailImage(offer) {
       `;
     }
 
-    function renderBookingSidebar(offer, price, ownerPublicName, ownerPublicCity, ownerGetsPerDay, platformFeePerDay) {
+    function renderBookingSidebar(offer, price, ownerPublicCity, ownerGetsPerDay, platformFeePerDay) {
       return `
         <aside class="sidebar">
           <div class="price">${escapeHtml(formatDetailNumber(price))}</div>
           <div class="price-small">${detailTranslate("detail.currencyPerDay")}</div>
 
           <div class="info-list">
-            <div class="info-row">
-              <span>${detailTranslate("detail.owner")}</span>
-              <span>${escapeHtml(ownerPublicName)}</span>
-            </div>
-
             <div class="info-row">
               <span>${detailTranslate("detail.location")}</span>
               <span>${escapeHtml(ownerPublicCity || getOfferCity(offer) || "-")}</span>
@@ -586,7 +576,6 @@ const data = Array.isArray(blockingReservations)
 
       const currentUser = await apiGetCurrentUser();
 
-      const ownerPublicName = detailTranslate("detail.ownerDefault");
       const ownerPublicCity = getOfferCity(offer);
 
       const offerName = getOfferName(offer);
@@ -642,7 +631,6 @@ const hasGps = offerHasGpsLocation(offer);
 } else if (!isActive) {
         sidebarContent = renderUnavailableSidebar(
           price,
-          ownerPublicName,
           ownerPublicCity,
           detailTranslate("detail.inactiveTitle"),
           detailTranslate("detail.inactiveText")
@@ -651,7 +639,6 @@ const hasGps = offerHasGpsLocation(offer);
         sidebarContent = renderBookingSidebar(
           offer,
           price,
-          ownerPublicName,
           ownerPublicCity,
           ownerGetsPerDay,
           platformFeePerDay
