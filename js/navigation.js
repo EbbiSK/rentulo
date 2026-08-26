@@ -98,6 +98,7 @@ function navProfileText(key) {
       reservations: "Moje rezervace",
       offers: "Moje nabídky",
       history: "Historie",
+      settings: "Nastavení",
       logout: "Odhlásit se",
       notifications: "upozornění"
     },
@@ -107,6 +108,7 @@ function navProfileText(key) {
       reservations: "My reservations",
       offers: "My listings",
       history: "History",
+      settings: "Settings",
       logout: "Log out",
       notifications: "notifications"
     },
@@ -116,6 +118,7 @@ function navProfileText(key) {
       reservations: "Meine Reservierungen",
       offers: "Meine Angebote",
       history: "Verlauf",
+      settings: "Einstellungen",
       logout: "Abmelden",
       notifications: "Benachrichtigungen"
     },
@@ -125,6 +128,7 @@ function navProfileText(key) {
       reservations: "Moje rezerwacje",
       offers: "Moje oferty",
       history: "Historia",
+      settings: "Ustawienia",
       logout: "Wyloguj się",
       notifications: "powiadomienia"
     }
@@ -1109,6 +1113,7 @@ function navProfileControl(activePage, notificationCount) {
         <a href="moje-rezervace.html" role="menuitem">${navProfileText("reservations")}</a>
         <a href="moje-nabidky.html?open=actions" role="menuitem">${navProfileText("offers")}</a>
         <a href="historie.html" role="menuitem">${navProfileText("history")}</a>
+        <a href="nastaveni.html" role="menuitem">${navProfileText("settings")}</a>
         <div class="nav-profile-menu-divider" aria-hidden="true"></div>
         <button type="button" id="sharedLogoutBtn" class="nav-profile-menu-logout" role="menuitem">${navProfileText("logout")}</button>
       </div>
