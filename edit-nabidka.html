@@ -78,7 +78,7 @@
             </div>
           </div>
 
-          <div class="form-grid">
+          <div class="form-grid edit-basics-grid">
             <div class="form-group">
               <label for="edit-name" data-i18n="editOffer.name">Název věci</label>
               <input
@@ -92,7 +92,7 @@
             <div class="form-group">
               <label for="edit-category" data-i18n="editOffer.category">Kategorie</label>
               <select id="edit-category">
-                <option value="" data-i18n="editOffer.chooseCategory">Vyberte kategorii</option>
+                <option value="" data-i18n="offer.categoryChoose">Vyberte</option>
                 <option value="Domácnost" data-i18n="home.category.household">Domácnost</option>
                 <option value="Zahrada" data-i18n="home.category.garden">Zahrada</option>
                 <option value="Stavba" data-i18n="home.category.construction">Stavba</option>
@@ -112,8 +112,8 @@
             <label for="edit-description" data-i18n="editOffer.itemDescription">Popis věci</label>
             <textarea
               id="edit-description"
-              placeholder="Napište stav věci, co je součástí půjčení a případné podmínky."
-              data-i18n-placeholder="editOffer.descriptionPlaceholder"
+              placeholder="Popište stav věci, důležité vlastnosti a případné podmínky."
+              data-i18n-placeholder="offer.descriptionPlaceholder"
             ></textarea>
           </div>
 
@@ -133,7 +133,7 @@
 
               <label class="pickup-checkbox">
                 <input type="checkbox" id="editPickupUseCustom" />
-                <span data-i18n="offer.pickupCustomToggle">Použít jiné místo vyzvednutí než údaje z profilu</span>
+                <span data-i18n="offer.pickupCustomToggleCreate">Použít jiné místo vyzvednutí</span>
               </label>
 
               <div class="pickup-custom-fields" id="editPickupCustomFields">

@@ -68,7 +68,7 @@ body {
 }
 
 .edit-page {
-  width: min(1320px, calc(100% - 64px));
+  width: min(1080px, calc(100% - 64px));
   margin: 0 auto;
   padding: 34px 0 64px;
 }
@@ -90,6 +90,10 @@ body {
 .edit-page-header {
   margin: 0 0 28px;
   padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .edit-page-header h1 {
@@ -126,6 +130,8 @@ body {
 
 .edit-card-header {
   padding: 26px 28px 0;
+  background: transparent;
+  border: 0;
 }
 
 .edit-card-header h2 {
@@ -143,17 +149,29 @@ body {
   padding: 22px 28px 28px;
 }
 
-.photo-upload-box,
+.photo-upload-box {
+  overflow: visible;
+  padding-bottom: 22px;
+  border: 0;
+  border-bottom: 1px solid var(--rentulo-line, #e5e9e5);
+  border-radius: 0;
+  background: transparent;
+}
+
 .pickup-options {
-  overflow: hidden;
-  border: 1px solid var(--rentulo-line, #e5e9e5);
-  border-radius: 18px;
-  background: #fbfcfb;
+  overflow: visible;
+  padding-top: 22px;
+  border: 0;
+  border-top: 1px solid var(--rentulo-line, #e5e9e5);
+  border-radius: 0;
+  background: transparent;
 }
 
 .photo-upload-header,
 .pickup-options-header {
-  padding: 18px 18px 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
 }
 
 .photo-upload-header strong,
@@ -180,7 +198,7 @@ body {
   grid-template-columns: 160px minmax(0, 1fr);
   gap: 18px;
   align-items: center;
-  padding: 16px 18px 18px;
+  padding: 14px 0 0;
 }
 
 .photo-preview {
@@ -220,7 +238,7 @@ body {
   gap: 8px 10px;
 }
 
-/* When a photo exists, the UI shows only the remove action. Removing it reveals the chooser again. */
+/* When a photo exists, only the remove action is shown. */
 .photo-upload-actions:has(.photo-remove-button:not([hidden])) .photo-file-picker {
   display: none;
 }
@@ -302,6 +320,10 @@ body {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.edit-basics-grid {
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(170px, 0.65fr);
 }
 
 .form-group {
@@ -400,15 +422,16 @@ html[data-focus-input="pointer"] .edit-cancel-button:focus {
 
 .pickup-options-body {
   display: grid;
-  gap: 16px;
-  padding: 16px 18px 18px;
+  gap: 14px;
+  padding: 14px 0 0;
 }
 
 .profile-pickup-summary {
-  padding: 12px 14px;
-  border: 1px solid #d9e1dd;
-  border-radius: 13px;
-  background: #ffffff;
+  padding: 0 0 14px;
+  border: 0;
+  border-bottom: 1px solid #d6e8df;
+  border-radius: 0;
+  background: transparent;
   color: var(--rentulo-ink, #102019);
   font-size: 13px;
   line-height: 1.5;
@@ -476,17 +499,16 @@ html[data-focus-input="pointer"] .edit-cancel-button:focus {
   cursor: pointer;
 }
 
-/* Editing is a positive state change, not a transactional action. */
 .btn-primary {
-  border: 1px solid #73d64f;
-  background: #73d64f;
-  color: #173a22;
-  box-shadow: 0 10px 22px rgba(115, 214, 79, 0.14);
+  border: 1px solid var(--rentulo-orange, #ff6a00);
+  background: var(--rentulo-orange, #ff6a00);
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(255, 106, 0, 0.14);
 }
 
 .btn-primary:hover {
-  border-color: #63c943;
-  background: #63c943;
+  border-color: var(--rentulo-orange-hover, #e85f00);
+  background: var(--rentulo-orange-hover, #e85f00);
 }
 
 .btn-primary:disabled {
@@ -587,8 +609,8 @@ html[data-focus-input="pointer"] .edit-cancel-button:focus {
   min-height: 46px;
   padding: 0 18px;
   border-radius: 13px;
-  background: #73d64f;
-  color: #173a22;
+  background: var(--rentulo-orange, #ff6a00);
+  color: #ffffff;
   font-size: 14px;
   font-weight: 800;
   text-decoration: none;
@@ -653,33 +675,37 @@ html[data-focus-input="pointer"] .edit-cancel-button:focus {
     padding: 18px;
   }
 
-  .photo-upload-box,
+  .photo-upload-box {
+    padding-bottom: 18px;
+  }
+
   .pickup-options {
-    border-radius: 16px;
+    padding-top: 18px;
   }
 
   .photo-upload-header,
   .pickup-options-header {
-    padding: 16px 15px 0;
+    padding: 0;
   }
 
   .photo-upload-layout,
-  .form-grid {
+  .form-grid,
+  .edit-basics-grid {
     grid-template-columns: 1fr;
   }
 
   .photo-upload-layout {
-    gap: 14px;
-    padding: 14px 15px 16px;
+    gap: 12px;
+    padding: 12px 0 0;
   }
 
   .photo-preview {
     width: 100%;
-    height: 190px;
+    height: 150px;
   }
 
   .pickup-options-body {
-    padding: 14px 15px 16px;
+    padding: 12px 0 0;
   }
 
   .form-actions {
