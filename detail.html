@@ -307,14 +307,24 @@
     .info-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 10px;
+      gap: 0;
     }
 
     .section {
-      background: #ffffff;
-      border: 1px solid #dfe5e8;
-      border-radius: 13px;
-      padding: 10px;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid #d6e8df;
+      border-radius: 0;
+      padding: 16px 2px;
+    }
+
+    .section:first-child {
+      padding-top: 0;
+    }
+
+    .section:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
     }
 
     .section h2 {
