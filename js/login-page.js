@@ -55,7 +55,7 @@ function loginNormalizeEmail(email) {
         case "moje-rezervace.html":
           return "moje-rezervace.html";
         case "muj-ucet.html":
-          return "muj-ucet.html";
+          return "index.html";
         case "nabidnout.html":
           return "nabidnout.html";
         case "nastaveni.html":
@@ -271,7 +271,7 @@ function loginNormalizeEmail(email) {
       hideLoginError();
       clearLoginErrors();
 
-      const targetPage = loginGetSafeReturnTo() || "muj-ucet.html";
+      const targetPage = loginGetSafeReturnTo() || "index.html";
 
       const supabaseClient = getSupabaseClient();
 
