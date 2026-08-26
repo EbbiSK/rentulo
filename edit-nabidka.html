@@ -12,6 +12,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link id="rentuloSharedTheme" rel="stylesheet" href="css/rentulo-theme.css" />
   <link rel="stylesheet" href="css/edit-offer.css" />
+
+  <style>
+    .edit-photo-title [data-photo-lang] {
+      display: none;
+    }
+
+    html[lang="cs"] .edit-photo-title [data-photo-lang="cs"],
+    html[lang="en"] .edit-photo-title [data-photo-lang="en"],
+    html[lang="de"] .edit-photo-title [data-photo-lang="de"],
+    html[lang="pl"] .edit-photo-title [data-photo-lang="pl"] {
+      display: inline;
+    }
+  </style>
 </head>
 
 <body data-navigation-page="edit-nabidka">
@@ -43,18 +56,16 @@
 
     <section class="edit-layout">
       <section class="edit-card">
-        <div class="edit-card-header">
-          <h2 data-i18n="editOffer.itemInformation">Informace o věci</h2>
-        </div>
-
         <form class="edit-card-body tool-form edit-tool-form">
 
           <div class="photo-upload-box">
             <div class="photo-upload-header">
-              <strong data-i18n="editOffer.photoTitle">Fotka věci</strong>
-              <p data-i18n="editOffer.photoDescription">
-                Můžete změnit nebo odebrat fotku nabídky. Pokud fotku nezměníte, zůstane uložená původní fotka.
-              </p>
+              <strong class="edit-photo-title">
+                <span data-photo-lang="cs">Fotka</span>
+                <span data-photo-lang="en">Photo</span>
+                <span data-photo-lang="de">Foto</span>
+                <span data-photo-lang="pl">Zdjęcie</span>
+              </strong>
             </div>
 
             <div class="photo-upload-layout">
