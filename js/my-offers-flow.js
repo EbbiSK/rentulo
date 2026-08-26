@@ -5,10 +5,7 @@
       manageListing: "Spravovat nabídku",
       handleRequestOne: "Zobrazit žádost",
       handleRequestMany: "Zobrazit žádosti",
-      hideRequestOne: "Skrýt žádost",
-      hideRequestMany: "Skrýt žádosti",
-      hideReservationOne: "Skrýt rezervaci",
-      hideReservationMany: "Skrýt rezervace",
+      hideOverview: "Skrýt přehled",
       requestsAndReservations: "Žádosti a rezervace",
       renter: "Zájemce",
       term: "Termín",
@@ -16,6 +13,7 @@
       status: "Stav",
       nextStep: "Co udělat",
       requestDetail: "Detail žádosti",
+      reservationDetail: "Detail rezervace",
       hideDetail: "Skrýt detail",
       awaitingDecision: "Čeká na vaše rozhodnutí",
       waitingRequestOne: "1 žádost čeká na vyřízení",
@@ -33,10 +31,7 @@
       manageListing: "Manage listing",
       handleRequestOne: "View request",
       handleRequestMany: "View requests",
-      hideRequestOne: "Hide request",
-      hideRequestMany: "Hide requests",
-      hideReservationOne: "Hide reservation",
-      hideReservationMany: "Hide reservations",
+      hideOverview: "Hide overview",
       requestsAndReservations: "Requests and reservations",
       renter: "Renter",
       term: "Dates",
@@ -44,6 +39,7 @@
       status: "Status",
       nextStep: "Next step",
       requestDetail: "Request details",
+      reservationDetail: "Reservation details",
       hideDetail: "Hide details",
       awaitingDecision: "Waiting for your decision",
       waitingRequestOne: "1 request needs your action",
@@ -61,10 +57,7 @@
       manageListing: "Angebot verwalten",
       handleRequestOne: "Anfrage anzeigen",
       handleRequestMany: "Anfragen anzeigen",
-      hideRequestOne: "Anfrage ausblenden",
-      hideRequestMany: "Anfragen ausblenden",
-      hideReservationOne: "Reservierung ausblenden",
-      hideReservationMany: "Reservierungen ausblenden",
+      hideOverview: "Übersicht ausblenden",
       requestsAndReservations: "Anfragen und Reservierungen",
       renter: "Interessent",
       term: "Zeitraum",
@@ -72,6 +65,7 @@
       status: "Status",
       nextStep: "Nächster Schritt",
       requestDetail: "Anfragedetails",
+      reservationDetail: "Reservierungsdetails",
       hideDetail: "Details ausblenden",
       awaitingDecision: "Wartet auf Ihre Entscheidung",
       waitingRequestOne: "1 Anfrage muss bearbeitet werden",
@@ -89,10 +83,7 @@
       manageListing: "Zarządzaj ofertą",
       handleRequestOne: "Pokaż prośbę",
       handleRequestMany: "Pokaż prośby",
-      hideRequestOne: "Ukryj prośbę",
-      hideRequestMany: "Ukryj prośby",
-      hideReservationOne: "Ukryj rezerwację",
-      hideReservationMany: "Ukryj rezerwacje",
+      hideOverview: "Ukryj przegląd",
       requestsAndReservations: "Prośby i rezerwacje",
       renter: "Zainteresowany",
       term: "Termin",
@@ -100,6 +91,7 @@
       status: "Status",
       nextStep: "Co zrobić",
       requestDetail: "Szczegóły prośby",
+      reservationDetail: "Szczegóły rezerwacji",
       hideDetail: "Ukryj szczegóły",
       awaitingDecision: "Czeka na Twoją decyzję",
       waitingRequestOne: "1 prośba czeka na rozpatrzenie",
@@ -296,13 +288,7 @@
         const isPanelOpen = Boolean(panel && panel.classList.contains("open"));
 
         if (isPanelOpen) {
-          const reservationFlow = flow.kind !== "pending";
-          setText(
-            primary,
-            reservationFlow
-              ? (flow.count === 1 ? text("hideReservationOne") : text("hideReservationMany"))
-              : (flow.count === 1 ? text("hideRequestOne") : text("hideRequestMany"))
-          );
+          setText(primary, text("hideOverview"));
         } else if (flow.kind === "pending") {
           setText(
             primary,
@@ -393,9 +379,10 @@
     const detailButton = card.querySelector('[data-offers-action="toggle-request-detail"]');
 
     if (detailButton) {
+      const closedDetailLabel = flow.kind === "pending" ? text("requestDetail") : text("reservationDetail");
       setText(
         detailButton,
-        detail && detail.classList.contains("open") ? text("hideDetail") : text("requestDetail")
+        detail && detail.classList.contains("open") ? text("hideDetail") : closedDetailLabel
       );
     }
   }
