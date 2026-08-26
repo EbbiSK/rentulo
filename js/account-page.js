@@ -1,838 +1,747 @@
-    const ACCOUNT_LOCALES = {
-      cs: "cs-CZ",
-      en: "en-GB",
-      de: "de-DE",
-      pl: "pl-PL"
-    };
+(function () {
+  const ACCOUNT_LOCALES = {
+    cs: "cs-CZ",
+    en: "en-GB",
+    de: "de-DE",
+    pl: "pl-PL"
+  };
 
-    let supabaseOffers = [];
-    let supabaseOwnerReservations = [];
-    let supabaseRenterReservations = [];
-    let verifiedAccountUser = null;
-    let accountLoadState = "idle";
+  let verifiedAccountUser = null;
+  let accountLoadState = "idle";
+  let supabaseOffers = [];
+  let ownerReservations = [];
+  let renterReservations = [];
+  let accountNotifications = [];
 
-    function getSupabaseClient() {
-      if (window.rentuloSupabase) {
-        return window.rentuloSupabase;
-      }
+  function getSupabaseClient() {
+    if (window.rentuloSupabase) return window.rentuloSupabase;
+    if (typeof rentuloSupabase !== "undefined") return rentuloSupabase;
+    return null;
+  }
 
-      if (typeof rentuloSupabase !== "undefined") {
-        return rentuloSupabase;
-      }
+  function t(key, fallback, replacements) {
+    let text = typeof window.rentuloTranslate === "function"
+      ? window.rentuloTranslate(key)
+      : fallback;
 
+    if (!text || text === key) text = fallback || key;
+
+    Object.keys(replacements || {}).forEach(function (name) {
+      text = text.replaceAll("{" + name + "}", String(replacements[name]));
+    });
+
+    return text;
+  }
+
+  function homeT(key, fallback, replacements) {
+    if (typeof window.accountHomeT === "function") {
+      return window.accountHomeT(key, fallback, replacements);
+    }
+
+    return t(key, fallback, replacements);
+  }
+
+  function currentLocale() {
+    const language = typeof window.getRentuloLanguage === "function"
+      ? window.getRentuloLanguage()
+      : "cs";
+
+    return ACCOUNT_LOCALES[language] || ACCOUNT_LOCALES.cs;
+  }
+
+  function formatNumber(value, options) {
+    const numberValue = Number(value);
+    if (!Number.isFinite(numberValue)) return String(value ?? "");
+    return numberValue.toLocaleString(currentLocale(), options);
+  }
+
+  function plural(prefix, count, fallbacks, replacements) {
+    const category = new Intl.PluralRules(currentLocale()).select(Number(count));
+    const supported = ["one", "few", "many", "other"].includes(category)
+      ? category
+      : "other";
+    const suffix = supported.charAt(0).toUpperCase() + supported.slice(1);
+
+    return t(
+      prefix + suffix,
+      fallbacks[supported] || fallbacks.other || "",
+      Object.assign({}, replacements || {}, { count: formatNumber(count) })
+    );
+  }
+
+  function normalizeStatus(status) {
+    if (typeof normalizeReservationStatus === "function") {
+      return normalizeReservationStatus(status);
+    }
+
+    return String(status || "").trim();
+  }
+
+  function isOpen(status) {
+    if (typeof isOpenReservationStatus === "function") {
+      return isOpenReservationStatus(status);
+    }
+
+    return ["pending", "approved", "paid", "picked_up"].includes(normalizeStatus(status));
+  }
+
+  function renderLoadState() {
+    const status = document.getElementById("accountLoadStatus");
+    const statusText = document.getElementById("accountLoadStatusText");
+    const retry = document.getElementById("accountLoadRetry");
+
+    if (!status || !statusText || !retry) return;
+
+    status.classList.remove("hidden", "error");
+    retry.hidden = true;
+    retry.disabled = false;
+
+    if (accountLoadState === "ready") {
+      status.classList.add("hidden");
+      return;
+    }
+
+    if (accountLoadState === "error") {
+      status.classList.add("error");
+      statusText.textContent = t(
+        "account.load.error",
+        "Údaje účtu se teď nepodařilo načíst. Zkuste to znovu."
+      );
+      retry.textContent = t("account.load.retry", "Zkusit znovu");
+      retry.hidden = false;
+      return;
+    }
+
+    statusText.textContent = t("account.load.loading", "Načítám údaje účtu...");
+    retry.disabled = true;
+  }
+
+  async function getCurrentUser() {
+    const client = getSupabaseClient();
+    if (!client) return null;
+
+    const { data, error } = await client.auth.getUser();
+    if (error || !data || !data.user) return null;
+    return data.user;
+  }
+
+  function fallbackUserName(user) {
+    const metadata = (user && user.user_metadata) || {};
+    return (
+      metadata.full_name ||
+      metadata.name ||
+      (user && (user.full_name || user.name)) ||
+      t("account.userFallback", "Uživatel")
+    );
+  }
+
+  async function loadProfile(user) {
+    const client = getSupabaseClient();
+    if (!client || !user || !user.id) return null;
+
+    const { data, error } = await client
+      .from("profiles")
+      .select("full_name, email")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.warn("Profil uživatele se nepodařilo načíst:", error);
       return null;
     }
 
-    async function getCurrentSupabaseUser() {
-      const supabaseClient = getSupabaseClient();
+    return data || null;
+  }
 
-      if (!supabaseClient) {
-        return null;
-      }
+  async function loadRating(user) {
+    const client = getSupabaseClient();
+    if (!client || !user || !user.id) return null;
 
-      const { data, error } = await supabaseClient.auth.getUser();
+    const { data, error } = await client
+      .from("user_rating_summary")
+      .select("average_rating, rating_count")
+      .eq("user_id", user.id)
+      .maybeSingle();
 
-      if (error || !data || !data.user) {
-        return null;
-      }
-
-      return data.user;
+    if (error) {
+      console.warn("Hodnocení uživatele se nepodařilo načíst:", error);
+      return null;
     }
 
-    function normalizeAccountEmail(email) {
-      return String(email || "").trim().toLowerCase();
+    return data || null;
+  }
+
+  async function renderProfile(user) {
+    const profile = await loadProfile(user);
+    const rating = await loadRating(user);
+    const name = (profile && profile.full_name) || fallbackUserName(user);
+    const email = (profile && profile.email) || (user && user.email) || "";
+
+    const nameElement = document.getElementById("profileName");
+    const emailElement = document.getElementById("profileEmail");
+    const avatarElement = document.getElementById("profileAvatar");
+    const ratingElement = document.getElementById("profileRating");
+
+    if (nameElement) nameElement.textContent = name;
+    if (emailElement) {
+      emailElement.textContent = email || t("account.emailMissing", "E-mail není uložen");
+    }
+    if (avatarElement) {
+      avatarElement.textContent = String(name || "U").trim().charAt(0).toUpperCase() || "U";
     }
 
-    function accountTranslate(key, fallback, replacements) {
-      let text = typeof window.rentuloTranslate === "function"
-        ? window.rentuloTranslate(key)
-        : fallback;
+    if (!ratingElement) return;
 
-      if (text === key) {
-        text = fallback;
-      }
-
-      Object.keys(replacements || {}).forEach(function (name) {
-        text = text.replaceAll("{" + name + "}", String(replacements[name]));
-      });
-
-      return text;
-    }
-
-    function getAccountLocale() {
-      const language = typeof window.getRentuloLanguage === "function"
-        ? window.getRentuloLanguage()
-        : "cs";
-
-      return ACCOUNT_LOCALES[language] || ACCOUNT_LOCALES.cs;
-    }
-
-    function formatAccountNumber(value, options) {
-      const numberValue = Number(value);
-
-      if (!Number.isFinite(numberValue)) {
-        return String(value === undefined || value === null ? "" : value);
-      }
-
-      return numberValue.toLocaleString(getAccountLocale(), options);
-    }
-
-    function getAccountPluralText(prefix, count, fallbacks, replacements) {
-      const pluralCategory = new Intl.PluralRules(getAccountLocale()).select(Number(count));
-      const supportedCategory = ["one", "few", "many", "other"].includes(pluralCategory)
-        ? pluralCategory
-        : "other";
-      const suffix = supportedCategory.charAt(0).toUpperCase() + supportedCategory.slice(1);
-      const fallback = fallbacks[supportedCategory] || fallbacks.other || "";
-
-      return accountTranslate(
-        prefix + suffix,
-        fallback,
-        Object.assign({}, replacements || {}, {
-          count: formatAccountNumber(count)
-        })
+    if (rating && Number(rating.rating_count) > 0) {
+      ratingElement.textContent = plural(
+        "account.rating",
+        Number(rating.rating_count),
+        {
+          one: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
+          few: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
+          many: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
+          other: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)"
+        },
+        {
+          average: formatNumber(rating.average_rating, { maximumFractionDigits: 1 })
+        }
       );
+      return;
     }
 
-    function renderAccountLoadState() {
-      const status = document.getElementById("accountLoadStatus");
-      const statusText = document.getElementById("accountLoadStatusText");
-      const retryButton = document.getElementById("accountLoadRetry");
-
-      if (!status || !statusText || !retryButton) {
-        return;
-      }
-
-      status.classList.remove("hidden", "error");
-      retryButton.hidden = true;
-      retryButton.disabled = false;
-
-      if (accountLoadState === "ready") {
-        status.classList.add("hidden");
-        return;
-      }
-
-      if (accountLoadState === "error") {
-        status.classList.add("error");
-        statusText.textContent = accountTranslate(
-          "account.load.error",
-          "Údaje účtu se teď nepodařilo načíst. Zkuste to znovu."
-        );
-        retryButton.textContent = accountTranslate(
-          "account.load.retry",
-          "Zkusit znovu"
-        );
-        retryButton.hidden = false;
-        return;
-      }
-
-      statusText.textContent = accountTranslate(
-        "account.load.loading",
-        "Načítám údaje účtu..."
-      );
-      retryButton.disabled = true;
-    }
-
-    function normalizeStatus(status) {
-  return normalizeReservationStatus(status);
-}
-
-    function isOpenStatus(status) {
-  return isOpenReservationStatus(
-    normalizeStatus(status)
-  );
-}
-
-    function isOwnerActionStatus(status) {
-  const normalizedStatus = normalizeStatus(status);
-
-  return [
-    RESERVATION_STATUS_PENDING,
-    RESERVATION_STATUS_PAID,
-    RESERVATION_STATUS_PICKED_UP
-  ].includes(normalizedStatus);
-}
-
-    function isWaitingForPaymentStatus(status) {
-      return normalizeStatus(status) === RESERVATION_STATUS_APPROVED;
-    }
-
-    function getUserNameSafe(user) {
-      if (!user) {
-        return accountTranslate("account.userFallback", "Uživatel");
-      }
-
-      const metadata = user.user_metadata || {};
-      const profileName =
-        user.fullName ||
-        user.full_name ||
-        user.name ||
-        user.jmeno ||
-        metadata.full_name ||
-        metadata.name ||
-        "";
-
-      if (profileName) {
-        return profileName;
-      }
-
-      if (typeof getUserName === "function") {
-        const fallbackName = getUserName(user);
-        const fallbackEmail = getUserEmailSafe(user);
-
-        if (fallbackName && fallbackName !== fallbackEmail) {
-          return fallbackName;
-        }
-      }
-
-      return accountTranslate("account.userFallback", "Uživatel");
-    }
-
-    function getUserEmailSafe(user) {
-      if (!user) {
-        return "";
-      }
-
-      if (typeof getUserEmail === "function") {
-        return getUserEmail(user);
-      }
-
-      return user.email || user.userEmail || user.mail || "";
-    }
-
-    async function loadCurrentUserProfile(user) {
-      if (!user || !user.id) {
-        return null;
-      }
-
-      const supabaseClient = getSupabaseClient();
-
-      if (!supabaseClient) {
-        return null;
-      }
-
-      const { data, error } = await supabaseClient
-        .from("profiles")
-        .select("full_name, email")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (error) {
-        return null;
-      }
-
-      return data || null;
-    }
-
-async function loadCurrentUserRating(user) {
-  if (!user || !user.id) {
-    return null;
+    ratingElement.textContent = t("account.ratingNone", "Hodnocení: zatím bez hodnocení");
   }
 
-  const supabaseClient = getSupabaseClient();
-
-  if (!supabaseClient) {
-    return null;
+  function normalizeOffer(row) {
+    return {
+      id: row.id,
+      name: row.name || t("account.itemFallback", "Věc k půjčení"),
+      status: row.status || "active"
+    };
   }
 
-  const { data, error } = await supabaseClient
-    .from("user_rating_summary")
-    .select("average_rating, rating_count")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (error) {
-    console.warn("Hodnocení uživatele se nepodařilo načíst:", error);
-    return null;
+  function normalizeReservation(row) {
+    return {
+      id: row.id,
+      ownerId: row.owner_id,
+      renterId: row.renter_id,
+      offerId: row.offer_id,
+      offerName: row.offer_name || t("account.itemFallback", "Věc k půjčení"),
+      status: normalizeStatus(row.status),
+      createdAt: row.created_at || "",
+      updatedAt: row.updated_at || row.created_at || ""
+    };
   }
 
-  return data;
-}
-    async function updateProfileBox(user) {
-      const profile = await loadCurrentUserProfile(user);
-      const name =
-        (profile && profile.full_name) ||
-        getUserNameSafe(user);
-      const email =
-        (profile && profile.email) ||
-        getUserEmailSafe(user);
+  async function loadAccountData() {
+    accountLoadState = "loading";
+    renderLoadState();
 
-      const greeting = document.getElementById("accountGreeting");
-const profileName = document.getElementById("profileName");
-const profileEmail = document.getElementById("profileEmail");
-const profileRating = document.getElementById("profileRating");
-const profileAvatar = document.getElementById("profileAvatar");
+    const client = getSupabaseClient();
+    const user = verifiedAccountUser || await getCurrentUser();
 
-      if (greeting) {
-        greeting.textContent =
-  typeof window.rentuloTranslate === "function"
-    ? window.rentuloTranslate("account.greeting")
-    : "Dobrý den";
-      }
-
-      if (profileName) {
-        profileName.textContent = name;
-      }
-
-      if (profileEmail) {
-        profileEmail.textContent = email || accountTranslate(
-          "account.emailMissing",
-          "E-mail není uložen"
-        );
-      }
-if (profileRating) {
-        profileRating.textContent = accountTranslate(
-          "account.ratingNone",
-          "Hodnocení: zatím bez hodnocení"
-        );
-
-        const ratingSummary = await loadCurrentUserRating(user);
-
-        if (ratingSummary && ratingSummary.rating_count) {
-          profileRating.textContent = getAccountPluralText(
-            "account.rating",
-            Number(ratingSummary.rating_count),
-            {
-              one: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
-              few: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
-              many: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
-              other: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)"
-            },
-            {
-              average: formatAccountNumber(ratingSummary.average_rating, {
-                maximumFractionDigits: 1
-              })
-            }
-          );
-        }
-      }
-      if (profileAvatar) {
-        profileAvatar.textContent = name.charAt(0).toUpperCase();
-      }
+    if (!client || !user) {
+      accountLoadState = "error";
+      renderLoadState();
+      return false;
     }
 
-    function setBadge(badge, count, isAlert) {
-      if (!badge) {
-        return;
-      }
-
-      if (count > 0) {
-        badge.classList.remove("hidden");
-        badge.textContent = count;
-
-        if (isAlert) {
-          badge.classList.add("alert");
-        } else {
-          badge.classList.remove("alert");
-        }
-
-        return;
-      }
-
-      badge.classList.add("hidden");
-      badge.textContent = "0";
-      badge.classList.remove("alert");
-    }
-
-    function normalizeSupabaseOffer(row) {
-      return {
-        id: row.id,
-        ownerId: row.owner_id,
-        ownerEmail: "",
-       name: row.name || accountTranslate("account.itemFallback", "Věc k půjčení"),
-category: row.category || accountTranslate("account.categoryFallback", "Ostatní"),
-        city: row.city || "",
-        price: Number(row.price_per_day || 0),
-        status: row.status || "active",
-        createdAt: row.created_at || "",
-        source: "supabase"
-      };
-    }
-
-    function normalizeSupabaseReservation(row) {
-      return {
-        id: row.id,
-        reservationId: row.id,
-
-        offerId: row.offer_id,
-        toolId: row.offer_id,
-
-        ownerId: row.owner_id,
-        renterId: row.renter_id,
-
-        offerName: row.offer_name || accountTranslate("account.itemFallback", "Věc k půjčení"),
-        toolName: row.offer_name || accountTranslate("account.itemFallback", "Věc k půjčení"),
-
-category: row.category || accountTranslate("account.categoryFallback", "Ostatní"),
-        city: row.city || "",
-
-        pricePerDay: Number(row.price_per_day || 0),
-        price: Number(row.price_per_day || 0),
-
-        startDate: row.start_date || row.date_from || "",
-        endDate: row.end_date || row.date_to || "",
-        dateFrom: row.start_date || row.date_from || "",
-        dateTo: row.end_date || row.date_to || "",
-
-        totalDays: Number(row.total_days || row.days || 0),
-        days: Number(row.total_days || row.days || 0),
-        totalPrice: Number(row.total_price || 0),
-
-        platformFeePercent: Number(row.platform_fee_percent || 10),
-        platformFeeAmount: Number(row.platform_fee_amount || 0),
-        ownerPayout: Number(row.owner_payout || 0),
-
-        renterName: row.renter_name || "",
-        renterEmail: row.renter_email || "",
-        renterPhone: row.renter_phone || "",
-
-        ownerName: row.owner_name || accountTranslate("account.ownerFallback", "Majitel"),
-
-        status: normalizeStatus(row.status || STATUS_PENDING),
-        statusText: getStatusText(row.status || STATUS_PENDING),
-
-        contactVisibleAfterPayment: Boolean(row.contact_visible_after_payment),
-
-        createdAt: row.created_at || "",
-        updatedAt: row.updated_at || "",
-
-        source: "supabase"
-      };
-    }
-
-    function getStatusText(status) {
-  return getReservationStatusText(status);
-}
-
-    function mergeById(localItems, supabaseItems) {
-      const merged = [];
-      const usedIds = new Set();
-
-      if (Array.isArray(supabaseItems)) {
-        supabaseItems.forEach(function (item) {
-          const id = String(item.id || item.reservationId || item.offerId || "");
-
-          if (id) {
-            usedIds.add(id);
-          }
-
-          merged.push(item);
-        });
-      }
-
-      if (Array.isArray(localItems)) {
-        localItems.forEach(function (item) {
-          const id = String(item.id || item.reservationId || item.offerId || "");
-
-          if (id && usedIds.has(id)) {
-            return;
-          }
-
-          merged.push(item);
-        });
-      }
-
-      return merged;
-    }
-
-    
-
-    async function loadSupabaseAccountData() {
-      accountLoadState = "loading";
-      renderAccountLoadState();
-
-      const supabaseClient = getSupabaseClient();
-
-      if (!supabaseClient) {
-        accountLoadState = "error";
-        renderAccountLoadState();
-        return false;
-      }
-
-      const supabaseUser = await getCurrentSupabaseUser();
-
-      if (!supabaseUser) {
-        accountLoadState = "error";
-        renderAccountLoadState();
-        return false;
-      }
-
-      const offersResult = await supabaseClient
+    const [offersResult, reservationsResult] = await Promise.all([
+      client
         .from("offers")
-        .select("id, owner_id, name, category, city, price_per_day, status, created_at")
-        .eq("owner_id", supabaseUser.id)
-        .neq("status", "deleted");
+        .select("id, name, status")
+        .eq("owner_id", user.id)
+        .neq("status", "deleted"),
+      client.rpc("get_my_reservations")
+    ]);
 
-      if (offersResult.error) {
-        console.error(offersResult.error);
-        accountLoadState = "error";
-        renderAccountLoadState();
-        return false;
-      }
-
-      const reservationsResult = await supabaseClient
-  .rpc("get_my_reservations");
-
-if (reservationsResult.error) {
-  console.error(reservationsResult.error);
-  accountLoadState = "error";
-  renderAccountLoadState();
-  return false;
-}
-
-const allReservations = Array.isArray(reservationsResult.data)
-  ? reservationsResult.data
-  : [];
-
-const ownerReservationsResult = {
-  data: allReservations.filter(function (reservation) {
-    return reservation.owner_id === supabaseUser.id;
-  })
-};
-
-const renterReservationsResult = {
-  data: allReservations.filter(function (reservation) {
-    return reservation.renter_id === supabaseUser.id;
-  })
-};
-
-      supabaseOffers = Array.isArray(offersResult.data)
-        ? offersResult.data.map(normalizeSupabaseOffer)
-        : [];
-
-      supabaseOwnerReservations = Array.isArray(ownerReservationsResult.data)
-        ? ownerReservationsResult.data.map(normalizeSupabaseReservation)
-        : [];
-
-      supabaseRenterReservations = Array.isArray(renterReservationsResult.data)
-        ? renterReservationsResult.data.map(normalizeSupabaseReservation)
-        : [];
-
-      accountLoadState = "ready";
-      renderAccountLoadState();
-
-      return true;
+    if (offersResult.error || reservationsResult.error) {
+      console.error(offersResult.error || reservationsResult.error);
+      accountLoadState = "error";
+      renderLoadState();
+      return false;
     }
 
-    function updateAccountActionBadgesFromSupabase() {
-      const user = verifiedAccountUser;
+    supabaseOffers = Array.isArray(offersResult.data)
+      ? offersResult.data.map(normalizeOffer)
+      : [];
 
-      if (!user) {
-        window.location.href = "prihlaseni.html";
-        return;
-      }
+    const allReservations = Array.isArray(reservationsResult.data)
+      ? reservationsResult.data.map(normalizeReservation)
+      : [];
 
-      const myOffers = supabaseOffers;
-      const myReservations = supabaseRenterReservations;
-      const incomingOpenRequests = supabaseOwnerReservations.filter(function (reservation) {
-        return isOpenStatus(reservation.status);
-      });
+    ownerReservations = allReservations.filter(function (reservation) {
+      return reservation.ownerId === user.id;
+    });
 
-      const activeReservations = myReservations.filter(function (reservation) {
-        return isOpenStatus(reservation.status);
-      });
+    renterReservations = allReservations.filter(function (reservation) {
+      return reservation.renterId === user.id;
+    });
 
-      const waitingPaymentCount = myReservations.filter(function (reservation) {
-        return isWaitingForPaymentStatus(reservation.status);
-      }).length;
+    accountLoadState = "ready";
+    renderLoadState();
+    return true;
+  }
 
-      const pendingRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
-        return normalizeStatus(reservation.status) === RESERVATION_STATUS_PENDING;
-      }).length;
+  function setBadge(element, count) {
+    if (!element) return;
 
-      const paidRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
-        return normalizeStatus(reservation.status) === RESERVATION_STATUS_PAID;
-      }).length;
+    if (count > 0) {
+      element.hidden = false;
+      element.textContent = formatNumber(count);
+      return;
+    }
 
-      const pickedUpRequestsCount = supabaseOwnerReservations.filter(function (reservation) {
-        return normalizeStatus(reservation.status) === RESERVATION_STATUS_PICKED_UP;
-      }).length;
+    element.hidden = true;
+    element.textContent = "0";
+  }
 
-      const ownerActionRequiredCount =
-        pendingRequestsCount +
-        paidRequestsCount +
-        pickedUpRequestsCount;
+  function setCardState(card, badge, description, count, urgent, text) {
+    if (card) card.classList.toggle("is-urgent", Boolean(urgent));
+    setBadge(badge, count);
+    if (description && text) description.textContent = text;
+  }
 
-window.rentuloAccountNotificationCount =
-  ownerActionRequiredCount + waitingPaymentCount;
-const currentNavigationPage = document.body.dataset.navigationPage || "";
+  function renderAccountCards() {
+    const reservationsCard = document.getElementById("reservationsCard");
+    const offersCard = document.getElementById("offersCard");
+    const reservationsBadge = document.getElementById("reservationsBadge");
+    const offersBadge = document.getElementById("offersBadge");
+    const reservationsText = document.getElementById("reservationsText");
+    const offersText = document.getElementById("offersText");
 
-if (typeof renderSharedNavigation === "function" && currentNavigationPage) {
-  renderSharedNavigation(currentNavigationPage);
-}
-      const reservationsCard = document.getElementById("reservationsCard");
-      const offersCard = document.getElementById("offersCard");
+    const activeReservations = renterReservations.filter(function (reservation) {
+      return isOpen(reservation.status);
+    });
 
-      const reservationsBadge = document.getElementById("reservationsBadge");
-      const offersBadge = document.getElementById("offersBadge");
+    const waitingPaymentCount = renterReservations.filter(function (reservation) {
+      return reservation.status === "approved";
+    }).length;
 
-      const reservationsText = document.getElementById("reservationsText");
-      const offersText = document.getElementById("offersText");
+    const pendingRequestsCount = ownerReservations.filter(function (reservation) {
+      return reservation.status === "pending";
+    }).length;
 
-      const alertSummary = document.getElementById("accountAlertSummary");
+    const paidRequestsCount = ownerReservations.filter(function (reservation) {
+      return reservation.status === "paid";
+    }).length;
 
-      setBadge(reservationsBadge, waitingPaymentCount, waitingPaymentCount > 0);
-      setBadge(offersBadge, ownerActionRequiredCount, ownerActionRequiredCount > 0);
+    const pickedUpRequestsCount = ownerReservations.filter(function (reservation) {
+      return reservation.status === "picked_up";
+    }).length;
 
-      if (waitingPaymentCount > 0) {
-        reservationsCard.classList.add("account-action-alert");
-        reservationsText.textContent = getAccountPluralText(
-          "account.dynamic.waitingPayment",
-          waitingPaymentCount,
-          {
-            one: "1 rezervace čeká na platbu",
-            few: "{count} rezervace čekají na platbu",
-            many: "{count} rezervací čeká na platbu",
-            other: "{count} rezervací čeká na platbu"
-          }
-        );
-      } else {
-        reservationsCard.classList.remove("account-action-alert");
+    const ownerActionCount = pendingRequestsCount + paidRequestsCount + pickedUpRequestsCount;
 
-        if (activeReservations.length > 0) {
-          reservationsText.textContent = getAccountPluralText(
-            "account.dynamic.activeReservation",
-            activeReservations.length,
-            {
-              one: "Máte 1 aktivní rezervaci",
-              few: "Máte {count} aktivní rezervace",
-              many: "Máte {count} aktivních rezervací",
-              other: "Máte {count} aktivních rezervací"
-            }
-          );
-        } else {
-          reservationsText.textContent = accountTranslate(
-            "account.reservationsDefault",
-            "Co si chci půjčit"
-          );
+    let reservationsDescription = t("account.reservationsDefault", "Co si chci půjčit");
+
+    if (waitingPaymentCount > 0) {
+      reservationsDescription = plural(
+        "account.dynamic.waitingPayment",
+        waitingPaymentCount,
+        {
+          one: "1 rezervace čeká na platbu",
+          few: "{count} rezervace čekají na platbu",
+          many: "{count} rezervací čeká na platbu",
+          other: "{count} rezervací čeká na platbu"
         }
-      }
-
-      if (ownerActionRequiredCount > 0) {
-        offersCard.classList.add("account-action-alert");
-
-        if (pendingRequestsCount > 0) {
-          offersText.textContent = getAccountPluralText(
-            "account.dynamic.pendingRequest",
-            pendingRequestsCount,
-            {
-              one: "Máte 1 novou žádost k potvrzení",
-              few: "Máte {count} nové žádosti k potvrzení",
-              many: "Máte {count} nových žádostí k potvrzení",
-              other: "Máte {count} nových žádostí k potvrzení"
-            }
-          );
-        } else if (paidRequestsCount > 0) {
-          offersText.textContent = getAccountPluralText(
-            "account.dynamic.paidRequest",
-            paidRequestsCount,
-            {
-              one: "1 rezervace je zaplacená, označte vyzvednutí",
-              few: "{count} rezervace jsou zaplacené, označte vyzvednutí",
-              many: "{count} rezervací je zaplacených, označte vyzvednutí",
-              other: "{count} rezervací je zaplacených, označte vyzvednutí"
-            }
-          );
-        } else if (pickedUpRequestsCount > 0) {
-          offersText.textContent = getAccountPluralText(
-            "account.dynamic.pickedUp",
-            pickedUpRequestsCount,
-            {
-              one: "1 půjčení probíhá, po vrácení ho uzavřete",
-              few: "{count} půjčení probíhají, po vrácení je uzavřete",
-              many: "{count} půjčení probíhá, po vrácení je uzavřete",
-              other: "{count} půjčení probíhá, po vrácení je uzavřete"
-            }
-          );
-        } else {
-          offersText.textContent = accountTranslate(
-            "account.dynamic.openRequests",
-            "Máte otevřené žádosti k vyřízení"
-          );
+      );
+    } else if (activeReservations.length > 0) {
+      reservationsDescription = plural(
+        "account.dynamic.activeReservation",
+        activeReservations.length,
+        {
+          one: "Máte 1 aktivní rezervaci",
+          few: "Máte {count} aktivní rezervace",
+          many: "Máte {count} aktivních rezervací",
+          other: "Máte {count} aktivních rezervací"
         }
-      } else {
-        offersCard.classList.remove("account-action-alert");
+      );
+    }
 
-        if (incomingOpenRequests.length > 0) {
-          offersText.textContent = getAccountPluralText(
-            "account.dynamic.incomingRequest",
-            incomingOpenRequests.length,
-            {
-              one: "Máte 1 otevřenou žádost u svých nabídek",
-              few: "Máte {count} otevřené žádosti u svých nabídek",
-              many: "Máte {count} otevřených žádostí u svých nabídek",
-              other: "Máte {count} otevřených žádostí u svých nabídek"
-            }
-          );
-        } else if (myOffers.length > 0) {
-          offersText.textContent = getAccountPluralText(
-            "account.dynamic.myOffer",
-            myOffers.length,
-            {
-              one: "Máte 1 vlastní nabídku",
-              few: "Máte {count} vlastní nabídky",
-              many: "Máte {count} vlastních nabídek",
-              other: "Máte {count} vlastních nabídek"
-            }
-          );
-        } else {
-          offersText.textContent = accountTranslate(
-            "account.offersDefault",
-            "Co nabízím a žádosti od lidí"
-          );
+    setCardState(
+      reservationsCard,
+      reservationsBadge,
+      reservationsText,
+      waitingPaymentCount,
+      waitingPaymentCount > 0,
+      reservationsDescription
+    );
+
+    let offersDescription = t("account.offersDefault", "Co nabízím a žádosti od lidí");
+
+    if (pendingRequestsCount > 0) {
+      offersDescription = plural(
+        "account.dynamic.pendingRequest",
+        pendingRequestsCount,
+        {
+          one: "Máte 1 novou žádost k potvrzení",
+          few: "Máte {count} nové žádosti k potvrzení",
+          many: "Máte {count} nových žádostí k potvrzení",
+          other: "Máte {count} nových žádostí k potvrzení"
         }
-      }
-
-      const totalAlerts = waitingPaymentCount + ownerActionRequiredCount;
-
-      if (totalAlerts > 0) {
-        const messageParts = [];
-
-        if (waitingPaymentCount > 0) {
-          messageParts.push(
-            "<strong>" + formatAccountNumber(waitingPaymentCount) + "</strong> " +
-            getAccountPluralText(
-              "account.alert.waitingPayment",
-              waitingPaymentCount,
-              {
-                one: "rezervace čeká na platbu",
-                few: "rezervace čekají na platbu",
-                many: "rezervací čeká na platbu",
-                other: "rezervací čeká na platbu"
-              }
-            )
-          );
+      );
+    } else if (paidRequestsCount > 0) {
+      offersDescription = plural(
+        "account.dynamic.paidRequest",
+        paidRequestsCount,
+        {
+          one: "1 rezervace je zaplacená, označte vyzvednutí",
+          few: "{count} rezervace jsou zaplacené, označte vyzvednutí",
+          many: "{count} rezervací je zaplacených, označte vyzvednutí",
+          other: "{count} rezervací je zaplacených, označte vyzvednutí"
         }
-
-        if (pendingRequestsCount > 0) {
-          messageParts.push(
-            "<strong>" + formatAccountNumber(pendingRequestsCount) + "</strong> " +
-            getAccountPluralText(
-              "account.alert.pending",
-              pendingRequestsCount,
-              {
-                one: "nová žádost čeká na potvrzení",
-                few: "nové žádosti čekají na potvrzení",
-                many: "nových žádostí čeká na potvrzení",
-                other: "nových žádostí čeká na potvrzení"
-              }
-            )
-          );
+      );
+    } else if (pickedUpRequestsCount > 0) {
+      offersDescription = plural(
+        "account.dynamic.pickedUp",
+        pickedUpRequestsCount,
+        {
+          one: "1 půjčení probíhá, po vrácení ho uzavřete",
+          few: "{count} půjčení probíhají, po vrácení je uzavřete",
+          many: "{count} půjčení probíhá, po vrácení je uzavřete",
+          other: "{count} půjčení probíhá, po vrácení je uzavřete"
         }
-
-        if (paidRequestsCount > 0) {
-          messageParts.push(
-            "<strong>" + formatAccountNumber(paidRequestsCount) + "</strong> " +
-            getAccountPluralText(
-              "account.alert.paid",
-              paidRequestsCount,
-              {
-                one: "zaplacená rezervace čeká na označení vyzvednutí",
-                few: "zaplacené rezervace čekají na označení vyzvednutí",
-                many: "zaplacených rezervací čeká na označení vyzvednutí",
-                other: "zaplacených rezervací čeká na označení vyzvednutí"
-              }
-            )
-          );
+      );
+    } else if (supabaseOffers.length > 0) {
+      offersDescription = plural(
+        "account.dynamic.myOffer",
+        supabaseOffers.length,
+        {
+          one: "Máte 1 vlastní nabídku",
+          few: "Máte {count} vlastní nabídky",
+          many: "Máte {count} vlastních nabídek",
+          other: "Máte {count} vlastních nabídek"
         }
+      );
+    }
 
-        if (pickedUpRequestsCount > 0) {
-          messageParts.push(
-            "<strong>" + formatAccountNumber(pickedUpRequestsCount) + "</strong> " +
-            getAccountPluralText(
-              "account.alert.pickedUp",
-              pickedUpRequestsCount,
-              {
-                one: "půjčení čeká na označení vrácení",
-                few: "půjčení čekají na označení vrácení",
-                many: "půjčení čeká na označení vrácení",
-                other: "půjčení čeká na označení vrácení"
-              }
-            )
-          );
-        }
+    setCardState(
+      offersCard,
+      offersBadge,
+      offersText,
+      ownerActionCount,
+      ownerActionCount > 0,
+      offersDescription
+    );
 
-        alertSummary.style.display = "block";
-        alertSummary.innerHTML = accountTranslate(
-          "account.alert.summary",
-          "Máte nové věci k vyřízení: {items}.",
-          {
-            items: messageParts.join(
-              accountTranslate("account.alert.join", " a ")
-            )
-          }
-        );
-      } else {
-        alertSummary.style.display = "none";
-        alertSummary.innerHTML = "";
-      }
+    window.rentuloAccountNotificationCount = waitingPaymentCount + ownerActionCount;
 
+    if (typeof renderSharedNavigation === "function") {
       renderSharedNavigation("muj-ucet");
     }
+  }
 
-    async function initializeAccountPage() {
-      if (!window.rentuloAuthGuard) {
-        window.location.replace("prihlaseni.html");
-        return;
-      }
+  function notificationStorageKey() {
+    const userId = verifiedAccountUser && verifiedAccountUser.id
+      ? verifiedAccountUser.id
+      : "anonymous";
 
-      const user = await window.rentuloAuthGuard.requireUser();
+    return "rentuloAccountReadNotifications:" + userId;
+  }
 
-      if (!user) {
-        return;
-      }
-
-      verifiedAccountUser = user;
-      await updateProfileBox(user);
-      renderSharedNavigation("muj-ucet");
-
-      const loaded = await loadSupabaseAccountData();
-
-      if (!loaded) {
-        return;
-      }
-
-      updateAccountActionBadgesFromSupabase();
+  function getReadNotificationKeys() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(notificationStorageKey()) || "[]");
+      return new Set(Array.isArray(parsed) ? parsed : []);
+    } catch (error) {
+      return new Set();
     }
+  }
 
-    async function retryAccountDataLoad() {
-      if (accountLoadState === "loading") {
-        return;
-      }
-
-      const retryButton = document.getElementById("accountLoadRetry");
-
-      if (retryButton) {
-        retryButton.disabled = true;
-      }
-
-      const loaded = await loadSupabaseAccountData();
-
-      if (loaded) {
-        updateAccountActionBadgesFromSupabase();
-      }
+  function saveReadNotificationKeys(keys) {
+    try {
+      localStorage.setItem(notificationStorageKey(), JSON.stringify(Array.from(keys)));
+    } catch (error) {
+      console.warn("Stav upozornění se nepodařilo uložit:", error);
     }
+  }
 
-    document.addEventListener("rentuloLanguageChanged", async function () {
-      renderAccountLoadState();
+  function makeNotificationKey(role, reservation) {
+    return [role, reservation.id, reservation.status].join(":");
+  }
 
-      if (verifiedAccountUser) {
-        await updateProfileBox(verifiedAccountUser);
-      }
+  function notificationItemName(reservation) {
+    return reservation.offerName || homeT("accountHome.notifications.itemFallback", "věci");
+  }
 
-      if (accountLoadState === "ready") {
-        updateAccountActionBadgesFromSupabase();
-      } else {
-        renderSharedNavigation("muj-ucet");
+  function buildNotifications() {
+    const notifications = [];
+
+    ownerReservations.forEach(function (reservation) {
+      const item = notificationItemName(reservation);
+
+      if (reservation.status === "pending") {
+        notifications.push({
+          key: makeNotificationKey("owner", reservation),
+          title: homeT("accountHome.notifications.newRequestTitle", "Nová žádost o půjčení"),
+          message: homeT(
+            "accountHome.notifications.newRequestMessage",
+            "Nabídka {item} čeká na vaše potvrzení.",
+            { item: item }
+          ),
+          href: "moje-nabidky.html?open=actions",
+          sortDate: reservation.updatedAt || reservation.createdAt || ""
+        });
+      } else if (reservation.status === "paid") {
+        notifications.push({
+          key: makeNotificationKey("owner", reservation),
+          title: homeT("accountHome.notifications.paidOwnerTitle", "Rezervace byla zaplacena"),
+          message: homeT(
+            "accountHome.notifications.paidOwnerMessage",
+            "U nabídky {item} můžete pokračovat předáním.",
+            { item: item }
+          ),
+          href: "moje-nabidky.html?open=actions",
+          sortDate: reservation.updatedAt || reservation.createdAt || ""
+        });
+      } else if (reservation.status === "picked_up") {
+        notifications.push({
+          key: makeNotificationKey("owner", reservation),
+          title: homeT("accountHome.notifications.pickedUpOwnerTitle", "Věc byla vyzvednuta"),
+          message: homeT(
+            "accountHome.notifications.pickedUpOwnerMessage",
+            "Po vrácení {item} označte rezervaci jako vrácenou.",
+            { item: item }
+          ),
+          href: "moje-nabidky.html?open=actions",
+          sortDate: reservation.updatedAt || reservation.createdAt || ""
+        });
+      } else if (reservation.status === "cancelled") {
+        notifications.push({
+          key: makeNotificationKey("owner", reservation),
+          title: homeT("accountHome.notifications.cancelledTitle", "Rezervace byla zrušena"),
+          message: homeT(
+            "accountHome.notifications.cancelledMessage",
+            "Rezervace {item} byla zrušena.",
+            { item: item }
+          ),
+          href: "historie.html",
+          sortDate: reservation.updatedAt || reservation.createdAt || ""
+        });
       }
     });
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const retryButton = document.getElementById("accountLoadRetry");
+    renterReservations.forEach(function (reservation) {
+      const item = notificationItemName(reservation);
+      const common = {
+        key: makeNotificationKey("renter", reservation),
+        href: "moje-rezervace.html",
+        sortDate: reservation.updatedAt || reservation.createdAt || ""
+      };
 
-      if (retryButton) {
-        retryButton.addEventListener("click", retryAccountDataLoad);
+      if (reservation.status === "approved") {
+        notifications.push(Object.assign({}, common, {
+          title: homeT("accountHome.notifications.approvedTitle", "Žádost byla schválena"),
+          message: homeT(
+            "accountHome.notifications.approvedMessage",
+            "Rezervaci {item} můžete nyní zaplatit.",
+            { item: item }
+          )
+        }));
+      } else if (reservation.status === "rejected") {
+        notifications.push(Object.assign({}, common, {
+          title: homeT("accountHome.notifications.rejectedTitle", "Žádost byla odmítnuta"),
+          message: homeT(
+            "accountHome.notifications.rejectedMessage",
+            "Žádost o {item} byla odmítnuta.",
+            { item: item }
+          )
+        }));
+      } else if (reservation.status === "picked_up") {
+        notifications.push(Object.assign({}, common, {
+          title: homeT("accountHome.notifications.pickedUpRenterTitle", "Věc je vyzvednuta"),
+          message: homeT(
+            "accountHome.notifications.pickedUpRenterMessage",
+            "Půjčení {item} právě probíhá.",
+            { item: item }
+          )
+        }));
+      } else if (reservation.status === "returned" || reservation.status === "completed") {
+        notifications.push(Object.assign({}, common, {
+          title: homeT("accountHome.notifications.returnedTitle", "Půjčení bylo dokončeno"),
+          message: homeT(
+            "accountHome.notifications.returnedMessage",
+            "Rezervaci {item} najdete v Historii.",
+            { item: item }
+          ),
+          href: "historie.html"
+        }));
+      }
+    });
+
+    notifications.sort(function (a, b) {
+      return String(b.sortDate || "").localeCompare(String(a.sortDate || ""));
+    });
+
+    return notifications.slice(0, 20);
+  }
+
+  function renderNotifications() {
+    const list = document.getElementById("accountNotificationList");
+    const empty = document.getElementById("accountNotificationEmpty");
+    const badge = document.getElementById("accountNotificationCount");
+
+    if (!list || !empty || !badge) return;
+
+    const readKeys = getReadNotificationKeys();
+    const unreadCount = accountNotifications.filter(function (notification) {
+      return !readKeys.has(notification.key);
+    }).length;
+
+    setBadge(badge, unreadCount);
+    list.innerHTML = "";
+    empty.hidden = accountNotifications.length > 0;
+
+    accountNotifications.forEach(function (notification) {
+      const link = document.createElement("a");
+      link.className = "account-notification-item";
+      link.href = notification.href;
+
+      if (!readKeys.has(notification.key)) {
+        link.classList.add("is-unread");
       }
 
-      initializeAccountPage();
+      const title = document.createElement("strong");
+      title.textContent = notification.title;
+
+      const message = document.createElement("span");
+      message.textContent = notification.message;
+
+      link.appendChild(title);
+      link.appendChild(message);
+      list.appendChild(link);
     });
+  }
+
+  function markNotificationsRead() {
+    if (!accountNotifications.length) return;
+
+    const readKeys = getReadNotificationKeys();
+    accountNotifications.forEach(function (notification) {
+      readKeys.add(notification.key);
+    });
+    saveReadNotificationKeys(readKeys);
+    renderNotifications();
+  }
+
+  function openNotificationPanel(open) {
+    const button = document.getElementById("accountNotificationButton");
+    const panel = document.getElementById("accountNotificationPanel");
+
+    if (!button || !panel) return;
+
+    const shouldOpen = typeof open === "boolean" ? open : panel.hidden;
+    panel.hidden = !shouldOpen;
+    button.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+
+    if (shouldOpen) {
+      markNotificationsRead();
+    }
+  }
+
+  function bindNotificationPanel() {
+    const button = document.getElementById("accountNotificationButton");
+    const panel = document.getElementById("accountNotificationPanel");
+
+    if (!button || !panel) return;
+
+    button.addEventListener("click", function (event) {
+      event.stopPropagation();
+      openNotificationPanel();
+    });
+
+    panel.addEventListener("click", function (event) {
+      event.stopPropagation();
+    });
+
+    document.addEventListener("click", function () {
+      openNotificationPanel(false);
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        openNotificationPanel(false);
+        button.focus();
+      }
+    });
+  }
+
+  function refreshRenderedData() {
+    renderAccountCards();
+    accountNotifications = buildNotifications();
+    renderNotifications();
+  }
+
+  async function initializeAccountPage() {
+    if (!window.rentuloAuthGuard) {
+      window.location.replace("prihlaseni.html");
+      return;
+    }
+
+    const user = await window.rentuloAuthGuard.requireUser();
+    if (!user) return;
+
+    verifiedAccountUser = user;
+    await renderProfile(user);
+
+    if (typeof renderSharedNavigation === "function") {
+      renderSharedNavigation("muj-ucet");
+    }
+
+    const loaded = await loadAccountData();
+    if (!loaded) return;
+
+    refreshRenderedData();
+  }
+
+  async function retryAccountDataLoad() {
+    if (accountLoadState === "loading") return;
+
+    const retry = document.getElementById("accountLoadRetry");
+    if (retry) retry.disabled = true;
+
+    const loaded = await loadAccountData();
+    if (loaded) refreshRenderedData();
+  }
+
+  async function refreshAfterReturnToPage() {
+    if (!verifiedAccountUser || document.visibilityState === "hidden") return;
+
+    const loaded = await loadAccountData();
+    if (loaded) refreshRenderedData();
+  }
+
+  document.addEventListener("rentuloLanguageChanged", async function () {
+    renderLoadState();
+
+    if (typeof window.renderAccountHomeTranslations === "function") {
+      window.renderAccountHomeTranslations();
+    }
+
+    if (verifiedAccountUser) {
+      await renderProfile(verifiedAccountUser);
+    }
+
+    if (accountLoadState === "ready") {
+      refreshRenderedData();
+    } else if (typeof renderSharedNavigation === "function") {
+      renderSharedNavigation("muj-ucet");
+    }
+  });
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") {
+      refreshAfterReturnToPage();
+    }
+  });
+
+  window.addEventListener("focus", refreshAfterReturnToPage);
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const retry = document.getElementById("accountLoadRetry");
+    if (retry) retry.addEventListener("click", retryAccountDataLoad);
+
+    bindNotificationPanel();
+    initializeAccountPage();
+  });
+})();
