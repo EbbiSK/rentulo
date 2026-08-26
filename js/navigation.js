@@ -607,25 +607,24 @@ function navInjectStyles() {
     .nav-profile-button {
       position: relative;
       display: inline-flex;
-      width: 48px;
-      height: 46px;
+      width: auto;
+      height: 42px;
       align-items: center;
       justify-content: center;
-      gap: 2px;
-      padding: 0;
-      border: 1px solid #d7e3dc;
-      border-radius: 14px;
-      background: #ffffff;
+      gap: 5px;
+      padding: 2px 4px 2px 2px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
       color: #173f35;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(16, 32, 25, 0.055);
-      transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+      box-shadow: none;
+      transition: background 0.16s ease, transform 0.16s ease;
     }
 
     .nav-profile-button:hover,
     .nav-profile-button.is-active {
-      border-color: #b9d3c5;
-      background: #f7fbf9;
+      background: #edf5f1;
     }
 
     .nav-profile-button:hover {
@@ -634,11 +633,16 @@ function navInjectStyles() {
 
     .nav-profile-button-initials {
       display: inline-flex;
-      min-width: 23px;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
       align-items: center;
       justify-content: center;
+      border: 1px solid #c8e0d3;
+      border-radius: 50%;
+      background: #e9f4ee;
       color: #0e5037;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
       line-height: 1;
       letter-spacing: -0.04em;
@@ -646,7 +650,7 @@ function navInjectStyles() {
     }
 
     .nav-profile-button-initials.is-three-characters {
-      font-size: 12px;
+      font-size: 11px;
       letter-spacing: -0.07em;
     }
 
@@ -655,7 +659,8 @@ function navInjectStyles() {
     }
 
     .nav-profile-chevron {
-      margin-left: -2px;
+      margin-left: 0;
+      color: #176747;
       font-size: 12px;
       line-height: 1;
       transform: translateY(1px);
@@ -663,8 +668,9 @@ function navInjectStyles() {
 
     .nav-notification-badge {
       position: absolute;
-      top: -7px;
-      right: -8px;
+      top: -5px;
+      right: auto;
+      left: 29px;
       display: inline-flex;
       min-width: 20px;
       height: 20px;
@@ -715,7 +721,7 @@ function navInjectStyles() {
       height: 42px;
       place-items: center;
       border: 1px solid #c8e0d3;
-      border-radius: 12px;
+      border-radius: 50%;
       background: #e9f4ee;
       color: #0e5037;
       font-size: 17px;
@@ -933,6 +939,7 @@ function navInjectStyles() {
       #mainNav .nav-notification-badge {
         top: 5px;
         right: 34px;
+        left: auto;
         border-color: #ffffff;
       }
 
