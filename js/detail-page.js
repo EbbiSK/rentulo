@@ -688,13 +688,7 @@ const hasGps = offerHasGpsLocation(offer);
 
                 <div class="section">
                   <h2>${detailTranslate("detail.pickupTitle")}</h2>
-
-                  <div class="pickup-preview">
-                    <div class="pickup-preview-row">
-                      <span>${detailTranslate("detail.city")}</span>
-                      <span>${escapeHtml(ownerPublicCity || offerCity || "-")}</span>
-                    </div>
-                  </div>
+                  <p>${escapeHtml(ownerPublicCity || offerCity || "-")}</p>
                 </div>
 
                 <div class="section">
