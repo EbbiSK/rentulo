@@ -938,7 +938,7 @@ const data = Array.isArray(updatedReservations)
 
     function renderRequestNote(status) {
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING) {
-        return `<p class="request-note">${offersTranslate("offers.note.pending", "Nová žádost čeká na vaše potvrzení nebo odmítnutí.")}</p>`;
+        return "";
       }
 
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
@@ -1024,12 +1024,7 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
 
     function renderReservationContactBlock(reservation) {
       if (!canShowContact(reservation.status)) {
-        return `
-          <div class="request-contact-box locked">
-            <strong>${offersTranslate("offers.contact.hiddenTitle", "Kontakt zatím skrytý")}</strong>
-            ${offersTranslate("offers.contact.hiddenText", "Kontakt na zájemce se zobrazí až po zaplacení rezervace.")}
-          </div>
-        `;
+        return "";
       }
 
       const renterName = reservation.renterName || offersTranslate("offers.renterFallback", "Zájemce");
