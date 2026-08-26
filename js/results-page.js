@@ -672,8 +672,8 @@ function getOfferPhoto(offer) {
               </div>
 
               <div class="result-info-box">
-                <span>${escapeHtml(resultsTranslate("results.term", "Termín"))}</span>
-                <strong>${escapeHtml(resultsTranslate("results.termSelectDetail", "Vyberete v detailu"))}</strong>
+                <span>${escapeHtml(resultsTranslate("detail.city", "Město"))}</span>
+                <strong>${escapeHtml(city)}</strong>
               </div>
 
               <div class="result-info-box">
