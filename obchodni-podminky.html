@@ -1,565 +1,303 @@
 <!DOCTYPE html>
-
 <html lang="cs">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title data-i18n="terms.documentTitle">Obchodní podmínky - Rentulo</title>
-<link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
-<link href="css/base.css" rel="stylesheet"/>
-<link href="css/header.css" rel="stylesheet"/>
-<link href="css/home.css" rel="stylesheet"/>
-<link href="css/offer.css" rel="stylesheet"/>
-<link href="css/results.css" rel="stylesheet"/>
-<link href="css/detail.css" rel="stylesheet"/>
-<link href="css/confirmation.css" rel="stylesheet"/>
-<link href="css/auth.css" rel="stylesheet"/>
-<link href="css/dashboard.css" rel="stylesheet"/>
-<link href="css/account-pages.css" rel="stylesheet"/>
-<link href="css/responsive.css" rel="stylesheet"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-  * {
-    box-sizing: border-box;
-  }
+  <title data-i18n="terms.documentTitle">Obchodní podmínky - Rentulo</title>
 
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #DFF7EE;
-    color: #173f35;
-  }
-
-  a {
-    color: inherit;
-  }
-
-  .header {
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 14px;
-    background: #DFF7EE !important;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-  }
-
-  .logo-icon {
-    width: 48px;
-    height: 48px;
-    flex: 0 0 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: static;
-    transform: none;
-    background: transparent;
-    border-radius: 0;
-  }
-
-  .logo-icon::before,
-  .logo-icon::after {
-    content: none;
-    display: none;
-  }
-
-  .logo-icon img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: contain;
-  }
-
-  .logo-text strong {
-    display: block;
-    font-size: 25px;
-    line-height: 1;
-    color: #173f35;
-  }
-
-  .logo-text small {
-    display: none;
-  }
-
-  .nav {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    font-size: 16px;
-  }
-
-  .btn-register {
-    background: #72d64b;
-    color: #173a22 !important;
-    padding: 12px 22px;
-    border-radius: 999px;
-    font-weight: 800;
-  }
-
-  .terms-page {
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: 28px 20px 56px;
-  }
-
-  .terms-card {
-    background: #ffffff;
-    border: 1px solid #cfe4da;
-    border-radius: 20px;
-    padding: 34px 40px;
-    box-shadow: 0 12px 32px rgba(23, 63, 53, 0.06);
-  }
-
-  .terms-card > * {
-    max-width: 930px;
-  }
-
-  .terms-card h1 {
-    margin: 0 0 12px;
-    font-size: 40px;
-    line-height: 1.08;
-    color: #173f35;
-  }
-
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    min-height: 30px;
-    margin: 0 0 10px;
-    padding: 6px 11px;
-    border: 1px solid #f2c79f;
-    border-radius: 999px;
-    background: #fff3e8;
-    color: #8a4b16;
-    font-size: 14px;
-    font-weight: 900;
-  }
-
-  .terms-intro {
-    margin: 0 0 22px;
-    font-size: 16px;
-    line-height: 1.65;
-    color: #4f625b;
-  }
-
-  .terms-warning {
-    background: #fff3e8;
-    border: 1px solid #f2c79f;
-    border-radius: 14px;
-    padding: 15px 17px;
-    margin-bottom: 30px;
-    color: #8a4b16;
-    font-weight: 700;
-    line-height: 1.5;
-  }
-
-  .terms-section {
-    margin-bottom: 18px;
-    padding: 20px 22px;
-    background: #f8fcfa;
-    border: 1px solid #d5e8df;
-    border-radius: 15px;
-  }
-
-  .terms-section h2 {
-    margin: 0 0 9px;
-    font-size: 22px;
-    line-height: 1.3;
-    color: #173f35;
-  }
-
-  .terms-section p {
-    margin: 0 0 10px;
-    font-size: 15.5px;
-    line-height: 1.65;
-    color: #334c43;
-  }
-
-  .terms-section p:last-child {
-    margin-bottom: 0;
-  }
-
-  .terms-section ul {
-    margin: 8px 0 0;
-    padding-left: 22px;
-    color: #334c43;
-    font-size: 15.5px;
-    line-height: 1.65;
-  }
-
-  .terms-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 30px;
-  }
-
-  .terms-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 46px;
-    border-radius: 13px;
-    padding: 12px 20px;
-    font-weight: 900;
-    text-decoration: none;
-  }
-
-  .terms-button.primary {
-    background: #72d64b;
-    color: #173a22;
-  }
-
-  .terms-button.light {
-    background: #eef7f3;
-    border: 1px solid #d2e5dc;
-    color: #173f35;
-  }
-
-  .terms-button:hover,
-  .terms-button:focus-visible {
-    filter: brightness(0.98);
-  }
-
-  @media (max-width: 900px) {
-    .header {
-      flex-direction: column !important;
-      align-items: flex-start !important;
-      background: #DFF7EE !important;
-    }
-
-    .nav {
-      width: 100% !important;
-      display: flex !important;
-      flex-direction: row !important;
-      flex-wrap: wrap !important;
-      justify-content: flex-start !important;
-      align-items: center !important;
-      gap: 10px 14px !important;
-    }
-
-    .nav a,
-    .nav button,
-    .nav select {
-      width: auto !important;
-      margin: 0 !important;
-    }
-  }
-
-  @media (max-width: 700px) {
-    .header,
-    .terms-page {
-      padding-left: 14px;
-      padding-right: 14px;
-    }
-
-    .header {
-      padding-top: 12px !important;
-      padding-bottom: 12px !important;
-      background: #DFF7EE !important;
-    }
-
-    .logo-icon {
-      width: 48px;
-      height: 48px;
-      flex-basis: 48px;
-    }
-
-    .logo-text strong {
-      font-size: 25px;
-    }
-
-    .terms-page {
-      padding-top: 20px;
-      padding-bottom: 42px;
-    }
-
-    .terms-card {
-      padding: 22px 18px;
-      border-radius: 18px;
-    }
-
-    .terms-card h1 {
-      font-size: 31px;
-    }
-
-    .terms-section {
-      padding: 17px 16px;
-      border-radius: 14px;
-    }
-
-    .terms-section h2 {
-      font-size: 20px;
-    }
-
-    .terms-actions {
-      flex-direction: column;
-    }
-
-    .terms-button {
-      width: 100%;
-    }
-  }
-</style>
-
+  <link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
+  <link id="rentuloSharedTheme" rel="stylesheet" href="css/rentulo-theme.css" />
+  <link rel="stylesheet" href="css/terms.css" />
 </head>
-<body data-i18n-document-title="terms.documentTitle" data-navigation-page="obchodni-podminky">
-<header class="header">
-<a class="logo" href="index.html">
-<div class="logo-icon">
-<img src="assets/rentulo-logo-mark.png" alt="" aria-hidden="true"/>
-</div>
-<div class="logo-text">
-<strong>Rentulo</strong>
-</div>
-</a>
-<nav class="nav" id="mainNav"></nav>
-</header>
-<main class="terms-page">
-<section class="terms-card">
-<p class="eyebrow" data-i18n="terms.eyebrow">Pracovní návrh</p>
-<h1 data-i18n="terms.title">Obchodní podmínky</h1>
-<p class="terms-intro" data-i18n="terms.intro">
+
+<body data-navigation-page="obchodni-podminky" data-i18n-document-title="terms.documentTitle">
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <img src="assets/rentulo-logo-mark.png" alt="" width="40" height="40" aria-hidden="true" />
+      </div>
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="terms-page">
+    <a
+      href="index.html"
+      class="back-link"
+      data-rentulo-back="true"
+      data-i18n="detail.back"
+    >
+      ← Zpět
+    </a>
+
+    <section class="terms-page-header">
+      <span class="terms-status" data-i18n="terms.eyebrow">Pracovní návrh</span>
+      <h1 data-i18n="terms.title">Obchodní podmínky</h1>
+      <p data-i18n="terms.intro">
         Tyto obchodní podmínky upravují základní pravidla používání platformy
         Rentulo, která umožňuje uživatelům nabízet vlastní věci k půjčení
         a posílat žádosti o půjčení věcí od jiných uživatelů.
       </p>
-	<div class="terms-warning" data-i18n="terms.warning">
-	        Toto je pracovní návrh odpovídající současné testovací verzi. Před
-	        veřejným spuštěním musí být doplněny údaje provozovatele, rozlišení
-	        soukromých osob a podnikatelů, konečná pravidla plateb, storna, stížností
-	        a účinnosti podmínek. Celé znění musí zkontrolovat právník.
-	      </div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section1.title">1. Popis služby a role Rentula</h2>
-	<p data-i18n="terms.section1.item1">
-	          Rentulo je online platforma, na které mohou registrovaní uživatelé
-	          zveřejňovat nabídky věcí k půjčení a jiní uživatelé mohou posílat
-	          žádosti o jejich půjčení.
-	        </p>
-	<p data-i18n="terms.section1.item2">
-	          Rentulo není vlastníkem nabízených věcí ani stranou dohody o půjčení.
-	          Tato dohoda vzniká přímo mezi majitelem věci a zájemcem. Platforma
-	          poskytuje technické prostředí pro nabídky, žádosti, rezervace, změny
-	          jejich stavů, předání kontaktů a hodnocení uživatelů.
-	        </p>
-	<p data-i18n="terms.section1.item3">
-	          Rentulo v běžném provozu fyzicky nekontroluje každou věc ani pravdivost
-	          každého údaje uživatele. Tím nejsou dotčeny povinnosti a odpovědnost,
-	          které podle právních předpisů nelze vyloučit.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section2.title">2. Registrace a uživatelský účet</h2>
-<p data-i18n="terms.section2.item1">
+    </section>
+
+    <div class="terms-warning" data-i18n="terms.warning">
+      Toto je pracovní návrh odpovídající současné testovací verzi. Před
+      veřejným spuštěním musí být doplněny údaje provozovatele, rozlišení
+      soukromých osob a podnikatelů, konečná pravidla plateb, storna, stížností
+      a účinnosti podmínek. Celé znění musí zkontrolovat právník.
+    </div>
+
+    <section class="terms-content-card">
+      <section class="terms-section">
+        <h2 data-i18n="terms.section1.title">1. Popis služby a role Rentula</h2>
+        <p data-i18n="terms.section1.item1">
+          Rentulo je online platforma, na které mohou registrovaní uživatelé
+          zveřejňovat nabídky věcí k půjčení a jiní uživatelé mohou posílat
+          žádosti o jejich půjčení.
+        </p>
+        <p data-i18n="terms.section1.item2">
+          Rentulo není vlastníkem nabízených věcí ani stranou dohody o půjčení.
+          Tato dohoda vzniká přímo mezi majitelem věci a zájemcem. Platforma
+          poskytuje technické prostředí pro nabídky, žádosti, rezervace, změny
+          jejich stavů, předání kontaktů a hodnocení uživatelů.
+        </p>
+        <p data-i18n="terms.section1.item3">
+          Rentulo v běžném provozu fyzicky nekontroluje každou věc ani pravdivost
+          každého údaje uživatele. Tím nejsou dotčeny povinnosti a odpovědnost,
+          které podle právních předpisů nelze vyloučit.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section2.title">2. Registrace a uživatelský účet</h2>
+        <p data-i18n="terms.section2.item1">
           Uživatel je povinen uvádět pravdivé a aktuální údaje a chránit přístup
-	          ke svému účtu. Za činnost provedenou prostřednictvím svého účtu odpovídá
-	          uživatel, pokud neprokáže jeho zneužití třetí osobou.
-	        </p>
-	<p data-i18n="terms.section2.item2">
-	          Uživatel nesmí účet zpřístupnit jiné osobě ani se vydávat za někoho
-	          jiného. Podezření na zneužití účtu nebo bezpečnostní incident oznámí
-	          bez zbytečného odkladu provozovateli.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section3.title">3. Postavení uživatelů a spotřebitelská práva</h2>
-	<p data-i18n="terms.section3.item1">
-	          Současná testovací verze nerozlišuje, zda uživatel jedná jako soukromá
-	          osoba, nebo v rámci podnikání. Toto rozlišení a odpovídající informace
-	          musí být doplněny před veřejným spuštěním.
-	        </p>
-	<p data-i18n="terms.section3.item2">
-	          Pokud majitel jedná jako podnikatel vůči spotřebiteli, musí splnit
-	          povinnosti vyplývající ze spotřebitelských předpisů. Na dohodu mezi
-	          dvěma soukromými osobami se spotřebitelská ochrana zpravidla nepoužije
-	          ve stejném rozsahu.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section4.title">4. Nabízení věcí</h2>
-	<p data-i18n="terms.section4.item1">
-	          Majitel odpovídá za to, že má právo věc nabídnout, že její popis a
-	          fotografie odpovídají skutečnosti a že je věc při předání způsobilá
-	          k dohodnutému použití.
-	        </p>
-	<ul>
-	<li data-i18n="terms.section4.item2">Majitel uvede zejména název, cenu za den, město, popis a dostupnost.</li>
-	<li data-i18n="terms.section4.item3">Majitel určí místo nebo způsob vyzvednutí a vrácení.</li>
-	<li data-i18n="terms.section4.item4">Zakázáno je nabízet věci, jejichž půjčování je protiprávní nebo nebezpečné.</li>
-	</ul>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section5.title">5. Žádost a rezervace</h2>
-	<p data-i18n="terms.section5.item1">
-	          Zájemce odešle žádost pro zvolený termín. Majitel ji může potvrdit
-	          nebo odmítnout. Do potvrzení žádosti nevzniká zájemci nárok na půjčení.
-	        </p>
-	<p data-i18n="terms.section5.item2">
-	          Po potvrzení žádost čeká na platbu. Po označení platby se oběma stranám
-	          zpřístupní kontaktní údaje; majitel následně označuje vyzvednutí a
-	          vrácení věci. Rozhodující je stav zobrazený v uživatelském účtu.
-	        </p>
-	<p data-i18n="terms.section5.item3">
-	          Uživatelé jsou povinni respektovat dohodnutý termín, místo a způsob
-	          předání. Technický stav rezervace sám o sobě nepotvrzuje fyzické
-	          předání ani stav věci.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section6.title">6. Cena, platba a poplatek platformy</h2>
-	<p data-i18n="terms.section6.item1">
-	          Cena půjčení se vypočítává podle ceny za den a délky rezervace.
-	          Zájemce v současném modelu hradí zobrazenou cenu půjčení. Z této částky
-	          se odečte poplatek Rentula ve výši 10 % a majiteli připadne 90 %.
-	        </p>
-	<p data-i18n="terms.section6.item2">
-	          Externí platební brána zatím není aktivní. Současné označení rezervace
-	          jako zaplacené slouží k ověření pracovního postupu aplikace a nepředstavuje
-	          skutečné zpracování platby poskytovatelem platebních služeb.
-	        </p>
-	<p data-i18n="terms.section6.item3">
-	          Konečná pravidla splatnosti, výplaty majiteli, vracení peněz, reklamací
-	          plateb a případných dalších nákladů musí být zveřejněna před aktivací
-	          skutečných plateb.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section7.title">7. Kontaktní údaje a předání</h2>
-	<p data-i18n="terms.section7.item1">
-	          Přesná adresa, telefon a instrukce k předání jsou neveřejné a zobrazují
-	          se pouze majiteli a zájemci u konkrétní rezervace po jejím označení
-	          jako zaplacené.
-	        </p>
-	<p data-i18n="terms.section7.item2">
-	          Uživatel smí tyto údaje použít jen pro vyřízení dané půjčky a nesmí je
-	          předávat dalším osobám ani používat k jiným účelům.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section8.title">8. Předání, používání a vrácení věci</h2>
-	<p data-i18n="terms.section8.item1">
-	          Majitel předá věc v dohodnutém termínu a ve stavu odpovídajícím
-	          zveřejněnému popisu a dohodnutému použití. Při předání si obě strany
-	          mohou stav věci přiměřeně zaznamenat.
-	        </p>
-	<p data-i18n="terms.section8.item2">
-	          Zájemce je povinen používat věc obvyklým a bezpečným způsobem, dodržovat
-	          pokyny majitele a vrátit ji v dohodnutém termínu ve stavu odpovídajícím
-	          převzetí s přihlédnutím k běžnému opotřebení.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section9.title">9. Poškození, ztráta a odpovědnost</h2>
-	<p data-i18n="terms.section9.item1">
-	          Odpovědnost za poškození, ztrátu nebo nevrácení věci řeší majitel a
-	          zájemce podle konkrétní dohody a platných právních předpisů. Rentulo
-	          může zpřístupnit dostupné údaje o rezervaci v rozsahu potřebném pro
-	          řešení konkrétního případu a dovoleném právními předpisy.
-	        </p>
-	<p data-i18n="terms.section9.item2">
-	          Rentulo samo nerozhoduje soukromoprávní spory mezi uživateli a
-	          neposkytuje pojištění nabízených věcí.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section10.title">10. Zrušení a odmítnutí</h2>
-	<p data-i18n="terms.section10.item1">
-	          Majitel může čekající žádost potvrdit nebo odmítnout. Zájemce může v
-	          současném postupu zrušit čekající nebo potvrzenou rezervaci; po označení
-	          platby už běžné zrušení v aplikaci dostupné není.
-	        </p>
-	<p data-i18n="terms.section10.item2">
-	          Konečné storno podmínky, lhůty, postup po zaplacení a finanční důsledky
-	          musí být doplněny před aktivací skutečných plateb.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section11.title">11. Hodnocení uživatelů</h2>
-	<p data-i18n="terms.section11.item1">
-	          Po označení věci jako vrácené může každá strana vložit jedno hodnocení
-	          druhé strany k dané rezervaci. Hodnocení musí vycházet ze skutečné
-	          zkušenosti, souviset s půjčením a nesmí být protiprávní ani urážlivé.
-	        </p>
-	<p data-i18n="terms.section11.item2">
-	          Rentulo může skrýt nebo odstranit hodnocení, které porušuje tyto
-	          podmínky nebo právní předpisy; postup kontroly a námitek musí být
-	          upřesněn před veřejným spuštěním.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section12.title">12. Zakázané používání a moderování obsahu</h2>
-	<p data-i18n="terms.section12.item1">
-	          Uživatel nesmí zveřejňovat protiprávní nebo klamavý obsah, nabízet
-	          zakázané či nebezpečné věci, obcházet pravidla platformy, narušovat její
-	          bezpečnost, zneužívat osobní údaje ani poškozovat jiné uživatele.
-	        </p>
-	<p data-i18n="terms.section12.item2">
-	          Provozovatel může v přiměřeném rozsahu skrýt nebo odstranit obsah a
-	          omezit účet, pokud je to potřebné k ochraně uživatelů, bezpečnosti
-	          služby, práv třetích osob nebo ke splnění právní povinnosti.
-	        </p>
-	<p data-i18n="terms.section12.item3">
-	          Před veřejným spuštěním musí být dokončen srozumitelný postup pro
-	          hlášení protiprávního obsahu, odůvodnění zásahů a podávání námitek.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section13.title">13. Dostupnost a změny služby</h2>
-	<p data-i18n="terms.section13.item1">
-	          Provozovatel může službu průběžně upravovat, opravovat, dočasně omezit
-	          nebo změnit její funkce. Nepřetržitá ani bezchybná dostupnost není
-	          zaručena.
-	        </p>
-	<p data-i18n="terms.section13.item2">
-	          Podstatné změny pravidel budou zveřejněny v aktuálním znění podmínek a,
-	          vyžadují-li to právní předpisy, oznámeny uživatelům přiměřeným způsobem.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section14.title">14. Stížnosti a spory</h2>
-	<p data-i18n="terms.section14.item1">
-	          Uživatelé se nejprve pokusí vyřešit spor o předání, stav, vrácení nebo
-	          úhradu věci přímo mezi sebou. Technický problém, stížnost nebo podezření
-	          na protiprávní obsah lze oznámit na kontaktní e-mail Rentula.
-	        </p>
-	<p data-i18n="terms.section14.item2">
-	          Tím nejsou dotčena práva uživatele obrátit se na příslušný orgán nebo
-	          soud. Konkrétní reklamační a mimosoudní postupy musí být doplněny podle
-	          postavení provozovatele a uživatelů před veřejným spuštěním.
-	        </p>
-	</div>
-	<div class="terms-section">
-	<h2 data-i18n="terms.section15.title">15. Provozovatel, kontakt a účinnost</h2>
-	<p data-i18n="terms.section15.item1">
-	          Identifikační a kontaktní údaje provozovatele musí být doplněny před
-	          veřejným spuštěním služby.
-	        </p>
-	<p><span data-i18n="terms.section15.contactLabel">Kontaktní e-mail:</span> <a href="mailto:info@rentulo.cz">info@rentulo.cz</a></p>
-	<p data-i18n="terms.section15.item3">
-	          Datum účinnosti a označení verze těchto podmínek budou doplněny po
-	          konečné právní kontrole a před veřejným spuštěním.
-	        </p>
-	</div>
-<div class="terms-actions">
-<a class="terms-button primary" data-i18n="terms.backRegistration" href="registrace.html">Zpět na registraci</a>
-<a class="terms-button light" data-i18n="terms.backHome" href="index.html">Zpět na úvod</a>
-</div>
-</section>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase-config.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/api.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/navigation.js"></script>
+          ke svému účtu. Za činnost provedenou prostřednictvím svého účtu odpovídá
+          uživatel, pokud neprokáže jeho zneužití třetí osobou.
+        </p>
+        <p data-i18n="terms.section2.item2">
+          Uživatel nesmí účet zpřístupnit jiné osobě ani se vydávat za někoho
+          jiného. Podezření na zneužití účtu nebo bezpečnostní incident oznámí
+          bez zbytečného odkladu provozovateli.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section3.title">3. Postavení uživatelů a spotřebitelská práva</h2>
+        <p data-i18n="terms.section3.item1">
+          Současná testovací verze nerozlišuje, zda uživatel jedná jako soukromá
+          osoba, nebo v rámci podnikání. Toto rozlišení a odpovídající informace
+          musí být doplněny před veřejným spuštěním.
+        </p>
+        <p data-i18n="terms.section3.item2">
+          Pokud majitel jedná jako podnikatel vůči spotřebiteli, musí splnit
+          povinnosti vyplývající ze spotřebitelských předpisů. Na dohodu mezi
+          dvěma soukromými osobami se spotřebitelská ochrana zpravidla nepoužije
+          ve stejném rozsahu.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section4.title">4. Nabízení věcí</h2>
+        <p data-i18n="terms.section4.item1">
+          Majitel odpovídá za to, že má právo věc nabídnout, že její popis a
+          fotografie odpovídají skutečnosti a že je věc při předání způsobilá
+          k dohodnutému použití.
+        </p>
+        <ul>
+          <li data-i18n="terms.section4.item2">Majitel uvede zejména název, cenu za den, město, popis a dostupnost.</li>
+          <li data-i18n="terms.section4.item3">Majitel určí místo nebo způsob vyzvednutí a vrácení.</li>
+          <li data-i18n="terms.section4.item4">Zakázáno je nabízet věci, jejichž půjčování je protiprávní nebo nebezpečné.</li>
+        </ul>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section5.title">5. Žádost a rezervace</h2>
+        <p data-i18n="terms.section5.item1">
+          Zájemce odešle žádost pro zvolený termín. Majitel ji může potvrdit
+          nebo odmítnout. Do potvrzení žádosti nevzniká zájemci nárok na půjčení.
+        </p>
+        <p data-i18n="terms.section5.item2">
+          Po potvrzení žádost čeká na platbu. Po označení platby se oběma stranám
+          zpřístupní kontaktní údaje; majitel následně označuje vyzvednutí a
+          vrácení věci. Rozhodující je stav zobrazený v uživatelském účtu.
+        </p>
+        <p data-i18n="terms.section5.item3">
+          Uživatelé jsou povinni respektovat dohodnutý termín, místo a způsob
+          předání. Technický stav rezervace sám o sobě nepotvrzuje fyzické
+          předání ani stav věci.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section6.title">6. Cena, platba a poplatek platformy</h2>
+        <p data-i18n="terms.section6.item1">
+          Cena půjčení se vypočítává podle ceny za den a délky rezervace.
+          Zájemce v současném modelu hradí zobrazenou cenu půjčení. Z této částky
+          se odečte poplatek Rentula ve výši 10 % a majiteli připadne 90 %.
+        </p>
+        <p data-i18n="terms.section6.item2">
+          Externí platební brána zatím není aktivní. Současné označení rezervace
+          jako zaplacené slouží k ověření pracovního postupu aplikace a nepředstavuje
+          skutečné zpracování platby poskytovatelem platebních služeb.
+        </p>
+        <p data-i18n="terms.section6.item3">
+          Konečná pravidla splatnosti, výplaty majiteli, vracení peněz, reklamací
+          plateb a případných dalších nákladů musí být zveřejněna před aktivací
+          skutečných plateb.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section7.title">7. Kontaktní údaje a předání</h2>
+        <p data-i18n="terms.section7.item1">
+          Přesná adresa, telefon a instrukce k předání jsou neveřejné a zobrazují
+          se pouze majiteli a zájemci u konkrétní rezervace po jejím označení
+          jako zaplacené.
+        </p>
+        <p data-i18n="terms.section7.item2">
+          Uživatel smí tyto údaje použít jen pro vyřízení dané půjčky a nesmí je
+          předávat dalším osobám ani používat k jiným účelům.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section8.title">8. Předání, používání a vrácení věci</h2>
+        <p data-i18n="terms.section8.item1">
+          Majitel předá věc v dohodnutém termínu a ve stavu odpovídajícím
+          zveřejněnému popisu a dohodnutému použití. Při předání si obě strany
+          mohou stav věci přiměřeně zaznamenat.
+        </p>
+        <p data-i18n="terms.section8.item2">
+          Zájemce je povinen používat věc obvyklým a bezpečným způsobem, dodržovat
+          pokyny majitele a vrátit ji v dohodnutém termínu ve stavu odpovídajícím
+          převzetí s přihlédnutím k běžnému opotřebení.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section9.title">9. Poškození, ztráta a odpovědnost</h2>
+        <p data-i18n="terms.section9.item1">
+          Odpovědnost za poškození, ztrátu nebo nevrácení věci řeší majitel a
+          zájemce podle konkrétní dohody a platných právních předpisů. Rentulo
+          může zpřístupnit dostupné údaje o rezervaci v rozsahu potřebném pro
+          řešení konkrétního případu a dovoleném právními předpisy.
+        </p>
+        <p data-i18n="terms.section9.item2">
+          Rentulo samo nerozhoduje soukromoprávní spory mezi uživateli a
+          neposkytuje pojištění nabízených věcí.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section10.title">10. Zrušení a odmítnutí</h2>
+        <p data-i18n="terms.section10.item1">
+          Majitel může čekající žádost potvrdit nebo odmítnout. Zájemce může v
+          současném postupu zrušit čekající nebo potvrzenou rezervaci; po označení
+          platby už běžné zrušení v aplikaci dostupné není.
+        </p>
+        <p data-i18n="terms.section10.item2">
+          Konečné storno podmínky, lhůty, postup po zaplacení a finanční důsledky
+          musí být doplněny před aktivací skutečných plateb.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section11.title">11. Hodnocení uživatelů</h2>
+        <p data-i18n="terms.section11.item1">
+          Po označení věci jako vrácené může každá strana vložit jedno hodnocení
+          druhé strany k dané rezervaci. Hodnocení musí vycházet ze skutečné
+          zkušenosti, souviset s půjčením a nesmí být protiprávní ani urážlivé.
+        </p>
+        <p data-i18n="terms.section11.item2">
+          Rentulo může skrýt nebo odstranit hodnocení, které porušuje tyto
+          podmínky nebo právní předpisy; postup kontroly a námitek musí být
+          upřesněn před veřejným spuštěním.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section12.title">12. Zakázané používání a moderování obsahu</h2>
+        <p data-i18n="terms.section12.item1">
+          Uživatel nesmí zveřejňovat protiprávní nebo klamavý obsah, nabízet
+          zakázané či nebezpečné věci, obcházet pravidla platformy, narušovat její
+          bezpečnost, zneužívat osobní údaje ani poškozovat jiné uživatele.
+        </p>
+        <p data-i18n="terms.section12.item2">
+          Provozovatel může v přiměřeném rozsahu skrýt nebo odstranit obsah a
+          omezit účet, pokud je to potřebné k ochraně uživatelů, bezpečnosti
+          služby, práv třetích osob nebo ke splnění právní povinnosti.
+        </p>
+        <p data-i18n="terms.section12.item3">
+          Před veřejným spuštěním musí být dokončen srozumitelný postup pro
+          hlášení protiprávního obsahu, odůvodnění zásahů a podávání námitek.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section13.title">13. Dostupnost a změny služby</h2>
+        <p data-i18n="terms.section13.item1">
+          Provozovatel může službu průběžně upravovat, opravovat, dočasně omezit
+          nebo změnit její funkce. Nepřetržitá ani bezchybná dostupnost není
+          zaručena.
+        </p>
+        <p data-i18n="terms.section13.item2">
+          Podstatné změny pravidel budou zveřejněny v aktuálním znění podmínek a,
+          vyžadují-li to právní předpisy, oznámeny uživatelům přiměřeným způsobem.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section14.title">14. Stížnosti a spory</h2>
+        <p data-i18n="terms.section14.item1">
+          Uživatelé se nejprve pokusí vyřešit spor o předání, stav, vrácení nebo
+          úhradu věci přímo mezi sebou. Technický problém, stížnost nebo podezření
+          na protiprávní obsah lze oznámit na kontaktní e-mail Rentula.
+        </p>
+        <p data-i18n="terms.section14.item2">
+          Tím nejsou dotčena práva uživatele obrátit se na příslušný orgán nebo
+          soud. Konkrétní reklamační a mimosoudní postupy musí být doplněny podle
+          postavení provozovatele a uživatelů před veřejným spuštěním.
+        </p>
+      </section>
+
+      <section class="terms-section">
+        <h2 data-i18n="terms.section15.title">15. Provozovatel, kontakt a účinnost</h2>
+        <p data-i18n="terms.section15.item1">
+          Identifikační a kontaktní údaje provozovatele musí být doplněny před
+          veřejným spuštěním služby.
+        </p>
+        <p>
+          <span data-i18n="terms.section15.contactLabel">Kontaktní e-mail:</span>
+          <a href="mailto:info@rentulo.cz">info@rentulo.cz</a>
+        </p>
+        <p data-i18n="terms.section15.item3">
+          Datum účinnosti a označení verze těchto podmínek budou doplněny po
+          konečné právní kontrole a před veřejným spuštěním.
+        </p>
+      </section>
+
+      <div class="terms-actions">
+        <a href="registrace.html" class="terms-button terms-button-primary" data-i18n="terms.backRegistration">
+          Zpět na registraci
+        </a>
+        <a href="index.html" class="terms-button terms-button-light" data-i18n="terms.backHome">
+          Zpět na úvod
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/navigation.js"></script>
 </body>
 </html>
