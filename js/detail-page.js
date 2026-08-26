@@ -28,6 +28,20 @@
       return locales[language] || locales.cs;
     }
 
+    function getDetailDescriptionTitle() {
+      const language = typeof window.getRentuloLanguage === "function"
+        ? window.getRentuloLanguage()
+        : "cs";
+      const labels = {
+        cs: "Popis věci",
+        en: "Item description",
+        de: "Beschreibung des Artikels",
+        pl: "Opis przedmiotu"
+      };
+
+      return labels[language] || labels.cs;
+    }
+
     function formatDetailNumber(value, options) {
       const numberValue = Number(value);
 
@@ -675,7 +689,7 @@ const hasGps = offerHasGpsLocation(offer);
                 <h1>${escapeHtml(offerName)}</h1>
 
                 <div class="category-line">
-                  ${escapeHtml(offerCategory)} · <strong>${escapeHtml(ownerPublicCity || offerCity || detailTranslate("detail.noCity"))}</strong>
+                  ${escapeHtml(offerCategory)}
                 </div>
 
                 <div class="badges">
@@ -691,21 +705,13 @@ const hasGps = offerHasGpsLocation(offer);
               </div>
 
               ${offer.description && offer.description.trim() ? `
-                <div class="description">${escapeHtml(offer.description)}</div>
+                <section class="description-section">
+                  <h2>${escapeHtml(getDetailDescriptionTitle())}</h2>
+                  <p class="description">${escapeHtml(offer.description)}</p>
+                </section>
               ` : ""}
 
               <div class="info-grid">
-                <div class="section">
-                  <h2>${detailTranslate("detail.includedTitle")}</h2>
-
-                  <ul>
-                    <li>✓ ${escapeHtml(offerName)}</li>
-                    <li>✓ ${detailTranslate("detail.includedAgreement")}</li>
-                    <li>✓ ${detailTranslate("detail.includedHandover")}</li>
-                    <li>✓ ${detailTranslate("detail.includedReturn")}</li>
-                  </ul>
-                </div>
-
                 <div class="section">
                   <h2>${detailTranslate("detail.termsTitle")}</h2>
 
