@@ -661,7 +661,7 @@ function getOfferPhoto(offer) {
             <div class="result-heading">
               <div>
                 <h2 class="result-title">${escapeHtml(name)}</h2>
-                <p class="result-meta">${escapeHtml(city)} · ${escapeHtml(category)}</p>
+                <p class="result-meta">${escapeHtml(category)}</p>
               </div>
             </div>
 
