@@ -661,18 +661,18 @@ function navInjectStyles() {
       border: 1px solid #9fcab7;
       border-radius: 50%;
       background: #deeee6;
-      color: #0b563a;
-      font-size: 15px;
+      color: #101c18;
+      font-size: 16px;
       font-weight: 800;
       line-height: 1;
-      letter-spacing: -0.045em;
+      letter-spacing: -0.05em;
       white-space: nowrap;
       box-shadow: 0 5px 14px rgba(18, 76, 57, 0.11);
     }
 
     .nav-profile-button-initials.is-three-characters {
-      font-size: 13px;
-      letter-spacing: -0.065em;
+      font-size: 15px;
+      letter-spacing: -0.08em;
     }
 
     .nav-profile-mobile-label {
