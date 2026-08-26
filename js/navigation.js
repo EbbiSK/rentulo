@@ -243,6 +243,11 @@ function navRefreshProfileSummaryView() {
   const rating = document.getElementById("sharedProfileRating");
   const avatar = document.getElementById("sharedProfileAvatar");
   const buttonInitials = document.getElementById("sharedProfileButtonInitials");
+  const mobileButtonInitials = document.getElementById("sharedMobileProfileInitials");
+  const mobileAvatar = document.getElementById("sharedMobileProfileAvatar");
+  const mobileName = document.getElementById("sharedMobileProfileName");
+  const mobileEmail = document.getElementById("sharedMobileProfileEmail");
+  const mobileRating = document.getElementById("sharedMobileProfileRating");
   const mobileLabel = document.querySelector(".nav-profile-mobile-label");
   const initials = navGetProfileInitials(summary.name);
 
@@ -254,6 +259,14 @@ function navRefreshProfileSummaryView() {
     buttonInitials.textContent = initials;
     buttonInitials.classList.toggle("is-three-characters", initials.length > 2);
   }
+  if (mobileButtonInitials) {
+    mobileButtonInitials.textContent = initials;
+    mobileButtonInitials.classList.toggle("is-three-characters", initials.length > 2);
+  }
+  if (mobileAvatar) mobileAvatar.textContent = initials;
+  if (mobileName) mobileName.textContent = summary.name;
+  if (mobileEmail) mobileEmail.textContent = summary.email;
+  if (mobileRating) mobileRating.textContent = navFormatProfileRating(summary);
   if (mobileLabel) mobileLabel.textContent = summary.name;
 }
 
@@ -821,6 +834,11 @@ function navInjectStyles() {
       display: none;
     }
 
+    .nav-mobile-profile-summary,
+    .nav-mobile-account-menu {
+      display: none;
+    }
+
     @media (max-width: 1100px) {
       .header,
       .header-inner {
@@ -852,6 +870,38 @@ function navInjectStyles() {
       .shared-mobile-menu-button:hover {
         border-color: #c9d9cf;
         background: #ffffff;
+      }
+
+      .shared-mobile-menu-button.is-profile-trigger {
+        position: relative;
+        gap: 4px;
+        min-height: 44px;
+        padding: 1px 2px;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .shared-mobile-menu-button.is-profile-trigger:hover {
+        background: #edf5f1;
+      }
+
+      html[data-focus-input="pointer"] .shared-mobile-menu-button.is-profile-trigger:focus,
+      html[data-focus-input="pointer"] .shared-mobile-menu-button.is-profile-trigger:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+
+      .shared-mobile-menu-button.is-profile-trigger .nav-profile-button-initials {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+      }
+
+      .shared-mobile-menu-button.is-profile-trigger .nav-notification-badge {
+        top: -4px;
+        left: 31px;
       }
 
       .header #mainNav,
@@ -914,50 +964,51 @@ function navInjectStyles() {
         color: #ffffff !important;
       }
 
-      #mainNav .nav-profile-control {
+      #mainNav.is-user-navigation .nav-profile-control {
+        display: none;
+      }
+
+      #mainNav.is-user-navigation .nav-mobile-profile-summary {
         display: block;
         width: 100%;
       }
 
-      #mainNav .nav-profile-button {
+      #mainNav.is-user-navigation .nav-mobile-profile-summary .nav-profile-summary {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         width: 100%;
-        height: 44px;
-        justify-content: flex-start;
-        padding: 0 12px;
-        border-radius: 10px;
-        box-shadow: none;
+        margin: 0;
+        padding: 8px 10px 14px;
+        text-align: center;
       }
 
-      #mainNav .nav-profile-mobile-label {
-        display: block;
-        min-width: 0;
-        margin-left: 8px;
-        overflow: hidden;
+      #mainNav.is-user-navigation .nav-mobile-profile-summary .nav-profile-summary-avatar {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 8px;
+        font-size: 15px;
+      }
+
+      #mainNav.is-user-navigation .nav-mobile-profile-summary .nav-profile-summary-copy {
+        width: 100%;
+      }
+
+      #mainNav.is-user-navigation .nav-mobile-profile-summary .nav-profile-summary-copy strong {
         font-size: 14px;
-        font-weight: 800;
-        text-overflow: ellipsis;
-        white-space: nowrap;
       }
 
-      #mainNav .nav-profile-chevron {
-        margin-left: auto;
-      }
-
-      #mainNav .nav-notification-badge {
-        top: 5px;
-        right: 34px;
-        left: auto;
-        border-color: #ffffff;
-      }
-
-      #mainNav .nav-profile-menu {
+      #mainNav.is-user-navigation .nav-mobile-account-menu {
         position: static;
+        display: block;
         width: 100%;
-        margin-top: 4px;
-        padding: 5px;
-        border-radius: 12px;
+        margin-top: 6px;
+        padding: 6px 0 0;
+        border: 0;
+        border-top: 1px solid #e8ece9;
+        border-radius: 0;
+        background: transparent;
         box-shadow: none;
-        background: #f8fbf9;
       }
 
       #mainNav .nav-language-control {
@@ -1081,19 +1132,37 @@ function navEnsureMobileMenuButton(nav) {
     button.className = "shared-mobile-menu-button";
     button.setAttribute("aria-controls", nav.id || "mainNav");
     button.setAttribute("aria-expanded", "false");
+    headerContainer.insertBefore(button, nav);
+  }
+
+  const currentUser = navGetCurrentUser();
+
+  if (currentUser) {
+    const summary = navEnsureProfileSummary(currentUser);
+    const initials = navGetProfileInitials(summary.name);
+    const initialsClass = initials.length > 2 ? " is-three-characters" : "";
+    const storedNotificationCount = Number(window.rentuloAccountNotificationCount);
+    const notificationCount = Number.isFinite(storedNotificationCount) ? storedNotificationCount : 0;
+    const badge = notificationCount > 0
+      ? `<span class="nav-notification-badge" aria-hidden="true">${notificationCount > 99 ? "99+" : notificationCount}</span>`
+      : "";
+
+    button.classList.add("is-profile-trigger");
+    button.setAttribute("aria-label", navProfileText("open"));
+    button.innerHTML = `
+      <span class="nav-profile-button-initials${initialsClass}" id="sharedMobileProfileInitials" aria-hidden="true">${navEscapeHtml(initials)}</span>
+      <span class="nav-profile-chevron" aria-hidden="true">⌄</span>
+      ${badge}
+    `;
+  } else {
+    button.classList.remove("is-profile-trigger");
+    button.setAttribute("aria-label", navGetMobileMenuLabel());
     button.innerHTML = `
       <span class="shared-mobile-menu-icon" aria-hidden="true">
         <span></span><span></span><span></span>
       </span>
-      <span class="shared-mobile-menu-label"></span>
+      <span class="shared-mobile-menu-label">${navGetMobileMenuLabel()}</span>
     `;
-
-    headerContainer.insertBefore(button, nav);
-  }
-
-  const label = button.querySelector(".shared-mobile-menu-label");
-  if (label) {
-    label.textContent = navGetMobileMenuLabel();
   }
 
   return button;
@@ -1383,6 +1452,37 @@ function navProfileControl(activePage, notificationCount) {
   `;
 }
 
+function navMobileProfileSummary() {
+  const summary = navEnsureProfileSummary(navGetCurrentUser());
+  const initials = navGetProfileInitials(summary.name);
+
+  return `
+    <div class="nav-mobile-profile-summary">
+      <div class="nav-profile-summary">
+        <div class="nav-profile-summary-avatar" id="sharedMobileProfileAvatar" aria-hidden="true">${navEscapeHtml(initials)}</div>
+        <div class="nav-profile-summary-copy">
+          <strong id="sharedMobileProfileName">${navEscapeHtml(summary.name)}</strong>
+          <span id="sharedMobileProfileEmail">${navEscapeHtml(summary.email)}</span>
+          <small id="sharedMobileProfileRating">${navEscapeHtml(navFormatProfileRating(summary))}</small>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function navMobileAccountMenu() {
+  return `
+    <div class="nav-profile-menu nav-mobile-account-menu">
+      <a href="moje-rezervace.html">${navProfileText("reservations")}</a>
+      <a href="moje-nabidky.html?open=actions">${navProfileText("offers")}</a>
+      <a href="historie.html">${navProfileText("history")}</a>
+      <a href="nastaveni.html">${navProfileText("settings")}</a>
+      <div class="nav-profile-menu-divider" aria-hidden="true"></div>
+      <button type="button" class="nav-profile-menu-logout" data-nav-logout="true">${navProfileText("logout")}</button>
+    </div>
+  `;
+}
+
 function renderSharedNavigation(activePage) {
   renderSharedBranding();
   navEnsureLanguageStyles();
@@ -1396,6 +1496,8 @@ function renderSharedNavigation(activePage) {
   navInjectStyles();
 
   const currentUser = navGetCurrentUser();
+  nav.classList.toggle("is-user-navigation", Boolean(currentUser));
+
   const storedNotificationCount = Number(window.rentuloAccountNotificationCount);
   const notificationCount = Number.isFinite(storedNotificationCount) ? storedNotificationCount : 0;
 
@@ -1413,10 +1515,12 @@ function renderSharedNavigation(activePage) {
 
   if (currentUser) {
     nav.innerHTML = `
+      ${navMobileProfileSummary()}
       <a href="jak-to-funguje.html" class="${isHowActive}">${howItWorksText}</a>
       <a href="vysledky.html" class="${isResultsActive}">${browseText}</a>
       <a href="nabidnout.html" class="${isOfferActive}">${offerText}</a>
       ${navProfileControl(activePage, notificationCount)}
+      ${navMobileAccountMenu()}
       ${navLanguageControl()}
     `;
   } else {
@@ -1449,13 +1553,13 @@ function renderSharedNavigation(activePage) {
     });
   }
 
-  const logoutButton = document.getElementById("sharedLogoutBtn");
-  if (logoutButton) {
+  const logoutButtons = document.querySelectorAll('#sharedLogoutBtn, [data-nav-logout="true"]');
+  logoutButtons.forEach(function (logoutButton) {
     logoutButton.addEventListener("click", function (event) {
       event.preventDefault();
       void navLogoutUser();
     });
-  }
+  });
 
   const languageButton = document.getElementById("sharedLanguageButton");
   const languageMenu = document.getElementById("sharedLanguageMenu");
