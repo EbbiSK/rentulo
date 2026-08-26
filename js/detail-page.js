@@ -714,10 +714,6 @@ const hasGps = offerHasGpsLocation(offer);
                 <div class="section">
                   <h2>${detailTranslate("detail.nearbyTitle")}</h2>
 
-                  <p>
-                    ${detailTranslate("detail.nearbyText")}
-                  </p>
-
                   <div class="gps-note ${hasGps ? "" : "missing"}">
                     ${escapeHtml(getPickupGpsText(offer))}
                   </div>
