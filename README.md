@@ -50,7 +50,6 @@ Medzi hlavné stránky patria napríklad:
 - `moje-nabidky.html`,
 - `moje-rezervace.html`,
 - `historie.html`,
-- `muj-ucet.html`,
 - `nastaveni.html`,
 - `registrace.html`,
 - `prihlaseni.html`,

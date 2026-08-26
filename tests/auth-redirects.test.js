@@ -98,7 +98,6 @@ const safeUuid = "123e4567-e89b-42d3-a456-426614174000";
 
 test("login redirect allowlist accepts only approved internal destinations", () => {
   const cases = [
-    ["muj-ucet.html", "muj-ucet.html"],
     ["historie.html", "historie.html"],
     ["moje-nabidky.html", "moje-nabidky.html"],
     ["moje-rezervace.html", "moje-rezervace.html"],
@@ -106,7 +105,7 @@ test("login redirect allowlist accepts only approved internal destinations", () 
     ["nastaveni.html", "nastaveni.html"],
     ["detail.html?id=" + safeUuid, "detail.html?id=" + safeUuid],
     ["edit-nabidka.html?id=" + safeUuid, "edit-nabidka.html?id=" + safeUuid],
-    [APP_ORIGIN + "/muj-ucet.html", "muj-ucet.html"]
+    [APP_ORIGIN + "/nastaveni.html", "nastaveni.html"]
   ];
 
   for (const [input, expected] of cases) {
@@ -121,6 +120,8 @@ test("login redirect allowlist rejects external, executable and malformed destin
     "javascript:alert(1)",
     "data:text/html,unsafe",
     "index.html",
+    "muj-ucet.html",
+    APP_ORIGIN + "/muj-ucet.html",
     "detail.html?id=not-a-uuid",
     "edit-nabidka.html?id=123"
   ];
@@ -132,8 +133,8 @@ test("login redirect allowlist rejects external, executable and malformed destin
 
 test("password recovery keeps the same safe return target when going back to login", async () => {
   assert.equal(
-    await getRecoveryBackLink("muj-ucet.html"),
-    "prihlaseni.html?returnTo=muj-ucet.html"
+    await getRecoveryBackLink("nastaveni.html"),
+    "prihlaseni.html?returnTo=nastaveni.html"
   );
 
   assert.equal(
@@ -145,6 +146,11 @@ test("password recovery keeps the same safe return target when going back to log
 test("password recovery drops unsafe return targets", async () => {
   assert.equal(
     await getRecoveryBackLink("https://evil.example/phishing"),
+    "prihlaseni.html"
+  );
+
+  assert.equal(
+    await getRecoveryBackLink("muj-ucet.html"),
     "prihlaseni.html"
   );
 

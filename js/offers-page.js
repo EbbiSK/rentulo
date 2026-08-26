@@ -1803,12 +1803,12 @@ return [
         return;
       }
 
-      renderSharedNavigation("muj-ucet");
+      renderSharedNavigation("moje-nabidky");
       renderLoadingState();
 
       const loaded = await loadOwnerData();
 
-      renderSharedNavigation("muj-ucet");
+      renderSharedNavigation("moje-nabidky");
 
       if (loaded) {
         renderOffers();
@@ -1827,7 +1827,7 @@ return [
     });
 
     document.addEventListener("rentuloLanguageChanged", function () {
-      renderSharedNavigation("muj-ucet");
+      renderSharedNavigation("moje-nabidky");
       refreshOfferDeleteModalText();
 
       if (ownerOffersLoadState === "loading") {

@@ -25,7 +25,7 @@
   }
 
   function redirectToLogin() {
-    const currentPage = window.location.pathname.split("/").pop() || "muj-ucet.html";
+    const currentPage = window.location.pathname.split("/").pop() || "index.html";
     const returnTo = currentPage + window.location.search + window.location.hash;
 
     window.location.replace(

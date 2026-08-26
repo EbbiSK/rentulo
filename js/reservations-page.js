@@ -604,7 +604,7 @@ return (
       if (typeof window.refreshRentuloNotificationBadge === "function") {
         await window.refreshRentuloNotificationBadge();
       } else {
-        renderSharedNavigation("muj-ucet");
+        renderSharedNavigation("moje-rezervace");
       }
 
       if (reservationsLoadState === "ready") {
@@ -1676,7 +1676,7 @@ const data = Array.isArray(paidReservations)
         return;
       }
 
-      renderSharedNavigation("muj-ucet");
+      renderSharedNavigation("moje-rezervace");
       renderLoadingState();
       reservationsLoadState = "loading";
 
@@ -1692,7 +1692,7 @@ const data = Array.isArray(paidReservations)
         ? await loadMyReviewsFromSupabase()
         : [];
 
-      renderSharedNavigation("muj-ucet");
+      renderSharedNavigation("moje-rezervace");
 
       if (reservationsLoadState === "ready") {
         renderReservations();
@@ -1836,7 +1836,7 @@ const data = Array.isArray(paidReservations)
     });
 
     document.addEventListener("rentuloLanguageChanged", function () {
-      renderSharedNavigation("muj-ucet");
+      renderSharedNavigation("moje-rezervace");
       refreshReservationCancelModalText();
       refreshReservationPaymentModalText();
 

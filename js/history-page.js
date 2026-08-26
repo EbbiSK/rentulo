@@ -647,7 +647,7 @@ document.addEventListener("click", async function (event) {
 
 document.addEventListener("rentuloLanguageChanged", function () {
   if (typeof renderSharedNavigation === "function") {
-    renderSharedNavigation("muj-ucet");
+    renderSharedNavigation("historie");
   }
 
   if (!historyCurrentUser) return;

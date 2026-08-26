@@ -123,8 +123,6 @@
         return "moje-nabidky.html";
       case "moje-rezervace.html":
         return "moje-rezervace.html";
-      case "muj-ucet.html":
-        return "muj-ucet.html";
       case "nabidnout.html":
         return "nabidnout.html";
       case "nastaveni.html":
@@ -142,7 +140,7 @@
   }
 
   function getPostResetDestination() {
-    return getSafeReturnTo() || "muj-ucet.html";
+    return getSafeReturnTo() || "index.html";
   }
 
   function updateBackToLoginLinks() {

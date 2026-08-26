@@ -1403,7 +1403,7 @@ function navBindGlobalDropdownDismissal() {
   navGlobalDropdownDismissalBound = true;
 }
 
-function navProfileControl(activePage, notificationCount) {
+function navProfileControl(notificationCount) {
   const badge = notificationCount > 0
     ? `<span class="nav-notification-badge" aria-hidden="true">${notificationCount > 99 ? "99+" : notificationCount}</span>`
     : "";
@@ -1412,7 +1412,6 @@ function navProfileControl(activePage, notificationCount) {
     ? `, ${notificationCount} ${navProfileText("notifications")}`
     : "";
 
-  const isAccountActive = activePage === "muj-ucet";
   const summary = navEnsureProfileSummary(navGetCurrentUser());
   const profileName = navEscapeHtml(summary.name);
   const profileEmail = navEscapeHtml(summary.email);
@@ -1426,7 +1425,7 @@ function navProfileControl(activePage, notificationCount) {
       <button
         type="button"
         id="sharedProfileButton"
-        class="nav-profile-button${isAccountActive ? " is-active" : ""}"
+        class="nav-profile-button"
         aria-label="${navProfileText("open")}${notificationLabel}"
         aria-haspopup="true"
         aria-expanded="false"
@@ -1529,7 +1528,7 @@ function renderSharedNavigation(activePage) {
       <a href="jak-to-funguje.html" class="${isHowActive}">${howItWorksText}</a>
       <a href="vysledky.html" class="${isResultsActive}">${browseText}</a>
       <a href="nabidnout.html" class="${isOfferActive}">${offerText}</a>
-      ${navProfileControl(activePage, notificationCount)}
+      ${navProfileControl(notificationCount)}
       ${navMobileAccountMenu()}
       ${navLanguageControl()}
     `;

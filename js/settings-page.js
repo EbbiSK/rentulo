@@ -198,7 +198,7 @@
     }
 
     if (typeof renderSharedNavigation === "function") {
-      renderSharedNavigation("muj-ucet");
+      renderSharedNavigation("nastaveni");
     }
   }
 

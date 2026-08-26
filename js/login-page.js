@@ -54,8 +54,6 @@ function loginNormalizeEmail(email) {
           return "moje-nabidky.html";
         case "moje-rezervace.html":
           return "moje-rezervace.html";
-        case "muj-ucet.html":
-          return "index.html";
         case "nabidnout.html":
           return "nabidnout.html";
         case "nastaveni.html":
