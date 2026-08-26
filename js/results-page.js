@@ -1029,10 +1029,7 @@ const HOME_CATEGORY_GROUPS = {
         return;
       }
 
-      const compactMobileFilters = window.matchMedia("(max-width: 760px)").matches;
-      allCategoriesOption.textContent = compactMobileFilters
-        ? getCompactCategoryAllLabel()
-        : resultsTranslate("results.categoryAll", "Všechny kategorie");
+      allCategoriesOption.textContent = getCompactCategoryAllLabel();
     }
 
     function setupResultsEvents() {
