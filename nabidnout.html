@@ -82,7 +82,7 @@
     }
 
     .offer-page {
-      width: min(1320px, calc(100% - 64px));
+      width: min(1080px, calc(100% - 64px));
       margin: 0 auto;
       padding: 34px 0 64px;
     }
@@ -189,17 +189,27 @@
       color: var(--rentulo-ink, #102019);
     }
 
-    .photo-upload-box,
+    .photo-upload-box {
+      overflow: visible;
+      padding-bottom: 22px;
+      border: 0;
+      border-bottom: 1px solid var(--rentulo-line, #e5e9e5);
+      border-radius: 0;
+      background: transparent;
+    }
+
     .pickup-options {
-      overflow: hidden;
-      border: 1px solid var(--rentulo-line, #e5e9e5);
-      border-radius: 18px;
-      background: #fbfcfb;
+      overflow: visible;
+      padding-top: 22px;
+      border: 0;
+      border-top: 1px solid var(--rentulo-line, #e5e9e5);
+      border-radius: 0;
+      background: transparent;
     }
 
     .photo-upload-header,
     .pickup-options-header {
-      padding: 18px 18px 0;
+      padding: 0;
       background: transparent;
       border: 0;
     }
@@ -236,7 +246,7 @@
       grid-template-columns: 160px minmax(0, 1fr);
       gap: 18px;
       align-items: center;
-      padding: 16px 18px 18px;
+      padding: 14px 0 0;
     }
 
     .photo-preview {
@@ -357,6 +367,10 @@
       gap: 16px;
     }
 
+    .offer-basics-grid {
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(170px, 0.65fr);
+    }
+
     .form-group {
       display: grid;
       gap: 8px;
@@ -437,15 +451,16 @@
 
     .pickup-options-body {
       display: grid;
-      gap: 16px;
-      padding: 16px 18px 18px;
+      gap: 14px;
+      padding: 14px 0 0;
     }
 
     .profile-pickup-summary {
-      padding: 12px 14px;
-      border: 1px solid #d9e1dd;
-      border-radius: 13px;
-      background: #ffffff;
+      padding: 0 0 14px;
+      border: 0;
+      border-bottom: 1px solid #d6e8df;
+      border-radius: 0;
+      background: transparent;
       color: var(--rentulo-ink, #102019);
       font-size: 13px;
       line-height: 1.5;
@@ -669,14 +684,17 @@
         padding: 18px;
       }
 
-      .photo-upload-box,
+      .photo-upload-box {
+        padding-bottom: 18px;
+      }
+
       .pickup-options {
-        border-radius: 16px;
+        padding-top: 18px;
       }
 
       .photo-upload-header,
       .pickup-options-header {
-        padding: 16px 15px 0;
+        padding: 0;
       }
 
       .photo-upload-layout,
@@ -685,17 +703,17 @@
       }
 
       .photo-upload-layout {
-        gap: 14px;
-        padding: 14px 15px 16px;
+        gap: 12px;
+        padding: 12px 0 0;
       }
 
       .photo-preview {
         width: 100%;
-        height: 190px;
+        height: 150px;
       }
 
       .pickup-options-body {
-        padding: 14px 15px 16px;
+        padding: 12px 0 0;
       }
 
       .form-actions {
@@ -786,7 +804,7 @@
             </div>
           </div>
 
-          <div class="form-grid">
+          <div class="form-grid offer-basics-grid">
             <div class="form-group">
               <label for="toolName" data-i18n="offer.nameLabel">Název věci</label>
               <input id="toolName" type="text" placeholder="např. vysavač, gril nebo reproduktor" data-i18n-placeholder="offer.namePlaceholder" />
@@ -816,7 +834,7 @@
 
           <div class="form-group full">
             <label for="toolDescription" data-i18n="offer.descriptionLabel">Popis nabízené věci</label>
-            <textarea id="toolDescription" placeholder="Popište stav věci, co je součástí půjčení a případné podmínky." data-i18n-placeholder="offer.descriptionPlaceholder"></textarea>
+            <textarea id="toolDescription" placeholder="Popište stav věci, důležité vlastnosti a případné podmínky." data-i18n-placeholder="offer.descriptionPlaceholder"></textarea>
           </div>
 
           <section class="pickup-options">
