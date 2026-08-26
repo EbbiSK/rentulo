@@ -1008,6 +1008,33 @@ const HOME_CATEGORY_GROUPS = {
         sortedOffers.map(renderOfferCard).join("");
     }
 
+    function getCompactCategoryAllLabel() {
+      const language = typeof window.getRentuloLanguage === "function"
+        ? window.getRentuloLanguage()
+        : "cs";
+      const labels = {
+        cs: "Všechny",
+        en: "All",
+        de: "Alle",
+        pl: "Wszystkie"
+      };
+
+      return labels[language] || labels.cs;
+    }
+
+    function updateResultsFilterLabelsForViewport() {
+      const allCategoriesOption = document.querySelector('#categoryFilter option[value=""]');
+
+      if (!allCategoriesOption) {
+        return;
+      }
+
+      const compactMobileFilters = window.matchMedia("(max-width: 760px)").matches;
+      allCategoriesOption.textContent = compactMobileFilters
+        ? getCompactCategoryAllLabel()
+        : resultsTranslate("results.categoryAll", "Všechny kategorie");
+    }
+
     function setupResultsEvents() {
       document.getElementById("results-search-button").addEventListener("click", function () {
         applySearchAndUpdateUrl();
@@ -1043,6 +1070,8 @@ const HOME_CATEGORY_GROUPS = {
       document.getElementById("priceFilter").addEventListener("change", function () {
         applySearchAndUpdateUrl();
       });
+
+      window.addEventListener("resize", updateResultsFilterLabelsForViewport);
     }
 
     async function initializeResultsPage() {
@@ -1050,6 +1079,7 @@ const HOME_CATEGORY_GROUPS = {
       document.title = resultsTranslate("results.documentTitle", "Výsledky vyhledávání - Rentulo");
       renderSharedNavigation("vysledky");
       setupResultsFromUrl();
+      updateResultsFilterLabelsForViewport();
       setupResultsEvents();
 
       renderEmptyResults("loading");
@@ -1068,5 +1098,6 @@ const HOME_CATEGORY_GROUPS = {
     document.addEventListener("rentuloLanguageChanged", function () {
       document.title = resultsTranslate("results.documentTitle", "Výsledky vyhledávání - Rentulo");
       applyResultsModeTranslations();
+      updateResultsFilterLabelsForViewport();
       renderResults();
     });

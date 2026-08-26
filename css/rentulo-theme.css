@@ -307,7 +307,7 @@ textarea {
 /* Results mobile layout: keep filters compact and remove nested info cards. */
 @media (max-width: 760px) {
   body[data-navigation-page="vysledky"] .filters-card {
-    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr) !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
   }
 
   body[data-navigation-page="vysledky"] .filters-card > h2,
@@ -324,8 +324,9 @@ textarea {
 
   body[data-navigation-page="vysledky"] .filter-group:nth-of-type(3) select,
   body[data-navigation-page="vysledky"] .filter-group:nth-of-type(4) select {
-    padding-right: 30px !important;
-    padding-left: 11px !important;
+    padding-right: 24px !important;
+    padding-left: 10px !important;
+    font-size: 12.5px !important;
   }
 
   body[data-navigation-page="vysledky"] .result-info {
