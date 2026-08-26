@@ -501,6 +501,55 @@
       box-shadow: none;
     }
 
+    @media (min-width: 761px) {
+      .result-info {
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+        gap: 0;
+        margin-bottom: 12px;
+        border-top: 1px solid var(--rentulo-line, #e5e9e5);
+        border-bottom: 1px solid var(--rentulo-line, #e5e9e5);
+      }
+
+      .result-info-box {
+        min-height: 0;
+        padding: 10px 14px;
+        border: 0;
+        border-right: 1px solid var(--rentulo-line, #e5e9e5);
+        border-radius: 0;
+        background: transparent;
+      }
+
+      .result-info-box:first-child {
+        padding-left: 0;
+      }
+
+      .result-info-box:last-child {
+        padding-right: 0;
+        border-right: 0;
+      }
+    }
+
+    @media (min-width: 1101px) {
+      .result-card {
+        grid-template-columns: 140px minmax(0, 1fr);
+        gap: 16px;
+        padding: 14px;
+        border-radius: 22px;
+      }
+
+      .result-image {
+        width: 140px;
+        height: 140px;
+        border-radius: 16px;
+      }
+
+      .result-heading {
+        margin: 1px 0 10px;
+      }
+    }
+
     @media (max-width: 1100px) {
       .results-page {
         width: min(1040px, calc(100% - 48px));
