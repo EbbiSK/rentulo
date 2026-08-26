@@ -28,166 +28,50 @@
     <nav class="nav" id="mainNav"></nav>
   </header>
 
-  <main class="account-home-page">
-    <section class="account-home-hero" aria-labelledby="accountHomeTitle">
-      <div class="account-home-hero-copy">
-        <span class="account-home-eyebrow" data-account-i18n="accountHome.eyebrow">Můj účet</span>
-        <h1 id="accountHomeTitle" data-account-i18n="accountHome.title">Váš přehled</h1>
-        <p data-account-i18n="accountHome.subtitle">
-          Rezervace, nabídky a nastavení máte přehledně na jednom místě.
-        </p>
+  <main class="account-page">
+    <section class="account-shell" aria-labelledby="accountTitle">
+      <header class="account-heading">
+        <h1 id="accountTitle" data-account-i18n="accountHome.title">Můj účet</h1>
+        <p data-account-i18n="accountHome.subtitle">Spravujte svůj profil a nastavení účtu.</p>
+      </header>
+
+      <div class="account-load-status" id="accountLoadStatus" role="status" aria-live="polite">
+        <span id="accountLoadStatusText" data-i18n="account.load.loading">Načítám údaje účtu...</span>
+        <button
+          class="account-load-retry"
+          id="accountLoadRetry"
+          type="button"
+          data-i18n="account.load.retry"
+          hidden
+        >
+          Zkusit znovu
+        </button>
       </div>
 
-      <div class="account-home-hero-actions">
-        <div class="account-notification-wrap">
-          <button
-            class="account-notification-button"
-            id="accountNotificationButton"
-            type="button"
-            aria-haspopup="true"
-            aria-expanded="false"
-            aria-controls="accountNotificationPanel"
-            data-account-i18n-aria-label="accountHome.notifications.open"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-            <span class="account-notification-count" id="accountNotificationCount" hidden>0</span>
-          </button>
-
-          <section
-            class="account-notification-panel"
-            id="accountNotificationPanel"
-            aria-labelledby="accountNotificationTitle"
-            hidden
-          >
-            <div class="account-notification-panel-head">
-              <h2 id="accountNotificationTitle" data-account-i18n="accountHome.notifications.title">Upozornění</h2>
-            </div>
-
-            <div class="account-notification-list" id="accountNotificationList"></div>
-
-            <p
-              class="account-notification-empty"
-              id="accountNotificationEmpty"
-              data-account-i18n="accountHome.notifications.empty"
-              hidden
-            >
-              Nemáte žádná upozornění.
-            </p>
-          </section>
-        </div>
-      </div>
-
-      <div class="account-profile-summary">
+      <section class="account-profile-card" id="accountProfileCard" aria-label="Profil" hidden>
         <div class="account-profile-avatar" id="profileAvatar" aria-hidden="true">U</div>
         <div class="account-profile-copy">
           <strong id="profileName">Uživatel</strong>
           <span id="profileEmail">email@example.cz</span>
+          <small id="profileRating">Hodnocení: zatím bez hodnocení</small>
         </div>
-        <div class="account-profile-rating" id="profileRating">Hodnocení: zatím bez hodnocení</div>
-      </div>
-    </section>
+      </section>
 
-    <div class="account-load-status" id="accountLoadStatus" role="status" aria-live="polite">
-      <span id="accountLoadStatusText" data-i18n="account.load.loading">Načítám údaje účtu...</span>
-      <button
-        class="account-load-retry"
-        id="accountLoadRetry"
-        type="button"
-        data-i18n="account.load.retry"
-        hidden
-      >
-        Zkusit znovu
-      </button>
-    </div>
+      <a href="nastaveni.html" class="account-settings-link">
+        <span class="account-settings-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.18.36.39.67.6 1 .28.39.63.6 1.1.6H21v4h-.09c-.47 0-.82.21-1.1.6-.21.33-.42.64-.6 1Z"></path>
+          </svg>
+        </span>
 
-    <section class="account-home-section" aria-labelledby="accountHomeSectionsTitle">
-      <div class="account-home-section-head">
-        <div>
-          <span class="account-home-section-kicker" data-account-i18n="accountHome.sections.kicker">Správa účtu</span>
-          <h2 id="accountHomeSectionsTitle" data-account-i18n="accountHome.sections.title">Co chcete spravovat?</h2>
-        </div>
-        <p data-account-i18n="accountHome.sections.subtitle">Důležité žádosti a rezervace zvýrazníme automaticky.</p>
-      </div>
+        <span class="account-settings-copy">
+          <strong data-account-i18n="accountHome.settingsTitle">Nastavení účtu</strong>
+          <span data-account-i18n="accountHome.settingsDescription">Osobní údaje, jazyk, heslo a zabezpečení účtu.</span>
+        </span>
 
-      <div class="account-home-grid">
-        <a href="moje-rezervace.html" class="account-home-card" id="reservationsCard">
-          <div class="account-home-card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <rect x="4" y="5" width="16" height="15" rx="2" />
-              <path d="M8 3v4M16 3v4M4 10h16" />
-            </svg>
-          </div>
-
-          <div class="account-home-card-main">
-            <div class="account-home-card-title-row">
-              <h3 data-i18n="account.reservationsTitle">Moje rezervace</h3>
-              <span class="account-home-card-badge" id="reservationsBadge" hidden>0</span>
-            </div>
-            <p id="reservationsText" data-i18n="account.reservationsDefault">Co si chci půjčit</p>
-          </div>
-
-          <span class="account-home-card-action" data-i18n="account.reservationsButton">Spravovat rezervace</span>
-        </a>
-
-        <a href="moje-nabidky.html?open=actions" class="account-home-card" id="offersCard">
-          <div class="account-home-card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M3 10.5 12 4l9 6.5" />
-              <path d="M5 9.5V20h14V9.5" />
-              <path d="M9 20v-6h6v6" />
-            </svg>
-          </div>
-
-          <div class="account-home-card-main">
-            <div class="account-home-card-title-row">
-              <h3 data-i18n="account.offersTitle">Moje nabídky</h3>
-              <span class="account-home-card-badge" id="offersBadge" hidden>0</span>
-            </div>
-            <p id="offersText" data-i18n="account.offersDefault">Co nabízím a žádosti od lidí</p>
-          </div>
-
-          <span class="account-home-card-action" data-i18n="account.offersButton">Spravovat nabídky</span>
-        </a>
-
-        <a href="historie.html" class="account-home-card account-home-card-secondary">
-          <div class="account-home-card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
-              <path d="M3 3v5h5M12 7v5l3 2" />
-            </svg>
-          </div>
-
-          <div class="account-home-card-main">
-            <div class="account-home-card-title-row">
-              <h3 data-i18n="account.historyTitle">Historie</h3>
-            </div>
-            <p data-i18n="account.historyDescription">Dokončené, vrácené, zrušené a odmítnuté rezervace.</p>
-          </div>
-
-          <span class="account-home-card-action account-home-card-action-soft" data-i18n="account.historyButton">Zobrazit historii</span>
-        </a>
-
-        <a href="nastaveni.html" class="account-home-card account-home-card-secondary">
-          <div class="account-home-card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.18.36.39.67.6 1 .28.39.63.6 1.1.6H21v4h-.09c-.47 0-.82.21-1.1.6-.21.33-.42.64-.6 1Z" />
-            </svg>
-          </div>
-
-          <div class="account-home-card-main">
-            <div class="account-home-card-title-row">
-              <h3 data-i18n="account.settingsTitle">Nastavení</h3>
-            </div>
-            <p data-account-i18n="accountHome.settingsDescription">Osobní údaje, jazyk, heslo a zabezpečení účtu.</p>
-          </div>
-
-          <span class="account-home-card-action account-home-card-action-soft" data-i18n="account.settingsButton">Otevřít nastavení</span>
-        </a>
-      </div>
+        <span class="account-settings-arrow" aria-hidden="true">→</span>
+      </a>
     </section>
   </main>
 
@@ -200,7 +84,6 @@
   <script src="js/storage.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/auth-guard.js"></script>
-  <script src="js/reservation-status.js"></script>
   <script src="js/account-page.js"></script>
 </body>
 </html>

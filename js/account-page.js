@@ -8,10 +8,6 @@
 
   let verifiedAccountUser = null;
   let accountLoadState = "idle";
-  let supabaseOffers = [];
-  let ownerReservations = [];
-  let renterReservations = [];
-  let accountNotifications = [];
 
   function getSupabaseClient() {
     if (window.rentuloSupabase) return window.rentuloSupabase;
@@ -33,6 +29,7 @@
     return text;
   }
 
+
   function homeT(key, fallback, replacements) {
     if (typeof window.accountHomeT === "function") {
       return window.accountHomeT(key, fallback, replacements);
@@ -53,36 +50,6 @@
     const numberValue = Number(value);
     if (!Number.isFinite(numberValue)) return String(value ?? "");
     return numberValue.toLocaleString(currentLocale(), options);
-  }
-
-  function plural(prefix, count, fallbacks, replacements) {
-    const category = new Intl.PluralRules(currentLocale()).select(Number(count));
-    const supported = ["one", "few", "many", "other"].includes(category)
-      ? category
-      : "other";
-    const suffix = supported.charAt(0).toUpperCase() + supported.slice(1);
-
-    return t(
-      prefix + suffix,
-      fallbacks[supported] || fallbacks.other || "",
-      Object.assign({}, replacements || {}, { count: formatNumber(count) })
-    );
-  }
-
-  function normalizeStatus(status) {
-    if (typeof normalizeReservationStatus === "function") {
-      return normalizeReservationStatus(status);
-    }
-
-    return String(status || "").trim();
-  }
-
-  function isOpen(status) {
-    if (typeof isOpenReservationStatus === "function") {
-      return isOpenReservationStatus(status);
-    }
-
-    return ["pending", "approved", "paid", "picked_up"].includes(normalizeStatus(status));
   }
 
   function renderLoadState() {
@@ -131,7 +98,7 @@
       metadata.full_name ||
       metadata.name ||
       (user && (user.full_name || user.name)) ||
-      t("account.userFallback", "Uživatel")
+      homeT("accountHome.userFallback", "Uživatel")
     );
   }
 
@@ -146,8 +113,7 @@
       .maybeSingle();
 
     if (error) {
-      console.warn("Profil uživatele se nepodařilo načíst:", error);
-      return null;
+      throw error;
     }
 
     return data || null;
@@ -171,7 +137,26 @@
     return data || null;
   }
 
-  async function renderProfile(user) {
+  function renderRating(rating) {
+    const ratingElement = document.getElementById("profileRating");
+    if (!ratingElement) return;
+
+    if (rating && Number(rating.rating_count) > 0) {
+      ratingElement.textContent = homeT(
+        "accountHome.ratingCompact",
+        "Hodnocení: ⭐ {average} / 5 ({count})",
+        {
+          average: formatNumber(rating.average_rating, { maximumFractionDigits: 1 }),
+          count: formatNumber(rating.rating_count)
+        }
+      );
+      return;
+    }
+
+    ratingElement.textContent = homeT("accountHome.ratingNone", "Hodnocení: zatím bez hodnocení");
+  }
+
+  async function loadAndRenderProfile(user) {
     const profile = await loadProfile(user);
     const rating = await loadRating(user);
     const name = (profile && profile.full_name) || fallbackUserName(user);
@@ -180,499 +165,27 @@
     const nameElement = document.getElementById("profileName");
     const emailElement = document.getElementById("profileEmail");
     const avatarElement = document.getElementById("profileAvatar");
-    const ratingElement = document.getElementById("profileRating");
+    const profileCard = document.getElementById("accountProfileCard");
 
     if (nameElement) nameElement.textContent = name;
     if (emailElement) {
-      emailElement.textContent = email || t("account.emailMissing", "E-mail není uložen");
+      emailElement.textContent = email || homeT("accountHome.emailMissing", "E-mail není uložen");
     }
     if (avatarElement) {
       avatarElement.textContent = String(name || "U").trim().charAt(0).toUpperCase() || "U";
     }
 
-    if (!ratingElement) return;
+    renderRating(rating);
 
-    if (rating && Number(rating.rating_count) > 0) {
-      ratingElement.textContent = plural(
-        "account.rating",
-        Number(rating.rating_count),
-        {
-          one: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
-          few: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
-          many: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)",
-          other: "Hodnocení: ⭐ {average} / 5 ({count} hodnocení)"
-        },
-        {
-          average: formatNumber(rating.average_rating, { maximumFractionDigits: 1 })
-        }
-      );
-      return;
+    if (profileCard) {
+      profileCard.hidden = false;
     }
-
-    ratingElement.textContent = t("account.ratingNone", "Hodnocení: zatím bez hodnocení");
-  }
-
-  function normalizeOffer(row) {
-    return {
-      id: row.id,
-      name: row.name || t("account.itemFallback", "Věc k půjčení"),
-      status: row.status || "active"
-    };
-  }
-
-  function normalizeReservation(row) {
-    return {
-      id: row.id,
-      ownerId: row.owner_id,
-      renterId: row.renter_id,
-      offerId: row.offer_id,
-      offerName: row.offer_name || t("account.itemFallback", "Věc k půjčení"),
-      status: normalizeStatus(row.status),
-      createdAt: row.created_at || "",
-      updatedAt: row.updated_at || row.created_at || ""
-    };
-  }
-
-  async function loadAccountData() {
-    accountLoadState = "loading";
-    renderLoadState();
-
-    const client = getSupabaseClient();
-    const user = verifiedAccountUser || await getCurrentUser();
-
-    if (!client || !user) {
-      accountLoadState = "error";
-      renderLoadState();
-      return false;
-    }
-
-    const [offersResult, reservationsResult] = await Promise.all([
-      client
-        .from("offers")
-        .select("id, name, status")
-        .eq("owner_id", user.id)
-        .neq("status", "deleted"),
-      client.rpc("get_my_reservations")
-    ]);
-
-    if (offersResult.error || reservationsResult.error) {
-      console.error(offersResult.error || reservationsResult.error);
-      accountLoadState = "error";
-      renderLoadState();
-      return false;
-    }
-
-    supabaseOffers = Array.isArray(offersResult.data)
-      ? offersResult.data.map(normalizeOffer)
-      : [];
-
-    const allReservations = Array.isArray(reservationsResult.data)
-      ? reservationsResult.data.map(normalizeReservation)
-      : [];
-
-    ownerReservations = allReservations.filter(function (reservation) {
-      return reservation.ownerId === user.id;
-    });
-
-    renterReservations = allReservations.filter(function (reservation) {
-      return reservation.renterId === user.id;
-    });
-
-    accountLoadState = "ready";
-    renderLoadState();
-    return true;
-  }
-
-  function setBadge(element, count) {
-    if (!element) return;
-
-    if (count > 0) {
-      element.hidden = false;
-      element.textContent = formatNumber(count);
-      return;
-    }
-
-    element.hidden = true;
-    element.textContent = "0";
-  }
-
-  function setCardState(card, badge, description, count, urgent, text) {
-    if (card) card.classList.toggle("is-urgent", Boolean(urgent));
-    setBadge(badge, count);
-    if (description && text) description.textContent = text;
-  }
-
-  function renderAccountCards() {
-    const reservationsCard = document.getElementById("reservationsCard");
-    const offersCard = document.getElementById("offersCard");
-    const reservationsBadge = document.getElementById("reservationsBadge");
-    const offersBadge = document.getElementById("offersBadge");
-    const reservationsText = document.getElementById("reservationsText");
-    const offersText = document.getElementById("offersText");
-
-    const activeReservations = renterReservations.filter(function (reservation) {
-      return isOpen(reservation.status);
-    });
-
-    const waitingPaymentCount = renterReservations.filter(function (reservation) {
-      return reservation.status === "approved";
-    }).length;
-
-    const pendingRequestsCount = ownerReservations.filter(function (reservation) {
-      return reservation.status === "pending";
-    }).length;
-
-    const paidRequestsCount = ownerReservations.filter(function (reservation) {
-      return reservation.status === "paid";
-    }).length;
-
-    const pickedUpRequestsCount = ownerReservations.filter(function (reservation) {
-      return reservation.status === "picked_up";
-    }).length;
-
-    const ownerActionCount = pendingRequestsCount + paidRequestsCount + pickedUpRequestsCount;
-
-    let reservationsDescription = t("account.reservationsDefault", "Co si chci půjčit");
-
-    if (waitingPaymentCount > 0) {
-      reservationsDescription = plural(
-        "account.dynamic.waitingPayment",
-        waitingPaymentCount,
-        {
-          one: "1 rezervace čeká na platbu",
-          few: "{count} rezervace čekají na platbu",
-          many: "{count} rezervací čeká na platbu",
-          other: "{count} rezervací čeká na platbu"
-        }
-      );
-    } else if (activeReservations.length > 0) {
-      reservationsDescription = plural(
-        "account.dynamic.activeReservation",
-        activeReservations.length,
-        {
-          one: "Máte 1 aktivní rezervaci",
-          few: "Máte {count} aktivní rezervace",
-          many: "Máte {count} aktivních rezervací",
-          other: "Máte {count} aktivních rezervací"
-        }
-      );
-    }
-
-    setCardState(
-      reservationsCard,
-      reservationsBadge,
-      reservationsText,
-      waitingPaymentCount,
-      waitingPaymentCount > 0,
-      reservationsDescription
-    );
-
-    let offersDescription = t("account.offersDefault", "Co nabízím a žádosti od lidí");
-
-    if (pendingRequestsCount > 0) {
-      offersDescription = plural(
-        "account.dynamic.pendingRequest",
-        pendingRequestsCount,
-        {
-          one: "Máte 1 novou žádost k potvrzení",
-          few: "Máte {count} nové žádosti k potvrzení",
-          many: "Máte {count} nových žádostí k potvrzení",
-          other: "Máte {count} nových žádostí k potvrzení"
-        }
-      );
-    } else if (paidRequestsCount > 0) {
-      offersDescription = plural(
-        "account.dynamic.paidRequest",
-        paidRequestsCount,
-        {
-          one: "1 rezervace je zaplacená, označte vyzvednutí",
-          few: "{count} rezervace jsou zaplacené, označte vyzvednutí",
-          many: "{count} rezervací je zaplacených, označte vyzvednutí",
-          other: "{count} rezervací je zaplacených, označte vyzvednutí"
-        }
-      );
-    } else if (pickedUpRequestsCount > 0) {
-      offersDescription = plural(
-        "account.dynamic.pickedUp",
-        pickedUpRequestsCount,
-        {
-          one: "1 půjčení probíhá, po vrácení ho uzavřete",
-          few: "{count} půjčení probíhají, po vrácení je uzavřete",
-          many: "{count} půjčení probíhá, po vrácení je uzavřete",
-          other: "{count} půjčení probíhá, po vrácení je uzavřete"
-        }
-      );
-    } else if (supabaseOffers.length > 0) {
-      offersDescription = plural(
-        "account.dynamic.myOffer",
-        supabaseOffers.length,
-        {
-          one: "Máte 1 vlastní nabídku",
-          few: "Máte {count} vlastní nabídky",
-          many: "Máte {count} vlastních nabídek",
-          other: "Máte {count} vlastních nabídek"
-        }
-      );
-    }
-
-    setCardState(
-      offersCard,
-      offersBadge,
-      offersText,
-      ownerActionCount,
-      ownerActionCount > 0,
-      offersDescription
-    );
-
-    window.rentuloAccountNotificationCount = waitingPaymentCount + ownerActionCount;
-
-    if (typeof renderSharedNavigation === "function") {
-      renderSharedNavigation("muj-ucet");
-    }
-  }
-
-  function notificationStorageKey() {
-    const userId = verifiedAccountUser && verifiedAccountUser.id
-      ? verifiedAccountUser.id
-      : "anonymous";
-
-    return "rentuloAccountReadNotifications:" + userId;
-  }
-
-  function getReadNotificationKeys() {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(notificationStorageKey()) || "[]");
-      return new Set(Array.isArray(parsed) ? parsed : []);
-    } catch (error) {
-      return new Set();
-    }
-  }
-
-  function saveReadNotificationKeys(keys) {
-    try {
-      localStorage.setItem(notificationStorageKey(), JSON.stringify(Array.from(keys)));
-    } catch (error) {
-      console.warn("Stav upozornění se nepodařilo uložit:", error);
-    }
-  }
-
-  function makeNotificationKey(role, reservation) {
-    return [role, reservation.id, reservation.status].join(":");
-  }
-
-  function notificationItemName(reservation) {
-    return reservation.offerName || homeT("accountHome.notifications.itemFallback", "věci");
-  }
-
-  function buildNotifications() {
-    const notifications = [];
-
-    ownerReservations.forEach(function (reservation) {
-      const item = notificationItemName(reservation);
-
-      if (reservation.status === "pending") {
-        notifications.push({
-          key: makeNotificationKey("owner", reservation),
-          title: homeT("accountHome.notifications.newRequestTitle", "Nová žádost o půjčení"),
-          message: homeT(
-            "accountHome.notifications.newRequestMessage",
-            "Nabídka {item} čeká na vaše potvrzení.",
-            { item: item }
-          ),
-          href: "moje-nabidky.html?open=actions",
-          sortDate: reservation.updatedAt || reservation.createdAt || ""
-        });
-      } else if (reservation.status === "paid") {
-        notifications.push({
-          key: makeNotificationKey("owner", reservation),
-          title: homeT("accountHome.notifications.paidOwnerTitle", "Rezervace byla zaplacena"),
-          message: homeT(
-            "accountHome.notifications.paidOwnerMessage",
-            "U nabídky {item} můžete pokračovat předáním.",
-            { item: item }
-          ),
-          href: "moje-nabidky.html?open=actions",
-          sortDate: reservation.updatedAt || reservation.createdAt || ""
-        });
-      } else if (reservation.status === "picked_up") {
-        notifications.push({
-          key: makeNotificationKey("owner", reservation),
-          title: homeT("accountHome.notifications.pickedUpOwnerTitle", "Věc byla vyzvednuta"),
-          message: homeT(
-            "accountHome.notifications.pickedUpOwnerMessage",
-            "Po vrácení {item} označte rezervaci jako vrácenou.",
-            { item: item }
-          ),
-          href: "moje-nabidky.html?open=actions",
-          sortDate: reservation.updatedAt || reservation.createdAt || ""
-        });
-      } else if (reservation.status === "cancelled") {
-        notifications.push({
-          key: makeNotificationKey("owner", reservation),
-          title: homeT("accountHome.notifications.cancelledTitle", "Rezervace byla zrušena"),
-          message: homeT(
-            "accountHome.notifications.cancelledMessage",
-            "Rezervace {item} byla zrušena.",
-            { item: item }
-          ),
-          href: "historie.html",
-          sortDate: reservation.updatedAt || reservation.createdAt || ""
-        });
-      }
-    });
-
-    renterReservations.forEach(function (reservation) {
-      const item = notificationItemName(reservation);
-      const common = {
-        key: makeNotificationKey("renter", reservation),
-        href: "moje-rezervace.html",
-        sortDate: reservation.updatedAt || reservation.createdAt || ""
-      };
-
-      if (reservation.status === "approved") {
-        notifications.push(Object.assign({}, common, {
-          title: homeT("accountHome.notifications.approvedTitle", "Žádost byla schválena"),
-          message: homeT(
-            "accountHome.notifications.approvedMessage",
-            "Rezervaci {item} můžete nyní zaplatit.",
-            { item: item }
-          )
-        }));
-      } else if (reservation.status === "rejected") {
-        notifications.push(Object.assign({}, common, {
-          title: homeT("accountHome.notifications.rejectedTitle", "Žádost byla odmítnuta"),
-          message: homeT(
-            "accountHome.notifications.rejectedMessage",
-            "Žádost o {item} byla odmítnuta.",
-            { item: item }
-          )
-        }));
-      } else if (reservation.status === "picked_up") {
-        notifications.push(Object.assign({}, common, {
-          title: homeT("accountHome.notifications.pickedUpRenterTitle", "Věc je vyzvednuta"),
-          message: homeT(
-            "accountHome.notifications.pickedUpRenterMessage",
-            "Půjčení {item} právě probíhá.",
-            { item: item }
-          )
-        }));
-      } else if (reservation.status === "returned" || reservation.status === "completed") {
-        notifications.push(Object.assign({}, common, {
-          title: homeT("accountHome.notifications.returnedTitle", "Půjčení bylo dokončeno"),
-          message: homeT(
-            "accountHome.notifications.returnedMessage",
-            "Rezervaci {item} najdete v Historii.",
-            { item: item }
-          ),
-          href: "historie.html"
-        }));
-      }
-    });
-
-    notifications.sort(function (a, b) {
-      return String(b.sortDate || "").localeCompare(String(a.sortDate || ""));
-    });
-
-    return notifications.slice(0, 20);
-  }
-
-  function renderNotifications() {
-    const list = document.getElementById("accountNotificationList");
-    const empty = document.getElementById("accountNotificationEmpty");
-    const badge = document.getElementById("accountNotificationCount");
-
-    if (!list || !empty || !badge) return;
-
-    const readKeys = getReadNotificationKeys();
-    const unreadCount = accountNotifications.filter(function (notification) {
-      return !readKeys.has(notification.key);
-    }).length;
-
-    setBadge(badge, unreadCount);
-    list.innerHTML = "";
-    empty.hidden = accountNotifications.length > 0;
-
-    accountNotifications.forEach(function (notification) {
-      const link = document.createElement("a");
-      link.className = "account-notification-item";
-      link.href = notification.href;
-
-      if (!readKeys.has(notification.key)) {
-        link.classList.add("is-unread");
-      }
-
-      const title = document.createElement("strong");
-      title.textContent = notification.title;
-
-      const message = document.createElement("span");
-      message.textContent = notification.message;
-
-      link.appendChild(title);
-      link.appendChild(message);
-      list.appendChild(link);
-    });
-  }
-
-  function markNotificationsRead() {
-    if (!accountNotifications.length) return;
-
-    const readKeys = getReadNotificationKeys();
-    accountNotifications.forEach(function (notification) {
-      readKeys.add(notification.key);
-    });
-    saveReadNotificationKeys(readKeys);
-    renderNotifications();
-  }
-
-  function openNotificationPanel(open) {
-    const button = document.getElementById("accountNotificationButton");
-    const panel = document.getElementById("accountNotificationPanel");
-
-    if (!button || !panel) return;
-
-    const shouldOpen = typeof open === "boolean" ? open : panel.hidden;
-    panel.hidden = !shouldOpen;
-    button.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
-
-    if (shouldOpen) {
-      markNotificationsRead();
-    }
-  }
-
-  function bindNotificationPanel() {
-    const button = document.getElementById("accountNotificationButton");
-    const panel = document.getElementById("accountNotificationPanel");
-
-    if (!button || !panel) return;
-
-    button.addEventListener("click", function (event) {
-      event.stopPropagation();
-      openNotificationPanel();
-    });
-
-    panel.addEventListener("click", function (event) {
-      event.stopPropagation();
-    });
-
-    document.addEventListener("click", function () {
-      openNotificationPanel(false);
-    });
-
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") {
-        openNotificationPanel(false);
-        button.focus();
-      }
-    });
-  }
-
-  function refreshRenderedData() {
-    renderAccountCards();
-    accountNotifications = buildNotifications();
-    renderNotifications();
   }
 
   async function initializeAccountPage() {
+    accountLoadState = "loading";
+    renderLoadState();
+
     if (!window.rentuloAuthGuard) {
       window.location.replace("prihlaseni.html");
       return;
@@ -682,33 +195,39 @@
     if (!user) return;
 
     verifiedAccountUser = user;
-    await renderProfile(user);
 
-    if (typeof renderSharedNavigation === "function") {
-      renderSharedNavigation("muj-ucet");
+    try {
+      await loadAndRenderProfile(user);
+      accountLoadState = "ready";
+    } catch (error) {
+      console.error("Profil uživatele se nepodařilo načíst:", error);
+      accountLoadState = "error";
     }
 
-    const loaded = await loadAccountData();
-    if (!loaded) return;
-
-    refreshRenderedData();
+    renderLoadState();
   }
 
   async function retryAccountDataLoad() {
     if (accountLoadState === "loading") return;
 
-    const retry = document.getElementById("accountLoadRetry");
-    if (retry) retry.disabled = true;
+    const user = verifiedAccountUser || await getCurrentUser();
+    if (!user) {
+      window.location.replace("prihlaseni.html");
+      return;
+    }
 
-    const loaded = await loadAccountData();
-    if (loaded) refreshRenderedData();
-  }
+    accountLoadState = "loading";
+    renderLoadState();
 
-  async function refreshAfterReturnToPage() {
-    if (!verifiedAccountUser || document.visibilityState === "hidden") return;
+    try {
+      await loadAndRenderProfile(user);
+      accountLoadState = "ready";
+    } catch (error) {
+      console.error("Profil uživatele se nepodařilo načíst:", error);
+      accountLoadState = "error";
+    }
 
-    const loaded = await loadAccountData();
-    if (loaded) refreshRenderedData();
+    renderLoadState();
   }
 
   document.addEventListener("rentuloLanguageChanged", async function () {
@@ -718,30 +237,16 @@
       window.renderAccountHomeTranslations();
     }
 
-    if (verifiedAccountUser) {
-      await renderProfile(verifiedAccountUser);
-    }
-
-    if (accountLoadState === "ready") {
-      refreshRenderedData();
-    } else if (typeof renderSharedNavigation === "function") {
-      renderSharedNavigation("muj-ucet");
+    if (verifiedAccountUser && accountLoadState === "ready") {
+      const rating = await loadRating(verifiedAccountUser);
+      renderRating(rating);
     }
   });
-
-  document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "visible") {
-      refreshAfterReturnToPage();
-    }
-  });
-
-  window.addEventListener("focus", refreshAfterReturnToPage);
 
   document.addEventListener("DOMContentLoaded", function () {
     const retry = document.getElementById("accountLoadRetry");
     if (retry) retry.addEventListener("click", retryAccountDataLoad);
 
-    bindNotificationPanel();
-    initializeAccountPage();
+    void initializeAccountPage();
   });
 })();

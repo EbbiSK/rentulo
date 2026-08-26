@@ -17,342 +17,51 @@ a {
 }
 
 button {
-  border: 0;
+  font: inherit;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo-icon {
-  width: 46px;
-  height: 46px;
-  flex: 0 0 46px;
-}
-
-.logo-icon img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.logo-text strong {
-  display: block;
-  font-size: 27px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
-
-.nav {
-  display: flex;
-  align-items: center;
-}
-
-.account-home-page {
-  width: min(1310px, calc(100% - 48px));
+.account-page {
+  width: min(860px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 28px 0 56px;
+  padding: 38px 0 64px;
 }
 
-.account-home-hero {
-  position: relative;
+.account-shell {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 26px;
-  padding: 30px 32px 26px;
-  border: 1px solid #dce8e1;
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at 92% 8%, rgba(233, 244, 238, 0.96) 0, rgba(233, 244, 238, 0) 35%),
-    var(--rentulo-surface);
-  box-shadow: 0 16px 42px rgba(16, 32, 25, 0.055);
+  gap: 18px;
 }
 
-.account-home-hero-copy {
-  max-width: 760px;
+.account-heading {
+  margin-bottom: 4px;
 }
 
-.account-home-eyebrow,
-.account-home-section-kicker {
-  display: inline-flex;
-  align-items: center;
-  min-height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: var(--rentulo-green-soft);
-  color: var(--rentulo-green);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-}
-
-.account-home-hero h1 {
-  margin: 12px 0 8px;
+.account-heading h1 {
+  margin: 0;
   color: var(--rentulo-green-dark);
-  font-size: clamp(34px, 4vw, 48px);
-  line-height: 1.02;
+  font-size: clamp(34px, 4vw, 46px);
+  line-height: 1.05;
   letter-spacing: -0.045em;
 }
 
-.account-home-hero-copy > p {
-  max-width: 690px;
-  margin: 0;
+.account-heading p {
+  margin: 9px 0 0;
   color: var(--rentulo-muted);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   line-height: 1.55;
-}
-
-.account-home-hero-actions {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
-}
-
-.account-notification-wrap {
-  position: relative;
-}
-
-.account-notification-button {
-  position: relative;
-  display: grid;
-  width: 48px;
-  height: 48px;
-  place-items: center;
-  border: 1px solid #d6e4dc;
-  border-radius: 15px;
-  background: #ffffff;
-  color: var(--rentulo-green-dark);
-  box-shadow: 0 8px 22px rgba(16, 32, 25, 0.06);
-  cursor: pointer;
-  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
-}
-
-.account-notification-button svg {
-  width: 22px;
-  height: 22px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.account-notification-button:hover {
-  transform: translateY(-1px);
-  border-color: #b9d3c5;
-  background: #fbfdfc;
-}
-
-.account-notification-button:focus-visible,
-.account-load-retry:focus-visible,
-.account-home-card:focus-visible,
-.account-notification-item:focus-visible {
-  outline: 3px solid rgba(23, 103, 71, 0.18);
-  outline-offset: 3px;
-}
-
-.account-notification-count {
-  position: absolute;
-  top: -7px;
-  right: -7px;
-  display: inline-flex;
-  min-width: 22px;
-  height: 22px;
-  align-items: center;
-  justify-content: center;
-  padding: 0 6px;
-  border: 2px solid var(--rentulo-page);
-  border-radius: 999px;
-  background: var(--rentulo-orange);
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.account-notification-panel {
-  position: absolute;
-  z-index: 1200;
-  top: calc(100% + 10px);
-  right: 0;
-  width: min(390px, calc(100vw - 48px));
-  overflow: hidden;
-  border: 1px solid #d8e5de;
-  border-radius: 18px;
-  background: #ffffff;
-  box-shadow: 0 22px 60px rgba(16, 32, 25, 0.16);
-}
-
-.account-notification-panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 16px 16px 13px;
-  border-bottom: 1px solid var(--rentulo-line);
-}
-
-.account-notification-panel-head h2 {
-  margin: 0;
-  color: var(--rentulo-green-dark);
-  font-size: 17px;
-  line-height: 1.2;
-}
-
-
-.account-notification-list {
-  max-height: 360px;
-  overflow-y: auto;
-}
-
-.account-notification-item {
-  position: relative;
-  display: block;
-  padding: 14px 16px 14px 34px;
-  border-bottom: 1px solid #edf1ee;
-  background: #ffffff;
-  transition: background 0.14s ease;
-}
-
-.account-notification-item:last-child {
-  border-bottom: 0;
-}
-
-.account-notification-item:hover {
-  background: #f8fbf9;
-}
-
-.account-notification-item::before {
-  content: "";
-  position: absolute;
-  top: 20px;
-  left: 17px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #c9d8d0;
-}
-
-.account-notification-item.is-unread {
-  background: #fffaf6;
-}
-
-.account-notification-item.is-unread::before {
-  background: var(--rentulo-orange);
-}
-
-.account-notification-item strong {
-  display: block;
-  margin-bottom: 3px;
-  color: var(--rentulo-ink);
-  font-size: 13px;
-  font-weight: 800;
-  line-height: 1.35;
-}
-
-.account-notification-item span {
-  display: block;
-  color: var(--rentulo-muted);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.45;
-}
-
-.account-notification-empty {
-  margin: 0;
-  padding: 24px 18px;
-  color: var(--rentulo-muted);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.45;
-  text-align: center;
-}
-
-.account-profile-summary {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: 52px minmax(0, auto) minmax(0, 1fr);
-  align-items: center;
-  gap: 14px 18px;
-  margin-top: 2px;
-  padding-top: 22px;
-  border-top: 1px solid var(--rentulo-line);
-}
-
-.account-profile-avatar {
-  display: grid;
-  width: 52px;
-  height: 52px;
-  place-items: center;
-  border: 1px solid #c8e0d3;
-  border-radius: 16px;
-  background: var(--rentulo-green-soft);
-  color: var(--rentulo-green-dark);
-  font-size: 22px;
-  font-weight: 800;
-}
-
-.account-profile-copy {
-  min-width: 0;
-}
-
-.account-profile-copy strong,
-.account-profile-copy span {
-  display: block;
-}
-
-.account-profile-copy strong {
-  overflow: hidden;
-  color: var(--rentulo-green-dark);
-  font-size: 15px;
-  font-weight: 800;
-  line-height: 1.3;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.account-profile-copy span {
-  overflow: hidden;
-  margin-top: 3px;
-  color: var(--rentulo-muted);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.3;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.account-profile-rating {
-  justify-self: end;
-  color: #40524a;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.4;
-  text-align: right;
 }
 
 .account-load-status {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin: 16px 0 0;
-  padding: 12px 14px;
-  border: 1px solid #d6e5dd;
+  gap: 14px;
+  min-height: 48px;
+  padding: 11px 14px;
+  border: 1px solid #dce5df;
   border-radius: 14px;
-  background: #eef6f2;
-  color: #486057;
+  background: #f8fbf9;
+  color: var(--rentulo-muted);
   font-size: 13px;
   font-weight: 700;
 }
@@ -362,15 +71,16 @@ button {
 }
 
 .account-load-status.error {
-  border-color: #efc9c5;
-  background: #fff7f6;
-  color: #9a342c;
+  border-color: #efc7bd;
+  background: #fff7f4;
+  color: #8b3d2b;
 }
 
 .account-load-retry {
   flex: 0 0 auto;
   min-height: 36px;
   padding: 0 12px;
+  border: 1px solid #d7e3dc;
   border-radius: 10px;
   background: #ffffff;
   color: var(--rentulo-green-dark);
@@ -379,344 +89,210 @@ button {
   cursor: pointer;
 }
 
+.account-load-retry:hover {
+  background: #f2f7f4;
+}
+
 .account-load-retry:disabled {
   cursor: wait;
-  opacity: 0.6;
+  opacity: 0.65;
 }
 
-.account-home-section {
-  margin-top: 34px;
+.account-profile-card {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid #dce5df;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(16, 32, 25, 0.055);
 }
 
-.account-home-section-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 28px;
-  margin-bottom: 16px;
-}
-
-.account-home-section-head h2 {
-  margin: 8px 0 0;
+.account-profile-avatar {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border: 1px solid #c7dfd2;
+  border-radius: 17px;
+  background: var(--rentulo-green-soft);
   color: var(--rentulo-green-dark);
-  font-size: 28px;
-  line-height: 1.12;
-  letter-spacing: -0.03em;
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1;
 }
 
-.account-home-section-head > p {
-  max-width: 430px;
-  margin: 0 0 2px;
+.account-profile-copy {
+  min-width: 0;
+}
+
+.account-profile-copy strong {
+  display: block;
+  overflow: hidden;
+  color: var(--rentulo-ink);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-profile-copy span,
+.account-profile-copy small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-profile-copy span {
+  margin-top: 3px;
   color: var(--rentulo-muted);
   font-size: 13px;
   font-weight: 600;
-  line-height: 1.45;
-  text-align: right;
 }
 
-.account-home-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+.account-profile-copy small {
+  margin-top: 7px;
+  color: var(--rentulo-green);
+  font-size: 12px;
+  font-weight: 700;
 }
 
-.account-home-card {
-  position: relative;
+.account-settings-link {
   display: grid;
-  grid-template-columns: 52px minmax(0, 1fr) auto;
-  grid-template-areas: "icon main action";
+  grid-template-columns: 48px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 16px;
-  min-height: 126px;
-  padding: 18px;
-  border: 1px solid #dce7e1;
-  border-radius: 20px;
+  gap: 15px;
+  min-height: 86px;
+  padding: 18px 19px;
+  border: 1px solid #dce5df;
+  border-radius: 18px;
   background: #ffffff;
-  box-shadow: 0 10px 28px rgba(16, 32, 25, 0.045);
-  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  box-shadow: 0 12px 32px rgba(16, 32, 25, 0.045);
+  transition: border-color 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
 }
 
-.account-home-card:hover {
-  transform: translateY(-2px);
-  border-color: #bfd5c8;
-  box-shadow: 0 14px 34px rgba(16, 32, 25, 0.075);
+.account-settings-link:hover {
+  transform: translateY(-1px);
+  border-color: #bfd5ca;
+  box-shadow: 0 15px 34px rgba(16, 32, 25, 0.07);
 }
 
-.account-home-card.is-urgent {
-  border-color: #f3c59f;
-  background: #fff9f4;
-  box-shadow: 0 12px 30px rgba(255, 106, 0, 0.075);
-}
-
-.account-home-card-icon {
-  grid-area: icon;
+.account-settings-icon {
   display: grid;
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   place-items: center;
-  border: 1px solid #cbe1d5;
-  border-radius: 16px;
-  background: var(--rentulo-green-soft);
+  border-radius: 14px;
+  background: #f1f7f4;
   color: var(--rentulo-green-dark);
 }
 
-.account-home-card.is-urgent .account-home-card-icon {
-  border-color: #f3d0b3;
-  background: #fff1e5;
-  color: #a14b0c;
-}
-
-.account-home-card-icon svg {
-  width: 24px;
-  height: 24px;
+.account-settings-icon svg {
+  width: 22px;
+  height: 22px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.8;
+  stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.account-home-card-main {
-  grid-area: main;
+.account-settings-copy {
   min-width: 0;
 }
 
-.account-home-card-title-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
+.account-settings-copy strong,
+.account-settings-copy span {
+  display: block;
 }
 
-.account-home-card h3 {
-  margin: 0;
-  color: var(--rentulo-green-dark);
-  font-size: 18px;
+.account-settings-copy strong {
+  color: var(--rentulo-ink);
+  font-size: 15px;
   font-weight: 800;
-  line-height: 1.25;
 }
 
-.account-home-card p {
-  margin: 6px 0 0;
+.account-settings-copy span {
+  margin-top: 4px;
   color: var(--rentulo-muted);
   font-size: 13px;
   font-weight: 600;
-  line-height: 1.42;
+  line-height: 1.45;
 }
 
-.account-home-card.is-urgent p {
-  color: #8d4a17;
+.account-settings-arrow {
+  color: var(--rentulo-green);
+  font-size: 22px;
   font-weight: 700;
-}
-
-.account-home-card-badge {
-  display: inline-flex;
-  min-width: 24px;
-  height: 24px;
-  align-items: center;
-  justify-content: center;
-  padding: 0 7px;
-  border-radius: 999px;
-  background: var(--rentulo-orange);
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 800;
   line-height: 1;
 }
 
-.account-home-card-action {
-  grid-area: action;
-  display: inline-flex;
-  min-height: 42px;
-  align-items: center;
-  justify-content: center;
-  padding: 0 15px;
-  border-radius: 12px;
-  background: var(--rentulo-green-soft);
-  color: var(--rentulo-green-dark);
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1;
-  white-space: nowrap;
-  transition: background 0.16s ease, color 0.16s ease;
-}
-
-.account-home-card:hover .account-home-card-action {
-  background: #dfeee6;
-}
-
-.account-home-card.is-urgent .account-home-card-action {
-  background: var(--rentulo-orange);
-  color: #ffffff;
-}
-
-.account-home-card.is-urgent:hover .account-home-card-action {
-  background: var(--rentulo-orange-hover);
-}
-
-.account-home-card-action-soft {
-  background: #f0f4f2;
-  color: #31463d;
-}
-
-.account-home-card-secondary:hover .account-home-card-action-soft {
-  background: #e5eeea;
-}
-
-@media (max-width: 900px) {
-  .account-home-page {
-    width: min(100% - 32px, 760px);
-    padding-top: 20px;
+@media (max-width: 700px) {
+  .account-page {
+    width: min(100% - 28px, 860px);
+    padding: 28px 0 48px;
   }
 
-  .account-home-section-head {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 9px;
-  }
-
-  .account-home-section-head > p {
-    max-width: 620px;
-    text-align: left;
-  }
-
-  .account-home-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 600px) {
-  .account-home-page {
-    width: calc(100% - 28px);
-    padding: 14px 0 34px;
-  }
-
-  .account-home-hero {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 16px;
-    padding: 20px 18px 18px;
-    border-radius: 20px;
-  }
-
-  .account-home-hero-copy {
-    grid-column: 1 / 2;
-  }
-
-  .account-home-hero-actions {
-    grid-column: 2 / 3;
-  }
-
-  .account-home-hero h1 {
-    margin-top: 10px;
+  .account-heading h1 {
     font-size: 34px;
   }
 
-  .account-home-hero-copy > p {
-    grid-column: 1 / -1;
-    font-size: 14px;
-  }
-
-  .account-home-profile-copy {
-    min-width: 0;
-  }
-
-  .account-profile-summary {
-    grid-template-columns: 46px minmax(0, 1fr);
-    gap: 12px;
-    padding-top: 18px;
+  .account-profile-card {
+    grid-template-columns: 50px minmax(0, 1fr);
+    gap: 13px;
+    padding: 17px;
   }
 
   .account-profile-avatar {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
     font-size: 20px;
   }
 
-  .account-profile-rating {
-    grid-column: 1 / -1;
-    justify-self: start;
-    padding-left: 58px;
-    margin-top: -4px;
-    text-align: left;
+  .account-settings-link {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 12px;
+    min-height: 80px;
+    padding: 16px;
   }
 
-  .account-notification-button {
+  .account-settings-icon {
     width: 44px;
     height: 44px;
-    border-radius: 14px;
   }
+}
 
-  .account-notification-panel {
-    position: fixed;
-    top: 86px;
-    right: 14px;
-    left: 14px;
-    width: auto;
-    max-height: calc(100vh - 108px);
-  }
-
-  .account-notification-list {
-    max-height: calc(100vh - 210px);
+@media (max-width: 480px) {
+  .account-heading p {
+    font-size: 14px;
   }
 
   .account-load-status {
     align-items: stretch;
     flex-direction: column;
-    gap: 10px;
   }
 
   .account-load-retry {
     width: 100%;
   }
 
-  .account-home-section {
-    margin-top: 26px;
+  .account-profile-copy strong,
+  .account-profile-copy span,
+  .account-profile-copy small {
+    white-space: normal;
+    word-break: break-word;
   }
 
-  .account-home-section-head h2 {
-    font-size: 24px;
+  .account-settings-link {
+    grid-template-columns: 44px minmax(0, 1fr);
   }
 
-  .account-home-card {
-    grid-template-columns: 46px minmax(0, 1fr);
-    grid-template-areas:
-      "icon main"
-      "action action";
-    gap: 13px 12px;
-    min-height: 0;
-    padding: 16px;
-    border-radius: 18px;
+  .account-settings-arrow {
+    display: none;
   }
-
-  .account-home-card-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
-  }
-
-  .account-home-card-icon svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  .account-home-card-action {
-    width: 100%;
-    min-height: 42px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .account-notification-button,
-  .account-home-card,
-  .account-home-card-action {
-    transition: none;
-  }
-}
-
-.account-notification-count[hidden],
-.account-home-card-badge[hidden],
-.account-notification-panel[hidden],
-.account-notification-empty[hidden] {
-  display: none !important;
 }

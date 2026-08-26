@@ -7,37 +7,22 @@ function navEnsureSharedTheme() {
     document.head.appendChild(theme);
   }
 
-  if (
-    !document.querySelector(
-      'link[href*="fonts.googleapis.com/css2?family=Manrope"]'
-    )
-  ) {
+  if (!document.querySelector('link[href*="fonts.googleapis.com/css2?family=Manrope"]')) {
     const font = document.createElement("link");
     font.rel = "stylesheet";
-    font.href =
-      "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap";
+    font.href = "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap";
     document.head.appendChild(font);
   }
 }
 
 navEnsureSharedTheme();
 
-function navLoadJson(key, fallback) {
-  if (typeof loadJson === "function") {
-    return loadJson(key, fallback);
-  }
-
-  try {
-    const value = localStorage.getItem(key);
-    return value ? JSON.parse(value) : fallback;
-  } catch (error) {
-    return fallback;
-  }
-}
-
 let navVerifiedUser = null;
 let navAuthPromise = null;
 let navAuthListenerRegistered = false;
+let navPreferredLanguageSaveRunning = false;
+let navPendingPreferredLanguage = null;
+let navGlobalDropdownDismissalBound = false;
 
 function navIsLoggedIn() {
   return Boolean(navVerifiedUser);
@@ -45,37 +30,6 @@ function navIsLoggedIn() {
 
 function navGetCurrentUser() {
   return navVerifiedUser;
-}
-async function navResolveSupabaseUser() {
-  const supabaseClient = navGetSupabaseClient();
-
-  if (!supabaseClient || !supabaseClient.auth) {
-    navVerifiedUser = null;
-    return null;
-  }
-
-  try {
-    const { data, error } = await supabaseClient.auth.getUser();
-    navVerifiedUser =
-      !error && data && data.user
-        ? data.user
-        : null;
-  } catch (error) {
-    console.warn(
-      "Stav přihlášení pro navigaci se nepodařilo ověřit.",
-      error
-    );
-    navVerifiedUser = null;
-  }
-  return navVerifiedUser;
-}
-
-function navGetVerifiedUser() {
-  if (!navAuthPromise) {
-    navAuthPromise = navResolveSupabaseUser();
-  }
-
-  return navAuthPromise;
 }
 
 function navGetSupabaseClient() {
@@ -90,10 +44,41 @@ function navGetSupabaseClient() {
   return null;
 }
 
+async function navResolveSupabaseUser() {
+  const supabaseClient = navGetSupabaseClient();
+
+  if (!supabaseClient || !supabaseClient.auth) {
+    navVerifiedUser = null;
+    return null;
+  }
+
+  try {
+    const { data, error } = await supabaseClient.auth.getUser();
+    navVerifiedUser = !error && data && data.user ? data.user : null;
+  } catch (error) {
+    console.warn("Stav přihlášení pro navigaci se nepodařilo ověřit.", error);
+    navVerifiedUser = null;
+  }
+
+  return navVerifiedUser;
+}
+
+function navGetVerifiedUser() {
+  if (!navAuthPromise) {
+    navAuthPromise = navResolveSupabaseUser();
+  }
+
+  return navAuthPromise;
+}
+
 function navTranslate(key, fallback) {
   if (typeof window.rentuloTranslate === "function") {
-    return window.rentuloTranslate(key);
+    const translated = window.rentuloTranslate(key);
+    if (translated && translated !== key) {
+      return translated;
+    }
   }
+
   return fallback;
 }
 
@@ -103,6 +88,51 @@ function navGetLanguage() {
   }
 
   return localStorage.getItem("rentuloLanguage") || "cs";
+}
+
+function navProfileText(key) {
+  const translations = {
+    cs: {
+      open: "Otevřít uživatelské menu",
+      myAccount: "Můj účet",
+      reservations: "Moje rezervace",
+      offers: "Moje nabídky",
+      history: "Historie",
+      logout: "Odhlásit se",
+      notifications: "upozornění"
+    },
+    en: {
+      open: "Open user menu",
+      myAccount: "My account",
+      reservations: "My reservations",
+      offers: "My listings",
+      history: "History",
+      logout: "Log out",
+      notifications: "notifications"
+    },
+    de: {
+      open: "Benutzermenü öffnen",
+      myAccount: "Mein Konto",
+      reservations: "Meine Reservierungen",
+      offers: "Meine Angebote",
+      history: "Verlauf",
+      logout: "Abmelden",
+      notifications: "Benachrichtigungen"
+    },
+    pl: {
+      open: "Otwórz menu użytkownika",
+      myAccount: "Moje konto",
+      reservations: "Moje rezerwacje",
+      offers: "Moje oferty",
+      history: "Historia",
+      logout: "Wyloguj się",
+      notifications: "powiadomienia"
+    }
+  };
+
+  const language = navGetLanguage();
+  const map = translations[language] || translations.cs;
+  return map[key] || translations.cs[key] || key;
 }
 
 function navFlagMarkup(language) {
@@ -115,6 +145,7 @@ function navFlagMarkup(language) {
 
   return `<span class="nav-language-flag ${flagClass}" aria-hidden="true"></span>`;
 }
+
 function navLanguageControl() {
   const language = navGetLanguage();
   const label = navTranslate("nav.language", "Jazyk");
@@ -128,31 +159,26 @@ function navLanguageControl() {
         aria-label="${label}"
         aria-haspopup="true"
         aria-expanded="false"
+        aria-controls="sharedLanguageMenu"
       >
         ${navFlagMarkup(language)}
         <span class="nav-language-chevron" aria-hidden="true">⌄</span>
       </button>
       <div id="sharedLanguageMenu" class="nav-language-menu" role="menu" hidden>
-        <button type="button" role="menuitem" data-language="cs" aria-label="Čeština">
-          ${navFlagMarkup("cs")}
-        </button>
-        <button type="button" role="menuitem" data-language="en" aria-label="English">
-          ${navFlagMarkup("en")}
-        </button>
-        <button type="button" role="menuitem" data-language="de" aria-label="Deutsch">
-          ${navFlagMarkup("de")}
-        </button>
-        <button type="button" role="menuitem" data-language="pl" aria-label="Polski">
-          ${navFlagMarkup("pl")}
-        </button>
+        <button type="button" role="menuitem" data-language="cs" aria-label="Čeština">${navFlagMarkup("cs")}</button>
+        <button type="button" role="menuitem" data-language="en" aria-label="English">${navFlagMarkup("en")}</button>
+        <button type="button" role="menuitem" data-language="de" aria-label="Deutsch">${navFlagMarkup("de")}</button>
+        <button type="button" role="menuitem" data-language="pl" aria-label="Polski">${navFlagMarkup("pl")}</button>
       </div>
     </div>
   `;
 }
+
 function navEnsureLanguageStyles() {
   if (document.getElementById("rentuloLanguageStyles")) {
     return;
   }
+
   const style = document.createElement("style");
   style.id = "rentuloLanguageStyles";
   style.textContent = `
@@ -203,7 +229,7 @@ function navEnsureLanguageStyles() {
       position: absolute;
       top: calc(100% + 6px);
       right: 0;
-      z-index: 1200;
+      z-index: 1300;
       display: grid;
       gap: 4px;
       min-width: 62px;
@@ -278,8 +304,6 @@ function navEnsureLanguageStyles() {
   `;
   document.head.appendChild(style);
 }
-let navPreferredLanguageSaveRunning = false;
-let navPendingPreferredLanguage = null;
 
 async function navPersistPreferredLanguage(language) {
   const client = navGetSupabaseClient();
@@ -303,9 +327,7 @@ async function navPersistPreferredLanguage(language) {
     }
 
     const { data: authData, error: authError } = await client.auth.updateUser({
-      data: {
-        preferred_language: language
-      }
+      data: { preferred_language: language }
     });
 
     if (authError) {
@@ -347,6 +369,7 @@ function navSavePreferredLanguage(language) {
   navPendingPreferredLanguage = language;
   void navFlushPreferredLanguageSaveQueue();
 }
+
 function navNormalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
 }
@@ -360,116 +383,14 @@ function navGetUserEmail(user) {
     return "";
   }
 
-  return (
-    user.email ||
-    user.userEmail ||
-    user.mail ||
-    ""
-  );
-}
-
-function navMergeById(primaryItems, secondaryItems) {
-  const mergedItems = [];
-
-  if (Array.isArray(primaryItems)) {
-    mergedItems.push(...primaryItems);
-  }
-  if (Array.isArray(secondaryItems)) {
-    secondaryItems.forEach(function (secondaryItem) {
-      const secondaryId = String(
-        secondaryItem.id ||
-        secondaryItem.offerId ||
-        secondaryItem.reservationId ||
-        ""
-      );
-
-      const alreadyExists = mergedItems.some(function (item) {
-        const itemId = String(
-          item.id ||
-          item.offerId ||
-          item.reservationId ||
-          ""
-        );
-        return itemId && secondaryId && itemId === secondaryId;
-      });
-
-      if (!alreadyExists) {
-        mergedItems.push(secondaryItem);
-      }
-    });
-  }
-
-  return mergedItems;
-}
-
-function navGetTools() {
-  return [];
-}
-
-function navGetReservations() {
-  return [];
-}
-
-function navGetToolId(tool) {
-  if (!tool) {
-    return "";
-  }
-
-  return (
-    tool.id ||
-    tool.offerId ||
-    ""
-  );
-}
-
-function navGetToolOwnerEmail(tool) {
-  if (!tool) {
-    return "";
-  }
-  return (
-    tool.ownerEmail ||
-    tool.userEmail ||
-    tool.email ||
-    ""
-  );
-}
-
-function navGetReservationToolId(reservation) {
-  if (typeof getReservationOfferId === "function") {
-    return getReservationOfferId(reservation);
-  }
-
-  if (!reservation) {
-    return "";
-  }
-
-  return (
-    reservation.toolId ||
-    reservation.offerId ||
-    ""
-  );
-}
-function navGetReservationRenterEmail(reservation) {
-  if (typeof getReservationRenterEmail === "function") {
-    return getReservationRenterEmail(reservation);
-  }
-
-  if (!reservation) {
-    return "";
-  }
-
-  return (
-    reservation.renterEmail ||
-    reservation.userEmail ||
-    reservation.borrowerEmail ||
-    ""
-  );
+  return user.email || user.userEmail || user.mail || "";
 }
 
 function navGetReservationStatus(reservation) {
   if (typeof getReservationStatus === "function") {
     return getReservationStatus(reservation);
   }
+
   if (!reservation) {
     return "pending";
   }
@@ -482,172 +403,172 @@ function navNormalizeReservationStatus(status) {
     return normalizeReservationStatus(status);
   }
 
-  const normalizedStatus = String(status || "pending")
-    .trim()
-    .toLowerCase();
+  const normalizedStatus = String(status || "pending").trim().toLowerCase();
 
-  if (normalizedStatus === "čeká na potvrzení") {
-    return "pending";
-  }
-
-  if (normalizedStatus === "čeká na platbu") {
-    return "approved";
-  }
-  if (normalizedStatus === "zaplaceno") {
-    return "paid";
-  }
-
-  if (normalizedStatus === "vyzvednuto") {
-    return "picked_up";
-  }
-
-  if (normalizedStatus === "vráceno") {
-    return "returned";
-  }
-
-  if (normalizedStatus === "odmítnuto") {
-    return "rejected";
-  }
-
-  if (normalizedStatus === "zrušeno") {
-    return "cancelled";
-  }
+  if (normalizedStatus === "čeká na potvrzení") return "pending";
+  if (normalizedStatus === "čeká na platbu") return "approved";
+  if (normalizedStatus === "zaplaceno") return "paid";
+  if (normalizedStatus === "vyzvednuto") return "picked_up";
+  if (normalizedStatus === "vráceno") return "returned";
+  if (normalizedStatus === "odmítnuto") return "rejected";
+  if (normalizedStatus === "zrušeno") return "cancelled";
 
   return normalizedStatus || "pending";
 }
 
 function navIsReservationWaitingForPayment(status) {
-  const normalizedStatus =
-    navNormalizeReservationStatus(status);
-  return normalizedStatus === "approved";
+  return navNormalizeReservationStatus(status) === "approved";
 }
 
 function navRequiresOwnerAction(status) {
-  const normalizedStatus =
-    navNormalizeReservationStatus(status);
-
-  return (
-    normalizedStatus === "pending" ||
-    normalizedStatus === "paid" ||
-    normalizedStatus === "picked_up"
-  );
+  const normalizedStatus = navNormalizeReservationStatus(status);
+  return normalizedStatus === "pending" || normalizedStatus === "paid" || normalizedStatus === "picked_up";
 }
 
-function navGetNotificationCount() {
-  const currentUser = navGetCurrentUser();
-
-  if (!currentUser) {
-    return 0;
-  }
-
-  const userEmail = navNormalizeEmail(
-    navGetUserEmail(currentUser)
-  );
-  if (!userEmail) {
-    return 0;
-  }
-
-  const tools = navGetTools();
-
-  const reservations =
-    typeof getReservations === "function"
-      ? getReservations()
-      : [];
-
-  const myToolIds = tools
-    .filter(function (tool) {
-      return (
-        navNormalizeEmail(
-          navGetToolOwnerEmail(tool)
-        ) === userEmail
-      );
-    })
-    .map(function (tool) {
-      return String(navGetToolId(tool));
-    });
-  const ownerActionRequests =
-    reservations.filter(function (reservation) {
-      const reservationToolId =
-        navGetReservationToolId(reservation);
-
-      const status =
-        navGetReservationStatus(reservation);
-
-      return (
-        myToolIds.includes(
-          String(reservationToolId)
-        ) &&
-        navRequiresOwnerAction(status)
-      );
-    }).length;
-  const renterWaitingForPayment =
-    reservations.filter(function (reservation) {
-      const renterEmail =
-        navNormalizeEmail(
-          navGetReservationRenterEmail(
-            reservation
-          )
-        );
-
-      const status =
-        navGetReservationStatus(reservation);
-
-      return (
-        renterEmail === userEmail &&
-        navIsReservationWaitingForPayment(
-          status
-        )
-      );
-    }).length;
-
-  return (
-    ownerActionRequests +
-    renterWaitingForPayment
-  );
-}
 function navInjectStyles() {
-  if (
-    document.getElementById(
-      "sharedNavigationStyles"
-    )
-  ) {
+  if (document.getElementById("sharedNavigationStyles")) {
     return;
   }
 
-  const style =
-    document.createElement("style");
-
+  const style = document.createElement("style");
   style.id = "sharedNavigationStyles";
-
   style.textContent = `
-    .nav-account-link {
+    .nav-profile-control {
+      position: relative;
       display: inline-flex;
-      align-items: center;
-      gap: 7px;
+      flex: 0 0 auto;
     }
+
+    .nav-profile-button {
+      position: relative;
+      display: inline-flex;
+      width: 48px;
+      height: 46px;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 0;
+      border: 1px solid #d7e3dc;
+      border-radius: 14px;
+      background: #ffffff;
+      color: #173f35;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(16, 32, 25, 0.055);
+      transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+    }
+
+    .nav-profile-button:hover,
+    .nav-profile-button.is-active {
+      border-color: #b9d3c5;
+      background: #f7fbf9;
+    }
+
+    .nav-profile-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .nav-profile-button svg {
+      width: 21px;
+      height: 21px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .nav-profile-mobile-label {
+      display: none;
+    }
+
+    .nav-profile-chevron {
+      margin-left: -2px;
+      font-size: 12px;
+      line-height: 1;
+      transform: translateY(1px);
+    }
+
     .nav-notification-badge {
-      min-width: 18px;
-      height: 18px;
-      padding: 0 6px;
+      position: absolute;
+      top: -7px;
+      right: -8px;
+      display: inline-flex;
+      min-width: 20px;
+      height: 20px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
+      border: 2px solid var(--rentulo-page, #f5f8f6);
       border-radius: 999px;
       background: #FF6A00;
-      color: white;
-      font-size: 12px;
-      line-height: 18px;
+      color: #ffffff;
+      font-size: 10px;
+      line-height: 1;
       font-weight: 800;
       text-align: center;
+      pointer-events: none;
     }
 
-    .nav-account-link:hover
-    .nav-notification-badge {
-      background: #E85F00;
+    .nav-profile-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 1300;
+      width: 238px;
+      padding: 7px;
+      border: 1px solid #dce5df;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 18px 44px rgba(16, 32, 25, 0.15);
     }
 
-    .logout-link {
+    .nav-profile-menu[hidden] {
+      display: none;
+    }
+
+    .nav-profile-menu a,
+    .nav-profile-menu button {
+      display: flex;
+      width: 100%;
+      min-height: 42px;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: #17251f !important;
+      font-family: inherit;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      line-height: 1.25;
+      text-align: left;
+      text-decoration: none !important;
       cursor: pointer;
+      box-shadow: none !important;
     }
-    .logout-link:hover {
-      background: #00563a;
+
+    .nav-profile-menu a:hover,
+    .nav-profile-menu button:hover,
+    .nav-profile-menu a.is-current {
+      background: #edf5f1 !important;
+      color: #102019 !important;
+    }
+
+    .nav-profile-menu-divider {
+      height: 1px;
+      margin: 6px 4px;
+      background: #e8ece9;
+    }
+
+    .nav-profile-menu .nav-profile-menu-logout {
+      color: #8c3521 !important;
+      font-weight: 800 !important;
+    }
+
+    .nav-profile-menu .nav-profile-menu-logout:hover {
+      background: #fff4ef !important;
+      color: #7b2c1c !important;
     }
 
     .shared-mobile-menu-button {
@@ -687,25 +608,6 @@ function navInjectStyles() {
         background: #ffffff;
       }
 
-      .shared-mobile-menu-button:focus-visible {
-        outline: 1px solid rgba(20, 82, 62, 0.72) !important;
-        outline-offset: 2px !important;
-      }
-
-      .shared-mobile-menu-icon {
-        display: grid;
-        gap: 3px;
-        width: 16px;
-      }
-
-      .shared-mobile-menu-icon span {
-        display: block;
-        width: 16px;
-        height: 2px;
-        border-radius: 999px;
-        background: currentColor;
-      }
-
       .header #mainNav,
       .header-inner #mainNav {
         position: absolute;
@@ -739,19 +641,18 @@ function navInjectStyles() {
         font-weight: 700 !important;
       }
 
-      #mainNav > a:not(.btn-register):not(.logout-link) {
+      #mainNav > a:not(.btn-register) {
         border-bottom: 0;
       }
 
-      #mainNav > a:not(.btn-register):not(.logout-link):hover,
-      #mainNav > a.active-link:not(.btn-register):not(.logout-link) {
+      #mainNav > a:not(.btn-register):hover,
+      #mainNav > a.active-link:not(.btn-register) {
         border-bottom-color: transparent;
         background: #e9f4ee !important;
         color: #102019 !important;
       }
 
-      #mainNav .btn-register,
-      #mainNav .logout-link {
+      #mainNav .btn-register {
         width: 100%;
         min-height: 42px;
         padding: 0 14px;
@@ -762,10 +663,50 @@ function navInjectStyles() {
         box-shadow: 0 10px 24px rgba(255, 106, 0, 0.16) !important;
       }
 
-      #mainNav .btn-register:hover,
-      #mainNav .logout-link:hover {
+      #mainNav .btn-register:hover {
         background: #E85F00 !important;
         color: #ffffff !important;
+      }
+
+      #mainNav .nav-profile-control {
+        display: block;
+        width: 100%;
+      }
+
+      #mainNav .nav-profile-button {
+        width: 100%;
+        height: 44px;
+        justify-content: flex-start;
+        padding: 0 12px;
+        border-radius: 10px;
+        box-shadow: none;
+      }
+
+      #mainNav .nav-profile-mobile-label {
+        display: inline;
+        margin-left: 8px;
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      #mainNav .nav-profile-chevron {
+        margin-left: auto;
+      }
+
+      #mainNav .nav-notification-badge {
+        top: 5px;
+        right: 34px;
+        border-color: #ffffff;
+      }
+
+      #mainNav .nav-profile-menu {
+        position: static;
+        width: 100%;
+        margin-top: 4px;
+        padding: 5px;
+        border-radius: 12px;
+        box-shadow: none;
+        background: #f8fbf9;
       }
 
       #mainNav .nav-language-control {
@@ -773,118 +714,89 @@ function navInjectStyles() {
         margin-top: 2px;
       }
     }
-/* Shared focus states across Rentulo */
-:where(
-  a[href],
-  button,
-  input,
-  select,
-  textarea,
-  summary,
-  [role="button"],
-  [tabindex]:not([tabindex="-1"])
-):focus {
-  outline: none !important;
-}
 
-:where(
-  input,
-  select,
-  textarea,
-  summary,
-  [tabindex]:not([tabindex="-1"])
-):focus-visible {
-  outline: 1px solid rgba(64, 127, 101, 0.35) !important;
-  outline-offset: 1px !important;
-}
+    :where(
+      a[href],
+      button,
+      input,
+      select,
+      textarea,
+      summary,
+      [role="button"],
+      [tabindex]:not([tabindex="-1"])
+    ):focus {
+      outline: none !important;
+    }
 
-:where(
-  a[href],
-  button,
-  [role="button"]
-):focus-visible {
-  outline: 1px solid rgba(20, 82, 62, 0.72) !important;
-  outline-offset: 2px !important;
-}
+    :where(
+      input,
+      select,
+      textarea,
+      summary,
+      [tabindex]:not([tabindex="-1"])
+    ):focus-visible {
+      outline: 1px solid rgba(64, 127, 101, 0.35) !important;
+      outline-offset: 1px !important;
+    }
 
-/* Main navigation text links: softer, rounded keyboard focus. */
-.nav > a[href]:not(.btn-register):focus-visible {
-  outline: 1px solid rgba(20, 82, 62, 0.58) !important;
-  outline-offset: 3px !important;
-  border-radius: 6px;
-}
+    :where(a[href], button, [role="button"]):focus-visible {
+      outline: 1px solid rgba(20, 82, 62, 0.72) !important;
+      outline-offset: 2px !important;
+    }
 
-/* Brand logo: match the same soft keyboard-focus language. */
-.logo:focus-visible {
-  outline: 1px solid rgba(20, 82, 62, 0.58) !important;
-  outline-offset: 3px !important;
-  border-radius: 8px;
-}
+    .nav > a[href]:not(.btn-register):focus-visible {
+      outline: 1px solid rgba(20, 82, 62, 0.58) !important;
+      outline-offset: 3px !important;
+      border-radius: 6px;
+    }
 
-/* Back-navigation links: precise rounded keyboard focus without layout shift. */
-a.back-link,
-a.results-back-link,
-a.manual-back {
-  position: relative;
-}
+    .logo:focus-visible {
+      outline: 1px solid rgba(20, 82, 62, 0.58) !important;
+      outline-offset: 3px !important;
+      border-radius: 8px;
+    }
 
-/* Keep back-navigation links clean on mouse hover across the project. */
-a.back-link:hover,
-a.results-back-link:hover,
-a.manual-back:hover {
-  text-decoration: none !important;
-}
+    a.back-link,
+    a.results-back-link,
+    a.manual-back {
+      position: relative;
+    }
 
-a.back-link:focus-visible,
-a.results-back-link:focus-visible,
-a.manual-back:focus-visible {
-  outline: none !important;
-}
+    a.back-link:hover,
+    a.results-back-link:hover,
+    a.manual-back:hover {
+      text-decoration: none !important;
+    }
 
-a.back-link:focus-visible::after,
-a.results-back-link:focus-visible::after,
-a.manual-back:focus-visible::after {
-  content: "";
-  position: absolute;
-  inset: -3px;
-  border: 1px solid rgba(20, 82, 62, 0.52);
-  border-radius: 7px;
-  pointer-events: none;
-}
+    a.back-link:focus-visible,
+    a.results-back-link:focus-visible,
+    a.manual-back:focus-visible {
+      outline: none !important;
+    }
 
-html[data-focus-input="keyboard"] .switch input:focus-visible + .switch-slider,
-.photo-file-input:focus-visible + .photo-file-control {
-  outline: 1px solid rgba(64, 127, 101, 0.35) !important;
-  outline-offset: 1px !important;
-}
-    @media (max-width: 600px) {
-      .nav {
-        gap: 8px;
-        align-items: flex-start;
-      }
+    a.back-link:focus-visible::after,
+    a.results-back-link:focus-visible::after,
+    a.manual-back:focus-visible::after {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border: 1px solid rgba(20, 82, 62, 0.52);
+      border-radius: 7px;
+      pointer-events: none;
+    }
 
-      .nav a,
-      .nav button {
-        font-size: 14px;
-      }
-
-      .nav-account-link {
-        gap: 5px;
-      }
-
-      .logout-link {
-        padding: 10px 16px;
-      }
+    html[data-focus-input="keyboard"] .switch input:focus-visible + .switch-slider,
+    .photo-file-input:focus-visible + .photo-file-control {
+      outline: 1px solid rgba(64, 127, 101, 0.35) !important;
+      outline-offset: 1px !important;
     }
   `;
+
   document.head.appendChild(style);
 }
 
 function navGetMobileMenuLabel() {
-  const translated = navTranslate(
-    "nav.menu",
-    ""
-  );
+  const translated = navTranslate("nav.menu", "");
 
   if (translated && translated !== "nav.menu") {
     return translated;
@@ -898,69 +810,39 @@ function navGetMobileMenuLabel() {
   }[navGetLanguage()] || "Menu";
 }
 
-function navSetMobileMenuOpen(
-  nav,
-  button,
-  isOpen
-) {
-  nav.classList.toggle(
-    "is-mobile-open",
-    isOpen
-  );
-  button.setAttribute(
-    "aria-expanded",
-    isOpen ? "true" : "false"
-  );
+function navSetMobileMenuOpen(nav, button, isOpen) {
+  nav.classList.toggle("is-mobile-open", isOpen);
+  button.setAttribute("aria-expanded", isOpen ? "true" : "false");
 }
 
 function navEnsureMobileMenuButton(nav) {
-  const headerContainer = nav.closest(
-    ".header, .header-inner"
-  );
+  const headerContainer = nav.closest(".header, .header-inner");
 
   if (!headerContainer) {
     return null;
   }
 
-  let button = headerContainer.querySelector(
-    ".shared-mobile-menu-button"
-  );
+  let button = headerContainer.querySelector(".shared-mobile-menu-button");
 
   if (!button) {
     button = document.createElement("button");
     button.type = "button";
-    button.className =
-      "shared-mobile-menu-button";
-    button.setAttribute(
-      "aria-controls",
-      nav.id || "mainNav"
-    );
-    button.setAttribute(
-      "aria-expanded",
-      "false"
-    );
+    button.className = "shared-mobile-menu-button";
+    button.setAttribute("aria-controls", nav.id || "mainNav");
+    button.setAttribute("aria-expanded", "false");
     button.innerHTML = `
       <span class="shared-mobile-menu-icon" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </span>
       <span class="shared-mobile-menu-label"></span>
     `;
 
-    headerContainer.insertBefore(
-      button,
-      nav
-    );
+    headerContainer.insertBefore(button, nav);
   }
 
-  const label = button.querySelector(
-    ".shared-mobile-menu-label"
-  );
-
+  const label = button.querySelector(".shared-mobile-menu-label");
   if (label) {
-    label.textContent =
-      navGetMobileMenuLabel();
+    label.textContent = navGetMobileMenuLabel();
   }
 
   return button;
@@ -969,552 +851,366 @@ function navEnsureMobileMenuButton(nav) {
 function navSetupSharedMobileNavigation(nav) {
   const button = navEnsureMobileMenuButton(nav);
 
-  if (!button) {
+  if (!button || button.dataset.mobileNavigationBound === "true") {
     return;
   }
 
-  if (
-    button.dataset.mobileNavigationBound ===
-    "true"
-  ) {
-    return;
-  }
-
-  const headerContainer = button.closest(
-    ".header, .header-inner"
-  );
-  const mobileQuery = window.matchMedia(
-    "(max-width: 1100px)"
-  );
+  const headerContainer = button.closest(".header, .header-inner");
+  const mobileQuery = window.matchMedia("(max-width: 1100px)");
 
   function closeMobileMenu() {
-    navSetMobileMenuOpen(
-      nav,
-      button,
-      false
-    );
+    navSetMobileMenuOpen(nav, button, false);
   }
 
-  button.addEventListener(
-    "click",
-    function (event) {
-      event.stopPropagation();
+  button.addEventListener("click", function (event) {
+    event.stopPropagation();
+    const isOpen = button.getAttribute("aria-expanded") === "true";
+    navSetMobileMenuOpen(nav, button, !isOpen);
+  });
 
-      const isOpen =
-        button.getAttribute(
-          "aria-expanded"
-        ) === "true";
-
-      navSetMobileMenuOpen(
-        nav,
-        button,
-        !isOpen
-      );
-    }
-  );
-
-  nav.addEventListener(
-    "click",
-    function (event) {
-      if (!mobileQuery.matches) {
-        return;
-      }
-
-      if (event.target.closest("a")) {
-        closeMobileMenu();
-      }
-    }
-  );
-
-  document.addEventListener(
-    "click",
-    function (event) {
-      if (
-        !mobileQuery.matches ||
-        !nav.classList.contains(
-          "is-mobile-open"
-        )
-      ) {
-        return;
-      }
-
-      if (
-        headerContainer &&
-        headerContainer.contains(
-          event.target
-        )
-      ) {
-        return;
-      }
-
+  nav.addEventListener("click", function (event) {
+    if (mobileQuery.matches && event.target.closest("a")) {
       closeMobileMenu();
     }
-  );
+  });
 
-  document.addEventListener(
-    "keydown",
-    function (event) {
-      if (
-        event.key !== "Escape" ||
-        !nav.classList.contains(
-          "is-mobile-open"
-        )
-      ) {
-        return;
-      }
+  document.addEventListener("click", function (event) {
+    if (!mobileQuery.matches || !nav.classList.contains("is-mobile-open")) {
+      return;
+    }
 
+    if (headerContainer && headerContainer.contains(event.target)) {
+      return;
+    }
+
+    closeMobileMenu();
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && nav.classList.contains("is-mobile-open")) {
       closeMobileMenu();
       button.focus();
     }
-  );
+  });
 
-  const handleViewportChange =
-    function (event) {
-      if (!event.matches) {
-        closeMobileMenu();
-      }
-    };
+  const handleViewportChange = function (event) {
+    if (!event.matches) {
+      closeMobileMenu();
+    }
+  };
 
-  if (
-    typeof mobileQuery.addEventListener ===
-    "function"
-  ) {
-    mobileQuery.addEventListener(
-      "change",
-      handleViewportChange
-    );
-  } else if (
-    typeof mobileQuery.addListener ===
-    "function"
-  ) {
-    mobileQuery.addListener(
-      handleViewportChange
-    );
+  if (typeof mobileQuery.addEventListener === "function") {
+    mobileQuery.addEventListener("change", handleViewportChange);
+  } else if (typeof mobileQuery.addListener === "function") {
+    mobileQuery.addListener(handleViewportChange);
   }
 
-  button.dataset.mobileNavigationBound =
-    "true";
+  button.dataset.mobileNavigationBound = "true";
 }
 
 function navEnableFocusInputTracking() {
   const root = document.documentElement;
 
-  document.addEventListener(
-    "keydown",
-    function (event) {
-      if (event.key === "Tab") {
-        root.dataset.focusInput = "keyboard";
-      }
-    },
-    true
-  );
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Tab") {
+      root.dataset.focusInput = "keyboard";
+    }
+  }, true);
 
-  document.addEventListener(
-    "pointerdown",
-    function () {
-      root.dataset.focusInput = "pointer";
-    },
-    true
-  );
+  document.addEventListener("pointerdown", function () {
+    root.dataset.focusInput = "pointer";
+  }, true);
 }
 
 function renderSharedBranding() {
-  const logoTextTitle =
-    document.querySelector(
-      ".logo-text strong"
-    );
-
+  const logoTextTitle = document.querySelector(".logo-text strong");
   if (logoTextTitle) {
     logoTextTitle.textContent = "Rentulo";
   }
 
-  const logoTextSubtitle =
-    document.querySelector(
-      ".logo-text small"
-    );
-
+  const logoTextSubtitle = document.querySelector(".logo-text small");
   if (logoTextSubtitle) {
     logoTextSubtitle.remove();
   }
 
-  const logoTitle =
-    document.querySelector(".logo-title");
-
+  const logoTitle = document.querySelector(".logo-title");
   if (logoTitle) {
     logoTitle.textContent = "Rentulo";
   }
-  const logoSubtitle =
-    document.querySelector(
-      ".logo-subtitle"
-    );
 
+  const logoSubtitle = document.querySelector(".logo-subtitle");
   if (logoSubtitle) {
     logoSubtitle.remove();
   }
 }
 
 function navClearLocalLogin() {
-  if (
-    typeof clearCurrentUser === "function"
-  ) {
+  if (typeof clearCurrentUser === "function") {
     clearCurrentUser();
   }
 
-  localStorage.removeItem(
-    "rentuloLoggedIn"
-  );
-
-  localStorage.removeItem(
-    "rentuloUser"
-  );
-
-  localStorage.removeItem(
-    "rentuloRememberLogin"
-  );
+  localStorage.removeItem("rentuloLoggedIn");
+  localStorage.removeItem("rentuloUser");
+  localStorage.removeItem("rentuloRememberLogin");
 }
 
 async function navLogoutUser() {
-  const supabaseClient =
-    navGetSupabaseClient();
-  if (
-    supabaseClient &&
-    supabaseClient.auth &&
-    typeof supabaseClient.auth.signOut ===
-      "function"
-  ) {
+  const supabaseClient = navGetSupabaseClient();
+
+  if (supabaseClient && supabaseClient.auth && typeof supabaseClient.auth.signOut === "function") {
     try {
       await supabaseClient.auth.signOut();
     } catch (error) {
-      console.warn(
-        "Supabase odhlášení se nepodařilo, pokračuji lokálním odhlášením.",
-        error
-      );
+      console.warn("Supabase odhlášení se nepodařilo, pokračuji lokálním odhlášením.", error);
     }
   }
 
   navClearLocalLogin();
-
   window.location.href = "index.html";
 }
 
-async function navLoadNotificationCountFromSupabase(
-  activePage
-) {
+async function navLoadNotificationCountFromSupabase(activePage) {
   const currentUser = navGetCurrentUser();
-  if (
-    !currentUser ||
-    typeof apiGetReservations !==
-      "function"
-  ) {
+
+  if (!currentUser || typeof apiGetReservations !== "function") {
     return;
   }
 
-  const reservations =
-    await apiGetReservations();
+  try {
+    const reservations = await apiGetReservations();
 
-  if (!Array.isArray(reservations)) {
-    return;
-  }
+    if (!Array.isArray(reservations)) {
+      return;
+    }
 
-  const userId = String(
-    currentUser.id || ""
-  );
+    const userId = String(currentUser.id || "");
+    const userEmail = navNormalizeEmail(navGetUserEmail(currentUser));
 
-  const userEmail =
-    navNormalizeEmail(
-      navGetUserEmail(currentUser)
-    );
-  const notificationCount =
-    reservations.filter(function (
-      reservation
-    ) {
-      const ownerId = String(
-        reservation.ownerId ||
-        reservation.owner_id ||
-        ""
-      );
+    const notificationCount = reservations.filter(function (reservation) {
+      const ownerId = String(reservation.ownerId || reservation.owner_id || "");
+      const renterId = String(reservation.renterId || reservation.renter_id || "");
+      const renterEmail = navNormalizeEmail(reservation.renterEmail || reservation.renter_email || "");
+      const status = navGetReservationStatus(reservation);
 
-      const renterId = String(
-        reservation.renterId ||
-        reservation.renter_id ||
-        ""
-      );
+      const ownerNeedsAction = ownerId === userId && navRequiresOwnerAction(status);
+      const renterNeedsPayment = (renterId === userId || renterEmail === userEmail) && navIsReservationWaitingForPayment(status);
 
-      const renterEmail =
-        navNormalizeEmail(
-          reservation.renterEmail ||
-          reservation.renter_email ||
-          ""
-        );
-      const status =
-        navGetReservationStatus(
-          reservation
-        );
-
-      const ownerNeedsAction =
-        ownerId === userId &&
-        navRequiresOwnerAction(status);
-
-      const renterNeedsPayment =
-        (
-          renterId === userId ||
-          renterEmail === userEmail
-        ) &&
-        navIsReservationWaitingForPayment(
-          status
-        );
-
-      return (
-        ownerNeedsAction ||
-        renterNeedsPayment
-      );
+      return ownerNeedsAction || renterNeedsPayment;
     }).length;
-  window.rentuloAccountNotificationCount =
-    notificationCount;
 
-  renderSharedNavigation(activePage);
+    window.rentuloAccountNotificationCount = notificationCount;
+    renderSharedNavigation(activePage);
+  } catch (error) {
+    console.warn("Počet upozornění se nepodařilo načíst.", error);
+  }
 }
 
 window.refreshRentuloNotificationBadge = async function () {
-  const activePage =
-    document.body.dataset.navigationPage || "";
-
+  const activePage = document.body.dataset.navigationPage || "";
   if (!activePage) {
     return;
   }
 
-  await navLoadNotificationCountFromSupabase(
-    activePage
-  );
+  await navLoadNotificationCountFromSupabase(activePage);
 };
 
-function renderSharedNavigation(
-  activePage
-) {
+function navCloseProfileMenu() {
+  const button = document.getElementById("sharedProfileButton");
+  const menu = document.getElementById("sharedProfileMenu");
+
+  if (!button || !menu) {
+    return;
+  }
+
+  menu.hidden = true;
+  button.setAttribute("aria-expanded", "false");
+}
+
+function navCloseLanguageMenu() {
+  const button = document.getElementById("sharedLanguageButton");
+  const menu = document.getElementById("sharedLanguageMenu");
+
+  if (!button || !menu) {
+    return;
+  }
+
+  menu.hidden = true;
+  button.setAttribute("aria-expanded", "false");
+}
+
+function navBindGlobalDropdownDismissal() {
+  if (navGlobalDropdownDismissalBound) {
+    return;
+  }
+
+  document.addEventListener("click", function () {
+    navCloseProfileMenu();
+    navCloseLanguageMenu();
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key !== "Escape") {
+      return;
+    }
+
+    const profileButton = document.getElementById("sharedProfileButton");
+    const profileMenu = document.getElementById("sharedProfileMenu");
+    const languageButton = document.getElementById("sharedLanguageButton");
+    const languageMenu = document.getElementById("sharedLanguageMenu");
+
+    if (profileButton && profileMenu && !profileMenu.hidden) {
+      navCloseProfileMenu();
+      profileButton.focus();
+      return;
+    }
+
+    if (languageButton && languageMenu && !languageMenu.hidden) {
+      navCloseLanguageMenu();
+      languageButton.focus();
+    }
+  });
+
+  navGlobalDropdownDismissalBound = true;
+}
+
+function navProfileControl(activePage, notificationCount) {
+  const badge = notificationCount > 0
+    ? `<span class="nav-notification-badge" aria-hidden="true">${notificationCount > 99 ? "99+" : notificationCount}</span>`
+    : "";
+
+  const notificationLabel = notificationCount > 0
+    ? `, ${notificationCount} ${navProfileText("notifications")}`
+    : "";
+
+  const isAccountActive = activePage === "muj-ucet";
+
+  return `
+    <div class="nav-profile-control">
+      <button
+        type="button"
+        id="sharedProfileButton"
+        class="nav-profile-button${isAccountActive ? " is-active" : ""}"
+        aria-label="${navProfileText("open")}${notificationLabel}"
+        aria-haspopup="true"
+        aria-expanded="false"
+        aria-controls="sharedProfileMenu"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.5"></circle>
+          <path d="M5.5 20c.8-4 3-6 6.5-6s5.7 2 6.5 6"></path>
+        </svg>
+        <span class="nav-profile-mobile-label">${navProfileText("myAccount")}</span>
+        <span class="nav-profile-chevron" aria-hidden="true">⌄</span>
+        ${badge}
+      </button>
+
+      <div id="sharedProfileMenu" class="nav-profile-menu" role="menu" hidden>
+        <a href="muj-ucet.html" role="menuitem" class="${isAccountActive ? "is-current" : ""}">${navProfileText("myAccount")}</a>
+        <a href="moje-rezervace.html" role="menuitem">${navProfileText("reservations")}</a>
+        <a href="moje-nabidky.html?open=actions" role="menuitem">${navProfileText("offers")}</a>
+        <a href="historie.html" role="menuitem">${navProfileText("history")}</a>
+        <div class="nav-profile-menu-divider" aria-hidden="true"></div>
+        <button type="button" id="sharedLogoutBtn" class="nav-profile-menu-logout" role="menuitem">${navProfileText("logout")}</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderSharedNavigation(activePage) {
   renderSharedBranding();
   navEnsureLanguageStyles();
-  const nav =
-    document.getElementById("mainNav") ||
-    document.querySelector(".nav");
+  navBindGlobalDropdownDismissal();
 
+  const nav = document.getElementById("mainNav") || document.querySelector(".nav");
   if (!nav) {
     return;
   }
 
   navInjectStyles();
 
-  const currentUser =
-    navGetCurrentUser();
+  const currentUser = navGetCurrentUser();
+  const storedNotificationCount = Number(window.rentuloAccountNotificationCount);
+  const notificationCount = Number.isFinite(storedNotificationCount) ? storedNotificationCount : 0;
 
-  const storedNotificationCount = Number(
-    window.rentuloAccountNotificationCount
-  );
+  const isHowActive = activePage === "jak-to-funguje" ? "active-link" : "";
+  const isResultsActive = activePage === "vysledky" ? "active-link" : "";
+  const isOfferActive = activePage === "nabidnout" ? "active-link" : "";
+  const isLoginActive = activePage === "prihlaseni" ? "active-link" : "";
+  const isRegisterActive = activePage === "registrace" ? "active-link" : "";
 
-  const notificationCount = Number.isFinite(
-    storedNotificationCount
-  )
-    ? storedNotificationCount
-    : navGetNotificationCount();
-  const accountBadge =
-    notificationCount > 0
-      ? `
-        <span class="nav-notification-badge">
-          ${
-            notificationCount > 99
-              ? "99+"
-              : notificationCount
-          }
-        </span>
-      `
-      : "";
-
-  const isHowActive =
-    activePage === "jak-to-funguje"
-      ? "active-link"
-      : "";
-
-  const isResultsActive =
-    activePage === "vysledky"
-      ? "active-link"
-      : "";
-  const isOfferActive =
-    activePage === "nabidnout"
-      ? "active-link"
-      : "";
-
-  const isAccountActive =
-    activePage === "muj-ucet"
-      ? "active-link"
-      : "";
-
-  const isLoginActive =
-    activePage === "prihlaseni"
-      ? "active-link"
-      : "";
-
-  const isRegisterActive =
-    activePage === "registrace"
-      ? "active-link"
-      : "";
-
-  const howItWorksText =
-    navTranslate(
-      "nav.howItWorks",
-      "Jak to funguje"
-    );
-  const browseText =
-    navTranslate(
-      "nav.browse",
-      "Prohlédnout nabídky"
-    );
-
-  const offerText =
-    navTranslate(
-      "nav.offer",
-      "Nabídnout cokoli"
-    );
-
-  const accountText =
-    navTranslate(
-      "nav.account",
-      "Můj účet"
-    );
-
-  const loginText =
-    navTranslate(
-      "nav.login",
-      "Přihlásit se"
-    );
-
-  const logoutText =
-    navTranslate(
-      "nav.logout",
-      "Odhlásit se"
-    );
-  const registerText =
-    navTranslate(
-      "nav.register",
-      "Registrovat se"
-    );
+  const howItWorksText = navTranslate("nav.howItWorks", "Jak to funguje");
+  const browseText = navTranslate("nav.browse", "Prohlédnout nabídky");
+  const offerText = navTranslate("nav.offer", "Nabídnout cokoli");
+  const loginText = navTranslate("nav.login", "Přihlásit se");
+  const registerText = navTranslate("nav.register", "Registrovat se");
 
   if (currentUser) {
     nav.innerHTML = `
-      <a
-        href="jak-to-funguje.html"
-        class="${isHowActive}"
-      >
-        ${howItWorksText}
-      </a>
-
-      <a
-        href="vysledky.html"
-        class="${isResultsActive}"
-      >
-        ${browseText}
-      </a>
-
-      <a
-        href="nabidnout.html"
-        class="${isOfferActive}"
-      >
-        ${offerText}
-      </a>
-      <a
-        href="muj-ucet.html"
-        class="nav-account-link ${isAccountActive}"
-      >
-        ${accountText}
-        ${accountBadge}
-      </a>
-
-      <a
-        href="#"
-        class="btn-register logout-link"
-        id="sharedLogoutBtn"
-      >
-        ${logoutText}
-      </a>
-
+      <a href="jak-to-funguje.html" class="${isHowActive}">${howItWorksText}</a>
+      <a href="vysledky.html" class="${isResultsActive}">${browseText}</a>
+      <a href="nabidnout.html" class="${isOfferActive}">${offerText}</a>
+      ${navProfileControl(activePage, notificationCount)}
       ${navLanguageControl()}
     `;
   } else {
     nav.innerHTML = `
-      <a
-        href="jak-to-funguje.html"
-        class="${isHowActive}"
-      >
-        ${howItWorksText}
-      </a>
-      <a
-        href="vysledky.html"
-        class="${isResultsActive}"
-      >
-        ${browseText}
-      </a>
-
-      <a
-        href="nabidnout.html"
-        class="${isOfferActive}"
-      >
-        ${offerText}
-      </a>
-
-      <a
-        href="prihlaseni.html"
-        class="${isLoginActive}"
-      >
-        ${loginText}
-      </a>
-
-      <a
-        href="registrace.html"
-        class="btn-register ${isRegisterActive}"
-      >
-        ${registerText}
-      </a>
+      <a href="jak-to-funguje.html" class="${isHowActive}">${howItWorksText}</a>
+      <a href="vysledky.html" class="${isResultsActive}">${browseText}</a>
+      <a href="nabidnout.html" class="${isOfferActive}">${offerText}</a>
+      <a href="prihlaseni.html" class="${isLoginActive}">${loginText}</a>
+      <a href="registrace.html" class="btn-register ${isRegisterActive}">${registerText}</a>
       ${navLanguageControl()}
     `;
   }
 
   navSetupSharedMobileNavigation(nav);
 
-  const logoutButton =
-    document.getElementById(
-      "sharedLogoutBtn"
-    );
+  const profileButton = document.getElementById("sharedProfileButton");
+  const profileMenu = document.getElementById("sharedProfileMenu");
 
+  if (profileButton && profileMenu) {
+    profileButton.addEventListener("click", function (event) {
+      event.stopPropagation();
+      const willOpen = profileMenu.hidden;
+      navCloseLanguageMenu();
+      profileMenu.hidden = !willOpen;
+      profileButton.setAttribute("aria-expanded", String(willOpen));
+    });
+
+    profileMenu.addEventListener("click", function (event) {
+      event.stopPropagation();
+    });
+  }
+
+  const logoutButton = document.getElementById("sharedLogoutBtn");
   if (logoutButton) {
-    logoutButton.addEventListener(
-      "click",
-      function (event) {
-        event.preventDefault();
-        navLogoutUser();
-      }
-    );
+    logoutButton.addEventListener("click", function (event) {
+      event.preventDefault();
+      void navLogoutUser();
+    });
   }
 
   const languageButton = document.getElementById("sharedLanguageButton");
   const languageMenu = document.getElementById("sharedLanguageMenu");
-  if (languageButton && languageMenu) {
-    const closeLanguageMenu = function () {
-      languageMenu.hidden = true;
-      languageButton.setAttribute("aria-expanded", "false");
-    };
 
+  if (languageButton && languageMenu) {
     languageButton.addEventListener("click", function (event) {
       event.stopPropagation();
       const willOpen = languageMenu.hidden;
+      navCloseProfileMenu();
       languageMenu.hidden = !willOpen;
       languageButton.setAttribute("aria-expanded", String(willOpen));
     });
+
     languageMenu.addEventListener("click", function (event) {
+      event.stopPropagation();
       const option = event.target.closest("[data-language]");
       if (!option) {
         return;
       }
 
       const language = option.dataset.language;
-      closeLanguageMenu();
+      navCloseLanguageMenu();
 
       if (typeof window.setRentuloLanguage === "function") {
         window.setRentuloLanguage(language);
@@ -1522,15 +1218,8 @@ function renderSharedNavigation(
         localStorage.setItem("rentuloLanguage", language);
         window.location.reload();
       }
-      navSavePreferredLanguage(language);
-    });
 
-    document.addEventListener("click", closeLanguageMenu);
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") {
-        closeLanguageMenu();
-        languageButton.focus();
-      }
+      navSavePreferredLanguage(language);
     });
   }
 }
@@ -1541,18 +1230,10 @@ function navGetSameOriginReferrerUrl() {
   }
 
   try {
-    const referrerUrl = new URL(
-      document.referrer,
-      window.location.href
-    );
-    const currentUrl = new URL(
-      window.location.href
-    );
+    const referrerUrl = new URL(document.referrer, window.location.href);
+    const currentUrl = new URL(window.location.href);
 
-    if (
-      referrerUrl.origin !== currentUrl.origin ||
-      referrerUrl.href === currentUrl.href
-    ) {
+    if (referrerUrl.origin !== currentUrl.origin || referrerUrl.href === currentUrl.href) {
       return null;
     }
 
@@ -1568,10 +1249,9 @@ function navRememberContextBackUrl() {
   }
 
   const referrerUrl = navGetSameOriginReferrerUrl();
-  const existingState =
-    window.history.state && typeof window.history.state === "object"
-      ? window.history.state
-      : {};
+  const existingState = window.history.state && typeof window.history.state === "object"
+    ? window.history.state
+    : {};
 
   if (existingState.rentuloBackUrl || !referrerUrl) {
     return;
@@ -1579,9 +1259,7 @@ function navRememberContextBackUrl() {
 
   try {
     window.history.replaceState(
-      Object.assign({}, existingState, {
-        rentuloBackUrl: referrerUrl
-      }),
+      Object.assign({}, existingState, { rentuloBackUrl: referrerUrl }),
       document.title,
       window.location.href
     );
@@ -1591,58 +1269,47 @@ function navRememberContextBackUrl() {
 }
 
 function navCanUseContextBack() {
-  const stateBackUrl =
-    window.history &&
-    window.history.state &&
-    typeof window.history.state === "object"
-      ? window.history.state.rentuloBackUrl
-      : "";
-  const backUrl =
-    stateBackUrl || navGetSameOriginReferrerUrl();
+  const stateBackUrl = window.history && window.history.state && typeof window.history.state === "object"
+    ? window.history.state.rentuloBackUrl
+    : "";
+  const backUrl = stateBackUrl || navGetSameOriginReferrerUrl();
 
-  return Boolean(
-    backUrl &&
-      window.history &&
-      window.history.length > 1
-  );
+  return Boolean(backUrl && window.history && window.history.length > 1);
 }
 
 function navSetupContextBackLinks() {
   navRememberContextBackUrl();
 
-  document
-    .querySelectorAll('a[data-rentulo-back="true"]')
-    .forEach(function (link) {
-      if (link.dataset.rentuloBackReady === "true") {
+  document.querySelectorAll('a[data-rentulo-back="true"]').forEach(function (link) {
+    if (link.dataset.rentuloBackReady === "true") {
+      return;
+    }
+
+    link.dataset.rentuloBackReady = "true";
+    link.addEventListener("click", function (event) {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
         return;
       }
 
-      link.dataset.rentuloBackReady = "true";
-      link.addEventListener("click", function (event) {
-        if (
-          event.defaultPrevented ||
-          event.button !== 0 ||
-          event.metaKey ||
-          event.ctrlKey ||
-          event.shiftKey ||
-          event.altKey
-        ) {
-          return;
-        }
+      if (!navCanUseContextBack()) {
+        return;
+      }
 
-        if (!navCanUseContextBack()) {
-          return;
-        }
-
-        event.preventDefault();
-        window.history.back();
-      });
+      event.preventDefault();
+      window.history.back();
     });
+  });
 }
 
 async function initializeSharedNavigation() {
-  const page =
-    document.body.dataset.navigationPage;
+  const page = document.body.dataset.navigationPage;
 
   if (!page) {
     return;
@@ -1652,7 +1319,7 @@ async function initializeSharedNavigation() {
   navSetupContextBackLinks();
   await navGetVerifiedUser();
   renderSharedNavigation(page);
-  navLoadNotificationCountFromSupabase(page);
+  void navLoadNotificationCountFromSupabase(page);
 
   const supabaseClient = navGetSupabaseClient();
 
@@ -1660,48 +1327,32 @@ async function initializeSharedNavigation() {
     !navAuthListenerRegistered &&
     supabaseClient &&
     supabaseClient.auth &&
-    typeof supabaseClient.auth.onAuthStateChange ===
-      "function"
+    typeof supabaseClient.auth.onAuthStateChange === "function"
   ) {
     navAuthListenerRegistered = true;
-    supabaseClient.auth.onAuthStateChange(
-      function (_event, session) {
-        navVerifiedUser =
-          session && session.user
-            ? session.user
-            : null;
-        navAuthPromise = Promise.resolve(
-          navVerifiedUser
-        );
-        window.rentuloAccountNotificationCount = 0;
-        renderSharedNavigation(page);
+    supabaseClient.auth.onAuthStateChange(function (_event, session) {
+      navVerifiedUser = session && session.user ? session.user : null;
+      navAuthPromise = Promise.resolve(navVerifiedUser);
+      window.rentuloAccountNotificationCount = 0;
+      renderSharedNavigation(page);
 
-        if (navVerifiedUser) {
-          navLoadNotificationCountFromSupabase(
-            page
-          );
-        }
+      if (navVerifiedUser) {
+        void navLoadNotificationCountFromSupabase(page);
       }
-    );
+    });
   }
 }
-document.addEventListener(
-  "rentuloLanguageChanged",
-  function () {
-    const page =
-      document.body.dataset.navigationPage;
 
-    if (page) {
-      renderSharedNavigation(page);
-    }
+document.addEventListener("rentuloLanguageChanged", function () {
+  const page = document.body.dataset.navigationPage;
+
+  if (page) {
+    renderSharedNavigation(page);
   }
-);
+});
 
 if (document.readyState === "loading") {
-  document.addEventListener(
-    "DOMContentLoaded",
-    initializeSharedNavigation
-  );
+  document.addEventListener("DOMContentLoaded", initializeSharedNavigation);
 } else {
   initializeSharedNavigation();
 }
