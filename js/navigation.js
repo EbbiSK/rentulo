@@ -330,6 +330,7 @@ function navLanguageControl() {
 
   return `
     <div class="nav-language-control">
+      <span class="nav-language-label">${label}</span>
       <button
         type="button"
         id="sharedLanguageButton"
@@ -364,6 +365,9 @@ function navEnsureLanguageStyles() {
       position: relative;
       display: inline-flex;
       flex-shrink: 0;
+    }
+    .nav-language-label {
+      display: none;
     }
     .nav-language-button {
       display: inline-flex;
@@ -1020,6 +1024,14 @@ function navInjectStyles() {
       #mainNav.is-user-navigation .nav-mobile-account-menu button {
         min-height: 40px;
         padding: 0 10px;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        line-height: 1.25;
+      }
+
+      #mainNav.is-user-navigation .nav-mobile-account-menu .nav-profile-menu-logout {
+        font-size: 14px !important;
+        font-weight: 800 !important;
       }
 
       #mainNav.is-user-navigation .nav-mobile-account-menu .nav-profile-menu-divider {
@@ -1029,6 +1041,27 @@ function navInjectStyles() {
       #mainNav .nav-language-control {
         align-self: flex-start;
         margin-top: 0;
+      }
+
+      #mainNav.is-user-navigation > .nav-language-control {
+        width: 100%;
+        align-self: stretch;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 0;
+        padding: 4px 10px 0;
+      }
+
+      #mainNav.is-user-navigation > .nav-language-control .nav-language-label {
+        display: block;
+        color: #17251f;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.25;
+      }
+
+      #mainNav.is-user-navigation > .nav-language-control .nav-language-menu {
+        right: 10px;
       }
     }
 
@@ -1493,6 +1526,7 @@ function navMobileAccountMenu() {
       <a href="nastaveni.html">${navProfileText("settings")}</a>
       <div class="nav-profile-menu-divider" aria-hidden="true"></div>
       <button type="button" class="nav-profile-menu-logout" data-nav-logout="true">${navProfileText("logout")}</button>
+      <div class="nav-profile-menu-divider" aria-hidden="true"></div>
     </div>
   `;
 }
