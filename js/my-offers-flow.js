@@ -9,10 +9,7 @@
       hideRequestMany: "Skrýt žádosti",
       hideReservationOne: "Skrýt rezervaci",
       hideReservationMany: "Skrýt rezervace",
-      newRequestOne: "Nová žádost o půjčení",
-      newRequestMany: "Nové žádosti o půjčení",
-      currentReservationOne: "Rezervace k nabídce",
-      currentReservationMany: "Rezervace k nabídce",
+      requestsAndReservations: "Žádosti a rezervace",
       renter: "Zájemce",
       term: "Termín",
       price: "Cena",
@@ -40,10 +37,7 @@
       hideRequestMany: "Hide requests",
       hideReservationOne: "Hide reservation",
       hideReservationMany: "Hide reservations",
-      newRequestOne: "New rental request",
-      newRequestMany: "New rental requests",
-      currentReservationOne: "Reservation for this listing",
-      currentReservationMany: "Reservations for this listing",
+      requestsAndReservations: "Requests and reservations",
       renter: "Renter",
       term: "Dates",
       price: "Price",
@@ -71,10 +65,7 @@
       hideRequestMany: "Anfragen ausblenden",
       hideReservationOne: "Reservierung ausblenden",
       hideReservationMany: "Reservierungen ausblenden",
-      newRequestOne: "Neue Ausleihanfrage",
-      newRequestMany: "Neue Ausleihanfragen",
-      currentReservationOne: "Reservierung zu diesem Angebot",
-      currentReservationMany: "Reservierungen zu diesem Angebot",
+      requestsAndReservations: "Anfragen und Reservierungen",
       renter: "Interessent",
       term: "Zeitraum",
       price: "Preis",
@@ -102,10 +93,7 @@
       hideRequestMany: "Ukryj prośby",
       hideReservationOne: "Ukryj rezerwację",
       hideReservationMany: "Ukryj rezerwacje",
-      newRequestOne: "Nowa prośba o wypożyczenie",
-      newRequestMany: "Nowe prośby o wypożyczenie",
-      currentReservationOne: "Rezerwacja tej oferty",
-      currentReservationMany: "Rezerwacje tej oferty",
+      requestsAndReservations: "Prośby i rezerwacje",
       renter: "Zainteresowany",
       term: "Termin",
       price: "Cena",
@@ -421,14 +409,9 @@
 
     const header = panel.querySelector(":scope > .request-panel-header");
     const title = header ? header.querySelector("h3") : null;
-    const count = countRequestCards(panel);
 
-    if (title && count > 0) {
-      if (flow.kind === "pending") {
-        setText(title, count === 1 ? text("newRequestOne") : text("newRequestMany"));
-      } else {
-        setText(title, count === 1 ? text("currentReservationOne") : text("currentReservationMany"));
-      }
+    if (title && countRequestCards(panel) > 0) {
+      setText(title, text("requestsAndReservations"));
     }
 
     panel.querySelectorAll(".request-card").forEach(function (card) {
