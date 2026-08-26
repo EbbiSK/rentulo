@@ -163,6 +163,52 @@
       padding: 22px 28px 28px;
     }
 
+    .offer-top-grid {
+      display: contents;
+    }
+
+    @media (min-width: 701px) {
+      .offer-card-body {
+        padding-top: 28px;
+      }
+
+      .offer-top-grid {
+        display: grid;
+        grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+        gap: 34px;
+        align-items: start;
+        padding-bottom: 22px;
+        border-bottom: 1px solid var(--rentulo-line, #e5e9e5);
+      }
+
+      .offer-top-grid .photo-upload-box {
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
+
+      .offer-top-grid .photo-upload-layout {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        align-items: start;
+      }
+
+      .offer-top-grid .photo-preview {
+        width: 100%;
+        height: 220px;
+      }
+
+      .offer-top-grid .offer-basics-grid {
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        gap: 18px 16px;
+        align-items: start;
+      }
+
+      .offer-top-grid .price-group {
+        grid-column: 1 / 2;
+        max-width: 240px;
+      }
+    }
+
     .form-message {
       display: none;
       margin: 0;
@@ -773,14 +819,11 @@
     <section class="offer-layout">
 
       <section class="offer-card">
-        <div class="offer-card-header">
-          <h2 data-i18n="offer.infoTitle">Informace o nabízené věci</h2>
-        </div>
-
         <form class="offer-card-body tool-form" id="offerForm">
 
           <div class="form-message" id="offerFormMessage" role="status" aria-live="polite"></div>
 
+          <div class="offer-top-grid">
           <div class="photo-upload-box">
             <div class="photo-upload-header">
               <div class="photo-upload-title">
@@ -825,11 +868,12 @@
 
             <datalist id="citySuggestions"></datalist>
 
-            <div class="form-group">
+            <div class="form-group price-group">
               <label for="toolPrice" data-i18n="offer.priceLabel">Cena za den</label>
               <input id="toolPrice" type="text" placeholder="např. 250 Kč" data-i18n-placeholder="offer.pricePlaceholder" aria-describedby="toolPriceError" />
               <p class="field-error-message" id="toolPriceError" data-i18n="offer.priceValidationPositive" hidden>Zadejte platnou cenu vyšší než 0 Kč.</p>
             </div>
+          </div>
           </div>
 
           <div class="form-group full">
