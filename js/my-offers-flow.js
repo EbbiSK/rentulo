@@ -1,11 +1,14 @@
 (function () {
   const COPY = {
     cs: {
+      addListing: "Přidat nabídku",
       manageListing: "Spravovat nabídku",
-      handleRequestOne: "Vyřídit žádost",
-      handleRequestMany: "Vyřídit žádosti",
-      hideRequestOne: "Skrýt detail",
-      hideRequestMany: "Skrýt detaily",
+      handleRequestOne: "Zobrazit žádost",
+      handleRequestMany: "Zobrazit žádosti",
+      hideRequestOne: "Skrýt žádost",
+      hideRequestMany: "Skrýt žádosti",
+      hideReservationOne: "Skrýt rezervaci",
+      hideReservationMany: "Skrýt rezervace",
       newRequestOne: "Nová žádost o půjčení",
       newRequestMany: "Nové žádosti o půjčení",
       currentReservationOne: "Rezervace k nabídce",
@@ -29,11 +32,14 @@
       confirmReturn: "Potvrdit vrácení"
     },
     en: {
+      addListing: "Add listing",
       manageListing: "Manage listing",
-      handleRequestOne: "Handle request",
-      handleRequestMany: "Handle requests",
-      hideRequestOne: "Hide details",
-      hideRequestMany: "Hide details",
+      handleRequestOne: "View request",
+      handleRequestMany: "View requests",
+      hideRequestOne: "Hide request",
+      hideRequestMany: "Hide requests",
+      hideReservationOne: "Hide reservation",
+      hideReservationMany: "Hide reservations",
       newRequestOne: "New rental request",
       newRequestMany: "New rental requests",
       currentReservationOne: "Reservation for this listing",
@@ -57,11 +63,14 @@
       confirmReturn: "Confirm return"
     },
     de: {
+      addListing: "Angebot hinzufügen",
       manageListing: "Angebot verwalten",
-      handleRequestOne: "Anfrage bearbeiten",
-      handleRequestMany: "Anfragen bearbeiten",
-      hideRequestOne: "Details ausblenden",
-      hideRequestMany: "Details ausblenden",
+      handleRequestOne: "Anfrage anzeigen",
+      handleRequestMany: "Anfragen anzeigen",
+      hideRequestOne: "Anfrage ausblenden",
+      hideRequestMany: "Anfragen ausblenden",
+      hideReservationOne: "Reservierung ausblenden",
+      hideReservationMany: "Reservierungen ausblenden",
       newRequestOne: "Neue Ausleihanfrage",
       newRequestMany: "Neue Ausleihanfragen",
       currentReservationOne: "Reservierung zu diesem Angebot",
@@ -85,11 +94,14 @@
       confirmReturn: "Rückgabe bestätigen"
     },
     pl: {
+      addListing: "Dodaj ofertę",
       manageListing: "Zarządzaj ofertą",
-      handleRequestOne: "Rozpatrz prośbę",
-      handleRequestMany: "Rozpatrz prośby",
-      hideRequestOne: "Ukryj szczegóły",
-      hideRequestMany: "Ukryj szczegóły",
+      handleRequestOne: "Pokaż prośbę",
+      handleRequestMany: "Pokaż prośby",
+      hideRequestOne: "Ukryj prośbę",
+      hideRequestMany: "Ukryj prośby",
+      hideReservationOne: "Ukryj rezerwację",
+      hideReservationMany: "Ukryj rezerwacje",
       newRequestOne: "Nowa prośba o wypożyczenie",
       newRequestMany: "Nowe prośby o wypożyczenie",
       currentReservationOne: "Rezerwacja tej oferty",
@@ -296,9 +308,12 @@
         const isPanelOpen = Boolean(panel && panel.classList.contains("open"));
 
         if (isPanelOpen) {
+          const reservationFlow = flow.kind !== "pending";
           setText(
             primary,
-            flow.count === 1 ? text("hideRequestOne") : text("hideRequestMany")
+            reservationFlow
+              ? (flow.count === 1 ? text("hideReservationOne") : text("hideReservationMany"))
+              : (flow.count === 1 ? text("hideRequestOne") : text("hideRequestMany"))
           );
         } else if (flow.kind === "pending") {
           setText(
@@ -449,6 +464,10 @@
 
   function enhanceAll() {
     scheduled = false;
+
+    const topAction = document.querySelector(".top-action-button");
+    setText(topAction, text("addListing"));
+
     const list = document.getElementById("offersList");
 
     if (!list) {
