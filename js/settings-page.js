@@ -227,13 +227,9 @@
   }
 
   async function loadPageData(client, user) {
-    const languageSelect = document.getElementById("preferredLanguage");
-    const emailCheckbox = document.getElementById("emailNotifications");
-    const settingsMessage = document.getElementById("settingsMessage");
     const profileMessage = document.getElementById("profileMessage");
 
     setLoadState("loading");
-    setMessage(settingsMessage, "", "");
     setMessage(profileMessage, "", "");
 
     let data;
@@ -243,7 +239,7 @@
       const response = await client
         .from("profiles")
         .select(
-          "full_name, email, phone, street, city, postal_code, preferred_language, email_notifications"
+          "full_name, email, phone, street, city, postal_code, preferred_language"
         )
         .eq("id", user.id)
         .maybeSingle();
@@ -301,18 +297,6 @@
     const language = profile && profile.preferred_language
       ? profile.preferred_language
       : "cs";
-
-    const emailNotifications = profile
-      ? profile.email_notifications !== false
-      : true;
-
-    if (languageSelect) {
-      languageSelect.value = language;
-    }
-
-    if (emailCheckbox) {
-      emailCheckbox.checked = emailNotifications;
-    }
 
     applyLanguage(language);
     setLoadState("ready");
@@ -486,67 +470,6 @@
       return user;
     } finally {
       setButtonLoading(button, false);
-    }
-  }
-
-  async function saveSettings(client, user) {
-    const languageSelect = document.getElementById("preferredLanguage");
-    const emailCheckbox = document.getElementById("emailNotifications");
-    const saveButton = document.getElementById("saveSettingsButton");
-    const message = document.getElementById("settingsMessage");
-
-    const preferredLanguage = languageSelect ? languageSelect.value : "cs";
-    const emailNotifications = emailCheckbox ? emailCheckbox.checked : true;
-
-    if (saveButton && saveButton.disabled) {
-      return;
-    }
-
-    setMessage(message, "", "");
-
-    setButtonLoading(saveButton, true);
-
-    try {
-      const { error: profileError } = await client
-        .from("profiles")
-        .update({
-          preferred_language: preferredLanguage,
-          email_notifications: emailNotifications,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", user.id);
-
-      if (profileError) {
-        throw profileError;
-      }
-
-      const { error: authError } = await client.auth.updateUser({
-        data: {
-          preferred_language: preferredLanguage
-        }
-      });
-
-      if (authError) {
-        throw authError;
-      }
-
-      applyLanguage(preferredLanguage);
-      setTranslatedMessage(
-        message,
-        "settings.saved",
-        "Nastavení bylo uloženo.",
-        "success"
-      );
-    } catch (error) {
-      console.error(error);
-      setTranslatedMessage(
-        message,
-        "settings.saveError",
-        "Nastavení se nepodařilo uložit.",
-        "error"
-      );
-    } finally {
-      setButtonLoading(saveButton, false);
     }
   }
 
@@ -1063,7 +986,6 @@
     initializePasswordVisibility();
 
     const profileForm = document.getElementById("profileForm");
-    const saveButton = document.getElementById("saveSettingsButton");
     const passwordForm = document.getElementById("passwordForm");
     const retryButton = document.getElementById("settingsRetryButton");
     const checkAccountCancellationButton = document.getElementById("checkAccountCancellationButton");
@@ -1076,12 +998,6 @@
       profileForm.addEventListener("submit", async function (event) {
         event.preventDefault();
         currentUser = await saveProfile(client, currentUser);
-      });
-    }
-
-    if (saveButton) {
-      saveButton.addEventListener("click", function () {
-        saveSettings(client, currentUser);
       });
     }
 
@@ -1133,14 +1049,7 @@
     await loadPageData(client, currentUser);
   }
 
-  document.addEventListener("rentuloLanguageChanged", function (event) {
-    const languageSelect = document.getElementById("preferredLanguage");
-    const language = event && event.detail ? event.detail.language : "";
-
-    if (languageSelect && language) {
-      languageSelect.value = language;
-    }
-
+  document.addEventListener("rentuloLanguageChanged", function () {
     refreshTranslatedMessages();
 
     const loadState = document.getElementById("settingsLoadState");
