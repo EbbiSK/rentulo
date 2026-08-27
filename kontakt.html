@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title data-i18n="contact.documentTitle">Kontakt - Rentulo</title>
+
+  <link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
+  <link id="rentuloSharedTheme" rel="stylesheet" href="css/rentulo-theme.css" />
+  <link rel="stylesheet" href="css/contact.css" />
+</head>
+
+<body data-navigation-page="kontakt" data-i18n-document-title="contact.documentTitle">
+  <header class="header">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <img src="assets/rentulo-logo-mark.png" alt="" width="40" height="40" aria-hidden="true" />
+      </div>
+      <div class="logo-text">
+        <strong>Rentulo</strong>
+      </div>
+    </a>
+
+    <nav class="nav" id="mainNav"></nav>
+  </header>
+
+  <main class="contact-page">
+    <a
+      href="index.html"
+      class="back-link"
+      data-rentulo-back="true"
+      data-i18n="detail.back"
+    >
+      ← Zpět
+    </a>
+
+    <section class="contact-hero">
+      <span class="contact-eyebrow" data-i18n="contact.eyebrow">Kontakt</span>
+      <h1 data-i18n="contact.title">Jak vám můžeme pomoci?</h1>
+      <p data-i18n="contact.intro">
+        Máte dotaz k účtu, nabídce, rezervaci nebo fungování Rentula? Napište nám a uveďte co nejpřesněji, s čím potřebujete pomoci.
+      </p>
+    </section>
+
+    <div class="contact-grid">
+      <section class="contact-card">
+        <div class="contact-card-heading">
+          <span class="contact-card-kicker" data-i18n="contact.supportKicker">Podpora</span>
+          <h2 data-i18n="contact.supportTitle">Zákaznická podpora</h2>
+        </div>
+
+        <p class="contact-card-text" data-i18n="contact.supportText">
+          Pro otázky k účtu, nabídce, rezervaci nebo technickému problému nás kontaktujte e-mailem.
+        </p>
+
+        <dl class="contact-details">
+          <div>
+            <dt data-i18n="contact.emailLabel">E-mail</dt>
+            <dd data-i18n="contact.toBeAdded">Bude doplněno</dd>
+          </div>
+          <div>
+            <dt data-i18n="contact.phoneLabel">Telefon</dt>
+            <dd data-i18n="contact.toBeAdded">Bude doplněno</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="contact-card contact-card-operator">
+        <div class="contact-card-heading">
+          <span class="contact-test-badge" data-i18n="contact.testBadge">Testovací verze</span>
+          <h2 data-i18n="contact.operatorTitle">Provozovatel Rentulo</h2>
+        </div>
+
+        <p class="contact-card-text" data-i18n="contact.operatorNotice">
+          Identifikační údaje provozovatele budou doplněny před spuštěním ostrého provozu. Následující položky slouží zatím pouze jako připravená struktura stránky.
+        </p>
+
+        <dl class="contact-details contact-company-details">
+          <div>
+            <dt data-i18n="contact.companyLabel">Název společnosti</dt>
+            <dd data-i18n="contact.toBeAdded">Bude doplněno</dd>
+          </div>
+          <div>
+            <dt data-i18n="contact.addressLabel">Sídlo</dt>
+            <dd data-i18n="contact.toBeAdded">Bude doplněno</dd>
+          </div>
+          <div>
+            <dt data-i18n="contact.companyIdLabel">IČO</dt>
+            <dd data-i18n="contact.toBeAdded">Bude doplněno</dd>
+          </div>
+          <div>
+            <dt data-i18n="contact.taxIdLabel">DIČ</dt>
+            <dd data-i18n="contact.toBeAdded">Bude doplněno</dd>
+          </div>
+          <div>
+            <dt data-i18n="contact.registerLabel">Zápis v rejstříku</dt>
+            <dd data-i18n="contact.toBeAdded">Bude doplněno</dd>
+          </div>
+        </dl>
+      </section>
+    </div>
+
+    <section class="contact-help-card">
+      <div>
+        <span class="contact-card-kicker" data-i18n="contact.helpKicker">Když řešíte rezervaci</span>
+        <h2 data-i18n="contact.helpTitle">Pomozte nám najít správný případ</h2>
+        <p data-i18n="contact.helpText">
+          Napište nám z e-mailové adresy, kterou používáte v Rentulo, a pokud je to možné, přidejte číslo nebo jiné údaje konkrétní rezervace.
+        </p>
+      </div>
+      <p class="contact-security-note" data-i18n="contact.securityNote">
+        Nikdy nám neposílejte své heslo ani údaje platební karty.
+      </p>
+    </section>
+
+    <section class="contact-links-card">
+      <h2 data-i18n="contact.linksTitle">Užitečné odkazy</h2>
+      <div class="contact-links">
+        <a href="jak-to-funguje.html" data-i18n="contact.howLink">Jak Rentulo funguje</a>
+        <a href="obchodni-podminky.html" data-i18n="contact.termsLink">Obchodní podmínky</a>
+        <a href="ochrana-osobnich-udaju.html" data-i18n="contact.privacyLink">Ochrana osobních údajů</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/navigation.js"></script>
+</body>
+</html>

@@ -395,6 +395,32 @@ body[data-navigation-page="vysledky"] #results-search-button::after {
     align-items: flex-start !important;
   }
 
+  #mainNav.is-user-navigation > .nav-language-control {
+    display: grid !important;
+    grid-template-columns: auto auto !important;
+    width: 100% !important;
+    align-self: stretch !important;
+    align-items: center !important;
+    justify-content: start !important;
+    column-gap: 10px !important;
+  }
+
+  #mainNav.is-user-navigation > .nav-language-control .nav-language-label {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  #mainNav.is-user-navigation > .nav-language-control .nav-language-button {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  #mainNav.is-user-navigation > .nav-language-control .nav-language-menu {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: end !important;
+  }
+
   #mainNav .nav-language-menu {
     grid-template-columns: 1fr !important;
     gap: 2px !important;

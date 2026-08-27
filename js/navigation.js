@@ -100,6 +100,7 @@ function navProfileText(key) {
       offers: "Moje nabídky",
       history: "Historie",
       settings: "Nastavení",
+      contact: "Kontakt",
       logout: "Odhlásit se",
       notifications: "upozornění",
       ratingNone: "Hodnocení: zatím bez hodnocení",
@@ -112,6 +113,7 @@ function navProfileText(key) {
       offers: "Moje ponuky",
       history: "História",
       settings: "Nastavenia",
+      contact: "Kontakt",
       logout: "Odhlásiť sa",
       notifications: "upozornenia",
       ratingNone: "Hodnotenie: zatiaľ bez hodnotenia",
@@ -124,6 +126,7 @@ function navProfileText(key) {
       offers: "My listings",
       history: "History",
       settings: "Settings",
+      contact: "Contact",
       logout: "Log out",
       notifications: "notifications",
       ratingNone: "Rating: no ratings yet",
@@ -136,6 +139,7 @@ function navProfileText(key) {
       offers: "Meine Angebote",
       history: "Verlauf",
       settings: "Einstellungen",
+      contact: "Kontakt",
       logout: "Abmelden",
       notifications: "Benachrichtigungen",
       ratingNone: "Bewertung: noch keine Bewertungen",
@@ -148,6 +152,7 @@ function navProfileText(key) {
       offers: "Moje oferty",
       history: "Historia",
       settings: "Ustawienia",
+      contact: "Kontakt",
       logout: "Wyloguj się",
       notifications: "powiadomienia",
       ratingNone: "Ocena: jeszcze bez ocen",
@@ -895,7 +900,8 @@ function navInjectStyles() {
     }
 
     .nav-mobile-profile-summary,
-    .nav-mobile-account-menu {
+    .nav-mobile-account-menu,
+    .nav-mobile-logout-control {
       display: none;
     }
 
@@ -1090,6 +1096,30 @@ function navInjectStyles() {
 
       #mainNav.is-user-navigation .nav-mobile-account-menu .nav-profile-menu-divider {
         margin: 4px;
+      }
+
+      #mainNav.is-user-navigation .nav-mobile-logout-control {
+        position: static;
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      #mainNav.is-user-navigation .nav-mobile-logout-control .nav-profile-menu-divider {
+        margin: 4px;
+      }
+
+      #mainNav.is-user-navigation .nav-mobile-logout-control .nav-profile-menu-logout {
+        min-height: 40px;
+        padding: 0 10px;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+        line-height: 1.25;
       }
 
       #mainNav .nav-language-control {
@@ -1593,6 +1623,7 @@ function navProfileControl(notificationCount) {
         </a>
         <a href="historie.html" role="menuitem">${navProfileText("history")}</a>
         <a href="nastaveni.html" role="menuitem">${navProfileText("settings")}</a>
+        <a href="kontakt.html" role="menuitem">${navProfileText("contact")}</a>
         <div class="nav-profile-menu-divider" aria-hidden="true"></div>
         <button type="button" id="sharedLogoutBtn" class="nav-profile-menu-logout" role="menuitem">${navProfileText("logout")}</button>
       </div>
@@ -1633,9 +1664,16 @@ function navMobileAccountMenu() {
       </a>
       <a href="historie.html">${navProfileText("history")}</a>
       <a href="nastaveni.html">${navProfileText("settings")}</a>
+      <a href="kontakt.html">${navProfileText("contact")}</a>
+    </div>
+  `;
+}
+
+function navMobileLogoutControl() {
+  return `
+    <div class="nav-profile-menu nav-mobile-logout-control">
       <div class="nav-profile-menu-divider" aria-hidden="true"></div>
       <button type="button" class="nav-profile-menu-logout" data-nav-logout="true">${navProfileText("logout")}</button>
-      <div class="nav-profile-menu-divider" aria-hidden="true"></div>
     </div>
   `;
 }
@@ -1679,6 +1717,7 @@ function renderSharedNavigation(activePage) {
       ${navProfileControl(notificationCount)}
       ${navMobileAccountMenu()}
       ${navLanguageControl()}
+      ${navMobileLogoutControl()}
     `;
   } else {
     nav.innerHTML = `
