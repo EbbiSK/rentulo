@@ -6,7 +6,8 @@
       confirmLabel: "Potvrzení hesla",
       confirmPlaceholder: "Zadejte heslo znovu",
       confirmRequired: "Potvrďte prosím heslo.",
-      mismatch: "Zadaná hesla se neshodují."
+      mismatch: "Zadaná hesla se neshodují.",
+      helperText: "Jméno, telefon a přesná adresa se druhé straně zobrazí až po zaplacení rezervace."
     },
     sk: {
       show: "Zobraziť heslo",
@@ -14,7 +15,8 @@
       confirmLabel: "Potvrdenie hesla",
       confirmPlaceholder: "Zadajte heslo znova",
       confirmRequired: "Potvrďte prosím heslo.",
-      mismatch: "Zadané heslá sa nezhodujú."
+      mismatch: "Zadané heslá sa nezhodujú.",
+      helperText: "Meno, telefón a presná adresa sa druhej strane zobrazia až po zaplatení rezervácie."
     },
     en: {
       show: "Show password",
@@ -22,7 +24,8 @@
       confirmLabel: "Confirm password",
       confirmPlaceholder: "Enter the password again",
       confirmRequired: "Please confirm your password.",
-      mismatch: "The passwords do not match."
+      mismatch: "The passwords do not match.",
+      helperText: "Your name, phone number and exact address are shown to the other party only after the reservation is paid."
     },
     de: {
       show: "Passwort anzeigen",
@@ -30,7 +33,8 @@
       confirmLabel: "Passwort bestätigen",
       confirmPlaceholder: "Passwort erneut eingeben",
       confirmRequired: "Bitte bestätigen Sie Ihr Passwort.",
-      mismatch: "Die eingegebenen Passwörter stimmen nicht überein."
+      mismatch: "Die eingegebenen Passwörter stimmen nicht überein.",
+      helperText: "Ihr Name, Ihre Telefonnummer und Ihre genaue Adresse werden der anderen Partei erst nach der Bezahlung der Reservierung angezeigt."
     },
     pl: {
       show: "Pokaż hasło",
@@ -38,7 +42,8 @@
       confirmLabel: "Potwierdź hasło",
       confirmPlaceholder: "Wpisz hasło ponownie",
       confirmRequired: "Potwierdź hasło.",
-      mismatch: "Wprowadzone hasła nie są takie same."
+      mismatch: "Wprowadzone hasła nie są takie same.",
+      helperText: "Imię i nazwisko, numer telefonu i dokładny adres pojawią się drugiej stronie dopiero po opłaceniu rezerwacji."
     }
   };
 
@@ -251,6 +256,10 @@
 
     document.querySelectorAll("[data-password-confirm-placeholder]").forEach(function (input) {
       input.setAttribute("placeholder", text("confirmPlaceholder"));
+    });
+
+    document.querySelectorAll("[data-registration-helper-text]").forEach(function (element) {
+      element.textContent = text("helperText");
     });
 
     const errorBox = document.getElementById("registrationError");
