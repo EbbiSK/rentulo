@@ -150,3 +150,41 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Confirmation page header: keep the user focused on email verification.
+   Only the Rentulo brand and language selector remain visible. */
+body[data-navigation-page="ucet-vytvoren"] #mainNav > * {
+  display: none !important;
+}
+
+body[data-navigation-page="ucet-vytvoren"] #mainNav > .nav-language-control {
+  display: inline-flex !important;
+}
+
+@media (max-width: 1100px) {
+  body[data-navigation-page="ucet-vytvoren"] .shared-mobile-menu-button {
+    display: none !important;
+  }
+
+  body[data-navigation-page="ucet-vytvoren"] .header #mainNav,
+  body[data-navigation-page="ucet-vytvoren"] .header-inner #mainNav {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
