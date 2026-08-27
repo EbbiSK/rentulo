@@ -20,6 +20,7 @@
         : "cs";
       const locales = {
         cs: "cs-CZ",
+        sk: "sk-SK",
         en: "en-GB",
         de: "de-DE",
         pl: "pl-PL"
@@ -1016,7 +1017,8 @@ const HOME_CATEGORY_GROUPS = {
         cs: "Všechny",
         en: "All",
         de: "Alle",
-        pl: "Wszystkie"
+        pl: "Wszystkie",
+        sk: "Všetky"
       };
 
       return labels[language] || labels.cs;

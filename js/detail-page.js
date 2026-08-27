@@ -20,6 +20,7 @@
         : "cs";
       const locales = {
         cs: "cs-CZ",
+        sk: "sk-SK",
         en: "en-GB",
         de: "de-DE",
         pl: "pl-PL"
@@ -34,6 +35,7 @@
         : "cs";
       const labels = {
         cs: "Popis věci",
+        sk: "Popis veci",
         en: "Item description",
         de: "Beschreibung des Artikels",
         pl: "Opis przedmiotu"
@@ -70,6 +72,25 @@
       };
 
       return detailTranslate(keys[pluralCategory] || keys.other);
+    }
+
+    function getDetailDaysText(days) {
+      const count = Number(days);
+      const language = typeof window.getRentuloLanguage === "function"
+        ? window.getRentuloLanguage()
+        : "cs";
+
+      if (language === "sk") {
+        const pluralCategory = new Intl.PluralRules("sk-SK").select(count);
+        const key = pluralCategory === "one"
+          ? "detail.oneDay"
+          : pluralCategory === "few"
+            ? "detail.fewDays"
+            : "detail.manyDays";
+        return detailTranslate(key, { days: count });
+      }
+
+      return detailTranslate(count === 1 ? "detail.oneDay" : "detail.manyDays", { days: count });
     }
 
     function detailCategoryLabel(category) {
@@ -938,7 +959,7 @@ const hasGps = offerHasGpsLocation(offer);
         const days = getDaysBetween(activeStartDate, activeEndDate);
         const total = days * getOfferPrice(offer);
 
-        calcDays.textContent = days > 0 ? detailTranslate(days === 1 ? "detail.oneDay" : "detail.manyDays", { days: days }) : "-";
+        calcDays.textContent = days > 0 ? getDetailDaysText(days) : "-";
         calcTotal.textContent = days > 0 ? formatDetailMoney(total) : "-";
 
         if (!activeStartDate || !activeEndDate || days <= 0) {

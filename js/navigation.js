@@ -105,6 +105,18 @@ function navProfileText(key) {
       ratingNone: "Hodnocení: zatím bez hodnocení",
       rating: "Hodnocení: {average} / 5 ({count})"
     },
+    sk: {
+      open: "Otvoriť používateľské menu",
+      user: "Používateľ",
+      reservations: "Moje rezervácie",
+      offers: "Moje ponuky",
+      history: "História",
+      settings: "Nastavenia",
+      logout: "Odhlásiť sa",
+      notifications: "upozornenia",
+      ratingNone: "Hodnotenie: zatiaľ bez hodnotenia",
+      rating: "Hodnotenie: {average} / 5 ({count})"
+    },
     en: {
       open: "Open user menu",
       user: "User",
@@ -214,6 +226,7 @@ function navEnsureProfileSummary(user) {
 function navProfileLocale() {
   return {
     cs: "cs-CZ",
+    sk: "sk-SK",
     en: "en-GB",
     de: "de-DE",
     pl: "pl-PL"
@@ -314,14 +327,15 @@ async function navLoadProfileSummary(user) {
 }
 
 function navFlagMarkup(language) {
-  const flagClass = {
-    cs: "flag-cz",
-    en: "flag-gb",
-    de: "flag-de",
-    pl: "flag-pl"
-  }[language] || "flag-cz";
+  const flagFile = {
+    cs: "cz",
+    sk: "sk",
+    en: "gb",
+    de: "de",
+    pl: "pl"
+  }[language] || "cz";
 
-  return `<span class="nav-language-flag ${flagClass}" aria-hidden="true"></span>`;
+  return `<img class="nav-language-flag" src="assets/flags/${flagFile}.svg" alt="" aria-hidden="true">`;
 }
 
 function navLanguageControl() {
@@ -344,10 +358,11 @@ function navLanguageControl() {
         <span class="nav-language-chevron" aria-hidden="true">⌄</span>
       </button>
       <div id="sharedLanguageMenu" class="nav-language-menu" role="menu" hidden>
-        <button type="button" role="menuitem" data-language="cs" aria-label="Čeština">${navFlagMarkup("cs")}</button>
-        <button type="button" role="menuitem" data-language="en" aria-label="English">${navFlagMarkup("en")}</button>
-        <button type="button" role="menuitem" data-language="de" aria-label="Deutsch">${navFlagMarkup("de")}</button>
-        <button type="button" role="menuitem" data-language="pl" aria-label="Polski">${navFlagMarkup("pl")}</button>
+        <button type="button" role="menuitem" data-language="cs" aria-label="Čeština">${navFlagMarkup("cs")}<span class="nav-language-code">CZ</span></button>
+        <button type="button" role="menuitem" data-language="sk" aria-label="Slovenčina">${navFlagMarkup("sk")}<span class="nav-language-code">SK</span></button>
+        <button type="button" role="menuitem" data-language="en" aria-label="English">${navFlagMarkup("en")}<span class="nav-language-code">EN</span></button>
+        <button type="button" role="menuitem" data-language="de" aria-label="Deutsch">${navFlagMarkup("de")}<span class="nav-language-code">DE</span></button>
+        <button type="button" role="menuitem" data-language="pl" aria-label="Polski">${navFlagMarkup("pl")}<span class="nav-language-code">PL</span></button>
       </div>
     </div>
   `;
@@ -373,34 +388,34 @@ function navEnsureLanguageStyles() {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      width: 58px;
-      height: 40px;
-      padding: 0 9px;
-      border: 1px solid #cbeab8;
+      gap: 6px;
+      width: 64px;
+      height: 42px;
+      padding: 0 8px;
+      border: 1px solid #dbe4de;
       border-radius: 14px;
-      background: #f0faea;
+      background: rgba(255, 255, 255, 0.94);
       color: #173f35;
       cursor: pointer;
       appearance: none;
-      box-shadow: none;
+      box-shadow: 0 7px 18px rgba(16, 32, 25, 0.06);
     }
     .nav-language-button:hover {
-      background: #e8f7df;
-      border-color: #aeda98;
+      background: #ffffff;
+      border-color: #c9d9cf;
     }
     .nav-language-button:focus {
       outline: none;
-      box-shadow: none;
+      box-shadow: 0 7px 18px rgba(16, 32, 25, 0.06);
     }
     .nav-language-button:focus-visible {
-      border-color: #9fd486;
-      box-shadow: none;
+      border-color: #b8cfc2;
+      box-shadow: 0 7px 18px rgba(16, 32, 25, 0.06);
     }
     html[data-focus-input="pointer"] .nav-language-button:focus {
       outline: none !important;
       outline-offset: 0 !important;
-      box-shadow: none !important;
+      box-shadow: 0 7px 18px rgba(16, 32, 25, 0.06) !important;
     }
     .nav-language-chevron {
       font-size: 15px;
@@ -409,17 +424,17 @@ function navEnsureLanguageStyles() {
     }
     .nav-language-menu {
       position: absolute;
-      top: calc(100% + 6px);
+      top: calc(100% + 7px);
       right: 0;
       z-index: 1300;
       display: grid;
-      gap: 4px;
-      min-width: 62px;
-      padding: 5px;
-      border: 1px solid #cbeab8;
-      border-radius: 14px;
-      background: #f8fff4;
-      box-shadow: 0 10px 24px rgba(23, 63, 53, 0.10);
+      gap: 3px;
+      min-width: 94px;
+      padding: 7px;
+      border: 1px solid #dce5df;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 18px 42px rgba(16, 32, 25, 0.13);
     }
     .nav-language-menu[hidden] {
       display: none;
@@ -427,60 +442,80 @@ function navEnsureLanguageStyles() {
     .nav-language-menu button {
       display: flex;
       align-items: center;
-      justify-content: center;
-      width: 50px;
-      height: 34px;
-      padding: 0;
+      justify-content: flex-start;
+      gap: 10px;
+      width: 100%;
+      min-width: 78px;
+      height: 40px;
+      padding: 0 9px;
       border: 0;
-      border-radius: 8px;
+      border-radius: 10px;
       background: transparent;
+      color: #17251f;
       cursor: pointer;
     }
     .nav-language-menu button:hover,
     .nav-language-menu button:focus-visible {
       outline: none;
-      background: #edf8f3;
+      background: #edf5f1;
+    }
+    .nav-language-code {
+      color: #173f35;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.04em;
     }
     .nav-language-flag {
-      position: relative;
-      display: inline-block;
-      width: 26px;
-      height: 18px;
-      overflow: hidden;
+      display: block;
+      width: 30px;
+      height: 22.5px;
+      object-fit: cover;
       border: 1px solid rgba(23, 63, 53, 0.18);
-      border-radius: 3px;
-      box-shadow: 0 1px 2px rgba(23, 63, 53, 0.12);
-      flex: 0 0 26px;
-    }
-    .flag-cz {
-      background: linear-gradient(to bottom, #ffffff 0 50%, #d7141a 50% 100%);
-    }
-    .flag-cz::before {
-      content: "";
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 52%;
-      background: #11457e;
-      clip-path: polygon(0 0, 100% 50%, 0 100%);
-    }
-    .flag-gb {
-      background:
-        linear-gradient(33deg, transparent 42%, #ffffff 42% 47%, #c8102e 47% 53%, #ffffff 53% 58%, transparent 58%),
-        linear-gradient(-33deg, transparent 42%, #ffffff 42% 47%, #c8102e 47% 53%, #ffffff 53% 58%, transparent 58%),
-        linear-gradient(to right, transparent 39%, #ffffff 39% 45%, #c8102e 45% 55%, #ffffff 55% 61%, transparent 61%),
-        linear-gradient(to bottom, transparent 34%, #ffffff 34% 42%, #c8102e 42% 58%, #ffffff 58% 66%, transparent 66%),
-        #012169;
-    }
-    .flag-de {
-      background: linear-gradient(to bottom, #000000 0 33.333%, #dd0000 33.333% 66.666%, #ffce00 66.666% 100%);
-    }
-    .flag-pl {
-      background: linear-gradient(to bottom, #ffffff 0 50%, #dc143c 50% 100%);
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(23, 63, 53, 0.10);
+      flex: 0 0 30px;
     }
     @media (max-width: 760px) {
+      .nav-language-control {
+        width: 100%;
+      }
       .nav-language-button {
-        width: 56px;
+        width: 62px;
+        height: 40px;
+        padding: 0 7px;
+        background: #ffffff;
+      }
+      .nav-language-menu {
+        position: static;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 4px;
+        width: 100%;
+        min-width: 0;
+        margin-top: 8px;
+        padding: 8px 0 0;
+        border: 0;
+        border-top: 1px solid #e5e9e5;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+      }
+      .nav-language-menu button {
+        justify-content: center;
+        gap: 5px;
+        min-width: 0;
         height: 38px;
+        padding: 0 3px;
+        border-radius: 9px;
+      }
+      .nav-language-menu .nav-language-flag {
+        width: 24px;
+        height: 18px;
+        flex: 0 0 24px;
+      }
+      .nav-language-menu .nav-language-code {
+        font-size: 11px;
+        letter-spacing: 0;
       }
     }
   `;
@@ -1173,6 +1208,7 @@ function navGetMobileMenuLabel() {
 
   return {
     cs: "Menu",
+    sk: "Menu",
     en: "Menu",
     de: "Menü",
     pl: "Menu"

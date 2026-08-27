@@ -2,6 +2,7 @@
 
     const OFFERS_LOCALES = {
       cs: "cs-CZ",
+      sk: "sk-SK",
       en: "en-GB",
       de: "de-DE",
       pl: "pl-PL"

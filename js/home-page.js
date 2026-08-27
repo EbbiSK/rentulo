@@ -469,7 +469,7 @@ function createMapMarkerIcon(count) {
 
 function formatMapPrice(value) {
   const language = typeof window.getRentuloLanguage === "function" ? window.getRentuloLanguage() : "cs";
-  const locales = { cs: "cs-CZ", en: "en-GB", de: "de-DE", pl: "pl-PL" };
+  const locales = { cs: "cs-CZ", sk: "sk-SK", en: "en-GB", de: "de-DE", pl: "pl-PL" };
   const locale = locales[language] || locales.cs;
   return Number(value || 0).toLocaleString(locale) + " Kč / " + homeTranslate("home.featuredDay", "den");
 }
@@ -492,9 +492,19 @@ function buildMapPopup(group) {
   const rating = document.createElement("span");
   rating.className = "home-map-popup-rating";
   if (best.ratingCount > 0) {
+    const currentLanguage = typeof window.getRentuloLanguage === "function"
+      ? window.getRentuloLanguage()
+      : "cs";
+    const slovakPluralCategory = currentLanguage === "sk"
+      ? new Intl.PluralRules("sk-SK").select(Number(best.ratingCount))
+      : "";
     const ratingCountText = best.ratingCount === 1
       ? homeTranslate("home.featuredRatingOne", "1 hodnocení")
-      : best.ratingCount + " " + homeTranslate("home.featuredRatingMany", "hodnocení");
+      : best.ratingCount + " " + (
+          slovakPluralCategory === "few"
+            ? homeTranslate("home.featuredRatingFew", "hodnotenia")
+            : homeTranslate("home.featuredRatingMany", "hodnocení")
+        );
     rating.textContent = "★ " + best.averageRating.toFixed(1) + " · " + ratingCountText;
   } else {
     rating.textContent = homeTranslate("home.featuredNoRating", "Zatím bez hodnocení");

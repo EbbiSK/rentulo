@@ -34,6 +34,15 @@ const templates = {
     picked_up: ["Věc byla vyzvednuta", "Majitel označil věc jako vyzvednutou."],
     returned: ["Věc byla vrácena", "Půjčení bylo označeno jako dokončené."],
   },
+  sk: {
+    new_request: ["Nová žiadosť o požičanie", "Pri vašej ponuke čaká nová žiadosť o požičanie."],
+    approved: ["Žiadosť bola schválená", "Majiteľ vašu žiadosť schválil. Rezerváciu teraz môžete zaplatiť."],
+    rejected: ["Žiadosť bola odmietnutá", "Majiteľ vašu žiadosť o požičanie odmietol."],
+    cancelled: ["Rezervácia bola zrušená", "Rezervácia bola zrušená a termín je znova voľný."],
+    paid: ["Rezervácia bola zaplatená", "Platba bola potvrdená. Kontaktné údaje sú teraz dostupné účastníkom rezervácie."],
+    picked_up: ["Vec bola vyzdvihnutá", "Majiteľ označil vec ako vyzdvihnutú."],
+    returned: ["Vec bola vrátená", "Požičanie bolo označené ako dokončené."],
+  },
   en: {
     new_request: ["New rental request", "A new rental request is waiting for your listing."],
     approved: ["Request approved", "The owner approved your request. You can now complete the payment."],
@@ -175,7 +184,7 @@ Deno.serve(async (req) => {
       continue;
     }
 
-    const language = profile.preferred_language === "en" || profile.preferred_language === "de" || profile.preferred_language === "pl"
+    const language = profile.preferred_language === "sk" || profile.preferred_language === "en" || profile.preferred_language === "de" || profile.preferred_language === "pl"
       ? profile.preferred_language
       : "cs";
     const [subject, intro] = templates[language][event];

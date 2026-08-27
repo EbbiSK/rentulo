@@ -8,6 +8,14 @@
       "history.detail.hide": "Skrýt detail",
       "history.review.commentOptional": "Komentář (nepovinný)"
     },
+    sk: {
+      "history.subtitle": "Dokončené rezervácie, požičania a hodnotenia na jednom mieste.",
+      "history.rentalsTabShort": "Moje rezervácie",
+      "history.offersTabShort": "Moje ponuky",
+      "history.detail.show": "Zobraziť detail",
+      "history.detail.hide": "Skryť detail",
+      "history.review.commentOptional": "Komentár (nepovinný)"
+    },
     en: {
       "history.subtitle": "Completed reservations, rentals and reviews in one place.",
       "history.rentalsTabShort": "My reservations",

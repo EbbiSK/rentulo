@@ -62,7 +62,7 @@ function cleanText(value: unknown, maxLength: number): string {
 
 function normalizeLanguage(value: unknown): string {
   const language = cleanText(value, 5).toLowerCase();
-  return ["cs", "en", "de", "pl"].includes(language) ? language : "cs";
+  return ["cs", "sk", "en", "de", "pl"].includes(language) ? language : "cs";
 }
 
 function normalizePostalCode(value: unknown): string {

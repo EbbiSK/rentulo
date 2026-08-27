@@ -385,3 +385,71 @@ body[data-navigation-page="vysledky"] #results-search-button::after {
   margin-left: 7px !important;
   background: center / 26px 26px no-repeat url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyNCAyNCcgZmlsbD0nbm9uZScgc3Ryb2tlPSd3aGl0ZScgc3Ryb2tlLXdpZHRoPScyLjUnIHN0cm9rZS1saW5lY2FwPSdyb3VuZCcgc3Ryb2tlLWxpbmVqb2luPSdyb3VuZCc+PHBhdGggZD0nTTUgMTJoMTMnLz48cGF0aCBkPSdtMTQgNyA1IDUtNSA1Jy8+PC9zdmc+") !important;
 }
+
+/* Mobile language picker: open as a compact vertical column below the flag button. */
+@media (max-width: 760px) {
+  #mainNav .nav-language-control {
+    width: auto !important;
+    align-self: flex-start !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  #mainNav .nav-language-menu {
+    grid-template-columns: 1fr !important;
+    gap: 2px !important;
+    width: 94px !important;
+    min-width: 94px !important;
+    margin-top: 6px !important;
+    padding: 4px !important;
+    border: 1px solid var(--rentulo-line, #e5e9e5) !important;
+    border-radius: 12px !important;
+    background: #ffffff !important;
+    box-shadow: 0 8px 20px rgba(16, 32, 25, 0.08) !important;
+  }
+
+  #mainNav .nav-language-menu button {
+    justify-content: flex-start !important;
+    gap: 7px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 38px !important;
+    padding: 0 7px !important;
+  }
+
+  #mainNav .nav-language-menu .nav-language-flag {
+    width: 26px !important;
+    height: 19px !important;
+    flex: 0 0 26px !important;
+  }
+
+  #mainNav .nav-language-menu .nav-language-code {
+    font-size: 12px !important;
+    letter-spacing: 0.01em !important;
+  }
+}
+
+/* Homepage map: custom +/- zoom controls were intentionally removed from the UI. */
+
+/* Homepage map: keep zoom controls high on the right, below the language menu area. */
+body[data-navigation-page="uvod"] .home-map-zoom-controls {
+  top: 145px !important;
+  right: 12px !important;
+  bottom: auto !important;
+}
+
+@media (max-width: 640px) {
+  body[data-navigation-page="uvod"] .home-map-zoom-controls {
+    top: 96px !important;
+    right: 12px !important;
+    bottom: auto !important;
+  }
+}
+
+/* Slovak mobile results: keep the full price-filter label inside the existing select. */
+@media (max-width: 760px) {
+  html[lang="sk"] body[data-navigation-page="vysledky"] #categoryFilter,
+  html[lang="sk"] body[data-navigation-page="vysledky"] #priceFilter {
+    font-size: 12px !important;
+  }
+}
