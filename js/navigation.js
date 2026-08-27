@@ -714,6 +714,25 @@ function navInjectStyles() {
       pointer-events: none;
     }
 
+    .nav-menu-notification-badge {
+      display: inline-flex;
+      min-width: 20px;
+      height: 20px;
+      margin-left: auto;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: #FF6A00;
+      color: #ffffff;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 800;
+      text-align: center;
+      flex: 0 0 auto;
+      pointer-events: none;
+    }
+
     .nav-profile-menu {
       position: absolute;
       top: calc(100% + 8px);
@@ -1354,7 +1373,10 @@ async function navLoadNotificationCountFromSupabase(activePage) {
     const userId = String(currentUser.id || "");
     const userEmail = navNormalizeEmail(navGetUserEmail(currentUser));
 
-    const notificationCount = reservations.filter(function (reservation) {
+    let offersNotificationCount = 0;
+    let reservationsNotificationCount = 0;
+
+    reservations.forEach(function (reservation) {
       const ownerId = String(reservation.ownerId || reservation.owner_id || "");
       const renterId = String(reservation.renterId || reservation.renter_id || "");
       const renterEmail = navNormalizeEmail(reservation.renterEmail || reservation.renter_email || "");
@@ -1363,9 +1385,21 @@ async function navLoadNotificationCountFromSupabase(activePage) {
       const ownerNeedsAction = ownerId === userId && navRequiresOwnerAction(status);
       const renterNeedsPayment = (renterId === userId || renterEmail === userEmail) && navIsReservationWaitingForPayment(status);
 
-      return ownerNeedsAction || renterNeedsPayment;
-    }).length;
+      if (ownerNeedsAction) {
+        offersNotificationCount += 1;
+      }
 
+      if (renterNeedsPayment) {
+        reservationsNotificationCount += 1;
+      }
+    });
+
+    const notificationCount = offersNotificationCount + reservationsNotificationCount;
+
+    window.rentuloAccountNotificationCounts = {
+      reservations: reservationsNotificationCount,
+      offers: offersNotificationCount
+    };
     window.rentuloAccountNotificationCount = notificationCount;
     renderSharedNavigation(activePage);
   } catch (error) {
@@ -1441,6 +1475,30 @@ function navBindGlobalDropdownDismissal() {
   navGlobalDropdownDismissalBound = true;
 }
 
+function navGetAccountNotificationCounts() {
+  const storedCounts = window.rentuloAccountNotificationCounts || {};
+  const reservationsCount = Number(storedCounts.reservations);
+  const offersCount = Number(storedCounts.offers);
+
+  return {
+    reservations: Number.isFinite(reservationsCount) && reservationsCount > 0
+      ? Math.floor(reservationsCount)
+      : 0,
+    offers: Number.isFinite(offersCount) && offersCount > 0
+      ? Math.floor(offersCount)
+      : 0
+  };
+}
+
+function navMenuNotificationBadge(count) {
+  if (!count) {
+    return "";
+  }
+
+  const label = count > 99 ? "99+" : String(count);
+  return `<span class="nav-menu-notification-badge" aria-hidden="true">${label}</span>`;
+}
+
 function navProfileControl(notificationCount) {
   const badge = notificationCount > 0
     ? `<span class="nav-notification-badge" aria-hidden="true">${notificationCount > 99 ? "99+" : notificationCount}</span>`
@@ -1457,6 +1515,7 @@ function navProfileControl(notificationCount) {
   const profileInitials = navGetProfileInitials(summary.name);
   const escapedProfileInitials = navEscapeHtml(profileInitials);
   const initialsClass = profileInitials.length > 2 ? " is-three-characters" : "";
+  const accountNotificationCounts = navGetAccountNotificationCounts();
 
   return `
     <div class="nav-profile-control">
@@ -1488,8 +1547,14 @@ function navProfileControl(notificationCount) {
             <small id="sharedProfileRating">${profileRating}</small>
           </div>
         </div>
-        <a href="moje-rezervace.html" role="menuitem">${navProfileText("reservations")}</a>
-        <a href="moje-nabidky.html" role="menuitem">${navProfileText("offers")}</a>
+        <a href="moje-rezervace.html" role="menuitem">
+          <span>${navProfileText("reservations")}</span>
+          ${navMenuNotificationBadge(accountNotificationCounts.reservations)}
+        </a>
+        <a href="moje-nabidky.html" role="menuitem">
+          <span>${navProfileText("offers")}</span>
+          ${navMenuNotificationBadge(accountNotificationCounts.offers)}
+        </a>
         <a href="historie.html" role="menuitem">${navProfileText("history")}</a>
         <a href="nastaveni.html" role="menuitem">${navProfileText("settings")}</a>
         <div class="nav-profile-menu-divider" aria-hidden="true"></div>
@@ -1518,10 +1583,18 @@ function navMobileProfileSummary() {
 }
 
 function navMobileAccountMenu() {
+  const accountNotificationCounts = navGetAccountNotificationCounts();
+
   return `
     <div class="nav-profile-menu nav-mobile-account-menu">
-      <a href="moje-rezervace.html">${navProfileText("reservations")}</a>
-      <a href="moje-nabidky.html">${navProfileText("offers")}</a>
+      <a href="moje-rezervace.html">
+        <span>${navProfileText("reservations")}</span>
+        ${navMenuNotificationBadge(accountNotificationCounts.reservations)}
+      </a>
+      <a href="moje-nabidky.html">
+        <span>${navProfileText("offers")}</span>
+        ${navMenuNotificationBadge(accountNotificationCounts.offers)}
+      </a>
       <a href="historie.html">${navProfileText("history")}</a>
       <a href="nastaveni.html">${navProfileText("settings")}</a>
       <div class="nav-profile-menu-divider" aria-hidden="true"></div>
