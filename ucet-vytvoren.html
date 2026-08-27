@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
@@ -7,210 +7,8 @@
   <title data-i18n="accountCreated.documentTitle">Potvrďte e-mail - Rentulo</title>
 
   <link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/header.css" />
-  <link rel="stylesheet" href="css/home.css" />
-  <link rel="stylesheet" href="css/offer.css" />
-  <link rel="stylesheet" href="css/results.css" />
-  <link rel="stylesheet" href="css/detail.css" />
-  <link rel="stylesheet" href="css/confirmation.css" />
-  <link rel="stylesheet" href="css/auth.css" />
-  <link rel="stylesheet" href="css/dashboard.css" />
-  <link rel="stylesheet" href="css/account-pages.css" />
-  <link rel="stylesheet" href="css/responsive.css" />
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #dff7ee;
-      color: #173f35;
-    }
-
-    .header {
-      max-width: 1240px;
-      height: auto;
-      margin: 0 auto;
-      padding: 10px 20px;
-      background: transparent;
-    }
-
-    .logo {
-      gap: 12px;
-      color: #173f35;
-    }
-
-    .logo-icon {
-      width: 48px;
-      height: 48px;
-      flex: 0 0 48px;
-      background: transparent;
-      border-radius: 0;
-      transform: none;
-    }
-
-    .logo-icon::before,
-    .logo-icon::after,
-    .logo-dot {
-      display: none;
-    }
-
-    .logo-icon img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .logo-text strong {
-      font-size: 25px;
-      color: #173f35;
-    }
-
-    .logo-text small {
-      display: none;
-    }
-
-    .nav {
-      gap: 18px;
-    }
-
-    .nav a {
-      color: #173f35;
-      font-size: 15px;
-    }
-
-    .nav .btn-register {
-      background: #7ed957;
-      color: #173a22 !important;
-      padding: 10px 20px;
-      border-radius: 999px;
-      font-weight: 800 !important;
-    }
-
-    .confirmation-page {
-      min-height: calc(100vh - 60px);
-      padding: 44px 20px 56px;
-      align-items: flex-start;
-    }
-
-    .confirmation-card {
-      max-width: 760px;
-      padding: 38px 40px;
-      background: #ffffff;
-      border: 1px solid #cfe8dc;
-      border-radius: 24px;
-      box-shadow: 0 14px 34px rgba(23, 63, 53, 0.08);
-    }
-
-    .confirmation-brand-mark {
-      margin-bottom: 20px;
-    }
-
-    .confirmation-brand-mark img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .confirmation-card .eyebrow {
-      margin: 0 0 6px;
-      color: #4c9f2f;
-      font-weight: 900;
-    }
-
-    .confirmation-card h1 {
-      margin: 0 0 14px;
-      color: #173f35;
-      font-size: 38px;
-      letter-spacing: -0.7px;
-    }
-
-    .confirmation-text {
-      margin: 0 0 20px;
-      color: #66736e;
-      font-size: 17px;
-      line-height: 1.5;
-    }
-
-    .reservation-summary {
-      margin: 26px 0 24px;
-      padding: 22px 24px;
-      background: #f2faef;
-      border: 1px solid #cfe8dc;
-      border-radius: 18px;
-    }
-
-    .reservation-summary h2 {
-      margin: 0 0 12px;
-      color: #173f35;
-      font-size: 22px;
-    }
-
-    .summary-row {
-      padding: 12px 0;
-      border-bottom-color: #dceee5;
-    }
-
-    .summary-row span { color: #66736e; }
-    .summary-row strong { color: #173f35; }
-
-    .confirmation-note {
-      margin: 0;
-      padding: 18px 20px;
-      background: #f4f8f6;
-      border: 1px solid #cfe0d8;
-      border-radius: 14px;
-      color: #53645e;
-      font-size: 15px;
-      line-height: 1.5;
-    }
-
-    .confirmation-note strong {
-      display: block;
-      margin-bottom: 4px;
-      color: #173f35;
-      font-size: 16px;
-    }
-
-    @media (max-width: 760px) {
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .nav {
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-
-      .confirmation-page {
-        padding: 24px 14px 36px;
-      }
-
-      .confirmation-card {
-        padding: 28px 24px;
-        border-radius: 20px;
-      }
-
-      .confirmation-card h1 {
-        font-size: 32px;
-      }
-
-      .summary-row {
-        display: grid;
-        gap: 4px;
-      }
-
-      .summary-row strong {
-        text-align: left;
-      }
-
-    }
-  </style>
+  <link id="rentuloSharedTheme" rel="stylesheet" href="css/rentulo-theme.css" />
+  <link rel="stylesheet" href="css/account-created.css" />
 </head>
 
 <body
@@ -220,7 +18,7 @@
   <header class="header">
     <a href="index.html" class="logo">
       <div class="logo-icon">
-        <img src="assets/rentulo-logo-mark.png" alt="" aria-hidden="true" />
+        <img src="assets/rentulo-logo-mark.png" alt="" width="46" height="46" aria-hidden="true" />
       </div>
 
       <div class="logo-text">
@@ -231,40 +29,50 @@
     <nav class="nav" id="mainNav"></nav>
   </header>
 
-  <main class="confirmation-page">
-    <section class="confirmation-card">
-      <div class="logo-icon confirmation-brand-mark">
-        <img src="assets/rentulo-logo-mark.png" alt="" aria-hidden="true" />
-      </div>
-
-      <p class="eyebrow" data-i18n="accountCreated.eyebrow">
-        Účet čeká na potvrzení
-      </p>
-
-      <h1 data-i18n="accountCreated.title">Potvrďte svůj e-mail.</h1>
-
-      <p class="confirmation-text" data-i18n="accountCreated.description">
-        Na zadanou e-mailovou adresu jsme poslali potvrzovací odkaz. Bez potvrzení se do nového účtu nepřihlásíte.
-      </p>
-
-      <div class="reservation-summary">
-        <h2 data-i18n="accountCreated.nextTitle">Jak registraci dokončit?</h2>
-
-        <div class="summary-row">
-          <span data-i18n="accountCreated.findLabel">1. Otevřete e-mail</span>
-          <strong data-i18n="accountCreated.findDescription">Vyhledejte zprávu s potvrzovacím odkazem</strong>
+  <main class="account-created-page">
+    <section class="account-created-shell" aria-labelledby="accountCreatedTitle">
+      <div class="account-created-intro">
+        <div class="account-created-brand-mark" aria-hidden="true">
+          <img src="assets/rentulo-logo-mark.png" alt="" width="56" height="56" />
         </div>
 
-        <div class="summary-row">
-          <span data-i18n="accountCreated.listLabel">2. Potvrďte e-mail</span>
-          <strong data-i18n="accountCreated.listDescription">Klikněte na potvrzovací odkaz ve zprávě</strong>
-        </div>
+        <p class="account-created-eyebrow" data-i18n="accountCreated.eyebrow">
+          Účet čeká na potvrzení
+        </p>
+
+        <h1 id="accountCreatedTitle" data-i18n="accountCreated.title">
+          Potvrďte svůj e-mail.
+        </h1>
+
+        <p class="account-created-description" data-i18n="accountCreated.description">
+          Na zadanou e-mailovou adresu jsme poslali potvrzovací odkaz. Bez potvrzení se do nového účtu nepřihlásíte.
+        </p>
       </div>
 
-      <p class="confirmation-note">
-        <strong data-i18n="accountCreated.doneTitle">Na této stránce už není potřeba nic dělat.</strong>
-        <span data-i18n="accountCreated.doneDescription">Po kliknutí na potvrzovací odkaz v e-mailu se otevře stránka Rentulo. Tuto kartu můžete zavřít.</span>
-      </p>
+      <div class="account-created-content">
+        <section class="account-created-steps" aria-labelledby="accountCreatedStepsTitle">
+          <h2 id="accountCreatedStepsTitle" data-i18n="accountCreated.nextTitle">
+            Jak registraci dokončit?
+          </h2>
+
+          <ol class="account-created-step-list">
+            <li class="account-created-step">
+              <strong data-i18n="accountCreated.findLabel">1. Otevřete e-mail</strong>
+              <span data-i18n="accountCreated.findDescription">Vyhledejte zprávu s potvrzovacím odkazem</span>
+            </li>
+
+            <li class="account-created-step">
+              <strong data-i18n="accountCreated.listLabel">2. Potvrďte e-mail</strong>
+              <span data-i18n="accountCreated.listDescription">Klikněte na potvrzovací odkaz ve zprávě</span>
+            </li>
+          </ol>
+        </section>
+
+        <div class="account-created-note" role="note">
+          <strong data-i18n="accountCreated.doneTitle">Na této stránce už není potřeba nic dělat.</strong>
+          <span data-i18n="accountCreated.doneDescription">Po kliknutí na potvrzovací odkaz v e-mailu se otevře stránka Rentulo. Tuto kartu můžete zavřít.</span>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -274,6 +82,5 @@
   <script src="js/api.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/navigation.js"></script>
- 
 </body>
 </html>
