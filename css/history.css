@@ -295,6 +295,10 @@ html[data-focus-input="pointer"] .history-star-button:focus {
 }
 
 .history-review-box {
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+  gap: 10px;
   padding: 12px;
   border: 1px solid #d5e8df;
   border-radius: 12px;
@@ -321,13 +325,6 @@ html[data-focus-input="pointer"] .history-star-button:focus {
   align-items: start;
   gap: 10px;
   margin-top: 12px;
-}
-
-.history-review-box {
-  display: flex;
-  flex-direction: column;
-  align-self: start;
-  gap: 10px;
 }
 
 .history-review-box label,
