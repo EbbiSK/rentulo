@@ -59,7 +59,7 @@
     }
 
     .logo-text small {
-      display: block;
+      display: none;
       margin-top: 2px;
       font-size: 12px;
       color: #66736e;
@@ -1156,6 +1156,3 @@
       background: #E85F00 !important;
     }
 
-    .logo-text small {
-      display: none;
-    }
