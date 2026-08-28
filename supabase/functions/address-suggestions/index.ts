@@ -102,7 +102,43 @@ function buildCity(properties: Record<string, unknown>): string {
   );
 }
 
-function mapPhotonFeatures(data: unknown): AddressSuggestion[] {
+function normalizeHouseNumber(value: unknown): string {
+  return cleanText(value, 24).replace(/\s+/g, "").toLowerCase();
+}
+
+function houseNumberMatches(candidate: unknown, required: unknown): boolean {
+  const normalizedCandidate = normalizeHouseNumber(candidate);
+  const normalizedRequired = normalizeHouseNumber(required);
+
+  if (!normalizedCandidate || !normalizedRequired) {
+    return false;
+  }
+
+  if (normalizedCandidate === normalizedRequired) {
+    return true;
+  }
+
+  return normalizedCandidate.split("/").includes(normalizedRequired);
+}
+
+function parseStreetAndHouseNumber(query: string): { street: string; houseNumber: string } | null {
+  const match = query.match(/^(.+?)\s+(\d+(?:\/\d+)?[a-zA-Z]?)$/);
+
+  if (!match) {
+    return null;
+  }
+
+  const street = cleanText(match[1], 140);
+  const houseNumber = cleanText(match[2], 24);
+
+  if (!street || !houseNumber) {
+    return null;
+  }
+
+  return { street, houseNumber };
+}
+
+function mapPhotonFeatures(data: unknown, requiredHouseNumber = ""): AddressSuggestion[] {
   const features = Array.isArray((data as { features?: unknown[] })?.features)
     ? (data as { features: unknown[] }).features
     : [];
@@ -116,6 +152,12 @@ function mapPhotonFeatures(data: unknown): AddressSuggestion[] {
       typeof (feature as { properties: unknown }).properties === "object"
         ? ((feature as { properties: Record<string, unknown> }).properties)
         : {};
+
+    const propertyHouseNumber = cleanText(properties.housenumber, 24);
+
+    if (requiredHouseNumber && !houseNumberMatches(propertyHouseNumber, requiredHouseNumber)) {
+      continue;
+    }
 
     const street = buildStreet(properties);
     const city = buildCity(properties);
@@ -193,6 +235,29 @@ async function fetchWithTimeout(url: string, timeoutMs = 4500): Promise<Response
   }
 }
 
+async function fetchPhotonSuggestions(
+  url: URL,
+  requiredHouseNumber = ""
+): Promise<AddressSuggestion[]> {
+  try {
+    const response = await fetchWithTimeout(url.toString());
+
+    if (!response.ok) {
+      console.warn("address-suggestions: Photon returned", response.status);
+      return [];
+    }
+
+    const data = await response.json();
+    return mapPhotonFeatures(data, requiredHouseNumber);
+  } catch (error) {
+    console.warn(
+      "address-suggestions: Photon request failed",
+      error instanceof Error ? error.message : String(error)
+    );
+    return [];
+  }
+}
+
 Deno.serve(async (req) => {
   const origin = req.headers.get("Origin");
 
@@ -236,31 +301,34 @@ Deno.serve(async (req) => {
     return jsonResponse({ suggestions: cached }, 200, origin);
   }
 
-  const url = new URL("https://photon.komoot.io/api/");
-  url.searchParams.set("q", query);
-  url.searchParams.set("limit", "8");
-  url.searchParams.set("countrycode", "CZ");
-  url.searchParams.append("layer", "house");
-  url.searchParams.append("layer", "street");
+  const parsedAddress = parseStreetAndHouseNumber(query);
+  let suggestions: AddressSuggestion[] = [];
 
-  try {
-    const response = await fetchWithTimeout(url.toString());
+  if (parsedAddress) {
+    const structuredUrl = new URL("https://photon.komoot.io/structured");
+    structuredUrl.searchParams.set("street", parsedAddress.street);
+    structuredUrl.searchParams.set("housenumber", parsedAddress.houseNumber);
+    structuredUrl.searchParams.set("limit", "8");
+    structuredUrl.searchParams.set("countrycode", "CZ");
+    structuredUrl.searchParams.append("layer", "house");
 
-    if (!response.ok) {
-      console.warn("address-suggestions: Photon returned", response.status);
-      return jsonResponse({ suggestions: [] }, 200, origin);
-    }
-
-    const data = await response.json();
-    const suggestions = mapPhotonFeatures(data);
-    writeCache(cacheKey, suggestions);
-
-    return jsonResponse({ suggestions }, 200, origin);
-  } catch (error) {
-    console.warn(
-      "address-suggestions: Photon request failed",
-      error instanceof Error ? error.message : String(error)
+    suggestions = await fetchPhotonSuggestions(
+      structuredUrl,
+      parsedAddress.houseNumber
     );
-    return jsonResponse({ suggestions: [] }, 200, origin);
   }
+
+  if (suggestions.length === 0) {
+    const url = new URL("https://photon.komoot.io/api/");
+    url.searchParams.set("q", query);
+    url.searchParams.set("limit", "8");
+    url.searchParams.set("countrycode", "CZ");
+    url.searchParams.append("layer", "house");
+    url.searchParams.append("layer", "street");
+
+    suggestions = await fetchPhotonSuggestions(url);
+  }
+
+  writeCache(cacheKey, suggestions);
+  return jsonResponse({ suggestions }, 200, origin);
 });
