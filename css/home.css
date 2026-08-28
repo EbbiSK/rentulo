@@ -184,7 +184,7 @@
 
 .home-point-button span {
   color: #073d2b;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 800;
 }
 
@@ -383,10 +383,6 @@
 }
 
 /* Jemné doladenie úvodnej stránky */
-
-.home-point-button span {
-  font-size: 17px;
-}
 
 @media (max-width: 1200px) {
   .home-landing {
