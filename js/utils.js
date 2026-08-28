@@ -64,20 +64,6 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function formatDate(dateString) {
-  if (!dateString) {
-    return "-";
-  }
-
-  const date = new Date(dateString);
-
-  if (Number.isNaN(date.getTime())) {
-    return String(dateString);
-  }
-
-  return date.toLocaleDateString("cs-CZ");
-}
-
 function normalizeText(value) {
   return String(value === undefined || value === null ? "" : value)
     .normalize("NFD")
