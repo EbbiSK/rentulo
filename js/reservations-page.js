@@ -957,14 +957,14 @@ return (
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert(reservationsTranslate("reservations.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku."));
+        showReservationsNotice(reservationsTranslate("reservations.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku."));
         return;
       }
 
       const supabaseUser = await getCurrentSupabaseUser();
 
       if (!supabaseUser) {
-        alert(reservationsTranslate("reservations.error.loginCancel", "Pro zrušení rezervace se musíte znovu přihlásit."));
+        showReservationsNotice(reservationsTranslate("reservations.error.loginCancel", "Pro zrušení rezervace se musíte znovu přihlásit."));
         window.location.href = "prihlaseni.html";
         return;
       }
@@ -974,7 +974,7 @@ return (
       });
 
       if (!reservation) {
-        alert(reservationsTranslate("reservations.error.notFound", "Rezervace nebyla nalezena."));
+        showReservationsNotice(reservationsTranslate("reservations.error.notFound", "Rezervace nebyla nalezena."));
         return;
       }
 
@@ -986,7 +986,7 @@ return (
         normalizedStatus !== RESERVATION_STATUS_PENDING &&
         normalizedStatus !== RESERVATION_STATUS_APPROVED
       ) {
-        alert(reservationsTranslate("reservations.error.cannotCancel", "Tuto rezervaci už nelze běžně zrušit."));
+        showReservationsNotice(reservationsTranslate("reservations.error.cannotCancel", "Tuto rezervaci už nelze běžně zrušit."));
         return;
       }
 
@@ -1004,7 +1004,7 @@ return (
 
       if (error) {
         console.error("Rezervaci se nepodařilo zrušit:", error);
-        alert(reservationsTranslate("reservations.error.cancel", "Rezervaci se nepodařilo zrušit. Zkuste to prosím znovu."));
+        showReservationsNotice(reservationsTranslate("reservations.error.cancel", "Rezervaci se nepodařilo zrušit. Zkuste to prosím znovu."));
         return;
       }
 
@@ -1023,14 +1023,14 @@ return (
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert(reservationsTranslate("reservations.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku."));
+        showReservationsNotice(reservationsTranslate("reservations.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku."));
         return;
       }
 
       const supabaseUser = await getCurrentSupabaseUser();
 
       if (!supabaseUser) {
-        alert(reservationsTranslate("reservations.error.loginPay", "Pro zaplacení se musíte znovu přihlásit."));
+        showReservationsNotice(reservationsTranslate("reservations.error.loginPay", "Pro zaplacení se musíte znovu přihlásit."));
         window.location.href = "prihlaseni.html";
         return;
       }
@@ -1052,7 +1052,7 @@ const data = Array.isArray(paidReservations)
 
       if (error) {
         console.error(error);
-        alert(reservationsTranslate("reservations.error.payment", "Platbu se nepodařilo dokončit. Zkuste to prosím znovu."));
+        showReservationsNotice(reservationsTranslate("reservations.error.payment", "Platbu se nepodařilo dokončit. Zkuste to prosím znovu."));
         return;
       }
 
@@ -1078,21 +1078,21 @@ const data = Array.isArray(paidReservations)
       });
 
       if (!reservation) {
-        alert(reservationsTranslate("reservations.error.notFound", "Rezervace nebyla nalezena."));
+        showReservationsNotice(reservationsTranslate("reservations.error.notFound", "Rezervace nebyla nalezena."));
         return;
       }
 
       const supabaseUser = await getCurrentSupabaseUser();
 
       if (!supabaseUser || !supabaseUser.id) {
-        alert(reservationsTranslate("reservations.error.loginReview", "Pro odeslání hodnocení se musíte přihlásit."));
+        showReservationsNotice(reservationsTranslate("reservations.error.loginReview", "Pro odeslání hodnocení se musíte přihlásit."));
         return;
       }
 
       const existingReview = findRenterReviewForReservation(reservation);
 
       if (existingReview) {
-        alert(reservationsTranslate("reservations.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
+        showReservationsNotice(reservationsTranslate("reservations.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
         return;
       }
 
@@ -1103,12 +1103,12 @@ const data = Array.isArray(paidReservations)
       const text = textElement ? textElement.value.trim() : "";
 
       if (!rating || rating < 1 || rating > 5) {
-        alert(reservationsTranslate("reservations.error.selectStars", "Vyberte počet hvězdiček."));
+        showReservationsNotice(reservationsTranslate("reservations.error.selectStars", "Vyberte počet hvězdiček."));
         return;
       }
 
       if (!text) {
-        alert(reservationsTranslate("reservations.error.writeComment", "Napište krátký komentář k půjčení."));
+        showReservationsNotice(reservationsTranslate("reservations.error.writeComment", "Napište krátký komentář k půjčení."));
         return;
       }
 
@@ -1123,7 +1123,7 @@ const data = Array.isArray(paidReservations)
       const reviewSupabaseClient = getSupabaseClient();
 
       if (!reviewSupabaseClient) {
-        alert(reservationsTranslate("reservations.error.supabaseUnavailable", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu."));
+        showReservationsNotice(reservationsTranslate("reservations.error.supabaseUnavailable", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu."));
         return;
       }
 
@@ -1135,15 +1135,15 @@ const data = Array.isArray(paidReservations)
         console.error("Chyba při ukládání hodnocení:", error);
 
         if (String(error.message || "").includes("duplicate")) {
-          alert(reservationsTranslate("reservations.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
+          showReservationsNotice(reservationsTranslate("reservations.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
         } else {
-          alert(reservationsTranslate("reservations.error.reviewSave", "Hodnocení se nepodařilo uložit."));
+          showReservationsNotice(reservationsTranslate("reservations.error.reviewSave", "Hodnocení se nepodařilo uložit."));
         }
 
         return;
       }
 
-      alert(reservationsTranslate("reservations.success.reviewSaved", "Hodnocení bylo uloženo."));
+      showReservationsNotice(reservationsTranslate("reservations.success.reviewSaved", "Hodnocení bylo uloženo."));
       await retryLoadReservations();
 
       if (reservationsLoadState === "ready") {
