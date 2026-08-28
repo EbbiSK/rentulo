@@ -228,6 +228,16 @@
       renderAccountMessage();
     }
 
+    function setAccountErrorMessage(textKey, textFallback) {
+      setAccountMessage(
+        textKey,
+        textFallback,
+        "",
+        "",
+        "error"
+      );
+    }
+
     function renderAccountMessage() {
       if (!accountMessageState) {
         return;
@@ -355,7 +365,7 @@
 
       if (!supabaseClient) {
         ownerOffersLoadState = "error";
-        alert(offersTranslate("offers.error.supabaseConfig", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu."));
+        setAccountErrorMessage("offers.error.supabaseConfig", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu.");
         return false;
       }
 
@@ -378,7 +388,7 @@
       if (offersResult.error) {
         ownerOffersLoadState = "error";
         console.error(offersResult.error);
-        alert(offersTranslate("offers.error.loadListings", "Nabídky se nepodařilo načíst. Obnovte stránku a zkuste to znovu."));
+        setAccountErrorMessage("offers.error.loadListings", "Nabídky se nepodařilo načíst. Obnovte stránku a zkuste to znovu.");
         return false;
       }
 
@@ -396,7 +406,7 @@ if (!reservationsResult.error) {
       if (reservationsResult.error) {
         ownerOffersLoadState = "error";
         console.error(reservationsResult.error);
-        alert(offersTranslate("offers.error.loadRequests", "Žádosti se nepodařilo načíst. Obnovte stránku a zkuste to znovu."));
+        setAccountErrorMessage("offers.error.loadRequests", "Žádosti se nepodařilo načíst. Obnovte stránku a zkuste to znovu.");
         return false;
       }
 
@@ -517,7 +527,7 @@ function getOfferStatus(offer) {
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert(offersTranslate("offers.error.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku."));
+        setAccountErrorMessage("offers.error.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku.");
         return null;
       }
 
@@ -533,7 +543,7 @@ const data = Array.isArray(updatedReservations)
 
       if (error) {
         console.error(error);
-        alert(offersTranslate("offers.error.saveStatus", "Stav rezervace se nepodařilo uložit. Zkuste to prosím znovu."));
+        setAccountErrorMessage("offers.error.saveStatus", "Stav rezervace se nepodařilo uložit. Zkuste to prosím znovu.");
         return null;
       }
 
@@ -590,7 +600,7 @@ const data = Array.isArray(updatedReservations)
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert(offersTranslate("offers.error.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku."));
+        setAccountErrorMessage("offers.error.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku.");
         return;
       }
 
@@ -603,7 +613,7 @@ const data = Array.isArray(updatedReservations)
 
       if (error) {
         console.error(error);
-        alert(offersTranslate("offers.error.publish", "Nabídku se nepodařilo zveřejnit."));
+        setAccountErrorMessage("offers.error.publish", "Nabídku se nepodařilo zveřejnit.");
         return;
       }
 
@@ -831,7 +841,7 @@ const data = Array.isArray(updatedReservations)
       });
 
       if (blockingReservations.length > 0) {
-        alert(offersTranslate("offers.error.deleteBlocked", "Tuto nabídku nelze smazat, protože k ní existuje otevřená rezervace."));
+        setAccountErrorMessage("offers.error.deleteBlocked", "Tuto nabídku nelze smazat, protože k ní existuje otevřená rezervace.");
         return;
       }
 
@@ -844,7 +854,7 @@ const data = Array.isArray(updatedReservations)
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert(offersTranslate("offers.error.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku."));
+        setAccountErrorMessage("offers.error.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku.");
         return;
       }
 
@@ -857,7 +867,7 @@ const data = Array.isArray(updatedReservations)
 
       if (error) {
         console.error(error);
-        alert(offersTranslate("offers.error.delete", "Nabídku se nepodařilo smazat."));
+        setAccountErrorMessage("offers.error.delete", "Nabídku se nepodařilo smazat.");
         return;
       }
 
