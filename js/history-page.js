@@ -217,6 +217,41 @@ function historyRenderSavedReview(review, title) {
   `;
 }
 
+function historyPageExtraT(key, fallback) {
+  return typeof window.historyExtraT === "function"
+    ? window.historyExtraT(key, fallback)
+    : fallback;
+}
+
+function historyGetCounterpart(reservation, role) {
+  const ownerName = reservation.owner_name || reservation.ownerName || historyT("history.fallback.owner", "Majitel");
+  const renterName = reservation.renter_name || reservation.renterName || historyT("history.fallback.renter", "Zákazník");
+
+  return role === "renter"
+    ? {
+        label: historyT("history.detail.owner", "Majitel"),
+        name: ownerName
+      }
+    : {
+        label: historyT("history.detail.renter", "Zájemce"),
+        name: renterName
+      };
+}
+
+function historyRenderPhotoMarkup(reservation, name) {
+  const photoUrl = reservation.photo_url || reservation.photoUrl || "";
+
+  if (!photoUrl) {
+    return '<div class="history-row-photo history-row-photo-empty" aria-hidden="true"></div>';
+  }
+
+  return `
+    <div class="history-row-photo">
+      <img src="${escapeHtml(photoUrl)}" alt="${escapeHtml(name)}" loading="lazy" />
+    </div>
+  `;
+}
+
 function historyRenderReviewForm(reservation, role) {
   if (!historyCanReview(reservation)) return "";
 
@@ -224,28 +259,43 @@ function historyRenderReviewForm(reservation, role) {
   const currentUserId = String(historyCurrentUser.id);
   const existingReview = historyFindReview(reservationId, currentUserId);
   const isRenter = role === "renter";
-  const title = isRenter ? historyT("history.review.rateOwner", "Ohodnotit majitele") : historyT("history.review.rateRenter", "Ohodnotit zákazníka");
+  const title = isRenter
+    ? historyT("history.review.rateOwner", "Ohodnotit majitele")
+    : historyT("history.review.rateRenter", "Ohodnotit zákazníka");
+  const ratingInputId = "history-rating-" + reservationId + "-" + role;
 
   if (existingReview) {
-    return historyRenderSavedReview(existingReview, historyT("history.review.sentTitle", "Hodnocení bylo odesláno"));
+    return historyRenderSavedReview(
+      existingReview,
+      historyT("history.review.sentTitle", "Hodnocení bylo odesláno")
+    );
   }
+
+  const stars = [1, 2, 3, 4, 5].map(function (rating) {
+    return `
+      <button
+        type="button"
+        class="history-star-button"
+        data-history-star="${rating}"
+        data-history-rating-target="${escapeHtml(ratingInputId)}"
+        aria-label="${rating} / 5"
+        aria-pressed="false"
+      >★</button>
+    `;
+  }).join("");
 
   return `
     <div class="history-review-box">
       <strong>${escapeHtml(title)}</strong>
+      <div class="history-rating-control">
+        <span>${escapeHtml(historyT("history.review.stars", "Počet hvězdiček"))}</span>
+        <div class="history-star-picker" role="group" aria-label="${escapeHtml(historyT("history.review.stars", "Počet hvězdiček"))}">
+          ${stars}
+        </div>
+        <input id="${escapeHtml(ratingInputId)}" type="hidden" value="" data-history-rating />
+      </div>
       <label>
-        ${escapeHtml(historyT("history.review.stars", "Počet hvězdiček"))}
-        <select id="history-rating-${escapeHtml(reservationId)}-${escapeHtml(role)}" data-history-rating>
-          <option value="" selected disabled>${escapeHtml(historyT("history.review.select", "Vyberte hodnocení"))}</option>
-          <option value="5">${escapeHtml(historyT("history.review.excellent", "★★★★★ - výborné"))}</option>
-          <option value="4">${escapeHtml(historyT("history.review.good", "★★★★☆ - dobré"))}</option>
-          <option value="3">${escapeHtml(historyT("history.review.average", "★★★☆☆ - průměrné"))}</option>
-          <option value="2">${escapeHtml(historyT("history.review.weak", "★★☆☆☆ - slabé"))}</option>
-          <option value="1">${escapeHtml(historyT("history.review.bad", "★☆☆☆☆ - špatné"))}</option>
-        </select>
-      </label>
-      <label>
-        ${escapeHtml(historyT("history.review.comment", "Komentář"))}
+        ${escapeHtml(historyPageExtraT("history.review.commentOptional", "Komentář (nepovinný)"))}
         <textarea id="history-text-${escapeHtml(reservationId)}-${escapeHtml(role)}" rows="3" placeholder="${escapeHtml(historyT("history.review.placeholder", "Jak proběhlo půjčení?"))}"></textarea>
       </label>
       <button type="button" class="history-primary-button" data-history-review="${escapeHtml(reservationId)}" data-history-role="${escapeHtml(role)}" disabled>
@@ -280,18 +330,14 @@ function historyRenderDetail(reservation, role) {
   const startDate = reservation.date_from || reservation.start_date || reservation.startDate || "";
   const endDate = reservation.date_to || reservation.end_date || reservation.endDate || "";
   const price = Number(reservation.total_price || reservation.totalPrice || 0);
-  const ownerName = reservation.owner_name || reservation.ownerName || historyT("history.fallback.owner", "Majitel");
-  const renterName = reservation.renter_name || reservation.renterName || historyT("history.fallback.renter", "Zákazník");
-  const counterpartLabel = role === "renter" ? historyT("history.detail.owner", "Majitel") : historyT("history.detail.renter", "Zákazník");
-  const counterpartName = role === "renter" ? ownerName : renterName;
+  const counterpart = historyGetCounterpart(reservation, role);
 
   return `
     <div class="history-detail" id="history-detail-${escapeHtml(reservationId)}-${escapeHtml(role)}">
       <div class="history-detail-grid">
         <div><span>${escapeHtml(historyT("history.detail.term", "Termín"))}</span><strong>${escapeHtml(historyFormatDate(startDate))} – ${escapeHtml(historyFormatDate(endDate))}</strong></div>
         <div><span>${escapeHtml(historyT("history.detail.total", "Celková cena"))}</span><strong>${escapeHtml(historyFormatMoney(price))}</strong></div>
-        <div><span>${escapeHtml(historyT("history.detail.status", "Stav"))}</span><strong>${escapeHtml(historyStatusText(reservation.status))}</strong></div>
-        <div><span>${escapeHtml(counterpartLabel)}</span><strong>${escapeHtml(counterpartName)}</strong></div>
+        <div><span>${escapeHtml(counterpart.label)}</span><strong>${escapeHtml(counterpart.name)}</strong></div>
       </div>
       <div class="history-review-grid">
         ${historyRenderReviewForm(reservation, role)}
@@ -309,12 +355,17 @@ function historyRenderRow(reservation, role) {
   const price = Number(reservation.total_price || reservation.totalPrice || 0);
   const normalizedStatus = historyNormalizeStatus(reservation.status);
   const status = historyStatusText(reservation.status);
+  const counterpart = historyGetCounterpart(reservation, role);
 
   return `
     <article class="history-record">
       <div class="simple-reservation-row">
         <div class="simple-reservation-main">
-          <div class="simple-reservation-info"><strong>${escapeHtml(name)}</strong></div>
+          ${historyRenderPhotoMarkup(reservation, name)}
+          <div class="simple-reservation-info">
+            <strong>${escapeHtml(name)}</strong>
+            <span>${escapeHtml(counterpart.label)}: ${escapeHtml(counterpart.name)}</span>
+          </div>
         </div>
         <div class="simple-reservation-date">${escapeHtml(historyFormatDate(startDate))} – ${escapeHtml(historyFormatDate(endDate))}</div>
         <div class="simple-reservation-price">${escapeHtml(historyFormatMoney(price))}</div>
@@ -383,6 +434,15 @@ function historySyncReviewSubmitButton(ratingElement) {
 
   const rating = Number(ratingElement.value || 0);
   submitButton.disabled = !(rating >= 1 && rating <= 5);
+
+  if (reviewBox) {
+    reviewBox.querySelectorAll("[data-history-star]").forEach(function (starButton) {
+      const starRating = Number(starButton.dataset.historyStar || 0);
+      const selected = rating >= starRating;
+      starButton.classList.toggle("selected", selected);
+      starButton.setAttribute("aria-pressed", selected ? "true" : "false");
+    });
+  }
 }
 
 function historyCaptureUiState() {
@@ -570,12 +630,10 @@ async function historySaveReview(reservationId, role) {
     return;
   }
 
-  if (!text) {
-    historyShowErrorNotice(historyT("history.error.comment", "Napište krátký komentář k půjčení."));
-    return;
-  }
+  const reviewedUserId = role === "renter"
+    ? historyGetOwnerId(reservation)
+    : historyGetRenterId(reservation);
 
-  const reviewedUserId = role === "renter" ? historyGetOwnerId(reservation) : historyGetRenterId(reservation);
   if (!reviewedUserId) {
     historyShowErrorNotice(historyT("history.error.userId", "Chybí ID hodnoceného uživatele."));
     return;
@@ -627,6 +685,16 @@ document.addEventListener("change", function (event) {
 });
 
 document.addEventListener("click", async function (event) {
+  const starButton = event.target.closest("[data-history-star]");
+  if (starButton) {
+    const targetId = starButton.dataset.historyRatingTarget;
+    const ratingElement = targetId ? document.getElementById(targetId) : null;
+    if (!ratingElement) return;
+
+    ratingElement.value = String(starButton.dataset.historyStar || "");
+    historySyncReviewSubmitButton(ratingElement);
+    return;
+  }
   const toggle = event.target.closest("[data-history-toggle]");
   if (toggle) {
     const reservationId = toggle.dataset.historyToggle;
