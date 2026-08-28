@@ -1,6 +1,7 @@
     const PLATFORM_FEE_PERCENT = 10;
     let currentOffer = null;
     let detailPageState = "idle";
+    let detailBookingMessage = "";
 
     function detailTranslate(key, replacements) {
       let text = typeof window.rentuloTranslate === "function"
@@ -443,6 +444,56 @@ function renderDetailImage(offer) {
       }
     }
 
+    function showDetailBookingMessage(message) {
+      const text = String(message || "").trim();
+      detailBookingMessage = text;
+
+      if (!text) {
+        return false;
+      }
+
+      const bookingDateHelp = document.getElementById("bookingDateHelp");
+
+      if (bookingDateHelp) {
+        bookingDateHelp.textContent = text;
+        bookingDateHelp.setAttribute("role", "alert");
+        return true;
+      }
+
+      const sidebar = document.querySelector(".sidebar");
+
+      if (sidebar) {
+        let notice = sidebar.querySelector(".detail-booking-message");
+
+        if (!notice) {
+          notice = document.createElement("div");
+          notice.className = "message-card warning detail-booking-message";
+          notice.setAttribute("role", "alert");
+          sidebar.prepend(notice);
+        }
+
+        notice.textContent = text;
+        return true;
+      }
+
+      console.error(text);
+      return false;
+    }
+
+    function clearDetailBookingMessage() {
+      detailBookingMessage = "";
+
+      const bookingDateHelp = document.getElementById("bookingDateHelp");
+      if (bookingDateHelp) {
+        bookingDateHelp.removeAttribute("role");
+      }
+
+      const notice = document.querySelector(".detail-booking-message");
+      if (notice) {
+        notice.remove();
+      }
+    }
+
     function renderSidebarMessage(type, title, text, buttonHref, buttonText) {
       return `
         <div class="message-card ${type === "warning" ? "warning" : ""}">
@@ -766,14 +817,14 @@ const hasGps = offerHasGpsLocation(offer);
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
-        alert(detailTranslate("detail.error.supabase"));
+        showDetailBookingMessage(detailTranslate("detail.error.supabase"));
         return false;
       }
 
       const supabaseUser = await getCurrentSupabaseUser();
 
       if (!supabaseUser) {
-        alert(detailTranslate("detail.error.loginAgain"));
+        showDetailBookingMessage(detailTranslate("detail.error.loginAgain"));
         window.location.href =
   `prihlaseni.html?returnTo=${encodeURIComponent(
     window.location.pathname.split("/").pop() + window.location.search
@@ -784,7 +835,7 @@ const hasGps = offerHasGpsLocation(offer);
       const currentUser = await apiGetCurrentUser();
 
       if (!currentUser) {
-        alert(detailTranslate("detail.error.login"));
+        showDetailBookingMessage(detailTranslate("detail.error.login"));
        window.location.href =
   `prihlaseni.html?returnTo=${encodeURIComponent(
     window.location.pathname.split("/").pop() + window.location.search
@@ -795,12 +846,11 @@ const hasGps = offerHasGpsLocation(offer);
       const ownerId = String(offer.ownerId || offer.owner_id || "");
 
       if (!ownerId) {
-        alert(detailTranslate("detail.error.ownerMissing"));
+        showDetailBookingMessage(detailTranslate("detail.error.ownerMissing"));
         return false;
       }
 
       if (String(supabaseUser.id) === ownerId) {
-        alert(detailTranslate("detail.error.ownItem"));
         renderDetail(offer);
         return false;
       }
@@ -829,16 +879,16 @@ const hasGps = offerHasGpsLocation(offer);
         const errorMessage = String(error.message || "");
 
         if (errorMessage.includes("Reservation dates overlap")) {
-          alert(detailTranslate("detail.error.overlap"));
+          showDetailBookingMessage(detailTranslate("detail.error.overlap"));
           return false;
         }
 
         if (errorMessage.includes("row-level security")) {
-          alert(detailTranslate("detail.error.rls"));
+          showDetailBookingMessage(detailTranslate("detail.error.rls"));
           return false;
         }
 
-        alert(detailTranslate("detail.error.save"));
+        showDetailBookingMessage(detailTranslate("detail.error.save"));
         return false;
       }
 
@@ -940,6 +990,10 @@ const hasGps = offerHasGpsLocation(offer);
 
       async function updateCalculation() {
         const checkVersion = ++availabilityCheckVersion;
+
+        if (bookingDateHelp) {
+          bookingDateHelp.removeAttribute("role");
+        }
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
 
@@ -1016,8 +1070,14 @@ const hasGps = offerHasGpsLocation(offer);
         }
       }
 
-      startDateInput.addEventListener("change", updateCalculation);
-      endDateInput.addEventListener("change", updateCalculation);
+      startDateInput.addEventListener("change", function () {
+        clearDetailBookingMessage();
+        updateCalculation();
+      });
+      endDateInput.addEventListener("change", function () {
+        clearDetailBookingMessage();
+        updateCalculation();
+      });
 
       updateCalculation();
 
@@ -1026,14 +1086,16 @@ const hasGps = offerHasGpsLocation(offer);
           return;
         }
 
+        clearDetailBookingMessage();
+
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
         const days = getDaysBetween(startDate, endDate);
         const total = days * getOfferPrice(offer);
 
         if (!startDate || !endDate || days <= 0) {
-          alert(detailTranslate("detail.error.validDates"));
-          updateCalculation();
+          await updateCalculation();
+          showDetailBookingMessage(detailTranslate("detail.error.validDates"));
           return;
         }
 
@@ -1045,13 +1107,13 @@ const hasGps = offerHasGpsLocation(offer);
           const hasConflict = await hasReservationDateConflict(offer.id, startDate, endDate);
 
           if (hasConflict) {
-            alert(detailTranslate("detail.error.dateConflict"));
-            updateCalculation();
+            await updateCalculation();
+            showDetailBookingMessage(detailTranslate("detail.error.dateConflict"));
             return;
           }
         } catch (error) {
-          alert(detailTranslate("detail.error.availability"));
-          updateCalculation();
+          await updateCalculation();
+          showDetailBookingMessage(detailTranslate("detail.error.availability"));
           return;
         }
 
@@ -1066,12 +1128,16 @@ const hasGps = offerHasGpsLocation(offer);
           );
 
           if (!reservationCreated) {
+            const reservationMessage = detailBookingMessage;
             await updateCalculation();
+            if (reservationMessage) {
+              showDetailBookingMessage(reservationMessage);
+            }
           }
         } catch (error) {
           console.error(error);
-          alert(detailTranslate("detail.error.save"));
           await updateCalculation();
+          showDetailBookingMessage(detailTranslate("detail.error.save"));
         }
       });
     }
