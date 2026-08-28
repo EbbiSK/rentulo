@@ -37,15 +37,15 @@
 
 .search-box {
   background: white;
-  border-radius: 24px;
-  padding: 20px;
+  border-radius: 22px;
+  padding: 16px 18px;
   display: grid;
   grid-template-columns: 1fr 0.85fr 176px;
-  gap: 16px;
+  gap: 14px;
   align-items: end;
   max-width: 760px;
   box-shadow: 0 18px 55px rgba(0, 0, 0, 0.08);
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .search-field {
@@ -382,13 +382,6 @@
 }
 
 /* Jemné doladenie úvodnej stránky */
-
-.search-box {
-  padding: 16px 18px;
-  gap: 14px;
-  border-radius: 22px;
-  margin-bottom: 20px;
-}
 
 .search-field {
   gap: 7px;
