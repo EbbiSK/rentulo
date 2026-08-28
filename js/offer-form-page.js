@@ -246,14 +246,21 @@ let offerSaveInProgress = false;
 
     function setupPickupAddressAutocomplete() {
       const streetInput = document.getElementById("pickupStreet");
+      const cityInput = document.getElementById("pickupCity");
+      const postalCodeInput = document.getElementById("pickupPostalCode");
       const suggestionsBox = document.getElementById("pickupAddressSuggestions");
 
-      if (!streetInput || !suggestionsBox) {
+      if (!streetInput || !cityInput || !postalCodeInput || !suggestionsBox) {
         return;
       }
 
       streetInput.addEventListener("input", function () {
         const query = streetInput.value.trim();
+
+        cityInput.value = "";
+        postalCodeInput.value = "";
+        cityInput.classList.remove("input-error");
+        postalCodeInput.classList.remove("input-error");
 
         offerAddressRequestId += 1;
         const requestId = offerAddressRequestId;
