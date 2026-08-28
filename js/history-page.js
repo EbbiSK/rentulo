@@ -155,10 +155,6 @@ function historyGetRenterId(reservation) {
   return String(reservation.renter_id || reservation.renterId || "");
 }
 
-function historyGetOfferId(reservation) {
-  return reservation.offer_id || reservation.offerId || null;
-}
-
 function historyGetSortTime(reservation) {
   const value = reservation.updated_at || reservation.updatedAt || reservation.created_at || reservation.createdAt || 0;
   const time = new Date(value).getTime();
