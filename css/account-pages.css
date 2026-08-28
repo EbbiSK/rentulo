@@ -492,9 +492,10 @@
 }
 
 .simple-offer-actions a {
-  padding: 11px 14px;
-  border-radius: 12px;
+  padding: 8px 11px;
+  border-radius: 10px;
   background: #f1ece3;
+  font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -518,7 +519,6 @@
   font-size: 14px;
 }
 
-.simple-offer-actions a,
 .simple-offer-actions button {
   padding: 8px 11px;
   font-size: 14px;
