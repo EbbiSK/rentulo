@@ -507,12 +507,12 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .simple-offer-main,
-  .simple-offer-actions {
+  .simple-offer-main {
     grid-column: 1 / -1;
   }
 
   .simple-offer-actions {
+    grid-column: 1 / -1;
     justify-content: flex-start;
   }
 }
