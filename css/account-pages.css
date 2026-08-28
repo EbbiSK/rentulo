@@ -580,8 +580,9 @@
 }
 
 .simple-reservation-info span {
-  font-size: 14px;
+  font-size: 12px;
   color: #65716c;
+  line-height: 1.2;
 }
 
 .simple-reservation-date,
@@ -696,7 +697,6 @@
   min-height: 48px;
 }
 
-.simple-reservation-info span,
 .simple-reservation-date,
 .simple-reservation-price,
 .simple-reservation-status {
