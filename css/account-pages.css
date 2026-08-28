@@ -452,7 +452,7 @@
 .simple-offer-main {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   min-width: 0;
 }
 
@@ -516,10 +516,6 @@
 .simple-offer-meta,
 .simple-offer-value {
   font-size: 14px;
-}
-
-.simple-offer-main {
-  gap: 10px;
 }
 
 .simple-offer-actions {
