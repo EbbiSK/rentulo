@@ -1,19 +1,11 @@
 /*
-  Rentulo API vrstva
+  Rentulo API / Supabase pomocná vrstva.
 
-  Tento súbor je príprava na budúci backend.
+  Obsahuje zdieľané frontendové funkcie pre aktuálneho používateľa,
+  načítanie a normalizáciu rezervácií a odosielanie rezervačných
+  e-mailov cez Supabase Edge Function.
 
-  Teraz zatiaľ používa existujúce funkcie z:
-  - js/storage.js
-  - js/reservations.js
-
-  Cieľ:
-  Stránky neskôr nebudú pracovať priamo s localStorage,
-  ale cez tieto api... funkcie.
-
-  Dôležité:
-  Tento súbor zatiaľ nikam nepripájame.
-  Nechávame ho pripravený, aby sme nerozbili aktuálny funkčný prototyp.
+  Tento súbor je aktívnou súčasťou aplikácie Rentulo.
 */
 
 /* =========================
@@ -163,12 +155,6 @@ async function apiGetCurrentUser() {
 
 
 /* =========================
-   Ponuky
-========================= */
-
-
-
-/* =========================
    Rezervácie
 ========================= */
 
@@ -188,12 +174,6 @@ async function apiGetReservations() {
   }
 return Array.isArray(data) ? data.map(apiNormalizeReservation) : [];
 }
-
-/* =========================
-   Notifikácie
-========================= */
-
-
 
 
 async function apiSendReservationEmail(reservationId, eventType) {
