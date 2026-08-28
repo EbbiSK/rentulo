@@ -381,10 +381,6 @@
 }
 
 @media (max-width: 560px) {
-  .offer-flow-attention {
-    font-size: 11px;
-  }
-
   .simple-offer-record .simple-offer-actions {
     display: grid !important;
     grid-template-columns: 1fr 1fr;
