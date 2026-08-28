@@ -135,48 +135,6 @@ function applyHomeDynamicTranslations() {
   applyHomeMapGestureTranslations();
 }
 
-function setupNearbySearch() {
-  const nearbyCard = document.getElementById("nearbyCard");
-  const nearbyStatus = document.getElementById("nearbyCardStatus");
-
-  if (!nearbyCard) return;
-
-  nearbyCard.addEventListener("click", function () {
-    if (!navigator.geolocation) {
-      if (nearbyStatus) {
-        nearbyStatus.textContent = [
-          homeTranslate("home.locationUnavailable", "Poloha není v tomto prohlížeči dostupná."),
-          homeTranslate("home.locationUnavailableHelp", "Zadejte město nebo PSČ ručně.")
-        ].join(" ");
-      }
-      return;
-    }
-
-    nearbyCard.disabled = true;
-    if (nearbyStatus) nearbyStatus.textContent = homeTranslate("home.locationLoading", "Zjišťuji vaši polohu...");
-
-    navigator.geolocation.getCurrentPosition(
-      function (position) {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        window.location.href = "vysledky.html?okoli=1&lat=" + encodeURIComponent(latitude) + "&lng=" + encodeURIComponent(longitude);
-      },
-      function () {
-        nearbyCard.disabled = false;
-        if (nearbyStatus) {
-          nearbyStatus.textContent = [
-            homeTranslate("home.locationDenied", "Polohu se nepodařilo načíst."),
-            homeTranslate("home.locationDeniedHelp", "Povolte přístup k poloze nebo zadejte město ručně.")
-          ].join(" ");
-        }
-      },
-      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
-    );
-  });
-}
-
-
 function getHomeMapReturnView() {
   try {
     const state = window.history && window.history.state ? window.history.state : null;
