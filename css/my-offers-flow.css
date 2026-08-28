@@ -412,7 +412,6 @@
   }
 
   .simple-offer-record .request-row {
-    grid-template-columns: 1fr 1fr !important;
     padding: 12px !important;
   }
 
