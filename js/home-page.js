@@ -144,9 +144,11 @@ function setupNearbySearch() {
   nearbyCard.addEventListener("click", function () {
     if (!navigator.geolocation) {
       if (nearbyStatus) {
-        nearbyStatus.textContent = homeTranslate("home.locationUnavailable", "Poloha není v tomto prohlížeči dostupná.");
+        nearbyStatus.textContent = [
+          homeTranslate("home.locationUnavailable", "Poloha není v tomto prohlížeči dostupná."),
+          homeTranslate("home.locationUnavailableHelp", "Zadejte město nebo PSČ ručně.")
+        ].join(" ");
       }
-      alert(homeTranslate("home.locationUnavailableHelp", "Zadejte město nebo PSČ ručně."));
       return;
     }
 
@@ -162,8 +164,12 @@ function setupNearbySearch() {
       },
       function () {
         nearbyCard.disabled = false;
-        if (nearbyStatus) nearbyStatus.textContent = homeTranslate("home.locationDenied", "Polohu se nepodařilo načíst.");
-        alert(homeTranslate("home.locationDeniedHelp", "Povolte přístup k poloze nebo zadejte město ručně."));
+        if (nearbyStatus) {
+          nearbyStatus.textContent = [
+            homeTranslate("home.locationDenied", "Polohu se nepodařilo načíst."),
+            homeTranslate("home.locationDeniedHelp", "Povolte přístup k poloze nebo zadejte město ručně.")
+          ].join(" ");
+        }
       },
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
     );
