@@ -3,7 +3,8 @@
 }
 
 button,
-input {
+input,
+select {
   font-family: inherit;
 }
 
@@ -130,7 +131,8 @@ input {
   font-weight: 800;
 }
 
-.field input {
+.field input,
+.field select {
   width: 100%;
   min-height: 44px;
   border: 1px solid #cfe0d8;
@@ -142,21 +144,32 @@ input {
   font-weight: 600;
 }
 
-.field input:focus {
+.field select {
+  appearance: auto;
+}
+
+.field input:focus,
+.field select:focus {
   outline: none;
   border-color: #cfe0d8;
   box-shadow: none;
 }
 
-.field input:focus-visible {
+.field input:focus-visible,
+.field select:focus-visible {
   outline: 1px solid rgba(64, 127, 101, 0.52);
   outline-offset: 1px;
 }
 
-html[data-focus-input="pointer"] .field input:focus {
+html[data-focus-input="pointer"] .field input:focus,
+html[data-focus-input="pointer"] .field select:focus {
   outline: none !important;
   outline-offset: 0 !important;
   box-shadow: none !important;
+}
+
+.settings-language-field {
+  max-width: 420px;
 }
 
 .profile-note {

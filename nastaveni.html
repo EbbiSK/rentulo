@@ -109,6 +109,34 @@
         </form>
       </section>
 
+      <section class="settings-card" id="languageSettingsSection">
+        <div class="settings-card-heading">
+          <h2 id="settingsLanguageTitle">Jazyk stránky</h2>
+          <p id="settingsLanguageDescription">
+            Vyberte jazyk, ve kterém chcete Rentulo používat. Volba se uloží k vašemu účtu a použije se po přihlášení.
+          </p>
+        </div>
+
+        <div class="field settings-language-field">
+          <label for="settingsLanguageSelect" id="settingsLanguageLabel">Jazyk</label>
+          <select id="settingsLanguageSelect">
+            <option value="cs">Čeština</option>
+            <option value="sk">Slovenčina</option>
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="pl">Polski</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="primary-button" id="saveLanguageButton">
+            <span class="button-label-default" id="settingsLanguageSaveLabel">Uložit jazyk</span>
+            <span class="button-label-loading" id="settingsLanguageSavingLabel">Ukládám…</span>
+          </button>
+          <span class="message" id="languageMessage" role="status" aria-live="polite"></span>
+        </div>
+      </section>
+
       <section class="settings-card">
         <div class="settings-card-heading">
           <h2 data-i18n="settings.passwordTitle">Změna hesla</h2>
@@ -207,5 +235,6 @@
   <script src="js/auth-guard.js"></script>
   <script src="js/password-visibility.js"></script>
   <script src="js/settings-page.js"></script>
+  <script src="js/settings-language.js"></script>
 </body>
 </html>

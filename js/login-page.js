@@ -170,7 +170,7 @@ function loginNormalizeEmail(email) {
         return;
       }
 
-      
+
     }
 
     function saveRememberLogin(rememberLogin) {
@@ -199,7 +199,7 @@ function loginNormalizeEmail(email) {
 
       const { data, error } = await supabaseClient
         .from("profiles")
-        .select("full_name, phone, street, city, postal_code")
+        .select("full_name, phone, street, city, postal_code, preferred_language")
         .eq("id", user.id)
         .maybeSingle();
 
@@ -257,6 +257,21 @@ function loginNormalizeEmail(email) {
         createdAt: user.created_at || new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
+    }
+
+    function loginApplyPreferredLanguage(user, profile) {
+      const supportedLanguages = ["cs", "sk", "en", "de", "pl"];
+      const metadata = user && user.user_metadata ? user.user_metadata : {};
+      const preferredLanguage = String(
+        (profile && profile.preferred_language) ||
+        metadata.preferred_language ||
+        "cs"
+      ).toLowerCase();
+      const language = supportedLanguages.includes(preferredLanguage)
+        ? preferredLanguage
+        : "cs";
+
+      localStorage.setItem("rentuloLanguage", language);
     }
 
     async function handleLoginSubmit(event) {
@@ -369,6 +384,7 @@ function loginNormalizeEmail(email) {
         const profile = await loginLoadProfile(supabaseClient, data.user);
         const currentUser = loginCreateLocalUserFromSupabase(data.user, profile);
 
+        loginApplyPreferredLanguage(data.user, profile);
         loginSaveCurrentUser(currentUser);
         window.location.href = targetPage;
       } catch (error) {

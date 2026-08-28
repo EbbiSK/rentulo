@@ -289,14 +289,23 @@ async function registrationLoadAddressSuggestions(query, requestId) {
 
 function setupAddressAutocomplete() {
   const streetInput = document.getElementById("street");
+  const cityInput = document.getElementById("city");
+  const postalCodeInput = document.getElementById("postalCode");
   const suggestionsBox = document.getElementById("addressSuggestions");
 
-  if (!streetInput || !suggestionsBox) {
+  if (!streetInput || !cityInput || !postalCodeInput || !suggestionsBox) {
     return;
   }
 
   streetInput.addEventListener("input", function () {
     const query = streetInput.value.trim();
+
+    cityInput.value = "";
+    postalCodeInput.value = "";
+    [cityInput, postalCodeInput].forEach(function (field) {
+      field.classList.remove("input-error");
+      field.removeAttribute("aria-invalid");
+    });
 
     registrationAddressRequestId += 1;
     const requestId = registrationAddressRequestId;

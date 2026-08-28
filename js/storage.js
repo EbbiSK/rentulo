@@ -30,7 +30,7 @@ function clearCurrentUser() {
   localStorage.removeItem("rentuloUser");
   localStorage.removeItem("rentuloLoggedIn");
   localStorage.removeItem("rentuloRememberLogin");
-
+  localStorage.setItem("rentuloLanguage", "cs");
 }
 
 // Odstrani aj kopie, ktore mohli zostat po starsich verziach aplikacie.

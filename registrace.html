@@ -238,6 +238,14 @@
     </section>
   </main>
 
+  <script>
+    localStorage.setItem("rentuloLanguage", "cs");
+    document.addEventListener("submit", function (event) {
+      if (event.target && event.target.id === "registrationForm") {
+        localStorage.setItem("rentuloLanguage", "cs");
+      }
+    }, true);
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/utils.js"></script>
