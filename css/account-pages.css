@@ -445,7 +445,8 @@
   margin-bottom: 10px;
   background: #ffffff;
   border: 1px solid #e8dfd2;
-  border-radius: 18px;
+  border-radius: 14px;
+  font-size: 15px;
 }
 
 .simple-offer-main {
@@ -512,11 +513,6 @@
     justify-content: flex-start;
   }
 }
-.simple-offer-row {
-  font-size: 15px;
-  border-radius: 14px;
-}
-
 .simple-offer-name {
   font-size: 16px;
 }
