@@ -51,7 +51,7 @@
 .search-field {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 7px;
 }
 
 .search-field label {
@@ -382,10 +382,6 @@
 }
 
 /* Jemné doladenie úvodnej stránky */
-
-.search-field {
-  gap: 7px;
-}
 
 .search-field input {
   height: 48px;
