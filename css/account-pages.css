@@ -483,6 +483,7 @@
 .simple-offer-value {
   font-weight: 700;
   color: #073f2e;
+  font-size: 14px;
 }
 
 .simple-offer-actions {
@@ -515,10 +516,6 @@
     justify-content: flex-start;
   }
 }
-.simple-offer-value {
-  font-size: 14px;
-}
-
 .simple-offer-actions button {
   padding: 8px 11px;
   font-size: 14px;
