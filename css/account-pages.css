@@ -556,7 +556,7 @@
 .simple-reservation-main {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
 }
 
@@ -708,9 +708,6 @@
   line-height: 1.2;
 }
 
-.simple-reservation-main {
-  gap: 8px;
-}
 .simple-reservation-row {
   min-height: 34px;
   padding: 3px 12px;
