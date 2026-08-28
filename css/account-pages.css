@@ -471,7 +471,7 @@
 }
 
 .simple-offer-name {
-  font-size: 18px;
+  font-size: 16px;
   color: #004d3a;
 }
 
@@ -513,10 +513,6 @@
     justify-content: flex-start;
   }
 }
-.simple-offer-name {
-  font-size: 16px;
-}
-
 .simple-offer-meta,
 .simple-offer-value {
   font-size: 14px;
