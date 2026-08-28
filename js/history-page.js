@@ -59,13 +59,44 @@ function historyShowSuccessNotice(message) {
     notice = document.createElement("div");
     notice.id = "historySuccessNotice";
     notice.className = "history-success-notice";
-    notice.setAttribute("role", "status");
-    notice.setAttribute("aria-live", "polite");
     notice.hidden = true;
     historySwitch.insertAdjacentElement("afterend", notice);
   }
 
+  notice.setAttribute("role", "status");
+  notice.setAttribute("aria-live", "polite");
   notice.textContent = "✓ " + message;
+  notice.hidden = false;
+
+  if (historySuccessNoticeTimer) {
+    window.clearTimeout(historySuccessNoticeTimer);
+  }
+
+  historySuccessNoticeTimer = window.setTimeout(function () {
+    notice.hidden = true;
+    historySuccessNoticeTimer = null;
+  }, 4500);
+}
+
+function historyShowErrorNotice(message) {
+  const historySwitch = document.querySelector(".history-switch");
+  if (!historySwitch) {
+    console.error(message);
+    return;
+  }
+
+  let notice = document.getElementById("historySuccessNotice");
+  if (!notice) {
+    notice = document.createElement("div");
+    notice.id = "historySuccessNotice";
+    notice.className = "history-success-notice";
+    notice.hidden = true;
+    historySwitch.insertAdjacentElement("afterend", notice);
+  }
+
+  notice.setAttribute("role", "alert");
+  notice.setAttribute("aria-live", "assertive");
+  notice.textContent = "⚠ " + message;
   notice.hidden = false;
 
   if (historySuccessNoticeTimer) {
@@ -519,13 +550,13 @@ async function historySaveReview(reservationId, role) {
   });
 
   if (!reservation || !historyCanReview(reservation)) {
-    alert(historyT("history.error.afterReturn", "Hodnocení lze odeslat až po vrácení věci."));
+    historyShowErrorNotice(historyT("history.error.afterReturn", "Hodnocení lze odeslat až po vrácení věci."));
     return;
   }
 
   const currentUserId = String(historyCurrentUser.id);
   if (historyFindReview(reservationId, currentUserId)) {
-    alert(historyT("history.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
+    historyShowErrorNotice(historyT("history.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
     return;
   }
 
@@ -535,24 +566,24 @@ async function historySaveReview(reservationId, role) {
   const text = textElement ? textElement.value.trim() : "";
 
   if (!rating || rating < 1 || rating > 5) {
-    alert(historyT("history.error.selectStars", "Vyberte počet hvězdiček."));
+    historyShowErrorNotice(historyT("history.error.selectStars", "Vyberte počet hvězdiček."));
     return;
   }
 
   if (!text) {
-    alert(historyT("history.error.comment", "Napište krátký komentář k půjčení."));
+    historyShowErrorNotice(historyT("history.error.comment", "Napište krátký komentář k půjčení."));
     return;
   }
 
   const reviewedUserId = role === "renter" ? historyGetOwnerId(reservation) : historyGetRenterId(reservation);
   if (!reviewedUserId) {
-    alert(historyT("history.error.userId", "Chybí ID hodnoceného uživatele."));
+    historyShowErrorNotice(historyT("history.error.userId", "Chybí ID hodnoceného uživatele."));
     return;
   }
 
   const client = typeof getSupabaseClient === "function" ? getSupabaseClient() : null;
   if (!client) {
-    alert(historyT("history.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku."));
+    historyShowErrorNotice(historyT("history.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku."));
     return;
   }
 
@@ -569,9 +600,9 @@ async function historySaveReview(reservationId, role) {
   if (result.error) {
     console.error("Chyba při ukládání hodnocení:", result.error);
     if (String(result.error.message || "").toLowerCase().includes("duplicate")) {
-      alert(historyT("history.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
+      historyShowErrorNotice(historyT("history.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
     } else {
-      alert(historyT("history.error.save", "Hodnocení se nepodařilo uložit."));
+      historyShowErrorNotice(historyT("history.error.save", "Hodnocení se nepodařilo uložit."));
     }
     return;
   }
