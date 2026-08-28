@@ -117,35 +117,6 @@ function getReservationStatus(reservation) {
 
   return normalizeReservationStatus(reservation.status);
 }
-function isPendingReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_PENDING;
-}
-
-function isApprovedReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED;
-}
-
-function isPaidReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_PAID;
-}
-
-function isPickedUpReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_PICKED_UP;
-}
-
-function isReturnedReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED;
-}
-function isRejectedReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_REJECTED;
-}
-
-function isCancelledReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_CANCELLED;
-}
-function isCompletedReservationStatus(status) {
-  return normalizeReservationStatus(status) === RESERVATION_STATUS_COMPLETED;
-}
 function isOpenReservationStatus(status) {
   const normalizedStatus = normalizeReservationStatus(status);
 
