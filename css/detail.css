@@ -164,7 +164,8 @@
   font-size: 14px;
 }
 
-.booking-card {
+.booking-card,
+.owner-detail-box {
   background: white;
   border-radius: 28px;
   padding: 26px;
@@ -259,15 +260,6 @@
   line-height: 1.4;
   margin-top: 16px;
 }
-.owner-detail-box {
-  background: white;
-  border-radius: 28px;
-  padding: 26px;
-  position: sticky;
-  top: 20px;
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.07);
-}
-
 .owner-detail-box h2 {
   font-size: 24px;
   margin-bottom: 12px;
