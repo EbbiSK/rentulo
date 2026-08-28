@@ -477,6 +477,7 @@
 
 .simple-offer-meta {
   color: #5b6862;
+  font-size: 14px;
 }
 
 .simple-offer-value {
@@ -514,7 +515,6 @@
     justify-content: flex-start;
   }
 }
-.simple-offer-meta,
 .simple-offer-value {
   font-size: 14px;
 }
