@@ -618,12 +618,12 @@
   }
 
   .simple-reservation-main,
-  .simple-reservation-actions,
   .simple-reservation-row .detail-row {
     grid-column: 1 / -1;
   }
 
   .simple-reservation-actions {
+    grid-column: 1 / -1;
     justify-content: flex-start;
   }
 }
