@@ -19,76 +19,13 @@ const EDIT_OFFER_PHOTO_ALLOWED_TYPES = [
   "image/webp"
 ];
 
-const editCityPostalCodes = {
-  "praha": "110 00",
-  "brno": "602 00",
-  "ostrava": "702 00",
-  "plzeň": "301 00",
-  "plzen": "301 00",
-  "liberec": "460 01",
-  "olomouc": "779 00",
-  "české budějovice": "370 01",
-  "ceske budejovice": "370 01",
-  "hradec králové": "500 03",
-  "hradec kralove": "500 03",
-  "pardubice": "530 02",
-  "zlín": "760 01",
-  "zlin": "760 01",
-  "havířov": "736 01",
-  "havirov": "736 01",
-  "kladno": "272 01",
-  "most": "434 01",
-  "opava": "746 01",
-  "frýdek-místek": "738 01",
-  "frydek-mistek": "738 01",
-  "karviná": "733 01",
-  "karvina": "733 01",
-  "jihlava": "586 01",
-  "teplice": "415 01",
-  "děčín": "405 02",
-  "decin": "405 02",
-  "chomutov": "430 01",
-  "karlovy vary": "360 01",
-  "jablonec nad nisou": "466 01",
-  "mladá boleslav": "293 01",
-  "mlada boleslav": "293 01",
-  "prostějov": "796 01",
-  "prostejov": "796 01",
-  "přerov": "750 02",
-  "prerov": "750 02",
-  "třinec": "739 61",
-  "trinec": "739 61",
-  "tábor": "390 01",
-  "tabor": "390 01",
-  "znojmo": "669 02",
-  "kolín": "280 02",
-  "kolin": "280 02",
-  "písek": "397 01",
-  "pisek": "397 01",
-  "cheb": "350 02",
-  "příbram": "261 01",
-  "pribram": "261 01",
-  "orlová": "735 14",
-  "orlova": "735 14",
-  "kroměříž": "767 01",
-  "kromeriz": "767 01",
-  "vsetín": "755 01",
-  "vsetin": "755 01",
-  "šumperk": "787 01",
-  "sumperk": "787 01",
-  "uherské hradiště": "686 01",
-  "uherske hradiste": "686 01",
-  "břeclav": "690 02",
-  "breclav": "690 02",
-  "hodonín": "695 01",
-  "hodonin": "695 01",
-  "česká lípa": "470 01",
-  "ceska lipa": "470 01",
-  "litoměřice": "412 01",
-  "litomerice": "412 01",
-  "krnov": "794 01",
-  "sokolov": "356 01"
-};
+const EDIT_ADDRESS_SUGGESTION_MIN_LENGTH = 3;
+const EDIT_ADDRESS_SUGGESTION_DELAY_MS = 450;
+
+let editAddressSuggestions = [];
+let editAddressActiveIndex = -1;
+let editAddressRequestId = 0;
+let editAddressTimer = null;
 
 function editT(key, fallback) {
   if (typeof window.rentuloTranslate === "function") {
@@ -192,104 +129,263 @@ function editValueOrEmpty(value) {
 }
 
 
-function normalizeEditCityName(value) {
+function editEscapeHtml(value) {
   return String(value || "")
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
-function setupEditCitySuggestions() {
-  const datalist = document.getElementById("editCitySuggestions");
+function closeEditAddressSuggestions() {
+  const streetInput = document.getElementById("edit-pickup-street");
+  const suggestionsBox = document.getElementById("editPickupAddressSuggestions");
 
-  if (!datalist) {
+  editAddressSuggestions = [];
+  editAddressActiveIndex = -1;
+
+  if (editAddressTimer) {
+    window.clearTimeout(editAddressTimer);
+    editAddressTimer = null;
+  }
+
+  if (suggestionsBox) {
+    suggestionsBox.innerHTML = "";
+    suggestionsBox.hidden = true;
+  }
+
+  if (streetInput) {
+    streetInput.setAttribute("aria-expanded", "false");
+    streetInput.removeAttribute("aria-activedescendant");
+  }
+}
+
+function renderEditAddressSuggestions(items) {
+  const streetInput = document.getElementById("edit-pickup-street");
+  const suggestionsBox = document.getElementById("editPickupAddressSuggestions");
+
+  if (!streetInput || !suggestionsBox) {
     return;
   }
 
-  const uniqueCities = [];
-  const seen = {};
+  editAddressSuggestions = Array.isArray(items) ? items.slice(0, 5) : [];
+  editAddressActiveIndex = -1;
 
-  Object.keys(editCityPostalCodes).forEach(function (city) {
-    const displayCity = city
-      .split(" ")
-      .map(function (part) {
-        return part.charAt(0).toUpperCase() + part.slice(1);
-      })
-      .join(" ");
+  if (!editAddressSuggestions.length) {
+    closeEditAddressSuggestions();
+    return;
+  }
 
-    const normalized = normalizeEditCityName(displayCity);
+  suggestionsBox.innerHTML = editAddressSuggestions
+    .map(function (item, index) {
+      const main = String(item.street || "").trim();
+      const meta = [item.city, item.postalCode]
+        .map(function (part) { return String(part || "").trim(); })
+        .filter(Boolean)
+        .join(", ");
 
-    if (!seen[normalized]) {
-      seen[normalized] = true;
-      uniqueCities.push(displayCity);
+      return `
+        <button
+          type="button"
+          class="address-suggestion"
+          id="editPickupAddressSuggestion${index}"
+          role="option"
+          data-address-index="${index}"
+          aria-selected="false"
+        >
+          <span class="address-suggestion-main">${editEscapeHtml(main)}</span>
+          <span class="address-suggestion-meta">${editEscapeHtml(meta)}</span>
+        </button>
+      `;
+    })
+    .join("") +
+    '<div class="address-attribution">© OpenStreetMap contributors</div>';
+
+  suggestionsBox.hidden = false;
+  streetInput.setAttribute("aria-expanded", "true");
+}
+
+function setEditAddressActiveIndex(nextIndex) {
+  const streetInput = document.getElementById("edit-pickup-street");
+  const suggestionButtons = Array.from(
+    document.querySelectorAll("#editPickupAddressSuggestions .address-suggestion")
+  );
+
+  if (!streetInput || !suggestionButtons.length) {
+    return;
+  }
+
+  const maxIndex = suggestionButtons.length - 1;
+  let normalizedIndex = nextIndex;
+
+  if (normalizedIndex < 0) {
+    normalizedIndex = maxIndex;
+  }
+
+  if (normalizedIndex > maxIndex) {
+    normalizedIndex = 0;
+  }
+
+  editAddressActiveIndex = normalizedIndex;
+
+  suggestionButtons.forEach(function (button, index) {
+    const isActive = index === normalizedIndex;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-selected", isActive ? "true" : "false");
+  });
+
+  const activeButton = suggestionButtons[normalizedIndex];
+  if (activeButton) {
+    streetInput.setAttribute("aria-activedescendant", activeButton.id);
+    activeButton.scrollIntoView({ block: "nearest" });
+  }
+}
+
+function selectEditAddress(index) {
+  const item = editAddressSuggestions[index];
+  const streetInput = document.getElementById("edit-pickup-street");
+  const cityInput = document.getElementById("edit-city");
+  const postalCodeInput = document.getElementById("edit-postal-code");
+
+  if (!item || !streetInput || !cityInput || !postalCodeInput) {
+    return;
+  }
+
+  streetInput.value = String(item.street || "").trim();
+  cityInput.value = String(item.city || "").trim();
+  postalCodeInput.value = String(item.postalCode || "").trim();
+
+  [streetInput, cityInput, postalCodeInput].forEach(function (field) {
+    field.classList.remove("input-error");
+  });
+
+  closeEditAddressSuggestions();
+}
+
+async function loadEditAddressSuggestions(query, requestId) {
+  const supabaseClient = getEditSupabaseClient();
+
+  if (!supabaseClient) {
+    return;
+  }
+
+  try {
+    const language =
+      typeof window.getRentuloLanguage === "function"
+        ? window.getRentuloLanguage()
+        : "cs";
+
+    const { data, error } = await supabaseClient.functions.invoke(
+      "address-suggestions",
+      {
+        body: {
+          query: query,
+          language: language
+        }
+      }
+    );
+
+    if (requestId !== editAddressRequestId) {
+      return;
+    }
+
+    if (error || !data || !Array.isArray(data.suggestions)) {
+      closeEditAddressSuggestions();
+      return;
+    }
+
+    renderEditAddressSuggestions(data.suggestions);
+  } catch (_error) {
+    if (requestId === editAddressRequestId) {
+      closeEditAddressSuggestions();
+    }
+  }
+}
+
+function setupEditPickupAddressAutocomplete() {
+  const streetInput = document.getElementById("edit-pickup-street");
+  const cityInput = document.getElementById("edit-city");
+  const postalCodeInput = document.getElementById("edit-postal-code");
+  const suggestionsBox = document.getElementById("editPickupAddressSuggestions");
+
+  if (!streetInput || !cityInput || !postalCodeInput || !suggestionsBox) {
+    return;
+  }
+
+  streetInput.addEventListener("input", function () {
+    const query = streetInput.value.trim();
+
+    cityInput.value = "";
+    postalCodeInput.value = "";
+    cityInput.classList.remove("input-error");
+    postalCodeInput.classList.remove("input-error");
+
+    editAddressRequestId += 1;
+    const requestId = editAddressRequestId;
+
+    if (editAddressTimer) {
+      window.clearTimeout(editAddressTimer);
+      editAddressTimer = null;
+    }
+
+    if (query.length < EDIT_ADDRESS_SUGGESTION_MIN_LENGTH) {
+      closeEditAddressSuggestions();
+      return;
+    }
+
+    editAddressTimer = window.setTimeout(function () {
+      loadEditAddressSuggestions(query, requestId);
+    }, EDIT_ADDRESS_SUGGESTION_DELAY_MS);
+  });
+
+  streetInput.addEventListener("keydown", function (event) {
+    if (suggestionsBox.hidden || !editAddressSuggestions.length) {
+      return;
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setEditAddressActiveIndex(editAddressActiveIndex + 1);
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setEditAddressActiveIndex(editAddressActiveIndex - 1);
+      return;
+    }
+
+    if (event.key === "Enter" && editAddressActiveIndex >= 0) {
+      event.preventDefault();
+      selectEditAddress(editAddressActiveIndex);
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeEditAddressSuggestions();
     }
   });
 
-  datalist.innerHTML = uniqueCities
-    .sort()
-    .map(function (city) {
-      return `<option value="${city}"></option>`;
-    })
-    .join("");
-}
+  suggestionsBox.addEventListener("mousedown", function (event) {
+    event.preventDefault();
+  });
 
-function fillEditPostalCodeFromCity() {
-  const cityInput = document.getElementById("edit-city");
-  const postalInput = document.getElementById("edit-postal-code");
+  suggestionsBox.addEventListener("click", function (event) {
+    const button = event.target.closest("[data-address-index]");
 
-  if (!cityInput || !postalInput) {
-    return;
-  }
-
-  const city = normalizeEditCityName(cityInput.value);
-  const postalCode = editCityPostalCodes[city];
-
-  if (!postalCode) {
-    if (postalInput.dataset.autoFilled === "true") {
-      postalInput.value = "";
+    if (!button) {
+      return;
     }
 
-    return;
-  }
+    selectEditAddress(Number(button.dataset.addressIndex));
+  });
 
-  if (!postalInput.value.trim() || postalInput.dataset.autoFilled === "true") {
-    postalInput.value = postalCode;
-    postalInput.dataset.autoFilled = "true";
-  }
-}
-
-function setupEditPostalCodeAutocomplete() {
-  const cityInput = document.getElementById("edit-city");
-  const postalInput = document.getElementById("edit-postal-code");
-
-  if (!cityInput || !postalInput) {
-    return;
-  }
-
-  const loadedCity = normalizeEditCityName(cityInput.value);
-  postalInput.dataset.autoFilled = "false";
-  postalInput.dataset.manuallyEdited = "false";
-
-  function updatePostalCodeForEditedCity() {
-    const currentCity = normalizeEditCityName(cityInput.value);
-
-    if (
-      currentCity !== loadedCity &&
-      postalInput.dataset.manuallyEdited !== "true"
-    ) {
-      postalInput.dataset.autoFilled = "true";
+  document.addEventListener("click", function (event) {
+    if (!event.target.closest(".address-autocomplete")) {
+      closeEditAddressSuggestions();
     }
-
-    fillEditPostalCodeFromCity();
-  }
-
-  cityInput.addEventListener("input", updatePostalCodeForEditedCity);
-  cityInput.addEventListener("change", updatePostalCodeForEditedCity);
-
-  postalInput.addEventListener("input", function () {
-    postalInput.dataset.autoFilled = "false";
-    postalInput.dataset.manuallyEdited = "true";
   });
 }
 
@@ -782,6 +878,11 @@ function setupEditPickupFields() {
 
   pickupUseCustom.addEventListener("change", function () {
     pickupCustomFields.classList.toggle("is-visible", pickupUseCustom.checked);
+
+    if (!pickupUseCustom.checked) {
+      closeEditAddressSuggestions();
+    }
+
     renderEditProfilePickupAddress();
   });
 
@@ -1051,8 +1152,7 @@ async function initializeEditOfferPage(supabaseUser) {
     editLockPriceFields(editHasBlockingReservation);
     setupEditOfferPhotoUpload();
     setupEditPickupFields();
-    setupEditCitySuggestions();
-    setupEditPostalCodeAutocomplete();
+    setupEditPickupAddressAutocomplete();
     setupEditOfferSave();
   } catch (error) {
     console.error(error);
