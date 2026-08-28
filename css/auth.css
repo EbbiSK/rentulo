@@ -253,7 +253,6 @@ input {
 
 @media (max-width: 620px) {
   .auth-page {
-    width: calc(100% - 28px);
     padding: 14px 0 36px;
   }
 
@@ -268,11 +267,6 @@ input {
 
   .auth-form {
     gap: 13px;
-  }
-
-  .form-group input,
-  .auth-button {
-    min-height: 48px;
   }
 
   .auth-note-right {
