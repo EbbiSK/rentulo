@@ -77,9 +77,9 @@
 }
 
 .search-button {
-  height: 54px;
+  height: 48px;
   border: none;
-  border-radius: 15px;
+  border-radius: 14px;
   background: #ff6a00;
   color: white;
   text-decoration: none;
@@ -382,11 +382,6 @@
 }
 
 /* Jemné doladenie úvodnej stránky */
-
-.search-button {
-  height: 48px;
-  border-radius: 14px;
-}
 
 .home-points {
   max-width: 760px;
