@@ -165,13 +165,13 @@
     });
 
     if (!reservation || !historyCanReview(reservation)) {
-      alert(historyT("history.error.afterReturn", "Hodnocení lze odeslat až po vrácení věci."));
+      historyShowErrorNotice(historyT("history.error.afterReturn", "Hodnocení lze odeslat až po vrácení věci."));
       return;
     }
 
     const currentUserId = String(historyCurrentUser.id);
     if (historyFindReview(reservationId, currentUserId)) {
-      alert(historyT("history.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
+      historyShowErrorNotice(historyT("history.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
       return;
     }
 
@@ -181,7 +181,7 @@
     const text = textElement ? textElement.value.trim() : "";
 
     if (!rating || rating < 1 || rating > 5) {
-      alert(historyT("history.error.selectStars", "Vyberte počet hvězdiček."));
+      historyShowErrorNotice(historyT("history.error.selectStars", "Vyberte počet hvězdiček."));
       return;
     }
 
@@ -190,13 +190,13 @@
       : historyGetRenterId(reservation);
 
     if (!reviewedUserId) {
-      alert(historyT("history.error.userId", "Chybí ID hodnoceného uživatele."));
+      historyShowErrorNotice(historyT("history.error.userId", "Chybí ID hodnoceného uživatele."));
       return;
     }
 
     const client = typeof getSupabaseClient === "function" ? getSupabaseClient() : null;
     if (!client) {
-      alert(historyT("history.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku."));
+      historyShowErrorNotice(historyT("history.error.supabase", "Služba je dočasně nedostupná. Obnovte stránku."));
       return;
     }
 
@@ -213,9 +213,9 @@
     if (result.error) {
       console.error("Chyba při ukládání hodnocení:", result.error);
       if (String(result.error.message || "").toLowerCase().includes("duplicate")) {
-        alert(historyT("history.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
+        historyShowErrorNotice(historyT("history.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."));
       } else {
-        alert(historyT("history.error.save", "Hodnocení se nepodařilo uložit."));
+        historyShowErrorNotice(historyT("history.error.save", "Hodnocení se nepodařilo uložit."));
       }
       return;
     }
