@@ -166,8 +166,7 @@ body[data-navigation-page="ucet-vytvoren"] #mainNav > .nav-language-control {
     display: none !important;
   }
 
-  body[data-navigation-page="ucet-vytvoren"] .header #mainNav,
-  body[data-navigation-page="ucet-vytvoren"] .header-inner #mainNav {
+  body[data-navigation-page="ucet-vytvoren"] .header #mainNav {
     position: static !important;
     top: auto !important;
     right: auto !important;
