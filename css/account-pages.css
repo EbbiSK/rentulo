@@ -588,8 +588,9 @@
 .simple-reservation-date,
 .simple-reservation-price,
 .simple-reservation-status {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .simple-reservation-actions {
@@ -695,13 +696,6 @@
   border-radius: 14px;
   gap: 14px;
   min-height: 48px;
-}
-
-.simple-reservation-date,
-.simple-reservation-price,
-.simple-reservation-status {
-  font-size: 12px;
-  line-height: 1.2;
 }
 
 .simple-reservation-row {
