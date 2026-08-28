@@ -142,10 +142,11 @@
 
 .home-point-button {
   width: 100%;
+  min-height: 72px;
   background: #f7f1e8;
   border: 1px solid #eadfce;
-  border-radius: 18px;
-  padding: 13px 14px;
+  border-radius: 20px;
+  padding: 16px 18px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -382,12 +383,6 @@
 }
 
 /* Jemné doladenie úvodnej stránky */
-
-.home-point-button {
-  min-height: 72px;
-  padding: 16px 18px;
-  border-radius: 20px;
-}
 
 .home-point-button strong {
   width: 38px;
