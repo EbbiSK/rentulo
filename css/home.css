@@ -1,6 +1,6 @@
 .home-landing {
   min-height: calc(100vh - 104px);
-  padding: 34px 92px 38px;
+  padding: 26px 92px 38px;
   display: grid;
   grid-template-columns: minmax(0, 760px) 360px;
   gap: 54px;
@@ -382,10 +382,6 @@
 }
 
 /* Jemné doladenie úvodnej stránky */
-
-.home-landing {
-  padding-top: 26px;
-}
 
 .search-box {
   padding: 16px 18px;
