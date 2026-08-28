@@ -161,6 +161,17 @@ h1 {
   font-weight: 900;
 }
 
+.reservation-page-notice.error {
+  border-color: #f2c79f;
+  background: #fff3e8;
+  color: #8a4b16;
+}
+
+.reservation-page-notice.error::before {
+  content: "!";
+  color: #8a4b16;
+}
+
 .account-list {
   display: grid;
   gap: 10px;
