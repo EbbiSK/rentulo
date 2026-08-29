@@ -11,18 +11,13 @@ const HISTORY_LOCALES = {
   pl: "pl-PL"
 };
 
-function historyT(key, fallback, values) {
+function historyT(key, fallback) {
   let text = fallback || key;
   if (typeof window.rentuloTranslate === "function") {
     text = window.rentuloTranslate(key);
   }
   if (text === key) {
     text = fallback || key;
-  }
-  if (values) {
-    Object.keys(values).forEach(function (name) {
-      text = text.replace(new RegExp("\\{" + name + "\\}", "g"), String(values[name]));
-    });
   }
   return text;
 }
@@ -213,12 +208,6 @@ function historyRenderSavedReview(review, title) {
   `;
 }
 
-function historyPageExtraT(key, fallback) {
-  return typeof window.historyExtraT === "function"
-    ? window.historyExtraT(key, fallback)
-    : fallback;
-}
-
 function historyGetCounterpart(reservation, role) {
   const ownerName = reservation.owner_name || reservation.ownerName || historyT("history.fallback.owner", "Majitel");
   const renterName = reservation.renter_name || reservation.renterName || historyT("history.fallback.renter", "Zákazník");
@@ -291,7 +280,7 @@ function historyRenderReviewForm(reservation, role) {
         <input id="${escapeHtml(ratingInputId)}" type="hidden" value="" data-history-rating />
       </div>
       <label>
-        ${escapeHtml(historyPageExtraT("history.review.commentOptional", "Komentář (nepovinný)"))}
+        ${escapeHtml(historyT("history.review.commentOptional", "Komentář (nepovinný)"))}
         <textarea id="history-text-${escapeHtml(reservationId)}-${escapeHtml(role)}" rows="3" placeholder="${escapeHtml(historyT("history.review.placeholder", "Jak proběhlo půjčení?"))}"></textarea>
       </label>
       <button type="button" class="history-primary-button" data-history-review="${escapeHtml(reservationId)}" data-history-role="${escapeHtml(role)}" disabled>
