@@ -1022,7 +1022,7 @@
           "privacy.s4p1": "Konečné právní základy budou určeny podle finálního provozního modelu. Podle konkrétního účelu může jít zejména o plnění smlouvy nebo kroky před jejím uzavřením, oprávněný zájem, splnění právní povinnosti nebo souhlas tam, kde jej právní předpisy vyžadují.",
           "privacy.s5Title": "5. Uložení údajů a používané technologie",
           "privacy.s5p1": "Hlavní údaje o účtech, profilech, nabídkách, rezervacích a hodnoceních jsou ukládány v cloudové databázi a autentizační službě Supabase.",
-          "privacy.s5p2": "Prohlížeč používá localStorage pro zvolený jazyk, volbu trvalého přihlášení a naposledy zjištěnou polohu uživatele. Přihlašovací relace se podle této volby ukládá do localStorage nebo sessionStorage. Tyto technologie nenahrazují hlavní databázi platformy.",
+          "privacy.s5p2": "Prohlížeč používá localStorage pro zvolený jazyk a volbu trvalého přihlášení. Přihlašovací relace se podle této volby ukládá do localStorage nebo sessionStorage. Poloha zařízení se po souhlasu uživatele používá pro vyhledávání v okolí, ale neukládá se do samostatného trvalého záznamu polohy v localStorage. Tyto technologie nenahrazují hlavní databázi platformy.",
           "privacy.s6Title": "6. Komu mohou být údaje zpřístupněny",
           "privacy.s6p1": "Údaje mohou být v nezbytném rozsahu zpřístupněny druhému účastníkovi konkrétní rezervace. Technické služby nyní zajišťují zejména Supabase pro databázi, přihlášení, úložiště a serverové funkce, Vercel pro hosting webu a Resend pro odesílání e-mailových oznámení.",
           "privacy.s6p2": "Mapové podklady poskytuje OpenStreetMap. Pro geokódování místa vyzvednutí a určení polohy nabídky platforma prostřednictvím serverové funkce předává ulici a číslo, město a PSČ místa vyzvednutí službě Nominatim. Pokud Nominatim nevrátí použitelný výsledek nebo je dočasně nedostupný, mohou být stejné údaje předány jako náhradní geokódovací službě Photon. Externí programové knihovny se načítají přes jsDelivr. Při načtení těchto zdrojů mohou jejich provozovatelé obdržet běžné technické údaje, například IP adresu a údaje prohlížeče. Po kliknutí na odkaz s adresou může uživatel otevřít Google Maps. Úplný seznam poskytovatelů, účely, právní základy a případná předávání do třetích zemí musí před veřejným spuštěním zkontrolovat právník.",
@@ -1030,7 +1030,7 @@
           "privacy.s7p1": "Veřejně nebo před potvrzením rezervace se zobrazuje pouze omezený rozsah údajů, například jméno, město a informace o nabídce.",
           "privacy.s7p2": "Telefon, přesná adresa a instrukce k předání jsou neveřejné a mohou se zobrazit jen oprávněným účastníkům konkrétní rezervace podle jejího stavu.",
           "privacy.s8Title": "8. Lokalita a poloha",
-          "privacy.s8p1": "Poloha nabídky se nevybírá z GPS zařízení majitele. Při vytvoření nebo úpravě nabídky se pro geokódování použije ulice a číslo, město a PSČ místa vyzvednutí. Z výsledku se k nabídce uloží souřadnice místa vyzvednutí; veřejná mapa však zpřístupňuje pouze jejich zaokrouhlenou podobu a přesnou adresu nezobrazuje. Pokud návštěvník povolí polohu zařízení, jeho přesné souřadnice se uloží do jeho prohlížeče a použijí se k vyhledání a řazení nabídek v okolí; neukládají se do jeho profilu v Supabase. Při přechodu na výsledky mohou být souřadnice také součástí adresy stránky.",
+          "privacy.s8p1": "Poloha nabídky se nevybírá z GPS zařízení majitele. Při vytvoření nebo úpravě nabídky se pro geokódování použije ulice a číslo, město a PSČ místa vyzvednutí. Z výsledku se k nabídce uloží souřadnice místa vyzvednutí; veřejná mapa však zpřístupňuje pouze jejich zaokrouhlenou podobu a přesnou adresu nezobrazuje. Pokud návštěvník povolí polohu zařízení, jeho přesné souřadnice se použijí během aktuální práce stránky k vyhledání a řazení nabídek v okolí; neukládají se do jeho profilu v Supabase ani do samostatného záznamu polohy v localStorage. Při přechodu na výsledky mohou být souřadnice také součástí adresy stránky (URL).",
           "privacy.s9Title": "9. Platby",
           "privacy.s9p1": "Externí platební brána zatím není aktivní. Platforma nyní eviduje pouze testovací stav platby pro ověření pracovního postupu. Po zapojení skutečného poskytovatele budou doplněny informace o zpracovávaných platebních údajích a příjemcích těchto údajů.",
           "privacy.s10Title": "10. Doba uchování",
@@ -2172,7 +2172,7 @@
           "privacy.s4p1": "Konečné právne základy budú určené podľa finálneho prevádzkového modelu. Podľa konkrétneho účelu môže ísť najmä o plnenie zmluvy alebo kroky pred jej uzavretím, oprávnený záujem, splnenie právnej povinnosti alebo súhlas tam, kde ho právne predpisy vyžadujú.",
           "privacy.s5Title": "5. Uloženie údajov a používané technológie",
           "privacy.s5p1": "Hlavné údaje o účtoch, profiloch, ponukách, rezerváciách a hodnoteniach sú ukladané v cloudovej databáze a autentifikačnej službe Supabase.",
-          "privacy.s5p2": "Prehliadač používa localStorage na zvolený jazyk, voľbu trvalého prihlásenia a naposledy zistenú polohu používateľa. Prihlasovacia relácia sa podľa tejto voľby ukladá do localStorage alebo sessionStorage. Tieto technológie nenahrádzajú hlavnú databázu platformy.",
+          "privacy.s5p2": "Prehliadač používa localStorage na zvolený jazyk a voľbu trvalého prihlásenia. Prihlasovacia relácia sa podľa tejto voľby ukladá do localStorage alebo sessionStorage. Poloha zariadenia sa po súhlase používateľa používa na vyhľadávanie v okolí, ale neukladá sa do samostatného trvalého záznamu polohy v localStorage. Tieto technológie nenahrádzajú hlavnú databázu platformy.",
           "privacy.s6Title": "6. Komu môžu byť údaje sprístupnené",
           "privacy.s6p1": "Údaje môžu byť v nevyhnutnom rozsahu sprístupnené druhému účastníkovi konkrétnej rezervácie. Technické služby teraz zabezpečujú najmä Supabase pre databázu, prihlásenie, úložisko a serverové funkcie, Vercel pre hosting webu a Resend na odosielanie e-mailových oznámení.",
           "privacy.s6p2": "Mapové podklady poskytuje OpenStreetMap. Na geokódovanie miesta vyzdvihnutia a určenie polohy ponuky platforma prostredníctvom serverovej funkcie odovzdáva ulicu a číslo, mesto a PSČ miesta vyzdvihnutia službe Nominatim. Ak Nominatim nevráti použiteľný výsledok alebo je dočasne nedostupný, môžu byť rovnaké údaje odovzdané ako náhradnej geokódovacej službe Photon. Externé programové knižnice sa načítavajú cez jsDelivr. Pri načítaní týchto zdrojov môžu ich prevádzkovatelia získať bežné technické údaje, napríklad IP adresu a údaje prehliadača. Po kliknutí na odkaz s adresou môže používateľ otvoriť Google Maps. Úplný zoznam poskytovateľov, účely, právne základy a prípadné prenosy do tretích krajín musí pred verejným spustením skontrolovať právnik.",
@@ -2180,7 +2180,7 @@
           "privacy.s7p1": "Verejne alebo pred potvrdením rezervácie sa zobrazuje iba obmedzený rozsah údajov, napríklad meno, mesto a informácie o ponuke.",
           "privacy.s7p2": "Telefón, presná adresa a pokyny k odovzdaniu sú neverejné a môžu sa zobraziť iba oprávneným účastníkom konkrétnej rezervácie podľa jej stavu.",
           "privacy.s8Title": "8. Lokalita a poloha",
-          "privacy.s8p1": "Poloha ponuky sa nevyberá z GPS zariadenia majiteľa. Pri vytvorení alebo úprave ponuky sa na geokódovanie použije ulica a číslo, mesto a PSČ miesta vyzdvihnutia. Z výsledku sa k ponuke uložia súradnice miesta vyzdvihnutia; verejná mapa však sprístupňuje iba ich zaokrúhlenú podobu a presnú adresu nezobrazuje. Ak návštevník povolí polohu zariadenia, jeho presné súradnice sa uložia do jeho prehliadača a použijú sa na vyhľadanie a zoradenie ponúk v okolí; neukladajú sa do jeho profilu v Supabase. Pri prechode na výsledky môžu byť súradnice tiež súčasťou adresy stránky.",
+          "privacy.s8p1": "Poloha ponuky sa nevyberá z GPS zariadenia majiteľa. Pri vytvorení alebo úprave ponuky sa na geokódovanie použije ulica a číslo, mesto a PSČ miesta vyzdvihnutia. Z výsledku sa k ponuke uložia súradnice miesta vyzdvihnutia; verejná mapa však sprístupňuje iba ich zaokrúhlenú podobu a presnú adresu nezobrazuje. Ak návštevník povolí polohu zariadenia, jeho presné súradnice sa použijú počas aktuálnej práce stránky na vyhľadanie a zoradenie ponúk v okolí; neukladajú sa do jeho profilu v Supabase ani do samostatného záznamu polohy v localStorage. Pri prechode na výsledky môžu byť súradnice tiež súčasťou adresy stránky (URL).",
           "privacy.s9Title": "9. Platby",
           "privacy.s9p1": "Externá platobná brána zatiaľ nie je aktívna. Platforma teraz eviduje iba testovací stav platby na overenie pracovného postupu. Po zapojení skutočného poskytovateľa budú doplnené informácie o spracúvaných platobných údajoch a príjemcoch týchto údajov.",
           "privacy.s10Title": "10. Doba uchovávania",
@@ -3322,7 +3322,7 @@
           "privacy.s4p1": "The final legal bases will be determined according to the final operating model. Depending on the specific purpose, processing may in particular be based on performance of a contract or steps taken before entering into a contract, legitimate interests, compliance with a legal obligation or consent where required by law.",
           "privacy.s5Title": "5. Data storage and technologies used",
           "privacy.s5p1": "The main data about accounts, profiles, listings, reservations and ratings is stored in the Supabase cloud database and authentication service.",
-          "privacy.s5p2": "The browser uses localStorage for the selected language, the persistent sign-in choice and the user’s most recently detected location. Depending on that choice, the sign-in session is stored in localStorage or sessionStorage. These technologies do not replace the platform’s main database.",
+          "privacy.s5p2": "The browser uses localStorage for the selected language and the persistent sign-in choice. Depending on that choice, the sign-in session is stored in localStorage or sessionStorage. With the user's permission, device location is used for nearby search but is not stored as a separate persistent location record in localStorage. These technologies do not replace the platform’s main database.",
           "privacy.s6Title": "6. Who may receive the data",
           "privacy.s6p1": "To the extent necessary, data may be made available to the other participant in a specific reservation. Technical services are currently provided mainly by Supabase for the database, authentication, storage and server functions, Vercel for website hosting and Resend for sending email notifications.",
           "privacy.s6p2": "Map data is provided by OpenStreetMap. To geocode the pickup location and determine the listing location, the platform sends the pickup street and house number, city and postal code through a server-side function to Nominatim. If Nominatim does not return a usable result or is temporarily unavailable, the same data may be sent to Photon as a fallback geocoding service. External software libraries are loaded through jsDelivr. When these resources are loaded, their operators may receive ordinary technical data such as the IP address and browser information. A user may open Google Maps after clicking an address link. The complete list of providers, purposes, legal bases and any transfers to third countries must be reviewed by a lawyer before public launch.",
@@ -3330,7 +3330,7 @@
           "privacy.s7p1": "Only a limited amount of data is displayed publicly or before a reservation is confirmed, for example the name, city and listing information.",
           "privacy.s7p2": "The phone number, exact address and handover instructions are not public and may be shown only to authorised participants in a specific reservation according to its status.",
           "privacy.s8Title": "8. Location data",
-          "privacy.s8p1": "The listing location is not selected from the owner’s device GPS. When a listing is created or edited, the pickup street and house number, city and postal code are used for geocoding. The resulting pickup coordinates are stored with the listing; the public map exposes only a rounded version and does not display the exact address. If a visitor allows access to the device location, the exact coordinates are saved in that visitor’s browser and used to find and sort nearby listings; they are not stored in the visitor’s Supabase profile. When the visitor opens the results, the coordinates may also form part of the page address.",
+          "privacy.s8p1": "The listing location is not selected from the owner’s device GPS. When a listing is created or edited, the pickup street and house number, city and postal code are used for geocoding. The resulting pickup coordinates are stored with the listing; the public map exposes only a rounded version and does not display the exact address. If a visitor allows access to the device location, the exact coordinates are used during the current use of the page to find and sort nearby listings; they are not stored in the visitor’s Supabase profile or in a separate location record in localStorage. When the visitor opens the results, the coordinates may also form part of the page URL.",
           "privacy.s9Title": "9. Payments",
           "privacy.s9p1": "An external payment gateway is not active yet. The platform currently records only a test payment status to verify the workflow. After a real provider is integrated, information about processed payment data and recipients of that data will be added.",
           "privacy.s10Title": "10. Retention period",
@@ -4471,7 +4471,7 @@
           "privacy.s4p1": "Die endgültigen Rechtsgrundlagen werden anhand des finalen Betriebsmodells bestimmt. Je nach Zweck kann die Verarbeitung insbesondere auf der Erfüllung eines Vertrags oder vorvertraglichen Maßnahmen, berechtigten Interessen, der Erfüllung einer rechtlichen Verpflichtung oder einer Einwilligung beruhen, soweit diese gesetzlich erforderlich ist.",
           "privacy.s5Title": "5. Speicherung der Daten und verwendete Technologien",
           "privacy.s5p1": "Die wichtigsten Daten zu Konten, Profilen, Angeboten, Reservierungen und Bewertungen werden in der Supabase-Cloud-Datenbank und dem Authentifizierungsdienst gespeichert.",
-          "privacy.s5p2": "Der Browser verwendet localStorage für die gewählte Sprache, die Entscheidung über eine dauerhafte Anmeldung und die zuletzt ermittelte Position des Benutzers. Abhängig von dieser Entscheidung wird die Anmeldesitzung in localStorage oder sessionStorage gespeichert. Diese Technologien ersetzen nicht die Hauptdatenbank der Plattform.",
+          "privacy.s5p2": "Der Browser verwendet localStorage für die gewählte Sprache und die Entscheidung über eine dauerhafte Anmeldung. Abhängig von dieser Entscheidung wird die Anmeldesitzung in localStorage oder sessionStorage gespeichert. Mit Zustimmung des Benutzers wird der Gerätestandort für die Umgebungssuche verwendet, aber nicht als separater dauerhafter Standortdatensatz in localStorage gespeichert. Diese Technologien ersetzen nicht die Hauptdatenbank der Plattform.",
           "privacy.s6Title": "6. Wem die Daten zugänglich gemacht werden können",
           "privacy.s6p1": "Soweit erforderlich, können Daten dem anderen Teilnehmer einer bestimmten Reservierung zugänglich gemacht werden. Technische Dienste werden derzeit insbesondere von Supabase für Datenbank, Authentifizierung, Speicher und Serverfunktionen, von Vercel für das Hosting der Website und von Resend für den Versand von E-Mail-Benachrichtigungen bereitgestellt.",
           "privacy.s6p2": "Kartendaten werden von OpenStreetMap bereitgestellt. Zur Geokodierung des Abholorts und zur Ermittlung des Angebotsstandorts übermittelt die Plattform Straße und Hausnummer, Ort und Postleitzahl des Abholorts über eine serverseitige Funktion an Nominatim. Wenn Nominatim kein verwertbares Ergebnis liefert oder vorübergehend nicht verfügbar ist, können dieselben Daten als Ersatz an den Geokodierungsdienst Photon übermittelt werden. Externe Programmbibliotheken werden über jsDelivr geladen. Beim Laden dieser Ressourcen können deren Betreiber übliche technische Daten wie die IP-Adresse und Browserinformationen erhalten. Nach dem Anklicken eines Adresslinks kann der Benutzer Google Maps öffnen. Die vollständige Liste der Anbieter, Zwecke, Rechtsgrundlagen und etwaige Übermittlungen in Drittländer muss vor dem öffentlichen Start von einem Rechtsanwalt geprüft werden.",
@@ -4479,7 +4479,7 @@
           "privacy.s7p1": "Öffentlich oder vor der Bestätigung einer Reservierung wird nur ein begrenzter Umfang an Daten angezeigt, zum Beispiel Name, Ort und Informationen zum Angebot.",
           "privacy.s7p2": "Telefonnummer, genaue Adresse und Übergabehinweise sind nicht öffentlich und können nur berechtigten Teilnehmern einer bestimmten Reservierung entsprechend ihrem Status angezeigt werden.",
           "privacy.s8Title": "8. Standort und Position",
-          "privacy.s8p1": "Der Standort eines Angebots wird nicht über das GPS-Gerät des Eigentümers ausgewählt. Beim Erstellen oder Bearbeiten eines Angebots werden Straße und Hausnummer, Ort und Postleitzahl des Abholorts für die Geokodierung verwendet. Die daraus ermittelten Koordinaten des Abholorts werden beim Angebot gespeichert; die öffentliche Karte gibt jedoch nur eine gerundete Version frei und zeigt die genaue Adresse nicht an. Erlaubt ein Besucher den Zugriff auf den Gerätestandort, werden die genauen Koordinaten im Browser des Besuchers gespeichert und zum Finden und Sortieren nahe gelegener Angebote verwendet; sie werden nicht im Supabase-Profil des Besuchers gespeichert. Beim Öffnen der Ergebnisse können die Koordinaten außerdem Teil der Seitenadresse sein.",
+          "privacy.s8p1": "Der Standort eines Angebots wird nicht über das GPS-Gerät des Eigentümers ausgewählt. Beim Erstellen oder Bearbeiten eines Angebots werden Straße und Hausnummer, Ort und Postleitzahl des Abholorts für die Geokodierung verwendet. Die daraus ermittelten Koordinaten des Abholorts werden beim Angebot gespeichert; die öffentliche Karte gibt jedoch nur eine gerundete Version frei und zeigt die genaue Adresse nicht an. Erlaubt ein Besucher den Zugriff auf den Gerätestandort, werden die genauen Koordinaten während der aktuellen Nutzung der Seite zum Finden und Sortieren nahe gelegener Angebote verwendet; sie werden weder im Supabase-Profil des Besuchers noch in einem separaten Standortdatensatz in localStorage gespeichert. Beim Öffnen der Ergebnisse können die Koordinaten außerdem Teil der Seiten-URL sein.",
           "privacy.s9Title": "9. Zahlungen",
           "privacy.s9p1": "Ein externer Zahlungsdienstleister ist noch nicht aktiv. Die Plattform erfasst derzeit nur einen Test-Zahlungsstatus zur Überprüfung des Arbeitsablaufs. Nach der Einbindung eines echten Anbieters werden Informationen über verarbeitete Zahlungsdaten und Empfänger dieser Daten ergänzt.",
           "privacy.s10Title": "10. Aufbewahrungsdauer",
@@ -5745,7 +5745,7 @@
           "privacy.s4p1": "Ostateczne podstawy prawne zostaną określone według docelowego modelu działania. W zależności od konkretnego celu może to być w szczególności wykonanie umowy albo działania przed jej zawarciem, prawnie uzasadniony interes, wypełnienie obowiązku prawnego lub zgoda, jeśli wymagają jej przepisy.",
           "privacy.s5Title": "5. Przechowywanie danych i używane technologie",
           "privacy.s5p1": "Główne dane dotyczące kont, profili, ofert, rezerwacji i ocen są przechowywane w chmurowej bazie danych i usłudze uwierzytelniania Supabase.",
-          "privacy.s5p2": "Przeglądarka używa localStorage do zapisania wybranego języka, decyzji o trwałym logowaniu i ostatnio ustalonej lokalizacji użytkownika. Zależnie od tej decyzji sesja logowania jest przechowywana w localStorage albo sessionStorage. Technologie te nie zastępują głównej bazy danych platformy.",
+          "privacy.s5p2": "Przeglądarka używa localStorage do zapisania wybranego języka i decyzji o trwałym logowaniu. Zależnie od tej decyzji sesja logowania jest przechowywana w localStorage albo sessionStorage. Za zgodą użytkownika lokalizacja urządzenia jest wykorzystywana do wyszukiwania ofert w okolicy, ale nie jest zapisywana jako osobny trwały rekord lokalizacji w localStorage. Technologie te nie zastępują głównej bazy danych platformy.",
           "privacy.s6Title": "6. Komu dane mogą zostać udostępnione",
           "privacy.s6p1": "Dane mogą zostać udostępnione w niezbędnym zakresie drugiemu uczestnikowi konkretnej rezerwacji. Dostawcami usług technicznych są obecnie w szczególności: Supabase w zakresie bazy danych, uwierzytelniania, przechowywania i funkcji serwerowych, Vercel w zakresie hostingu strony oraz Resend w zakresie wysyłania powiadomień e-mail.",
           "privacy.s6p2": "Dane mapowe dostarcza OpenStreetMap. W celu geokodowania miejsca odbioru i ustalenia położenia oferty platforma przekazuje za pośrednictwem funkcji serwerowej ulicę i numer domu, miasto oraz kod pocztowy miejsca odbioru do usługi Nominatim. Jeśli Nominatim nie zwróci użytecznego wyniku albo jest tymczasowo niedostępny, te same dane mogą zostać przekazane do usługi geokodowania Photon jako rozwiązania zapasowego. Zewnętrzne biblioteki programistyczne są wczytywane przez jsDelivr. Podczas wczytywania tych zasobów ich operatorzy mogą otrzymać zwykłe dane techniczne, takie jak adres IP i informacje o przeglądarce. Po kliknięciu odnośnika z adresem użytkownik może otworzyć Google Maps. Pełna lista dostawców, cele, podstawy prawne i ewentualne przekazywanie danych do państw trzecich muszą zostać sprawdzone przez prawnika przed publicznym uruchomieniem.",
@@ -5753,7 +5753,7 @@
           "privacy.s7p1": "Publicznie albo przed potwierdzeniem rezerwacji wyświetlany jest tylko ograniczony zakres danych, na przykład imię, miasto i informacje o ofercie.",
           "privacy.s7p2": "Numer telefonu, dokładny adres i instrukcje przekazania nie są publiczne i mogą być wyświetlane wyłącznie uprawnionym uczestnikom konkretnej rezerwacji odpowiednio do jej statusu.",
           "privacy.s8Title": "8. Lokalizacja i położenie",
-          "privacy.s8p1": "Położenie oferty nie jest wybierane z GPS urządzenia właściciela. Podczas tworzenia lub edycji oferty do geokodowania używane są ulica i numer domu, miasto oraz kod pocztowy miejsca odbioru. Uzyskane współrzędne miejsca odbioru są zapisywane przy ofercie; mapa publiczna udostępnia jednak tylko ich zaokrągloną postać i nie pokazuje dokładnego adresu. Jeśli odwiedzający zezwoli na dostęp do lokalizacji urządzenia, dokładne współrzędne zostaną zapisane w jego przeglądarce i użyte do wyszukiwania oraz sortowania ofert w okolicy; nie są zapisywane w profilu odwiedzającego w Supabase. Po przejściu do wyników współrzędne mogą być również częścią adresu strony.",
+          "privacy.s8p1": "Położenie oferty nie jest wybierane z GPS urządzenia właściciela. Podczas tworzenia lub edycji oferty do geokodowania używane są ulica i numer domu, miasto oraz kod pocztowy miejsca odbioru. Uzyskane współrzędne miejsca odbioru są zapisywane przy ofercie; mapa publiczna udostępnia jednak tylko ich zaokrągloną postać i nie pokazuje dokładnego adresu. Jeśli odwiedzający zezwoli na dostęp do lokalizacji urządzenia, dokładne współrzędne są używane podczas bieżącego korzystania ze strony do wyszukiwania i sortowania ofert w okolicy; nie są zapisywane w profilu odwiedzającego w Supabase ani w osobnym rekordzie lokalizacji w localStorage. Po przejściu do wyników współrzędne mogą być również częścią adresu URL strony.",
           "privacy.s9Title": "9. Płatności",
           "privacy.s9p1": "Zewnętrzna bramka płatnicza nie jest jeszcze aktywna. Platforma zapisuje obecnie jedynie testowy status płatności w celu sprawdzenia procesu działania. Po wdrożeniu rzeczywistego dostawcy zostaną uzupełnione informacje o przetwarzanych danych płatniczych i odbiorcach tych danych.",
           "privacy.s10Title": "10. Okres przechowywania",
@@ -5779,9 +5779,13 @@
   }
 
   function getRentuloLanguage() {
-    return normalizeLanguage(
-      localStorage.getItem("rentuloLanguage")
-    );
+    try {
+      return normalizeLanguage(
+        localStorage.getItem("rentuloLanguage")
+      );
+    } catch {
+      return DEFAULT_LANGUAGE;
+    }
   }
 
   function translate(key, language) {
@@ -5843,10 +5847,14 @@
     const selectedLanguage =
       normalizeLanguage(language);
 
-    localStorage.setItem(
-      "rentuloLanguage",
-      selectedLanguage
-    );
+    try {
+      localStorage.setItem(
+        "rentuloLanguage",
+        selectedLanguage
+      );
+    } catch {
+      // Continue without persistence when storage is unavailable.
+    }
 
     applyRentuloTranslations(
       selectedLanguage
