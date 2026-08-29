@@ -46,34 +46,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   initializeEditOfferPage(supabaseUser);
 });
 
-function getEditSupabaseClient() {
-  if (window.rentuloSupabase) {
-    return window.rentuloSupabase;
-  }
-
-  if (typeof rentuloSupabase !== "undefined") {
-    return rentuloSupabase;
-  }
-
-  return null;
-}
-
-async function getEditSupabaseUser() {
-  const supabaseClient = getEditSupabaseClient();
-
-  if (!supabaseClient) {
-    return null;
-  }
-
-  const { data, error } = await supabaseClient.auth.getUser();
-
-  if (error || !data || !data.user) {
-    return null;
-  }
-
-  return data.user;
-}
-
 function editShowMessage(message, type = "error") {
   let messageBox = document.querySelector(".site-message");
 
@@ -129,21 +101,13 @@ function editValueOrEmpty(value) {
 }
 
 
-function editEscapeHtml(value) {
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
 function closeEditAddressSuggestions() {
   const streetInput = document.getElementById("edit-pickup-street");
   const suggestionsBox = document.getElementById("editPickupAddressSuggestions");
 
   editAddressSuggestions = [];
   editAddressActiveIndex = -1;
+  editAddressRequestId += 1;
 
   if (editAddressTimer) {
     window.clearTimeout(editAddressTimer);
@@ -194,8 +158,8 @@ function renderEditAddressSuggestions(items) {
           data-address-index="${index}"
           aria-selected="false"
         >
-          <span class="address-suggestion-main">${editEscapeHtml(main)}</span>
-          <span class="address-suggestion-meta">${editEscapeHtml(meta)}</span>
+          <span class="address-suggestion-main">${escapeHtml(main)}</span>
+          <span class="address-suggestion-meta">${escapeHtml(meta)}</span>
         </button>
       `;
     })
@@ -264,7 +228,7 @@ function selectEditAddress(index) {
 }
 
 async function loadEditAddressSuggestions(query, requestId) {
-  const supabaseClient = getEditSupabaseClient();
+  const supabaseClient = getSupabaseClient();
 
   if (!supabaseClient) {
     return;
@@ -453,7 +417,7 @@ function renderEditPhotoPreview(photoValue) {
     return;
   }
 
-  preview.innerHTML = `<img src="${photoValue}" alt="${editT("editOffer.photoTitle", "Fotka věci")}">`;
+  preview.innerHTML = `<img src="${escapeHtml(photoValue)}" alt="${escapeHtml(editT("editOffer.photoTitle", "Fotka věci"))}">`;
 }
 
 function updateEditPhotoControlState(state, fileNameValue) {
@@ -655,31 +619,7 @@ function setupEditOfferPhotoUpload() {
 }
 
 function getEditPageElement() {
-  return document.querySelector(".edit-page") || document.querySelector(".offer-page");
-}
-
-function protectEditOfferPage() {
-  const editPage = getEditPageElement();
-
-  if (!editPage) {
-    return;
-  }
-
-  if (navIsLoggedIn()) {
-    return;
-  }
-
-  editPage.innerHTML = `
-    <section class="login-required-box">
-      <p class="eyebrow">${editT("editOffer.loginRequired", "Přihlášení je potřeba")}</p>
-      <h1>${editT("editOffer.loginTitle", "Pro úpravu nabídky se nejdříve přihlaste.")}</h1>
-      <p>${editT("editOffer.loginDescription", "Nabídky mohou upravovat pouze přihlášení uživatelé.")}</p>
-      <div class="login-required-actions">
-        <a href="prihlaseni.html">${editT("editOffer.signIn", "Přihlásit se")}</a>
-        <a href="registrace.html" class="secondary-action">${editT("editOffer.createAccount", "Vytvořit účet")}</a>
-      </div>
-    </section>
-  `;
+  return document.querySelector(".edit-page");
 }
 
 function showEditOfferNotFound() {
@@ -721,7 +661,7 @@ function showEditOfferForbidden() {
 }
 
 async function loadOfferFromSupabase(offerId) {
-  const supabaseClient = getEditSupabaseClient();
+  const supabaseClient = getSupabaseClient();
 
   if (!supabaseClient) {
     throw new Error(editT("editOffer.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku."));
@@ -741,7 +681,7 @@ async function loadOfferFromSupabase(offerId) {
 }
 
 async function loadEditOwnerProfile(userId) {
-  const supabaseClient = getEditSupabaseClient();
+  const supabaseClient = getSupabaseClient();
 
   if (!supabaseClient || !userId) {
     return;
@@ -769,7 +709,7 @@ async function loadEditOwnerProfile(userId) {
 }
 
 async function offerHasOpenReservationInSupabase(offerId) {
-  const supabaseClient = getEditSupabaseClient();
+  const supabaseClient = getSupabaseClient();
 
   if (!supabaseClient || !offerId) {
     return false;
@@ -1124,7 +1064,7 @@ async function initializeEditOfferPage(supabaseUser) {
     return;
   }
 
-  const supabaseClient = getEditSupabaseClient();
+  const supabaseClient = getSupabaseClient();
 
   if (!supabaseClient) {
     editShowMessage(editT("editOffer.supabaseMissing", "Služba je dočasně nedostupná. Obnovte stránku."));
@@ -1179,8 +1119,8 @@ function setupEditOfferSave() {
       return;
     }
 
-    const supabaseClient = getEditSupabaseClient();
-    const supabaseUser = await getEditSupabaseUser();
+    const supabaseClient = getSupabaseClient();
+    const supabaseUser = await getCurrentSupabaseUser();
 
     if (!supabaseClient || !supabaseUser) {
       editShowMessage(editT("editOffer.sessionMissing", "Vaše přihlášení vypršelo. Přihlaste se prosím znovu."));
