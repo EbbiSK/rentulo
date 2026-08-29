@@ -1,9 +1,8 @@
 /*
   Rentulo API / Supabase pomocná vrstva.
 
-  Obsahuje zdieľané frontendové funkcie pre aktuálneho používateľa,
-  načítanie a normalizáciu rezervácií a odosielanie rezervačných
-  e-mailov cez Supabase Edge Function.
+  Obsahuje zdieľané frontendové funkcie pre načítanie a normalizáciu
+  rezervácií a odosielanie rezervačných e-mailov cez Supabase Edge Function.
 
   Tento súbor je aktívnou súčasťou aplikácie Rentulo.
 */
@@ -11,15 +10,6 @@
 /* =========================
    Pomocné funkcie
 ========================= */
-
-
-function apiClone(value) {
-  try {
-    return JSON.parse(JSON.stringify(value));
-  } catch (error) {
-    return value;
-  }
-}
 
 
 function apiNormalizeReservation(row) {
@@ -128,32 +118,6 @@ function apiNormalizeReservation(row) {
     source: row.source || "supabase"
   };
 }
-/* =========================
-   Používateľ
-========================= */
-
-async function apiGetCurrentUser() {
-  const supabaseClient =
-    typeof rentuloSupabase !== "undefined" ? rentuloSupabase : null;
-
-  if (!supabaseClient) {
-    return null;
-  }
-
-  const { data, error } = await supabaseClient.auth.getUser();
-
-  if (error || !data || !data.user) {
-    if (typeof clearCurrentUser === "function") {
-      clearCurrentUser();
-    }
-
-    return null;
-  }
-
-  return apiClone(data.user);
-}
-
-
 /* =========================
    Rezervácie
 ========================= */
