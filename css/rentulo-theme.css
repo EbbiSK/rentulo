@@ -242,16 +242,10 @@ textarea {
   }
 
   .btn-register:hover,
-  .logout-link:hover,
-  .active-register:hover {
+  .logout-link:hover {
     background: var(--rentulo-orange-hover) !important;
     color: #ffffff !important;
     transform: translateY(-1px);
-  }
-
-  .active-register {
-    background: var(--rentulo-orange) !important;
-    color: #ffffff !important;
   }
 
   .nav-notification-badge {
@@ -454,8 +448,6 @@ body[data-navigation-page="vysledky"] #results-search-button::after {
     letter-spacing: 0.01em !important;
   }
 }
-
-/* Homepage map: custom +/- zoom controls were intentionally removed from the UI. */
 
 /* Homepage map: keep zoom controls high on the right, below the language menu area. */
 body[data-navigation-page="uvod"] .home-map-zoom-controls {
