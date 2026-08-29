@@ -177,14 +177,13 @@ function saveHomeMapViewForReturn() {
 }
 
 function applyHomeMapReturnView() {
-  if (!homeMap || !homeMapReturnView) return false;
+  if (!homeMap || !homeMapReturnView) return;
 
   homeMap.setView(
     [homeMapReturnView.latitude, homeMapReturnView.longitude],
     homeMapReturnView.zoom,
     { animate: false }
   );
-  return true;
 }
 
 function applyVisitorLocation(position) {
@@ -276,7 +275,6 @@ function compareMapOffers(first, second, userLocation) {
 }
 
 async function loadHomeMapOffers() {
-  const status = document.getElementById("homeMapStatus");
   const supabaseClient = typeof getSupabaseClient === "function" ? getSupabaseClient() : null;
 
   if (!supabaseClient || typeof window.L === "undefined") {
