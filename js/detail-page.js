@@ -59,10 +59,6 @@
       return formatDetailNumber(value) + " Kč";
     }
 
-    function formatDetailMoneyPerDay(value) {
-      return formatDetailNumber(value) + " " + detailTranslate("detail.currencyPerDay");
-    }
-
     function getDetailRatingLabel(count) {
       const pluralCategory = new Intl.PluralRules(getDetailLocale()).select(Number(count));
       const keys = {
@@ -116,13 +112,6 @@
       return categories[value]
         ? detailTranslate(categories[value])
         : (value || detailTranslate("home.category.other"));
-    }
-
-    function detailStatusLabel(status) {
-      const value = String(status || "").trim().toLowerCase();
-      if (value === "active" || value === "aktivní") return detailTranslate("detail.status.active");
-      if (value === "draft" || value === "koncept") return detailTranslate("detail.status.draft");
-      return status || detailTranslate("detail.status.active");
     }
 
   
@@ -240,83 +229,6 @@ owner_id: row.owner_id,
       }
 
       return data ? normalizeSupabaseOffer(data) : null;
-    }
-
-    async function loadOfferPrivatePickupData(offerId) {
-      const supabaseClient = getSupabaseClient();
-
-      if (!supabaseClient || !offerId) {
-        return null;
-      }
-
-      const { data, error } = await supabaseClient
-        .from("offers")
-        .select("pickup_phone, pickup_street, pickup_city, pickup_postal_code, pickup_note")
-        .eq("id", offerId)
-        .maybeSingle();
-
-      if (error) {
-        console.warn("Kontaktní údaje nabídky se nepodařilo načíst z tabulky offers.", error);
-        return null;
-      }
-
-      return data || null;
-    }
-
-    function getOfferPickupPhone(offer, pickupData) {
-      return (
-        (pickupData && pickupData.pickup_phone) ||
-        offer.pickupPhone ||
-        offer.pickup_phone ||
-        ""
-      );
-    }
-
-    function getOfferPickupStreet(offer, pickupData) {
-      return (
-        (pickupData && pickupData.pickup_street) ||
-        offer.pickupStreet ||
-        offer.pickup_street ||
-        ""
-      );
-    }
-
-    function getOfferPickupCity(offer, pickupData) {
-      return (
-        (pickupData && pickupData.pickup_city) ||
-        offer.pickupCity ||
-        offer.pickup_city ||
-        getOfferCity(offer) ||
-        ""
-      );
-    }
-
-    function getOfferPickupPostalCode(offer, pickupData) {
-      return (
-        (pickupData && pickupData.pickup_postal_code) ||
-        offer.pickupPostalCode ||
-        offer.pickup_postal_code ||
-        offer.postalCode ||
-        offer.psc ||
-        ""
-      );
-    }
-
-    function getOfferPickupNote(offer, pickupData) {
-      return (
-        (pickupData && pickupData.pickup_note) ||
-        offer.pickupNote ||
-        offer.pickup_note ||
-        ""
-      );
-    }
-
-    function getOfferPickupFullAddress(offer, pickupData) {
-      return [
-        getOfferPickupStreet(offer, pickupData),
-        getOfferPickupCity(offer, pickupData),
-        getOfferPickupPostalCode(offer, pickupData)
-      ].filter(Boolean).join(", ");
     }
 
 function getOfferCategory(offer) {
@@ -598,13 +510,6 @@ function renderDetailImage(offer) {
         return false;
       }
 
-      const blockingStatuses = [
-        "pending",
-        "approved",
-        "paid",
-        "picked_up"
-      ];
-
       const { data: blockingReservations, error } = await supabaseClient
   .rpc("get_blocking_reservations", {
     p_offer_id: offerId
@@ -635,14 +540,11 @@ const data = Array.isArray(blockingReservations)
 
       currentOffer = offer;
 
-      const currentUser = await apiGetCurrentUser();
-
-      const ownerPublicCity = getOfferCity(offer);
+      const currentUser = await getCurrentSupabaseUser();
 
       const offerName = getOfferName(offer);
       const offerCategory = detailCategoryLabel(getOfferCategory(offer));
       const offerCity = getOfferCity(offer);
-      const offerStatus = detailStatusLabel(getOfferStatus(offer));
 
       const price = getOfferPrice(offer);
 
@@ -654,7 +556,6 @@ const isActive = isOfferActive(offer);
 const hasGps = offerHasGpsLocation(offer);
 
       const availabilityBadgeClass = isActive ? "available" : "unavailable";
-      const statusBadgeClass = isActive ? "" : "draft";
 
       let availabilityText = detailTranslate("detail.available");
       let availabilityPanelText = detailTranslate("detail.availabilityPanelActive");
@@ -740,7 +641,7 @@ const hasGps = offerHasGpsLocation(offer);
 
                 <div class="section">
                   <h2>${detailTranslate("detail.pickupTitle")}</h2>
-                  <p>${escapeHtml(ownerPublicCity || offerCity || "-")}</p>
+                  <p>${escapeHtml(offerCity || "-")}</p>
                 </div>
 
                 <div class="section">
@@ -813,7 +714,7 @@ const hasGps = offerHasGpsLocation(offer);
 
 
 
-    async function createSupabaseReservation(offer, startDate, endDate, days, totalPrice) {
+    async function createSupabaseReservation(offer, startDate, endDate) {
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
@@ -832,17 +733,6 @@ const hasGps = offerHasGpsLocation(offer);
         return false;
       }
 
-      const currentUser = await apiGetCurrentUser();
-
-      if (!currentUser) {
-        showDetailBookingMessage(detailTranslate("detail.error.login"));
-       window.location.href =
-  `prihlaseni.html?returnTo=${encodeURIComponent(
-    window.location.pathname.split("/").pop() + window.location.search
-  )}`;
-        return false;
-      }
-
       const ownerId = String(offer.ownerId || offer.owner_id || "");
 
       if (!ownerId) {
@@ -854,12 +744,6 @@ const hasGps = offerHasGpsLocation(offer);
         renderDetail(offer);
         return false;
       }
-
-      const pricePerDay = getOfferPrice(offer);
-      const platformFeeAmount = Math.round(totalPrice * PLATFORM_FEE_PERCENT / 100);
-      const ownerPayout = totalPrice - platformFeeAmount;
-
-
 
       const reservationToInsert = {
          offer_id: offer.id,
@@ -919,7 +803,6 @@ const hasGps = offerHasGpsLocation(offer);
       const rentButton = document.getElementById("rentButton");
       const bookingDateHelp = document.getElementById("bookingDateHelp");
       const detailAvailabilityPanel = document.getElementById("detailAvailabilityPanel");
-      const bookingAvailabilityBox = document.getElementById("bookingAvailabilityBox");
 
       if (!startDateInput || !endDateInput || !calcDays || !calcTotal || !rentButton) {
         return;
@@ -955,16 +838,6 @@ const hasGps = offerHasGpsLocation(offer);
             : detailTranslate("detail.availabilityPanelActive")
         );
 
-        updateAvailabilityElement(
-          bookingAvailabilityBox,
-          state,
-          hasConflict
-            ? detailTranslate("detail.dateConflictButton")
-            : detailTranslate("detail.availableTitle"),
-          hasConflict
-            ? detailTranslate("detail.dateConflictText")
-            : detailTranslate("detail.availableText")
-        );
       }
 
       function setRentButtonState(state) {
@@ -1091,7 +964,6 @@ const hasGps = offerHasGpsLocation(offer);
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
         const days = getDaysBetween(startDate, endDate);
-        const total = days * getOfferPrice(offer);
 
         if (!startDate || !endDate || days <= 0) {
           await updateCalculation();
@@ -1122,9 +994,7 @@ const hasGps = offerHasGpsLocation(offer);
           const reservationCreated = await createSupabaseReservation(
             offer,
             startDate,
-            endDate,
-            days,
-            total
+            endDate
           );
 
           if (!reservationCreated) {
