@@ -14,11 +14,6 @@
   }
 
   function clearLegacyAuthState() {
-    if (typeof clearCurrentUser === "function") {
-      clearCurrentUser();
-      return;
-    }
-
     localStorage.removeItem("rentuloUser");
     localStorage.removeItem("rentuloLoggedIn");
     localStorage.removeItem("rentuloRememberLogin");
