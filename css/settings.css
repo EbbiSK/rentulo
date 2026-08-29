@@ -2,12 +2,6 @@
   box-sizing: border-box;
 }
 
-button,
-input,
-select {
-  font-family: inherit;
-}
-
 .settings-page {
   max-width: 1240px;
   margin: 0 auto;
@@ -124,8 +118,7 @@ select {
   grid-column: 1 / -1;
 }
 
-.field label,
-.field-title {
+.field label {
   color: var(--rentulo-ink, #102019);
   font-size: 13px;
   font-weight: 800;
@@ -252,32 +245,10 @@ html[data-focus-input="pointer"] .field select:focus {
   color: #b42318;
 }
 
-.password-tools {
-  display: flex;
-  align-items: center;
-  margin-top: 12px;
-}
-
-.show-password {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--rentulo-muted, #64706b);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  user-select: none;
-}
-
-.show-password input,
 .danger-checkbox input {
   width: 17px;
   height: 17px;
   flex: 0 0 17px;
-}
-
-.show-password input {
-  accent-color: var(--rentulo-green, #176747);
 }
 
 .button-label-loading {
