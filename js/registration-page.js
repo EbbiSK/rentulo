@@ -17,15 +17,6 @@ function registrationT(key, fallback) {
 }
 
 
-function registrationEscapeHtml(value) {
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
 function registrationNormalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
 }
@@ -115,21 +106,16 @@ function registrationIsEmpty(value) {
   return String(value || "").trim() === "";
 }
 
-function registrationGetSupabaseClient() {
-  if (window.rentuloSupabase) {
-    return window.rentuloSupabase;
-  }
-
-  if (typeof rentuloSupabase !== "undefined") {
-    return rentuloSupabase;
-  }
-
-  return null;
-}
-
 function registrationCloseAddressSuggestions() {
   const streetInput = document.getElementById("street");
   const suggestionsBox = document.getElementById("addressSuggestions");
+
+  registrationAddressRequestId += 1;
+
+  if (registrationAddressTimer) {
+    window.clearTimeout(registrationAddressTimer);
+    registrationAddressTimer = null;
+  }
 
   registrationAddressSuggestions = [];
   registrationAddressActiveIndex = -1;
@@ -178,8 +164,8 @@ function registrationRenderAddressSuggestions(items) {
           data-address-index="${index}"
           aria-selected="false"
         >
-          <span class="address-suggestion-main">${registrationEscapeHtml(main)}</span>
-          <span class="address-suggestion-meta">${registrationEscapeHtml(meta)}</span>
+          <span class="address-suggestion-main">${escapeHtml(main)}</span>
+          <span class="address-suggestion-meta">${escapeHtml(meta)}</span>
         </button>
       `;
     })
@@ -248,7 +234,7 @@ function registrationSelectAddress(index) {
 }
 
 async function registrationLoadAddressSuggestions(query, requestId) {
-  const supabaseClient = registrationGetSupabaseClient();
+  const supabaseClient = getSupabaseClient();
 
   if (!supabaseClient) {
     return;
@@ -469,7 +455,7 @@ async function createUserAccount(event) {
   registrationClearErrors();
   registrationCloseAddressSuggestions();
 
-  const supabaseClient = registrationGetSupabaseClient();
+  const supabaseClient = getSupabaseClient();
 
   if (!supabaseClient) {
     registrationShowError(
@@ -634,26 +620,12 @@ async function createUserAccount(event) {
 }
 
 function handleRegistrationLanguageChange() {
-  document.title = registrationT(
-    "registration.documentTitle",
-    "Registrace - Rentulo"
-  );
   registrationRenderError();
   registrationSetButtonState(registrationSubmitInProgress);
   registrationCloseAddressSuggestions();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  document.title = registrationT(
-    "registration.documentTitle",
-    "Registrace - Rentulo"
-  );
-
-  if (typeof window.applyRentuloTranslations === "function") {
-    window.applyRentuloTranslations();
-  }
-
-  renderSharedNavigation("registrace");
   setupAddressAutocomplete();
   resetRegistrationConsentCheckboxes();
 
