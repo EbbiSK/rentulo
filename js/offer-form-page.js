@@ -1,7 +1,6 @@
 let offerSaveInProgress = false;
     let offerSaveStatus = "";
     let offerPhotoDataUrl = "";
-    let offerPhotoFile = null;
     let offerPhotoProcessing = false;
     let offerPhotoSelectionToken = 0;
     let offerOwnerProfile = {
@@ -34,40 +33,9 @@ let offerSaveInProgress = false;
       return fallback;
     }
 
-    function showOfferLoginRequired() {
-      const offerPage = document.querySelector(".offer-page");
-
-      if (!offerPage) {
-        return;
-      }
-
-      offerPage.innerHTML = `
-        <section class="login-required-box">
-          <p class="eyebrow">${offerTranslate("offer.loginRequiredEyebrow", "Přihlášení je potřeba")}</p>
-
-          <h1>${offerTranslate("offer.loginRequiredTitle", "Pro přidání nabídky se nejdříve přihlaste.")}</h1>
-
-          <p>${offerTranslate("offer.loginRequiredDescription", "Věci mohou nabízet pouze přihlášení uživatelé. Po přihlášení se můžete vrátit a přidat vlastní nabídku.")}</p>
-
-          <div class="login-required-actions">
-            <a href="prihlaseni.html">${offerTranslate("nav.login", "Přihlásit se")}</a>
-            <a href="registrace.html" class="secondary-action">${offerTranslate("offer.createAccount", "Vytvořit účet")}</a>
-          </div>
-        </section>
-      `;
-    }
-
     function getInputValue(id) {
       const input = document.getElementById(id);
       return input ? input.value.trim() : "";
-    }
-
-    function setInputValue(id, value) {
-      const input = document.getElementById(id);
-
-      if (input) {
-        input.value = value === undefined || value === null ? "" : value;
-      }
     }
 
     function offerEscapeHtml(value) {
@@ -331,8 +299,7 @@ let offerSaveInProgress = false;
     }
 
     async function fillProfileAddressAsDefault(authenticatedUser) {
-      const supabaseClient = window.rentuloSupabase ||
-        (typeof rentuloSupabase !== "undefined" ? rentuloSupabase : null);
+      const supabaseClient = getSupabaseClient();
 
       if (!authenticatedUser || !authenticatedUser.id || !supabaseClient) {
         return;
@@ -437,16 +404,6 @@ let offerSaveInProgress = false;
       if (field) {
         field.classList.add("input-error");
       }
-    }
-
-    function setDynamicTranslatedText(element, key, fallback) {
-      if (!element) {
-        return;
-      }
-
-      element.dataset.dynamicI18nKey = key || "";
-      element.dataset.dynamicI18nFallback = fallback || "";
-      element.textContent = offerTranslate(key, fallback);
     }
 
     function refreshDynamicTranslatedText(element) {
@@ -607,7 +564,6 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
 
         if (!file) {
           offerPhotoDataUrl = "";
-          offerPhotoFile = null;
           offerPhotoProcessing = false;
           renderPhotoPreview("");
           updatePhotoStatusByKey("offer.photoRecommendation", "Doporučujeme kvalitní a dobře osvětlenou fotku.", "");
@@ -617,7 +573,6 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
 
         if (!OFFER_PHOTO_ALLOWED_TYPES.includes(file.type)) {
           offerPhotoDataUrl = "";
-          offerPhotoFile = null;
           offerPhotoProcessing = false;
           photoInput.value = "";
           renderPhotoPreview("");
@@ -628,7 +583,6 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
 
         if (file.size > OFFER_PHOTO_MAX_BYTES) {
           offerPhotoDataUrl = "";
-          offerPhotoFile = null;
           offerPhotoProcessing = false;
           photoInput.value = "";
           renderPhotoPreview("");
@@ -636,8 +590,6 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           setRemovePhotoButtonVisible(removePhotoButton, false);
           return;
         }
-
-        offerPhotoFile = file;
         offerPhotoProcessing = true;
         updatePhotoStatusByKey("offer.photoProcessing", "Zpracovávám fotku...", "");
 
@@ -650,7 +602,6 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
 
           if (!dataUrl) {
             offerPhotoDataUrl = "";
-            offerPhotoFile = null;
             photoInput.value = "";
             renderPhotoPreview("");
             updatePhotoStatusByKey("offer.photoLoadFailed", "Fotku se nepodařilo načíst. Zkuste jiný obrázek.", "error");
@@ -669,7 +620,6 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
         removePhotoButton.addEventListener("click", function () {
           offerPhotoSelectionToken += 1;
           offerPhotoDataUrl = "";
-          offerPhotoFile = null;
           offerPhotoProcessing = false;
           photoInput.value = "";
           renderPhotoPreview("");
@@ -704,7 +654,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
       };
     }
 
-    function validateOfferForm(status) {
+    function validateOfferForm() {
       clearOfferFormErrors();
       hideOfferFormMessage();
 
@@ -940,7 +890,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
         return;
       }
 
-      if (!validateOfferForm(status)) {
+      if (!validateOfferForm()) {
         return;
       }
 
@@ -976,7 +926,7 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           pickupCoordinates
         );
 
-        const { data, error } = await supabaseClient
+        const { error } = await supabaseClient
           .from("offers")
           .insert(supabaseOffer)
           .select()
@@ -986,7 +936,12 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
           throw error;
         }
 
-        sessionStorage.setItem("rentuloOfferSaved", status);
+        try {
+          sessionStorage.setItem("rentuloOfferSaved", status);
+        } catch (_error) {
+          // Continue after a successful save even when session storage is unavailable.
+        }
+
         window.location.href = "moje-nabidky.html";
       } catch (error) {
         if (uploadedPhotoPath) {
@@ -1091,7 +1046,6 @@ preview.innerHTML = `<img src="${dataUrl}" alt="${offerTranslate("offer.photoAlt
         return;
       }
 
-      renderSharedNavigation("nabidnout");
       setupPickupAddressAutocomplete();
       await fillProfileAddressAsDefault(authenticatedUser);
       setupOfferPhotoUpload();
