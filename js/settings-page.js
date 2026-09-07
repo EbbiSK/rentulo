@@ -146,55 +146,16 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
 
-  async function getAuthenticatedUser(client) {
-    const { data, error } = await client.auth.getUser();
-
-    if (error || !data || !data.user) {
-      return null;
-    }
-
-    return data.user;
-  }
-
-  function syncLocalUser(user, profile) {
-    if (!user || !user.id || typeof saveCurrentUser !== "function") {
-      return;
-    }
-
-    const metadata = user.user_metadata || {};
-    const currentLocalUser =
-      typeof getCurrentUser === "function" ? getCurrentUser() : null;
-    const fullName =
-      (profile && profile.full_name) ||
-      metadata.full_name ||
-      metadata.fullName ||
-      user.email ||
-      translate("settings.userFallback", "Uživatel");
-
-    saveCurrentUser({
-      ...(currentLocalUser || {}),
-      id: user.id,
-      fullName: fullName,
-      name: fullName,
-      email: user.email || "",
-      phone: (profile && profile.phone) || metadata.phone || "",
-      street: (profile && profile.street) || metadata.street || "",
-      city: (profile && profile.city) || metadata.city || "",
-      postalCode:
-        (profile && profile.postal_code) ||
-        metadata.postal_code ||
-        metadata.postalCode ||
-        "",
-      source: "supabase",
-      updatedAt: new Date().toISOString()
-    });
-  }
-
   function applyLanguage(language) {
     if (typeof window.setRentuloLanguage === "function") {
       window.setRentuloLanguage(language);
-    } else {
+      return;
+    }
+
+    try {
       localStorage.setItem("rentuloLanguage", language);
+    } catch (error) {
+      // Continue when browser storage is unavailable.
     }
 
     if (typeof renderSharedNavigation === "function") {
@@ -280,7 +241,6 @@
       }
     }
 
-    syncLocalUser(user, profile);
     setProfileFields(profile, user);
 
     const pendingEmail = normalizeEmail(user && user.new_email);
@@ -440,14 +400,6 @@
           }
         };
 
-      syncLocalUser(
-        updatedUser,
-        {
-          ...profileUpdate,
-          email: effectiveEmail
-        }
-      );
-
       setTranslatedMessage(
         message,
         emailConfirmationRequired
@@ -550,10 +502,6 @@
         confirmPassword.value = "";
       }
 
-      const showPasswords = document.getElementById("showPasswords");
-      if (showPasswords) {
-        showPasswords.checked = false;
-      }
       if (currentPassword) {
         currentPassword.type = "password";
       }
@@ -929,33 +877,6 @@
     }
   }
 
-  function initializePasswordVisibility() {
-    const checkbox = document.getElementById("showPasswords");
-    const currentPassword = document.getElementById("currentPassword");
-    const newPassword = document.getElementById("newPassword");
-    const confirmPassword = document.getElementById("confirmPassword");
-
-    if (!checkbox) {
-      return;
-    }
-
-    checkbox.addEventListener("change", function () {
-      const inputType = checkbox.checked ? "text" : "password";
-
-      if (currentPassword) {
-        currentPassword.type = inputType;
-      }
-
-      if (newPassword) {
-        newPassword.type = inputType;
-      }
-
-      if (confirmPassword) {
-        confirmPassword.type = inputType;
-      }
-    });
-  }
-
   async function initializeSettingsPage() {
     if (!window.rentuloAuthGuard) {
       window.location.replace("prihlaseni.html?returnTo=nastaveni.html");
@@ -982,8 +903,6 @@
 
       return;
     }
-
-    initializePasswordVisibility();
 
     const profileForm = document.getElementById("profileForm");
     const passwordForm = document.getElementById("passwordForm");
