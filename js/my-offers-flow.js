@@ -6,7 +6,6 @@
       handleRequestOne: "Zobrazit žádost",
       handleRequestMany: "Zobrazit žádosti",
       hideOverview: "Skrýt přehled",
-      requestsAndReservations: "Žádosti a rezervace",
       renter: "Zájemce",
       term: "Termín",
       price: "Cena",
@@ -21,7 +20,6 @@
       waitingPayment: "Rezervace čeká na platbu zájemce",
       paidHandover: "Rezervace je zaplacená – čeká na předání",
       pickedReturn: "Půjčení probíhá – po vrácení ho uzavřete",
-      openReservation: "Probíhá rezervace",
       showReservation: "Zobrazit rezervaci",
       confirmHandover: "Potvrdit předání",
       confirmReturn: "Potvrdit vrácení"
@@ -32,7 +30,6 @@
       handleRequestOne: "Zobraziť žiadosť",
       handleRequestMany: "Zobraziť žiadosti",
       hideOverview: "Skryť prehľad",
-      requestsAndReservations: "Žiadosti a rezervácie",
       renter: "Záujemca",
       term: "Termín",
       price: "Cena",
@@ -47,7 +44,6 @@
       waitingPayment: "Rezervácia čaká na platbu záujemcu",
       paidHandover: "Rezervácia je zaplatená – čaká na odovzdanie",
       pickedReturn: "Požičanie prebieha – po vrátení ho uzavrite",
-      openReservation: "Prebieha rezervácia",
       showReservation: "Zobraziť rezerváciu",
       confirmHandover: "Potvrdiť odovzdanie",
       confirmReturn: "Potvrdiť vrátenie"
@@ -58,7 +54,6 @@
       handleRequestOne: "View request",
       handleRequestMany: "View requests",
       hideOverview: "Hide overview",
-      requestsAndReservations: "Requests and reservations",
       renter: "Renter",
       term: "Dates",
       price: "Price",
@@ -73,7 +68,6 @@
       waitingPayment: "Reservation is waiting for the renter's payment",
       paidHandover: "Paid – waiting for handover",
       pickedReturn: "Rental in progress – close it after return",
-      openReservation: "Reservation in progress",
       showReservation: "View reservation",
       confirmHandover: "Confirm handover",
       confirmReturn: "Confirm return"
@@ -84,7 +78,6 @@
       handleRequestOne: "Anfrage anzeigen",
       handleRequestMany: "Anfragen anzeigen",
       hideOverview: "Übersicht ausblenden",
-      requestsAndReservations: "Anfragen und Reservierungen",
       renter: "Interessent",
       term: "Zeitraum",
       price: "Preis",
@@ -99,7 +92,6 @@
       waitingPayment: "Reservierung wartet auf die Zahlung des Interessenten",
       paidHandover: "Bezahlt – Übergabe steht aus",
       pickedReturn: "Ausleihe läuft – nach Rückgabe abschließen",
-      openReservation: "Reservierung läuft",
       showReservation: "Reservierung anzeigen",
       confirmHandover: "Übergabe bestätigen",
       confirmReturn: "Rückgabe bestätigen"
@@ -110,7 +102,6 @@
       handleRequestOne: "Pokaż prośbę",
       handleRequestMany: "Pokaż prośby",
       hideOverview: "Ukryj przegląd",
-      requestsAndReservations: "Prośby i rezerwacje",
       renter: "Zainteresowany",
       term: "Termin",
       price: "Cena",
@@ -125,7 +116,6 @@
       waitingPayment: "Rezerwacja czeka na płatność zainteresowanego",
       paidHandover: "Opłacona – czeka na przekazanie",
       pickedReturn: "Wypożyczenie trwa – zamknij po zwrocie",
-      openReservation: "Rezerwacja w toku",
       showReservation: "Pokaż rezerwację",
       confirmHandover: "Potwierdź przekazanie",
       confirmReturn: "Potwierdź zwrot"
@@ -163,10 +153,6 @@
     if (element && element.textContent !== value) {
       element.textContent = value;
     }
-  }
-
-  function countRequestCards(panel) {
-    return panel ? panel.querySelectorAll(".request-card").length : 0;
   }
 
   function inspectFlow(panel) {
@@ -331,7 +317,7 @@
     }
   }
 
-  function ensureFieldWrapper(row, element, wrapperClass, labelText) {
+  function ensureFieldWrapper(element, wrapperClass, labelText) {
     if (!element) {
       return null;
     }
@@ -359,22 +345,22 @@
 
   function inspectRequestCard(card) {
     if (!card) {
-      return { kind: "none", count: 0 };
+      return { kind: "none" };
     }
 
     if (card.querySelector('[data-offers-action="approve-reservation"]')) {
-      return { kind: "pending", count: 1 };
+      return { kind: "pending" };
     }
 
     if (card.querySelector('[data-offers-action="mark-picked-up"]')) {
-      return { kind: "paid", count: 1 };
+      return { kind: "paid" };
     }
 
     if (card.querySelector('[data-offers-action="mark-returned"]')) {
-      return { kind: "picked", count: 1 };
+      return { kind: "picked" };
     }
 
-    return { kind: "reservation", count: 1 };
+    return { kind: "reservation" };
   }
 
   function enhanceRequestCard(card) {
@@ -391,11 +377,11 @@
     const requestStatus = row.querySelector(".request-status");
     const requestActions = row.querySelector(".row-actions");
 
-    ensureFieldWrapper(row, requestMain, "offer-flow-party", text("renter"));
-    ensureFieldWrapper(row, requestDate, "offer-flow-term", text("term"));
-    ensureFieldWrapper(row, requestPrice, "offer-flow-price", text("price"));
-    ensureFieldWrapper(row, requestStatus, "offer-flow-status", text("status"));
-    ensureFieldWrapper(row, requestActions, "offer-flow-actions", text("nextStep"));
+    ensureFieldWrapper(requestMain, "offer-flow-party", text("renter"));
+    ensureFieldWrapper(requestDate, "offer-flow-term", text("term"));
+    ensureFieldWrapper(requestPrice, "offer-flow-price", text("price"));
+    ensureFieldWrapper(requestStatus, "offer-flow-status", text("status"));
+    ensureFieldWrapper(requestActions, "offer-flow-actions", text("nextStep"));
 
     if (flow.kind === "pending" && requestStatus) {
       setText(requestStatus, text("awaitingDecision"));
@@ -413,19 +399,12 @@
     }
   }
 
-  function enhanceRequestPanel(record, panel, flow) {
+  function enhanceRequestPanel(panel, flow) {
     if (!panel) {
       return;
     }
 
     panel.classList.toggle("offer-flow-needs-action", flow.kind === "pending" || flow.kind === "paid" || flow.kind === "picked");
-
-    const header = panel.querySelector(":scope > .request-panel-header");
-    const title = header ? header.querySelector("h3") : null;
-
-    if (title && countRequestCards(panel) > 0) {
-      setText(title, text("requestsAndReservations"));
-    }
 
     panel.querySelectorAll(".request-card").forEach(function (card) {
       enhanceRequestCard(card);
@@ -455,7 +434,7 @@
 
     ensureAttention(info, flow);
     organizeOfferActions(row, flow, panel);
-    enhanceRequestPanel(record, panel, flow);
+    enhanceRequestPanel(panel, flow);
   }
 
   function enhanceAll() {
