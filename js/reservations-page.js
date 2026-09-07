@@ -74,23 +74,8 @@ function formatReservationsDateTime(value) {
   return date.toLocaleString(getReservationsLocale());
 }
 
-function getReservationsCountText(count) {
-  const pluralCategory = new Intl.PluralRules(getReservationsLocale()).select(Number(count));
-  const supportedCategory = ["one", "few", "many", "other"].includes(pluralCategory)
-    ? pluralCategory
-    : "other";
-  const suffix = supportedCategory.charAt(0).toUpperCase() + supportedCategory.slice(1);
-
-  return reservationsTranslate(
-    "reservations.count" + suffix,
-    "{count} rezervací",
-    { count: formatReservationsNumber(count) }
-  );
-}
-
   const PLATFORM_FEE_PERCENT = 10;
     let supabaseReservations = [];
-    let supabaseReviews = [];
     let reservationsLoadState = "idle";
     let reservationsNoticeTimer = null;
 
@@ -151,52 +136,6 @@ function getReservationsCountText(count) {
       } catch (error) {
         console.warn("E-mailové upozornění se nepodařilo odeslat:", error);
       }
-    }
-
-    function findRenterReviewForReservation(reservation) {
-      if (!reservation) {
-        return null;
-      }
-
-      const reservationId = reservation.id || reservation.reservationId;
-      const renterId = reservation.renterId;
-
-      return supabaseReviews.find(function (review) {
-        return (
-          String(review.reservation_id) === String(reservationId) &&
-          String(review.reviewer_id) === String(renterId)
-        );
-      }) || null;
-    }
-
-    function findOwnerReviewForReservation(reservation) {
-      if (!reservation) {
-        return null;
-      }
-
-      const reservationId = reservation.id || reservation.reservationId;
-      const ownerId = reservation.ownerId;
-
-      return supabaseReviews.find(function (review) {
-        return (
-          String(review.reservation_id) === String(reservationId) &&
-          String(review.reviewer_id) === String(ownerId)
-        );
-      }) || null;
-    }
-
-    function renderSavedReview(review) {
-      if (!review) {
-        return "";
-      }
-
-      return `
-        <div class="review-lines">
-          <span>${escapeHtml(getStars(review.rating))}</span>
-          ${review.text ? `<span>${escapeHtml(review.text)}</span>` : ""}
-          <span>${escapeHtml(reservationsTranslate("reservations.review.sent", "Odesláno"))}: ${escapeHtml(formatReservationsDateTime(review.created_at))}</span>
-        </div>
-      `;
     }
 
     function getSafeReservationStatusText(status) {
@@ -361,35 +300,6 @@ const data = Array.isArray(reservationsData)
         : [];
     }
 
-    async function loadMyReviewsFromSupabase() {
-      const supabaseClient = getSupabaseClient();
-
-      if (!supabaseClient) {
-        return [];
-      }
-
-      const supabaseUser = await getCurrentSupabaseUser();
-
-      if (!supabaseUser) {
-        return [];
-      }
-
-      const { data, error } = await supabaseClient
-        .from("reviews")
-        .select("*")
-        .or("reviewer_id.eq." + supabaseUser.id + ",reviewed_user_id.eq." + supabaseUser.id)
-        .order("created_at", {
-          ascending: false
-        });
-
-      if (error) {
-        console.error("Hodnocení se nepodařilo načíst:", error);
-        return [];
-      }
-
-      return Array.isArray(data) ? data : [];
-    }
-
     function getSafeReservationStatus(reservation) {
       if (typeof getReservationStatus === "function") {
         return getReservationStatus(reservation);
@@ -448,47 +358,13 @@ const data = Array.isArray(reservationsData)
       return days * pricePerDay;
     }
 
-    function getSafeReservationPlatformFee(reservation, percent) {
-      if (typeof getReservationPlatformFee === "function") {
-        return getReservationPlatformFee(reservation, percent);
-      }
-
-      if (reservation.platformFeeAmount !== undefined && reservation.platformFeeAmount !== null) {
-        return Number(reservation.platformFeeAmount) || 0;
-      }
-
-      return Math.round(getSafeReservationTotalPrice(reservation) * percent / 100);
-    }
-
-    function getSafeReservationOwnerPayout(reservation, percent) {
-      if (typeof getReservationOwnerPayout === "function") {
-        return getReservationOwnerPayout(reservation, percent);
-      }
-
-      if (reservation.ownerPayout !== undefined && reservation.ownerPayout !== null) {
-        return Number(reservation.ownerPayout) || 0;
-      }
-
-      return getSafeReservationTotalPrice(reservation) - getSafeReservationPlatformFee(reservation, percent);
-    }
-
     function safeIsOpenReservationStatus(status) {
-  return isOpenReservationStatus(
-    normalizeReservationStatus(status)
-  );
-}
-
-    function safeIsClosedReservationStatus(status) {
-  return isClosedReservationStatus(
-    normalizeReservationStatus(status)
-  );
-}
+      return isOpenReservationStatus(status);
+    }
 
     function getSafeReservationContactVisible(status) {
-  return getReservationContactVisible(
-    normalizeReservationStatus(status)
-  );
-}
+      return getReservationContactVisible(status);
+    }
 
     function isMapUsefulForStatus(status) {
       const normalizedStatus = normalizeReservationStatus(status);
@@ -602,14 +478,9 @@ return (
       renderLoadingState();
 
       supabaseReservations = await loadMyReservationsFromSupabase();
-      supabaseReviews = reservationsLoadState === "ready"
-        ? await loadMyReviewsFromSupabase()
-        : [];
 
       if (typeof window.refreshRentuloNotificationBadge === "function") {
         await window.refreshRentuloNotificationBadge();
-      } else {
-        renderSharedNavigation("moje-rezervace");
       }
 
       if (reservationsLoadState === "ready") {
@@ -711,14 +582,8 @@ return (
       const elements = getReservationCancelModalElements();
 
       if (!elements.overlay) {
-        return Promise.resolve(
-          confirm(
-            reservationsTranslate(
-              "reservations.confirm.cancel",
-              "Opravdu chcete tuto rezervaci zrušit? Termín se znovu uvolní."
-            )
-          )
-        );
+        console.error("Reservation cancellation modal is missing.");
+        return Promise.resolve(false);
       }
 
       reservationCancelModalReservation = reservation;
@@ -1075,86 +940,6 @@ const data = Array.isArray(paidReservations)
       }
     }
 
-    async function saveRenterReview(reservationId) {
-      const reservation = supabaseReservations.find(function (item) {
-        const itemId = item.id || item.reservationId;
-        return String(itemId) === String(reservationId);
-      });
-
-      if (!reservation) {
-        showReservationsNotice(reservationsTranslate("reservations.error.notFound", "Rezervace nebyla nalezena."), "error");
-        return;
-      }
-
-      const supabaseUser = await getCurrentSupabaseUser();
-
-      if (!supabaseUser || !supabaseUser.id) {
-        showReservationsNotice(reservationsTranslate("reservations.error.loginReview", "Pro odeslání hodnocení se musíte přihlásit."), "error");
-        return;
-      }
-
-      const existingReview = findRenterReviewForReservation(reservation);
-
-      if (existingReview) {
-        showReservationsNotice(reservationsTranslate("reservations.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."), "error");
-        return;
-      }
-
-      const ratingElement = document.getElementById("renter-review-rating-" + reservationId);
-      const textElement = document.getElementById("renter-review-text-" + reservationId);
-
-      const rating = Number(ratingElement ? ratingElement.value : 0);
-      const text = textElement ? textElement.value.trim() : "";
-
-      if (!rating || rating < 1 || rating > 5) {
-        showReservationsNotice(reservationsTranslate("reservations.error.selectStars", "Vyberte počet hvězdiček."), "error");
-        return;
-      }
-
-      if (!text) {
-        showReservationsNotice(reservationsTranslate("reservations.error.writeComment", "Napište krátký komentář k půjčení."), "error");
-        return;
-      }
-
-      const reviewToInsert = {
-  reservation_id: reservation.id,
-  rating: rating,
-  text: text
-};
-
-      
-
-      const reviewSupabaseClient = getSupabaseClient();
-
-      if (!reviewSupabaseClient) {
-        showReservationsNotice(reservationsTranslate("reservations.error.supabaseUnavailable", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu."), "error");
-        return;
-      }
-
-      const { error } = await reviewSupabaseClient
-        .from("reviews")
-        .insert(reviewToInsert);
-
-      if (error) {
-        console.error("Chyba při ukládání hodnocení:", error);
-
-        if (String(error.message || "").includes("duplicate")) {
-          showReservationsNotice(reservationsTranslate("reservations.error.alreadyReviewed", "Tuto rezervaci jste už hodnotili."), "error");
-        } else {
-          showReservationsNotice(reservationsTranslate("reservations.error.reviewSave", "Hodnocení se nepodařilo uložit."), "error");
-        }
-
-        return;
-      }
-
-      showReservationsNotice(reservationsTranslate("reservations.success.reviewSaved", "Hodnocení bylo uloženo."));
-      await retryLoadReservations();
-
-      if (reservationsLoadState === "ready") {
-        openReservationDetail(reservationId);
-      }
-    }
-
     function openReservationDetail(reservationId) {
       setTimeout(function () {
         const detail = document.getElementById("reservation-detail-" + reservationId);
@@ -1190,75 +975,6 @@ const data = Array.isArray(paidReservations)
       button.textContent = reservationsTranslate("reservations.hideDetail", "Skrýt detail");
     }
 
-    function renderOwnerReviewForRenterBox(reservation, status) {
-      if (status !== "returned") {
-        return "";
-      }
-
-      const ownerReview = findOwnerReviewForReservation(reservation);
-
-      if (ownerReview) {
-        return `
-          <div class="review-box">
-            <strong>${escapeHtml(reservationsTranslate("reservations.review.fromOwner", "Hodnocení od majitele"))}</strong>
-            ${renderSavedReview(ownerReview)}
-          </div>
-        `;
-      }
-
-      return `
-        <div class="review-box">
-          <strong>${escapeHtml(reservationsTranslate("reservations.review.fromOwner", "Hodnocení od majitele"))}</strong>
-          ${escapeHtml(reservationsTranslate("reservations.review.notRatedByOwner", "Majitel vás zatím neohodnotil."))}
-        </div>
-      `;
-    }
-
-    function renderRenterReviewBox(reservation, status) {
-      if (status !== "returned") {
-        return "";
-      }
-
-      const reservationId = reservation.id || reservation.reservationId;
-      const renterReview = findRenterReviewForReservation(reservation);
-
-      if (renterReview) {
-        return `
-          <div class="review-box">
-            <strong>${escapeHtml(reservationsTranslate("reservations.review.sentTitle", "Hodnocení bylo odesláno"))}</strong>
-            ${renderSavedReview(renterReview)}
-          </div>
-        `;
-      }
-
-      return `
-        <div class="review-box">
-          <strong>${escapeHtml(reservationsTranslate("reservations.review.rateOwner", "Ohodnotit majitele"))}</strong>
-          <div class="review-lines">
-            <label>
-              ${escapeHtml(reservationsTranslate("reservations.review.stars", "Počet hvězdiček"))}
-              <select id="renter-review-rating-${reservationId}">
-                <option value="5">★★★★★ - ${escapeHtml(reservationsTranslate("reservations.review.excellent", "výborné"))}</option>
-                <option value="4">★★★★☆ - ${escapeHtml(reservationsTranslate("reservations.review.good", "dobré"))}</option>
-                <option value="3">★★★☆☆ - ${escapeHtml(reservationsTranslate("reservations.review.average", "průměrné"))}</option>
-                <option value="2">★★☆☆☆ - ${escapeHtml(reservationsTranslate("reservations.review.weak", "slabé"))}</option>
-                <option value="1">★☆☆☆☆ - ${escapeHtml(reservationsTranslate("reservations.review.bad", "špatné"))}</option>
-              </select>
-            </label>
-
-            <label>
-              ${escapeHtml(reservationsTranslate("reservations.review.comment", "Komentář"))}
-              <textarea id="renter-review-text-${reservationId}" rows="3" placeholder="${escapeHtml(reservationsTranslate("reservations.review.placeholder", "Jak proběhlo půjčení?"))}"></textarea>
-            </label>
-
-            <button type="button" class="btn-primary small-button" data-reservations-action="save-review" data-reservation-id="${escapeHtml(reservationId)}">
-              ${escapeHtml(reservationsTranslate("reservations.review.submit", "Odeslat hodnocení"))}
-            </button>
-          </div>
-        </div>
-      `;
-    }
-
     function renderPaymentBox(reservation, status) {
       if (normalizeReservationStatus(status) === RESERVATION_STATUS_APPROVED) {
         return `
@@ -1270,10 +986,10 @@ const data = Array.isArray(paidReservations)
       }
 
       if (getSafeReservationContactVisible(status)) {
-        const paymentTitle =
-          normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED
-            ? reservationsTranslate("reservations.payment.completed", "Platba byla přijata a půjčení je dokončeno")
-            : reservationsTranslate("reservations.payment.accepted", "Platba byla přijata");
+        const paymentTitle = reservationsTranslate(
+          "reservations.payment.accepted",
+          "Platba byla přijata"
+        );
         const paymentStatus =
           reservation.paymentProviderStatus === "paid_test"
             ? reservationsTranslate("reservations.payment.statusPaidTest", "Testovací platba")
@@ -1325,36 +1041,6 @@ const data = Array.isArray(paidReservations)
         `;
       }
 
-      if (normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED) {
-        return `
-          <div class="reservation-state-box finished">
-            <strong>${escapeHtml(reservationsTranslate("reservations.state.returnedTitle", "Vráceno – půjčení je dokončeno"))}</strong>
-            ${escapeHtml(reservationsTranslate("reservations.state.returnedText", "Rezervace byla úspěšně ukončena. Už není potřeba žádná další akce."))}
-          </div>
-        `;
-      }
-
-      if (normalizeReservationStatus(status) === RESERVATION_STATUS_REJECTED) {
-        return `
-          <div class="reservation-state-box rejected">
-            <strong>${escapeHtml(reservationsTranslate("reservations.state.rejectedTitle", "Žádost byla odmítnuta"))}</strong>
-            ${escapeHtml(reservationsTranslate("reservations.state.rejectedText", "Majitel vaši žádost odmítl."))}
-          </div>
-        `;
-      }
-
-      if (
-  normalizeReservationStatus(status) ===
-  RESERVATION_STATUS_CANCELLED
-) {
-        return `
-          <div class="reservation-state-box rejected">
-            <strong>${escapeHtml(reservationsTranslate("reservations.state.cancelledTitle", "Rezervace byla zrušena"))}</strong>
-            ${escapeHtml(reservationsTranslate("reservations.state.cancelledText", "Tato rezervace už nepokračuje."))}
-          </div>
-        `;
-      }
-
       return "";
     }
 
@@ -1381,21 +1067,15 @@ const data = Array.isArray(paidReservations)
         `;
       }
 
-      const contactTitle =
-  normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED
-        ? reservationsTranslate("reservations.contact.completedTitle", "Kontaktní údaje k dokončené rezervaci")
-        : reservationsTranslate("reservations.contact.pickupTitle", "Údaje pro vyzvednutí");
-
-      const returnedNote =
-  normalizeReservationStatus(status) === RESERVATION_STATUS_RETURNED
-        ? `<span>${escapeHtml(reservationsTranslate("reservations.contact.completedNote", "Rezervace je dokončená. Kontaktní údaje zůstávají dostupné, protože půjčení bylo zaplaceno."))}</span>`
-        : "";
+      const contactTitle = reservationsTranslate(
+        "reservations.contact.pickupTitle",
+        "Údaje pro vyzvednutí"
+      );
 
       return `
         <div class="contact-box visible">
           <strong>${contactTitle}</strong>
           <div class="contact-lines">
-            ${returnedNote}
             <span>${escapeHtml(reservationsTranslate("reservations.ownerLabel", "Majitel"))}: ${escapeHtml(getReservationOwnerName(reservation))}</span>
             <span>${escapeHtml(reservationsTranslate("reservations.contact.phone", "Telefon"))}: ${escapeHtml(phone || reservationsTranslate("reservations.contact.phoneMissing", "Telefon není uložen"))}</span>
             <span>${escapeHtml(reservationsTranslate("reservations.contact.address", "Adresa"))}: ${escapeHtml(address || reservationsTranslate("reservations.contact.addressMissing", "Adresa není uložená"))}</span>
@@ -1411,11 +1091,7 @@ const data = Array.isArray(paidReservations)
       `;
     }
 
-    function renderReservationDetailActions(reservation, status, isHistorySection) {
-      if (isHistorySection) {
-        return "";
-      }
-
+    function renderReservationDetailActions(reservation, status) {
       const normalizedStatus = normalizeReservationStatus(status);
 
       if (
@@ -1441,7 +1117,7 @@ const data = Array.isArray(paidReservations)
       `;
     }
 
-    function renderReservationDetailPanel(reservation, isHistorySection) {
+    function renderReservationDetailPanel(reservation) {
       const status = getSafeReservationStatus(reservation);
 
       const totalPrice = getSafeReservationTotalPrice(reservation);
@@ -1476,40 +1152,12 @@ const data = Array.isArray(paidReservations)
 
           ${renderContactBox(reservation, status)}
 
-          ${renderOwnerReviewForRenterBox(reservation, status)}
-
-          ${renderRenterReviewBox(reservation, status)}
-
-          ${renderReservationDetailActions(reservation, status, isHistorySection)}
+          ${renderReservationDetailActions(reservation, status)}
         </div>
       `;
     }
 
-    function getStatusClass(status) {
-  const normalizedStatus = normalizeReservationStatus(status);
-
-  if (
-    normalizedStatus === RESERVATION_STATUS_PAID ||
-    normalizedStatus === RESERVATION_STATUS_PICKED_UP
-  ) {
-    return "status-paid";
-  }
-
-      if (normalizedStatus === RESERVATION_STATUS_RETURNED) {
-        return "status-finished";
-      }
-
-      if (
-  normalizedStatus === RESERVATION_STATUS_REJECTED ||
- normalizedStatus === RESERVATION_STATUS_CANCELLED
-) {
-        return "status-rejected";
-      }
-
-      return "";
-    }
-
-    function renderReservationCard(reservation, isHistorySection) {
+    function renderReservationCard(reservation) {
       const status = getSafeReservationStatus(reservation);
       const normalizedStatus = normalizeReservationStatus(status);
       const statusText = getSafeReservationStatusText(status);
@@ -1523,7 +1171,7 @@ const data = Array.isArray(paidReservations)
       const reservationId = reservation.id || reservation.reservationId;
       const offerId = getSafeReservationOfferId(reservation);
       const isPaymentRequired = normalizedStatus === RESERVATION_STATUS_APPROVED;
-      const isPriority = !isHistorySection && (
+      const isPriority = (
         isPaymentRequired ||
         normalizedStatus === RESERVATION_STATUS_PAID ||
         normalizedStatus === RESERVATION_STATUS_PICKED_UP
@@ -1543,14 +1191,13 @@ const data = Array.isArray(paidReservations)
         </button>
       `;
 
-      const offerDetailAction =
-        !isHistorySection && offerId
-          ? `
-            <a class="reservation-primary-action offer-detail-link" href="detail.html?id=${encodeURIComponent(offerId)}">
-              ${escapeHtml(reservationsTranslate("reservations.offerDetail", "Detail nabídky"))}
-            </a>
-          `
-          : "";
+      const offerDetailAction = offerId
+        ? `
+          <a class="reservation-primary-action offer-detail-link" href="detail.html?id=${encodeURIComponent(offerId)}">
+            ${escapeHtml(reservationsTranslate("reservations.offerDetail", "Detail nabídky"))}
+          </a>
+        `
+        : "";
 
       return `
   <article class="simple-reservation-row ${isPriority ? "priority" : ""}">
@@ -1585,44 +1232,29 @@ const data = Array.isArray(paidReservations)
       class="detail-row"
       id="reservation-detail-${escapeHtml(reservationId)}"
     >
-      ${renderReservationDetailPanel(reservation, isHistorySection)}
+      ${renderReservationDetailPanel(reservation)}
     </div>
   </article>
 `;
     }
 
-    function renderReservationList(reservations, isHistorySection) {
+    function renderReservationList(reservations) {
       return `
-        <div class="reservation-card-list ${isHistorySection ? "history-list" : "active-list"}">
+        <div class="reservation-card-list active-list">
           ${reservations.map(function (reservation) {
-            return renderReservationCard(reservation, isHistorySection);
+            return renderReservationCard(reservation);
           }).join("")}
         </div>
       `;
     }
 
-    function renderReservationSection(title, reservations, emptyText, sectionClass, isHistorySection) {
-      const countText = getReservationsCountText(reservations.length);
-
+    function renderReservationSection(reservations, emptyText) {
       const content = reservations.length
-        ? renderReservationList(reservations, isHistorySection)
+        ? renderReservationList(reservations)
         : `<p class="section-empty-note">${escapeHtml(emptyText)}</p>`;
 
-      if (sectionClass === "active") {
-        return `
-          <section class="reservation-section ${escapeHtml(sectionClass)}">
-            ${content}
-          </section>
-        `;
-      }
-
       return `
-        <section class="reservation-section ${escapeHtml(sectionClass)}">
-          <div class="reservation-section-header">
-            <h2>${escapeHtml(title)}</h2>
-            <span>${escapeHtml(countText)}</span>
-          </div>
-
+        <section class="reservation-section active">
           ${content}
         </section>
       `;
@@ -1646,11 +1278,8 @@ const data = Array.isArray(paidReservations)
 
       document.getElementById("reservationsList").innerHTML =
         renderReservationSection(
-          reservationsTranslate("reservations.activeTitle", "Aktivní rezervace"),
           activeReservations,
-          reservationsTranslate("reservations.activeEmpty", "Nemáte žádné aktivní rezervace. Dokončené, zrušené a odmítnuté záznamy najdete v Historii."),
-          "active",
-          false
+          reservationsTranslate("reservations.activeEmpty", "Nemáte žádné aktivní rezervace. Dokončené, zrušené a odmítnuté záznamy najdete v Historii.")
         );
     }
 
@@ -1661,23 +1290,10 @@ const data = Array.isArray(paidReservations)
         return;
       }
 
-      renderSharedNavigation("moje-rezervace");
       renderLoadingState();
       reservationsLoadState = "loading";
 
-      const currentUser = await apiGetCurrentUser();
-
-      if (!currentUser) {
-        window.location.href = "prihlaseni.html";
-        return;
-      }
-
       supabaseReservations = await loadMyReservationsFromSupabase();
-      supabaseReviews = reservationsLoadState === "ready"
-        ? await loadMyReviewsFromSupabase()
-        : [];
-
-      renderSharedNavigation("moje-rezervace");
 
       if (reservationsLoadState === "ready") {
         renderReservations();
@@ -1692,16 +1308,9 @@ const data = Array.isArray(paidReservations)
       ).map(function (element) {
         return element.id;
       });
-      const reviewValues = {};
-
-      document.querySelectorAll("#reservationsList select[id], #reservationsList textarea[id]")
-        .forEach(function (element) {
-          reviewValues[element.id] = element.value;
-        });
 
       return {
-        openDetailIds: openDetailIds,
-        reviewValues: reviewValues
+        openDetailIds: openDetailIds
       };
     }
 
@@ -1724,14 +1333,6 @@ const data = Array.isArray(paidReservations)
 
         if (button) {
           button.textContent = reservationsTranslate("reservations.hideDetail", "Skrýt detail");
-        }
-      });
-
-      Object.keys(state.reviewValues).forEach(function (elementId) {
-        const element = document.getElementById(elementId);
-
-        if (element) {
-          element.value = state.reviewValues[elementId];
         }
       });
     }
@@ -1774,7 +1375,7 @@ const data = Array.isArray(paidReservations)
         return;
       }
 
-      const mutationActions = new Set(["save-review", "pay", "cancel"]);
+      const mutationActions = new Set(["pay", "cancel"]);
       const isMutationAction = mutationActions.has(action);
 
       if (isMutationAction && actionButton.dataset.busy === "true") {
@@ -1787,11 +1388,6 @@ const data = Array.isArray(paidReservations)
       }
 
       try {
-        if (action === "save-review") {
-          await saveRenterReview(reservationId);
-          return;
-        }
-
         if (action === "pay") {
           await payReservation(reservationId);
           return;
@@ -1821,7 +1417,6 @@ const data = Array.isArray(paidReservations)
     });
 
     document.addEventListener("rentuloLanguageChanged", function () {
-      renderSharedNavigation("moje-rezervace");
       refreshReservationCancelModalText();
       refreshReservationPaymentModalText();
 
