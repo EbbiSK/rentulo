@@ -32,10 +32,6 @@
       color: #173f35 !important;
     }
 
-    .logo-text small {
-      display: none !important;
-    }
-
     .account-page {
       padding-top: 18px !important;
     }
@@ -54,7 +50,6 @@
     }
 
     .account-page-header h1,
-    .reservation-section-header h2,
     .account-empty-state h2 {
       color: #173f35 !important;
     }
@@ -82,19 +77,6 @@
       gap: 10px !important;
     }
 
-    .reservation-section-header {
-      padding: 10px 12px !important;
-      border: 1px solid #cfe3da !important;
-      border-radius: 14px !important;
-      background: rgba(255, 255, 255, 0.82) !important;
-      box-shadow: 0 10px 26px rgba(23, 63, 53, 0.045) !important;
-    }
-
-    .reservation-section-header span {
-      background: #eef8e9 !important;
-      color: #4f9f2f !important;
-    }
-
     .reservation-card-list {
       gap: 10px !important;
     }
@@ -116,11 +98,6 @@
       background: #ffffff !important;
       box-shadow: 0 10px 26px rgba(23, 63, 53, 0.045) !important;
       overflow: hidden;
-    }
-
-    .simple-reservation-row.priority {
-      border-color: #cfe3da !important;
-      box-shadow: 0 10px 26px rgba(23, 63, 53, 0.045) !important;
     }
 
     .simple-reservation-main {
@@ -245,22 +222,6 @@
       border-color: #e85f00 !important;
     }
 
-    /* When payment is available, it is the one attention action; detail becomes secondary. */
-    .simple-reservation-actions:has(.reservation-primary-action.orange)
-      [data-reservations-action="toggle-detail"],
-    .simple-reservation-row:has(.detail-row.open)
-      [data-reservations-action="toggle-detail"] {
-      background: #edf5f1 !important;
-      color: #173f35 !important;
-    }
-
-    .simple-reservation-actions:has(.reservation-primary-action.orange)
-      [data-reservations-action="toggle-detail"]:hover,
-    .simple-reservation-row:has(.detail-row.open)
-      [data-reservations-action="toggle-detail"]:hover {
-      background: #e2f0e9 !important;
-    }
-
     /* Expanded reservation: one calm block, without repeating the whole row visually. */
     .simple-reservation-row .detail-row {
       grid-column: 1 / -1 !important;
@@ -308,8 +269,7 @@
 
     .payment-box,
     .contact-box,
-    .reservation-state-box,
-    .review-box {
+    .reservation-state-box {
       padding: 11px 12px !important;
       border-radius: 12px !important;
     }
@@ -322,7 +282,6 @@
       color: #173f35 !important;
     }
 
-    .reservation-state-box.rejected,
     .payment-box.waiting {
       background: #fff3e8 !important;
       border-color: #f2c79f !important;
@@ -341,17 +300,6 @@
       display: block;
       margin-bottom: 3px;
       color: #173f35 !important;
-    }
-
-    .reservation-state-box.finished {
-      background: #f1f4f2 !important;
-      border-color: #dce5df !important;
-      color: #334c43 !important;
-    }
-
-    .review-box {
-      background: rgba(255, 255, 255, 0.86) !important;
-      border-color: #d5e7df !important;
     }
 
     .small-button.light,
@@ -389,11 +337,6 @@
     .account-empty-state {
       border: 1px solid #cfe3da !important;
       box-shadow: 0 10px 26px rgba(23, 63, 53, 0.045) !important;
-    }
-
-    .account-empty-state a {
-      background: #73d64f !important;
-      color: #173a22 !important;
     }
 
     @media (max-width: 1100px) {
@@ -452,20 +395,12 @@
         margin: 4px -12px -11px !important;
       }
 
-      .detail-grid {
-        grid-template-columns: 1fr !important;
-      }
     }
 
     @media (max-width: 560px) {
       .account-page {
         padding-left: 14px !important;
         padding-right: 14px !important;
-      }
-
-      .reservation-section-header {
-        align-items: center !important;
-        flex-direction: row !important;
       }
 
       .simple-reservation-row {
@@ -612,7 +547,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/utils.js"></script>
-  <script src="js/reservation-utils.js"></script>
   <script src="js/api.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/storage.js"></script>
