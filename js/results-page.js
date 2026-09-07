@@ -1,6 +1,5 @@
     let resultsOffers = [];
     let resultsRatingSummaries = {};
-    let resultsReservedOfferIds = new Set();
     let resultsLoadState = "idle";
     let resultsGpsLoadState = "idle";
 
@@ -80,33 +79,6 @@
 
 
 
-
-    function parseStoredMoney(value) {
-      if (value === undefined || value === null || value === "") {
-        return null;
-      }
-
-      const cleanedValue = String(value)
-        .toLowerCase()
-        .replace("kč", "")
-        .replace("kc", "")
-        .replace(/\s/g, "")
-        .replace(",", ".")
-        .replace(/[^\d.]/g, "")
-        .trim();
-
-      if (cleanedValue === "") {
-        return null;
-      }
-
-      const numberValue = Number(cleanedValue);
-
-      if (Number.isNaN(numberValue)) {
-        return null;
-      }
-
-      return Math.max(0, Math.round(numberValue));
-    }
 
     function getResultsParams() {
       return new URLSearchParams(window.location.search);
@@ -368,70 +340,6 @@
       });
     }
 
-    function getSupabaseReservationOfferId(reservation) {
-      if (!reservation) {
-        return "";
-      }
-
-      return String(
-        reservation.offer_id ||
-        reservation.offerId ||
-        reservation.toolId ||
-        ""
-      );
-    }
-
-    async function loadReservedOfferIdsFromSupabase() {
-      resultsReservedOfferIds = new Set();
-
-      const supabaseClient = getSupabaseClient();
-
-      if (!supabaseClient) {
-        return;
-      }
-
-      const blockingStatuses = [
-        "pending",
-        "approved",
-        "paid",
-        "picked_up"
-      ];
-
-      const { data, error } = await supabaseClient
-      .rpc("get_blocked_offer_ids");
-
-      if (error) {
-        console.warn("Dostupnost nabídek se nepodařilo načíst ze Supabase.");
-        return;
-      }
-
-      if (!Array.isArray(data)) {
-        return;
-      }
-
-      data.forEach(function (reservation) {
-        const offerId = getSupabaseReservationOfferId(reservation);
-
-        if (offerId) {
-          resultsReservedOfferIds.add(offerId);
-        }
-      });
-    }
-
-    function isOfferReservedInResults(offer) {
-      const offerId = String(getOfferId(offer) || "");
-
-      if (offerId && resultsReservedOfferIds.has(offerId)) {
-        return true;
-      }
-
-      if (typeof isOfferCurrentlyReserved === "function") {
-        return isOfferCurrentlyReserved(offer);
-      }
-
-      return false;
-    }
-
     function getOwnerRatingSummary(offer) {
       const ownerId = getOfferOwnerId(offer);
 
@@ -593,8 +501,6 @@ function getOfferPhoto(offer) {
         "load-error": ["results.empty.loadErrorTitle", "Nabídky se nepodařilo načíst.", "results.empty.loadErrorMessage", "Zkontrolujte připojení k internetu a zkuste stránku obnovit.", "vysledky.html", "results.tryAgain", "Zkusit znovu", "index.html", "results.backHome", "Zpět na úvod"],
         "loading": ["results.empty.loadingTitle", "Načítám nabídky...", "results.empty.loadingMessage", "Chvíli strpení, načítáme nabídky.", "vysledky.html", "results.refresh", "Obnovit", "index.html", "results.backHome", "Zpět na úvod"],
         "no-offers": ["results.empty.noOffersTitle", "Zatím zde nejsou žádné nabídky.", "results.empty.noOffersMessage", "Na Rentulu zatím nikdo nepřidal žádnou věc k půjčení. Můžete přidat první nabídku a vyzkoušet, jak bude fungovat.", "nabidnout.html", "results.addItem", "Přidat věc", "index.html", "results.backHome", "Zpět na úvod"],
-        "nearby-no-gps": ["results.empty.noGpsTitle", "Žádná nabídka zatím nemá uloženou GPS polohu.", "results.empty.noGpsMessage", "Hledání podle okolí funguje jen u nabídek, které mají uloženou polohu. Nabídky můžete stále procházet běžným hledáním podle názvu, kategorie nebo města.", "vysledky.html", "results.showAll", "Zobrazit všechny nabídky", "nabidnout.html", "results.addGpsListing", "Přidat nabídku s GPS"],
-        "nearby-no-location": ["results.empty.noLocationTitle", "Polohu se nepodařilo načíst.", "results.empty.noLocationMessage", "Bez vaší polohy neumíme nabídky seřadit podle vzdálenosti. Zkuste hledání znovu z úvodní stránky nebo použijte běžné hledání podle města.", "index.html", "results.backHome", "Zpět na úvod", "vysledky.html", "results.showAll", "Zobrazit všechny nabídky"],
         "no-match": ["results.empty.noMatchTitle", "Nenašli jsme žádnou nabídku.", "results.empty.noMatchMessage", "Pro zadané hledání nebo zvolené filtry nebyla nalezena žádná nabídka. Zkuste změnit název, kategorii, město, cenu nebo dostupnost.", "vysledky.html", "results.clearSearch", "Zrušit hledání", "nabidnout.html", "results.addItem", "Přidat věc"]
       }[type] || null;
 
@@ -956,22 +862,8 @@ const HOME_CATEGORY_GROUPS = {
       renderResults();
     }
 
-    function getEmptyResultType(offers, filteredOffers) {
-      if (!offers.length) {
-        return "no-offers";
-      }
-
-      if (!filteredOffers.length) {
-        return "no-match";
-      }
-
-      return "no-match";
-    }
-
     function renderResults() {
       const offers = resultsOffers;
-
-      updateNearbyBanner(offers);
 
       if (resultsLoadState === "error") {
         renderEmptyResults("load-error");
@@ -982,6 +874,8 @@ const HOME_CATEGORY_GROUPS = {
         renderEmptyResults("no-offers");
         return;
       }
+
+      updateNearbyBanner(offers);
 
       const whatQuery = document.getElementById("results-search-what").value;
       const whereQuery = document.getElementById("results-search-where").value;
@@ -1001,7 +895,7 @@ const HOME_CATEGORY_GROUPS = {
       const sortedOffers = sortOffersForNearbySearch(filteredOffers);
 
       if (!sortedOffers.length) {
-        renderEmptyResults(getEmptyResultType(offers, filteredOffers));
+        renderEmptyResults("no-match");
         return;
       }
 
@@ -1070,13 +964,10 @@ const HOME_CATEGORY_GROUPS = {
         applySearchAndUpdateUrl();
       });
 
-      window.addEventListener("resize", updateResultsFilterLabelsForViewport);
     }
 
     async function initializeResultsPage() {
       clearLegacyStoredVisitorLocation();
-      document.title = resultsTranslate("results.documentTitle", "Výsledky vyhledávání - Rentulo");
-      renderSharedNavigation("vysledky");
       setupResultsFromUrl();
       updateResultsFilterLabelsForViewport();
       setupResultsEvents();
@@ -1095,7 +986,6 @@ const HOME_CATEGORY_GROUPS = {
     });
 
     document.addEventListener("rentuloLanguageChanged", function () {
-      document.title = resultsTranslate("results.documentTitle", "Výsledky vyhledávání - Rentulo");
       applyResultsModeTranslations();
       updateResultsFilterLabelsForViewport();
       renderResults();
