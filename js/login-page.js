@@ -149,30 +149,6 @@ function loginNormalizeEmail(email) {
       );
     }
 
-
-    function loginGetInitials(fullName) {
-      if (!fullName) {
-        return "U";
-      }
-
-      const parts = fullName.trim().split(" ").filter(Boolean);
-
-      if (parts.length === 1) {
-        return parts[0].charAt(0).toUpperCase();
-      }
-
-      return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
-    }
-
-    function loginSaveCurrentUser(user) {
-      if (typeof saveCurrentUser === "function") {
-        saveCurrentUser(user);
-        return;
-      }
-
-
-    }
-
     function saveRememberLogin(rememberLogin) {
       try {
         localStorage.setItem(
@@ -199,7 +175,7 @@ function loginNormalizeEmail(email) {
 
       const { data, error } = await supabaseClient
         .from("profiles")
-        .select("full_name, phone, street, city, postal_code, preferred_language")
+        .select("preferred_language")
         .eq("id", user.id)
         .maybeSingle();
 
@@ -209,54 +185,6 @@ function loginNormalizeEmail(email) {
       }
 
       return data || null;
-    }
-
-    function loginCreateLocalUserFromSupabase(user, profile) {
-      const metadata = user && user.user_metadata ? user.user_metadata : {};
-
-      const fullName =
-        (profile && profile.full_name) ||
-        metadata.full_name ||
-        metadata.fullName ||
-        user.email ||
-        loginTranslate("login.userFallback", "Uživatel");
-
-      const phone =
-        (profile && profile.phone) ||
-        metadata.phone ||
-        "";
-
-      const street =
-        (profile && profile.street) ||
-        metadata.street ||
-        "";
-
-      const city =
-        (profile && profile.city) ||
-        metadata.city ||
-        "";
-
-      const postalCode =
-        (profile && profile.postal_code) ||
-        metadata.postal_code ||
-        metadata.postalCode ||
-        "";
-
-      return {
-        id: user.id,
-        fullName: fullName,
-        name: fullName,
-        email: user.email || "",
-        phone: phone,
-        street: street,
-        city: city,
-        postalCode: postalCode,
-        initials: loginGetInitials(fullName),
-        role: "user",
-        source: "supabase",
-        createdAt: user.created_at || new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
     }
 
     function loginApplyPreferredLanguage(user, profile) {
@@ -271,7 +199,11 @@ function loginNormalizeEmail(email) {
         ? preferredLanguage
         : "cs";
 
-      localStorage.setItem("rentuloLanguage", language);
+      try {
+        localStorage.setItem("rentuloLanguage", language);
+      } catch (_error) {
+        // Continue without persistence when browser storage is unavailable.
+      }
     }
 
     async function handleLoginSubmit(event) {
@@ -382,10 +314,8 @@ function loginNormalizeEmail(email) {
         }
 
         const profile = await loginLoadProfile(supabaseClient, data.user);
-        const currentUser = loginCreateLocalUserFromSupabase(data.user, profile);
 
         loginApplyPreferredLanguage(data.user, profile);
-        loginSaveCurrentUser(currentUser);
         window.location.href = targetPage;
       } catch (error) {
         console.error(loginTranslate("login.console.failed", "Přihlášení se nepodařilo."), error);
@@ -400,22 +330,11 @@ function loginNormalizeEmail(email) {
     }
 
     function handleLoginLanguageChange() {
-      document.title = loginTranslate(
-        "login.documentTitle",
-        "Přihlášení - Rentulo"
-      );
       renderLoginError();
       setLoginButtonState(loginSubmitInProgress);
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-      document.title = loginTranslate("login.documentTitle", "Přihlášení - Rentulo");
-
-      if (typeof window.applyRentuloTranslations === "function") {
-        window.applyRentuloTranslations();
-      }
-
-      renderSharedNavigation("prihlaseni");
       loginUpdateRecoveryLink();
 
       const loginForm = document.getElementById("loginForm");
