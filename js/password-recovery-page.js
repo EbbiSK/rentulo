@@ -200,10 +200,8 @@
     const passwordForm = document.getElementById("setPasswordForm");
     const title = document.getElementById("recoveryTitle");
     const description = document.getElementById("recoveryDescription");
-    const helperBox = document.querySelector(".auth-helper-box");
 
     if (requestForm) requestForm.classList.add("hidden");
-    if (helperBox) helperBox.classList.add("hidden");
     if (passwordForm) passwordForm.classList.remove("hidden");
     if (title) {
       title.dataset.i18n = "passwordRecovery.newTitle";
@@ -342,9 +340,6 @@
   }
 
   document.addEventListener("DOMContentLoaded", async function () {
-    document.title = t("passwordRecovery.documentTitle", "Obnova hesla - Rentulo");
-    if (typeof window.applyRentuloTranslations === "function") window.applyRentuloTranslations();
-    if (typeof window.renderSharedNavigation === "function") window.renderSharedNavigation("prihlaseni");
     updateBackToLoginLinks();
 
     const client = typeof getSupabaseClient === "function" ? getSupabaseClient() : null;
