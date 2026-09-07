@@ -3,6 +3,14 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1WQZ-gW9198Qu2amXZ-nPg_1dkadBSz
 
 const RENTULO_REMEMBER_LOGIN_KEY = "rentuloRememberLogin";
 
+function rentuloGetStorage(storageName) {
+  try {
+    return window[storageName] || null;
+  } catch (_error) {
+    return null;
+  }
+}
+
 function rentuloReadStorage(storage, key) {
   try {
     return storage ? storage.getItem(key) : null;
@@ -36,20 +44,24 @@ function rentuloRemoveStorage(storage, key) {
 
 function rentuloShouldRememberLogin() {
   return (
-    rentuloReadStorage(window.localStorage, RENTULO_REMEMBER_LOGIN_KEY) ===
-    "true"
+    rentuloReadStorage(
+      rentuloGetStorage("localStorage"),
+      RENTULO_REMEMBER_LOGIN_KEY
+    ) === "true"
   );
 }
 
 const rentuloAuthStorage = {
   getItem: function (key) {
     const rememberLogin = rentuloShouldRememberLogin();
+    const localStorageRef = rentuloGetStorage("localStorage");
+    const sessionStorageRef = rentuloGetStorage("sessionStorage");
     const primaryStorage = rememberLogin
-      ? window.localStorage
-      : window.sessionStorage;
+      ? localStorageRef
+      : sessionStorageRef;
     const secondaryStorage = rememberLogin
-      ? window.sessionStorage
-      : window.localStorage;
+      ? sessionStorageRef
+      : localStorageRef;
     const primaryValue = rentuloReadStorage(primaryStorage, key);
 
     if (primaryValue !== null) {
@@ -70,12 +82,14 @@ const rentuloAuthStorage = {
 
   setItem: function (key, value) {
     const rememberLogin = rentuloShouldRememberLogin();
+    const localStorageRef = rentuloGetStorage("localStorage");
+    const sessionStorageRef = rentuloGetStorage("sessionStorage");
     const targetStorage = rememberLogin
-      ? window.localStorage
-      : window.sessionStorage;
+      ? localStorageRef
+      : sessionStorageRef;
     const otherStorage = rememberLogin
-      ? window.sessionStorage
-      : window.localStorage;
+      ? sessionStorageRef
+      : localStorageRef;
 
     if (rentuloWriteStorage(targetStorage, key, value)) {
       rentuloRemoveStorage(otherStorage, key);
@@ -86,20 +100,23 @@ const rentuloAuthStorage = {
   },
 
   removeItem: function (key) {
-    rentuloRemoveStorage(window.localStorage, key);
-    rentuloRemoveStorage(window.sessionStorage, key);
+    rentuloRemoveStorage(rentuloGetStorage("localStorage"), key);
+    rentuloRemoveStorage(rentuloGetStorage("sessionStorage"), key);
   }
 };
 
-const rentuloSupabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY,
-  {
-    auth: {
-      storage: rentuloAuthStorage,
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  }
-);
+const rentuloSupabase =
+  window.supabase && typeof window.supabase.createClient === "function"
+    ? window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY,
+        {
+          auth: {
+            storage: rentuloAuthStorage,
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+          }
+        }
+      )
+    : null;
