@@ -36,16 +36,6 @@ const CLOSED_RESERVATION_STATUSES = [
   LEGACY_RESERVATION_STATUS_COMPLETED
 ];
 
-const BLOCKING_RESERVATION_STATUSES = [
-  RESERVATION_STATUS_PENDING,
-  RESERVATION_STATUS_APPROVED,
-  RESERVATION_STATUS_PAID,
-  RESERVATION_STATUS_PICKED_UP,
-  LEGACY_RESERVATION_STATUS_PENDING,
-  LEGACY_RESERVATION_STATUS_APPROVED,
-  LEGACY_RESERVATION_STATUS_PAID,
-  LEGACY_RESERVATION_STATUS_PICKED_UP
-];
 function normalizeReservationStatus(status) {
   const normalizedStatus = String(status || "").trim();
 
@@ -120,37 +110,14 @@ function getReservationStatus(reservation) {
 function isOpenReservationStatus(status) {
   const normalizedStatus = normalizeReservationStatus(status);
 
-  return OPEN_RESERVATION_STATUSES.includes(status) ||
-    OPEN_RESERVATION_STATUSES.includes(normalizedStatus);
+  return OPEN_RESERVATION_STATUSES.includes(normalizedStatus);
 }
 function isClosedReservationStatus(status) {
   const normalizedStatus = normalizeReservationStatus(status);
 
-  return CLOSED_RESERVATION_STATUSES.includes(status) ||
-    CLOSED_RESERVATION_STATUSES.includes(normalizedStatus);
+  return CLOSED_RESERVATION_STATUSES.includes(normalizedStatus);
 }
 
 function isBlockingReservationStatus(status) {
-  const normalizedStatus = normalizeReservationStatus(status);
-
-  if (
-    CLOSED_RESERVATION_STATUSES.includes(status) ||
-    CLOSED_RESERVATION_STATUSES.includes(normalizedStatus)
-  ) {
-    return false;
-  }
-
-  return BLOCKING_RESERVATION_STATUSES.includes(status) ||
-    BLOCKING_RESERVATION_STATUSES.includes(normalizedStatus);
-}
-function isBlockingReservation(reservation) {
-  return isBlockingReservationStatus(getReservationStatus(reservation));
-}
-
-function isOpenReservation(reservation) {
-  return isOpenReservationStatus(getReservationStatus(reservation));
-}
-
-function isClosedReservation(reservation) {
-  return isClosedReservationStatus(getReservationStatus(reservation));
+  return isOpenReservationStatus(status);
 }
