@@ -3,7 +3,6 @@
 
 
 
-
 function getReservationOfferId(reservation) {
   if (!reservation) {
     return "";
@@ -83,37 +82,6 @@ function getReservationTotalPrice(reservation) {
     reservation.pricePerDay ||
     0
   );
-}
-
-function getReservationPlatformFee(reservation, platformFeePercent) {
-  if (!reservation) {
-    return 0;
-  }
-
-  const totalPrice = getReservationTotalPrice(reservation);
-  const percent = Number(
-    platformFeePercent ||
-    reservation.platform_fee_percent ||
-    reservation.platformFeePercent ||
-    10
-  );
-
-  return Number(
-    reservation.platform_fee_amount ||
-    reservation.platformFeeAmount ||
-    Math.round(totalPrice * percent / 100)
-  );
-}
-
-function getReservationOwnerPayout(reservation, platformFeePercent) {
-  if (!reservation) {
-    return 0;
-  }
-
-  const totalPrice = getReservationTotalPrice(reservation);
-  const platformFee = getReservationPlatformFee(reservation, platformFeePercent);
-
-  return Number(reservation.owner_payout || reservation.ownerPayout || totalPrice - platformFee);
 }
 
 function getReservationContactVisible(status) {
