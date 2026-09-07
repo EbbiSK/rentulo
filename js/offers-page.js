@@ -140,28 +140,6 @@
       return offersTranslate("offers.showRequests", "Zobrazit žádosti");
     }
 
-    function getWaitingRequestText(count) {
-      const label = getOffersPluralText("offers.waiting", count, {
-        one: "žádost čeká",
-        few: "žádosti čekají",
-        many: "žádostí čeká",
-        other: "žádostí čeká"
-      });
-
-      return formatOffersNumber(count) + " " + label + " " + offersTranslate("offers.forAction", "na vyřízení");
-    }
-
-    function getOpenRequestText(count) {
-      const label = getOffersPluralText("offers.open", count, {
-        one: "otevřená žádost",
-        few: "otevřené žádosti",
-        many: "otevřených žádostí",
-        other: "otevřených žádostí"
-      });
-
-      return formatOffersNumber(count) + " " + label;
-    }
-
     
     
 
@@ -176,12 +154,6 @@
 
     function isOpenStatus(status) {
   return isOpenReservationStatus(
-    normalizeReservationStatus(status)
-  );
-}
-
-    function isClosedStatus(status) {
-  return isClosedReservationStatus(
     normalizeReservationStatus(status)
   );
 }
@@ -251,7 +223,13 @@
     }
 
     function showAccountMessageFromStorage() {
-      const savedState = sessionStorage.getItem("rentuloOfferSaved");
+      let savedState = "";
+
+      try {
+        savedState = sessionStorage.getItem("rentuloOfferSaved") || "";
+      } catch (_error) {
+        return;
+      }
 
       if (savedState === "draft") {
         setAccountMessage(
@@ -261,7 +239,11 @@
           "Až budete připraveni, klikněte u nabídky na Zveřejnit."
         );
 
-        sessionStorage.removeItem("rentuloOfferSaved");
+        try {
+          sessionStorage.removeItem("rentuloOfferSaved");
+        } catch (_error) {
+          // The confirmation is optional when session storage is unavailable.
+        }
         return;
       }
 
@@ -273,7 +255,11 @@
           "Vaše nabídka je teď viditelná ve výsledcích vyhledávání."
         );
 
-        sessionStorage.removeItem("rentuloOfferSaved");
+        try {
+          sessionStorage.removeItem("rentuloOfferSaved");
+        } catch (_error) {
+          // The confirmation is optional when session storage is unavailable.
+        }
       }
     }
 
@@ -422,37 +408,6 @@ if (!reservationsResult.error) {
       return true;
     }
 
-function getOfferCategory(offer) {
-      const category = String(offer.category || "").trim();
-      const normalized = typeof normalizeText === "function"
-        ? normalizeText(category)
-        : category.toLowerCase();
-      const categories = {
-        "domacnost": "home.category.household",
-        "zahrada": "home.category.garden",
-        "stavba": "home.category.construction",
-        "hobby": "home.category.hobby",
-        "party": "home.category.party",
-        "ostatni": "home.category.other",
-        "dum a zahrada": "category.homeGarden",
-        "dilna a naradi": "category.workshopTools",
-        "sport a volny cas": "category.sportLeisure",
-        "elektronika": "category.electronics",
-        "deti a rodina": "category.childrenFamily",
-        "auto a doprava": "category.autoTransport",
-        "party a akce": "category.partyEvents",
-        "cestovani a kempovani": "category.travelCamping",
-        "stavebni technika": "category.construction"
-      };
-      const translationKey = categories[normalized];
-
-      if (translationKey) {
-        return offersTranslate(translationKey, category);
-      }
-
-      return category || offersTranslate("offers.categoryFallback", "Ostatní");
-    }
-
     function getOfferDisplayName(offer) {
       return getOfferName(offer, offersTranslate("offers.itemFallback", "Věc k půjčení"));
     }
@@ -491,10 +446,6 @@ function getOfferStatus(offer) {
 
     function isOfferActive(offer) {
       return offer.status === "active";
-    }
-
-    function getOfferStatusClass(offer) {
-      return isOfferDraft(offer) ? "draft" : isOfferHidden(offer) ? "hidden" : "";
     }
 
     function getOfferPhoto(offer) {
@@ -904,46 +855,14 @@ const data = Array.isArray(updatedReservations)
     function reopenReservationAfterRender(reservationId, panelType) {
       const offerId = getOfferIdByReservationId(reservationId);
 
-      if (!offerId) {
-        return;
-      }
-
-      const offerDetail = document.getElementById("offer-detail-" + offerId);
-      const offerManageButton = document.getElementById("offer-manage-toggle-" + offerId);
-
-      if (offerDetail) {
-        offerDetail.classList.add("open");
-      }
-
-      if (offerManageButton) {
-        offerManageButton.textContent = offersTranslate("offers.hide", "Skrýt");
-      }
-
-      if (panelType === "history") {
-        const historyPanel = document.getElementById("history-panel-" + offerId);
-        const historyButton = document.getElementById("history-toggle-" + offerId);
-
-        if (historyPanel) {
-          historyPanel.classList.add("open");
-        }
-
-        if (historyButton) {
-          historyButton.textContent = offersTranslate("offers.hideHistory", "Skrýt historii");
-        }
-
+      if (!offerId || panelType === "history") {
         return;
       }
 
       const openPanel = document.getElementById("open-panel-" + offerId);
-      const openButton = document.getElementById("open-toggle-" + offerId);
 
       if (openPanel) {
         openPanel.classList.add("open");
-      }
-
-      if (openButton) {
-        openButton.textContent = offersTranslate("offers.hideRequests", "Skrýt žádosti");
-        openButton.classList.remove("important");
       }
     }
 
@@ -1142,54 +1061,6 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       `;
     }
 
-    function renderHistoryRequestRow(reservation) {
-      const status = reservation.status;
-      const statusText = getStatusText(status);
-
-      const renterName = reservation.renterName || offersTranslate("offers.renterFallback", "Zájemce");
-      const renterEmail = canShowContact(status)
-        ? reservation.renterEmail || offersTranslate("offers.emailMissing", "E-mail není uložen")
-        : offersTranslate("offers.contact.afterPayment", "Kontakt se zobrazí po zaplacení");
-
-      const startDate = reservation.startDate;
-      const endDate = reservation.endDate;
-      const price = reservation.totalPrice;
-      const reservationId = reservation.id;
-
-      return `
-        <div class="history-row-wrapper">
-          <div class="history-row">
-            <div class="history-main">
-              <span class="history-title">${escapeHtml(renterName)}</span>
-              <span class="history-subtitle">${escapeHtml(renterEmail)}</span>
-            </div>
-
-            <div class="history-info">
-              ${escapeHtml(formatOffersDate(startDate))} – ${escapeHtml(formatOffersDate(endDate))}
-            </div>
-
-            <div class="history-status">
-              ${escapeHtml(statusText)}
-            </div>
-
-            <div class="history-price hide-tablet">
-              ${escapeHtml(formatOffersMoney(price))}
-            </div>
-
-            <div class="row-actions">
-              <button class="history-toggle-button" type="button" data-offers-action="toggle-history-request" data-reservation-id="${escapeHtml(reservationId)}">
-                ${offersTranslate("offers.detail.show", "Detail")}
-              </button>
-            </div>
-          </div>
-
-          <div class="history-detail" id="history-request-detail-${escapeHtml(reservationId)}">
-            ${renderRequestDetailContent(reservation, status)}
-          </div>
-        </div>
-      `;
-    }
-
     function toggleRequestDetail(reservationId, button) {
       const detail = document.getElementById("request-detail-" + reservationId);
 
@@ -1209,70 +1080,6 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       button.textContent = offersTranslate("offers.hideDetail", "Skrýt detail");
     }
 
-    function toggleHistoryRequest(reservationId, button) {
-      const detail = document.getElementById("history-request-detail-" + reservationId);
-
-      if (!detail) {
-        return;
-      }
-
-      const isOpen = detail.classList.contains("open");
-
-      if (isOpen) {
-        detail.classList.remove("open");
-        button.textContent = offersTranslate("offers.detail.show", "Detail");
-        return;
-      }
-
-      detail.classList.add("open");
-      button.textContent = offersTranslate("offers.hideDetail", "Skrýt detail");
-    }
-
-    function toggleRequestPanel(panelId, button) {
-      const panel = document.getElementById(panelId);
-
-      if (!panel) {
-        return;
-      }
-
-      const isOpen = panel.classList.contains("open");
-      const isImportant = button.getAttribute("data-important") === "true";
-
-      if (isOpen) {
-        panel.classList.remove("open");
-        button.textContent = button.getAttribute("data-closed-text");
-
-        if (isImportant) {
-          button.classList.add("important");
-        }
-
-        return;
-      }
-
-      panel.classList.add("open");
-      button.textContent = button.getAttribute("data-open-text");
-      button.classList.remove("important");
-    }
-
-    function toggleOfferDetail(detailId, button) {
-      const detail = document.getElementById(detailId);
-
-      if (!detail) {
-        return;
-      }
-
-      const isOpen = detail.classList.contains("open");
-
-      if (isOpen) {
-        detail.classList.remove("open");
-        button.textContent = offersTranslate("offers.manage", "Spravovat");
-        return;
-      }
-
-      detail.classList.add("open");
-      button.textContent = offersTranslate("offers.hide", "Skrýt");
-    }
-
     function renderRequestPanel(panelId, title, requests, content) {
       const countText = getRequestPanelCountText(requests);
 
@@ -1290,51 +1097,17 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       `;
     }
 
-    function toggleOfferOverviewFromMenu(offerId, menuElement) {
-      const detail = document.getElementById("offer-detail-" + offerId);
-
-      if (!detail) {
-        return;
-      }
-
-      detail.classList.toggle("open");
-
-      if (menuElement && typeof menuElement.removeAttribute === "function") {
-        menuElement.removeAttribute("open");
-      }
-    }
-
     function toggleOfferRequests(offerId) {
-      const offerDetail = document.getElementById("offer-detail-" + offerId);
       const openPanel = document.getElementById("open-panel-" + offerId);
-      const openButton = document.getElementById("open-toggle-" + offerId);
       const isOpen = openPanel && openPanel.classList.contains("open");
 
       if (isOpen) {
         openPanel.classList.remove("open");
-
-        if (openButton) {
-          openButton.textContent = openButton.getAttribute("data-closed-text");
-
-          if (openButton.getAttribute("data-important") === "true") {
-            openButton.classList.add("important");
-          }
-        }
-
         return;
-      }
-
-      if (offerDetail) {
-        offerDetail.classList.add("open");
       }
 
       if (openPanel) {
         openPanel.classList.add("open");
-      }
-
-      if (openButton) {
-        openButton.textContent = offersTranslate("offers.hideRequests", "Skrýt žádosti");
-        openButton.classList.remove("important");
       }
 
       setTimeout(function () {
@@ -1344,126 +1117,6 @@ return `<p class="request-note success">${offersTranslate("offers.note.pickedUp"
       }, 0);
     }
 
-    function renderOffer(offer, requests) {
-      const offerId = String(offer.id);
-      const offerName = getOfferDisplayName(offer);
-      const offerCity = getOfferCity(offer);
-      const offerCategory = getOfferCategory(offer);
-      const offerPrice = getOfferPrice(offer);
-      const isDraft = isOfferDraft(offer);
-
-      const openRequests = requests.filter(function (reservation) {
-        return isOpenStatus(reservation.status);
-      });
-
-      const ownerActionRequests = openRequests.filter(function (reservation) {
-        return isOwnerActionStatus(reservation.status);
-      });
-
-      const openPanelId = "open-panel-" + offerId;
-      const offerDetailId = "offer-detail-" + offerId;
-
-      const openRequestsButtonText = openRequests.length
-        ? offersTranslate("offers.showRequestsCount", "Zobrazit žádosti ({count})", { count: openRequests.length })
-        : offersTranslate("offers.openRequestsZero", "Otevřené žádosti (0)");
-
-      const openContent = openRequests.length
-        ? openRequests.map(renderRequest).join("")
-        : `<p class="request-empty-note">${offersTranslate("offers.noOpenRequests", "U této nabídky teď není žádná otevřená žádost.")}</p>`;
-
-      let requestStateHtml = `<span class="offer-request-state quiet">${offersTranslate("offers.noOpenRequestsShort", "Bez otevřených žádostí")}</span>`;
-
-      if (isDraft) {
-        requestStateHtml = `<span class="offer-request-state draft">${offersTranslate("offers.draftNotPublished", "Koncept není zveřejněný")}</span>`;
-      } else if (ownerActionRequests.length) {
-        requestStateHtml = `
-          <span class="offer-request-state urgent">
-            ${escapeHtml(getWaitingRequestText(ownerActionRequests.length))}
-          </span>
-        `;
-      } else if (openRequests.length) {
-        requestStateHtml = `
-          <span class="offer-request-state active">
-            ${escapeHtml(getOpenRequestText(openRequests.length))}
-          </span>
-        `;
-      }
-
-      const primaryActionHtml = isDraft
-        ? `<button class="offer-primary-button orange" type="button" data-offers-action="publish-offer" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.publish", "Zveřejnit nabídku")}</button>`
-        : openRequests.length
-          ? `<button class="offer-primary-button ${ownerActionRequests.length ? "urgent" : ""}" type="button" data-offers-action="open-offer-requests" data-offer-id="${escapeHtml(offerId)}">${getOfferRequestsButtonText(openRequests, ownerActionRequests)}</button>`
-          : `<button class="offer-primary-button secondary" type="button" data-offers-action="toggle-offer-detail" data-detail-id="${escapeHtml(offerDetailId)}">${offersTranslate("offers.overview", "Přehled nabídky")}</button>`;
-
-      const directOfferActionsHtml = `
-        ${isDraft ? "" : `<a class="offer-secondary-link" href="detail.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.publicDetail", "Detail nabídky")}</a>`}
-        <a class="offer-secondary-link" href="edit-nabidka.html?id=${encodeURIComponent(offerId)}">${offersTranslate("offers.edit", "Upravit nabídku")}</a>
-        ${openRequests.length ? "" : `<button class="offer-delete-action danger" type="button" data-offers-action="delete-offer" data-offer-id="${escapeHtml(offerId)}">${offersTranslate("offers.delete", "Smazat nabídku")}</button>`}
-      `;
-
-      const detailHtml = isDraft
-        ? ""
-        : `
-          <div class="offer-detail" id="${escapeHtml(offerDetailId)}">
-            <div class="offer-detail-grid">
-              <div class="mini-stat">
-                <span>${offersTranslate("offers.place", "Místo")}</span>
-                <strong>${escapeHtml(offerCity)}</strong>
-              </div>
-              <div class="mini-stat">
-                <span>${offersTranslate("offers.category", "Kategorie")}</span>
-                <strong>${escapeHtml(offerCategory)}</strong>
-              </div>
-              <div class="mini-stat">
-                <span>${offersTranslate("offers.openRequests", "Žádosti a rezervace")}</span>
-                <strong>${escapeHtml(openRequests.length)}</strong>
-              </div>
-            </div>
-
-            <div class="offer-detail-actions">
-              <button
-                class="request-toggle-button ${ownerActionRequests.length ? "important" : ""}"
-                type="button"
-                id="open-toggle-${escapeHtml(offerId)}"
-                data-offers-action="toggle-request-panel"
-                data-panel-id="${escapeHtml(openPanelId)}"
-                data-closed-text="${escapeHtml(openRequestsButtonText)}"
-                data-open-text="${escapeHtml(offersTranslate("offers.hideRequests", "Skrýt žádosti"))}"
-                data-important="${ownerActionRequests.length ? "true" : "false"}"
-              >${escapeHtml(openRequestsButtonText)}</button>
-            </div>
-
-            ${renderRequestPanel(openPanelId, offersTranslate("offers.openRequests", "Žádosti a rezervace"), openRequests, openContent)}
-          </div>
-        `;
-
-      return `
-        <article class="offer-card ${ownerActionRequests.length ? "has-urgent-request" : ""}">
-          <div class="offer-card-main">
-            <div class="offer-tool">
-              ${renderToolImage(offer)}
-              <div class="offer-card-copy">
-                <div class="offer-title-line">
-                  <h2 class="offer-card-title">${escapeHtml(offerName)}</h2>
-                  <span class="status-pill ${getOfferStatusClass(offer)}">${escapeHtml(getOfferStatus(offer))}</span>
-                </div>
-                <p class="offer-card-meta">${escapeHtml(offerCity)} · ${escapeHtml(offerCategory)}</p>
-                <div class="offer-card-summary">
-                  <strong>${escapeHtml(formatOffersMoneyPerDay(offerPrice))}</strong>
-                  ${requestStateHtml}
-                </div>
-              </div>
-            </div>
-
-            <div class="offer-card-controls">
-              ${primaryActionHtml}
-              ${directOfferActionsHtml}
-            </div>
-          </div>
-          ${detailHtml}
-        </article>
-      `;
-    }
 function renderSimpleOffer(offer, requests) {
   const offerId = String(offer.id);
   const offerName = getOfferDisplayName(offer);
@@ -1566,7 +1219,7 @@ function renderSimpleOffer(offer, requests) {
         return;
       }
 
-      const offersRowsHtml = ownerOffers.map(function (offer, index) {
+      const offersRowsHtml = ownerOffers.map(function (offer) {
         const offerId = String(offer.id);
 
         const offerRequests = ownerReservations.filter(function (reservation) {
@@ -1611,19 +1264,6 @@ function renderSimpleOffer(offer, requests) {
         }
 
         element.classList.add("open");
-
-        if (elementId.startsWith("open-panel-")) {
-          const panelButton = Array.from(
-            document.querySelectorAll('[data-offers-action="toggle-request-panel"]')
-          ).find(function (button) {
-            return button.dataset.panelId === elementId;
-          });
-
-          if (panelButton) {
-            panelButton.textContent = panelButton.dataset.openText || offersTranslate("offers.hideRequests", "Skrýt žádosti");
-            panelButton.classList.remove("important");
-          }
-        }
 
         if (elementId.startsWith("request-detail-")) {
           const reservationId = elementId.replace("request-detail-", "");
@@ -1679,27 +1319,10 @@ return [
       }
 
       setTimeout(function () {
-        const offerDetail = document.getElementById("offer-detail-" + offerId);
-        const offerManageButton = document.getElementById("offer-manage-toggle-" + offerId);
-
-        if (offerDetail) {
-          offerDetail.classList.add("open");
-        }
-
-        if (offerManageButton) {
-          offerManageButton.textContent = offersTranslate("offers.hide", "Skrýt");
-        }
-
         const openPanel = document.getElementById("open-panel-" + offerId);
-        const openButton = document.getElementById("open-toggle-" + offerId);
 
         if (openPanel) {
           openPanel.classList.add("open");
-        }
-
-        if (openButton) {
-          openButton.textContent = offersTranslate("offers.hideRequests", "Skrýt žádosti");
-          openButton.classList.remove("important");
         }
 
         const requestCard = document.getElementById("request-card-" + reservationId);
@@ -1764,9 +1387,6 @@ return [
           case "toggle-request-detail":
             toggleRequestDetail(reservationId, actionButton);
             break;
-          case "toggle-history-request":
-            toggleHistoryRequest(reservationId, actionButton);
-            break;
           case "publish-offer":
             await publishOffer(offerId);
             break;
@@ -1778,15 +1398,6 @@ return [
             break;
           case "open-offer-requests":
             toggleOfferRequests(offerId);
-            break;
-          case "toggle-offer-detail":
-            toggleOfferDetail(actionButton.dataset.detailId || "", actionButton);
-            break;
-          case "toggle-request-panel":
-            toggleRequestPanel(actionButton.dataset.panelId || "", actionButton);
-            break;
-          case "toggle-offer-overview":
-            toggleOfferOverviewFromMenu(offerId, actionButton.closest("details"));
             break;
           case "delete-offer":
             await deleteOffer(offerId);
@@ -1809,12 +1420,10 @@ return [
         return;
       }
 
-      renderSharedNavigation("moje-nabidky");
       renderLoadingState();
 
       const loaded = await loadOwnerData();
 
-      renderSharedNavigation("moje-nabidky");
 
       if (loaded) {
         renderOffers();
@@ -1833,7 +1442,6 @@ return [
     });
 
     document.addEventListener("rentuloLanguageChanged", function () {
-      renderSharedNavigation("moje-nabidky");
       refreshOfferDeleteModalText();
 
       if (ownerOffersLoadState === "loading") {
