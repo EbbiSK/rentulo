@@ -88,7 +88,11 @@ function navGetLanguage() {
     return window.getRentuloLanguage();
   }
 
-  return localStorage.getItem("rentuloLanguage") || "cs";
+  try {
+    return localStorage.getItem("rentuloLanguage") || "cs";
+  } catch (error) {
+    return "cs";
+  }
 }
 
 function navProfileText(key) {
@@ -1232,7 +1236,7 @@ function navInjectStyles() {
 function navGetMobileMenuLabel() {
   const translated = navTranslate("nav.menu", "");
 
-  if (translated && translated !== "nav.menu") {
+  if (translated) {
     return translated;
   }
 
@@ -1398,13 +1402,18 @@ function renderSharedBranding() {
 }
 
 function navClearLocalLogin() {
-  if (typeof clearCurrentUser === "function") {
-    clearCurrentUser();
-  }
+  try {
+    if (typeof clearCurrentUser === "function") {
+      clearCurrentUser();
+      return;
+    }
 
-  localStorage.removeItem("rentuloLoggedIn");
-  localStorage.removeItem("rentuloUser");
-  localStorage.removeItem("rentuloRememberLogin");
+    localStorage.removeItem("rentuloLoggedIn");
+    localStorage.removeItem("rentuloUser");
+    localStorage.removeItem("rentuloRememberLogin");
+  } catch (error) {
+    // Continue logout even when browser storage is unavailable.
+  }
 }
 
 async function navLogoutUser() {
@@ -1782,7 +1791,11 @@ function renderSharedNavigation(activePage) {
       if (typeof window.setRentuloLanguage === "function") {
         window.setRentuloLanguage(language);
       } else {
-        localStorage.setItem("rentuloLanguage", language);
+        try {
+          localStorage.setItem("rentuloLanguage", language);
+        } catch (error) {
+          // Continue without persistence when browser storage is unavailable.
+        }
         window.location.reload();
       }
 
@@ -1906,6 +1919,10 @@ async function initializeSharedNavigation() {
       navVerifiedUser = session && session.user ? session.user : null;
       navAuthPromise = Promise.resolve(navVerifiedUser);
       window.rentuloAccountNotificationCount = 0;
+      window.rentuloAccountNotificationCounts = {
+        reservations: 0,
+        offers: 0
+      };
       navProfileSummary = null;
       renderSharedNavigation(page);
 
