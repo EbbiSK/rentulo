@@ -59,7 +59,11 @@
       return normalizeLanguage(window.getRentuloLanguage());
     }
 
-    return normalizeLanguage(localStorage.getItem("rentuloLanguage"));
+    try {
+      return normalizeLanguage(localStorage.getItem("rentuloLanguage"));
+    } catch (error) {
+      return "cs";
+    }
   }
 
   function getSupabaseClient() {
@@ -132,42 +136,6 @@
     return !error && data && data.user ? data.user : null;
   }
 
-  async function loadPreference(client, user) {
-    if (!client || !user || !user.id) {
-      return;
-    }
-
-    const select = document.getElementById("settingsLanguageSelect");
-
-    if (!select) {
-      return;
-    }
-
-    try {
-      const { data, error } = await client
-        .from("profiles")
-        .select("preferred_language")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (error) {
-        throw error;
-      }
-
-      const metadata = user.user_metadata || {};
-      const language = normalizeLanguage(
-        (data && data.preferred_language) || metadata.preferred_language || "cs"
-      );
-
-      select.value = language;
-      renderText(language);
-    } catch (error) {
-      console.warn("Jazyk účtu se nepodařilo načíst.", error);
-      select.value = getCurrentLanguage();
-      renderText();
-    }
-  }
-
   async function savePreference(client, user) {
     const select = document.getElementById("settingsLanguageSelect");
 
@@ -205,11 +173,15 @@
       if (typeof window.setRentuloLanguage === "function") {
         window.setRentuloLanguage(language);
       } else {
-        localStorage.setItem("rentuloLanguage", language);
-      }
+        try {
+          localStorage.setItem("rentuloLanguage", language);
+        } catch (error) {
+          // Continue when browser storage is unavailable.
+        }
 
-      if (typeof renderSharedNavigation === "function") {
-        renderSharedNavigation("nastaveni");
+        if (typeof renderSharedNavigation === "function") {
+          renderSharedNavigation("nastaveni");
+        }
       }
 
       select.value = language;
@@ -232,15 +204,15 @@
       return;
     }
 
-    renderText();
+    const language = getCurrentLanguage();
+    select.value = language;
+    renderText(language);
 
     const user = await getUser();
 
     if (!user) {
       return;
     }
-
-    await loadPreference(client, user);
 
     saveButton.addEventListener("click", function () {
       void savePreference(client, user);
