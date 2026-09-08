@@ -262,15 +262,13 @@ pickupLongitude:
       };
     }
 
-    async function loadMyReservationsFromSupabase() {
+    async function loadMyReservationsFromSupabase(supabaseUser) {
       const supabaseClient = getSupabaseClient();
 
       if (!supabaseClient) {
         reservationsLoadState = "error";
         return [];
       }
-
-      const supabaseUser = await getCurrentSupabaseUser();
 
       if (!supabaseUser) {
         reservationsLoadState = "redirecting";
@@ -437,7 +435,6 @@ return (
           </div>
         `;
       }
-
       return `
         <div class="tool-thumb tool-image">⌁</div>
       `;
@@ -477,7 +474,13 @@ return (
       reservationsLoadState = "loading";
       renderLoadingState();
 
-      supabaseReservations = await loadMyReservationsFromSupabase();
+      const verifiedUser = await window.rentuloAuthGuard.requireUser();
+
+      if (!verifiedUser) {
+        return;
+      }
+
+      supabaseReservations = await loadMyReservationsFromSupabase(verifiedUser);
 
       if (typeof window.refreshRentuloNotificationBadge === "function") {
         await window.refreshRentuloNotificationBadge();
@@ -1293,7 +1296,7 @@ const data = Array.isArray(paidReservations)
       renderLoadingState();
       reservationsLoadState = "loading";
 
-      supabaseReservations = await loadMyReservationsFromSupabase();
+      supabaseReservations = await loadMyReservationsFromSupabase(verifiedUser);
 
       if (reservationsLoadState === "ready") {
         renderReservations();
