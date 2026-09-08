@@ -1314,6 +1314,3 @@ function setupEditOfferSave() {
     }
   });
 }
-document.addEventListener("DOMContentLoaded", function () {
-  renderSharedNavigation("edit-nabidka");
-});
