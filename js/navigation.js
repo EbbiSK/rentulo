@@ -1433,18 +1433,22 @@ async function navLogoutUser() {
 
 async function navLoadNotificationCountFromSupabase(activePage) {
   const currentUser = navGetCurrentUser();
+  const supabaseClient = navGetSupabaseClient();
 
-  if (!currentUser || typeof apiGetReservations !== "function") {
+  if (!currentUser || !supabaseClient) {
     return;
   }
 
   try {
-    const reservations = await apiGetReservations();
+    const { data, error } = await supabaseClient
+      .rpc("get_my_reservations");
 
-    if (!Array.isArray(reservations)) {
+    if (error) {
+      console.warn("Počet upozornění se nepodařilo načíst.", error);
       return;
     }
 
+    const reservations = Array.isArray(data) ? data : [];
     const userId = String(currentUser.id || "");
     const userEmail = navNormalizeEmail(navGetUserEmail(currentUser));
 
