@@ -100,6 +100,19 @@ test("auth guard keeps direct Supabase verification as a fallback", async () => 
   assert.deepEqual(state.redirects, []);
 });
 
+test("successful auth verification preserves the remember-login preference", async () => {
+  const state = createSandbox();
+
+  const user = await state.sandbox.window.rentuloAuthGuard.requireUser();
+
+  assert.equal(user.id, state.user.id);
+  assert.deepEqual(
+    state.removedKeys,
+    ["rentuloUser", "rentuloLoggedIn"],
+    "legacy cleanup must not remove the active rentuloRememberLogin preference"
+  );
+});
+
 test("blocked localStorage does not invalidate a verified user", async () => {
   const state = createSandbox({ storageThrows: true });
 
