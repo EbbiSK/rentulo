@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
   clearLegacyStoredVisitorLocation();
-  renderSharedNavigation("");
   setupHomeSearch();
   setupCategorySearch();
   applyHomeDynamicTranslations();
