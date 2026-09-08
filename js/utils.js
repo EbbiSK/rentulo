@@ -40,6 +40,10 @@ function getSupabaseClient() {
 }
 
 async function getCurrentSupabaseUser() {
+  if (typeof navGetVerifiedUser === "function") {
+    return await navGetVerifiedUser();
+  }
+
   const supabaseClient = getSupabaseClient();
 
   if (!supabaseClient) {
