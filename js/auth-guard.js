@@ -14,9 +14,13 @@
   }
 
   function clearLegacyAuthState() {
-    localStorage.removeItem("rentuloUser");
-    localStorage.removeItem("rentuloLoggedIn");
-    localStorage.removeItem("rentuloRememberLogin");
+    try {
+      localStorage.removeItem("rentuloUser");
+      localStorage.removeItem("rentuloLoggedIn");
+      localStorage.removeItem("rentuloRememberLogin");
+    } catch (error) {
+      // Legacy cleanup must never interrupt a valid Supabase session.
+    }
   }
 
   function redirectToLogin() {

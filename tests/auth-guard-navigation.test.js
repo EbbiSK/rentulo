@@ -41,6 +41,10 @@ function createSandbox(options = {}) {
     },
     localStorage: {
       removeItem(key) {
+        if (options.storageThrows) {
+          throw new Error("localStorage unavailable");
+        }
+
         removedKeys.push(key);
       }
     },
@@ -94,6 +98,21 @@ test("auth guard keeps direct Supabase verification as a fallback", async () => 
   assert.equal(state.getNavigationGetUserCalls(), 0);
   assert.equal(state.getFallbackGetUserCalls(), 1, "fallback auth.getUser must still work");
   assert.deepEqual(state.redirects, []);
+});
+
+test("blocked localStorage does not invalidate a verified user", async () => {
+  const state = createSandbox({ storageThrows: true });
+
+  const user = await state.sandbox.window.rentuloAuthGuard.requireUser();
+
+  assert.equal(user.id, state.user.id);
+  assert.equal(state.getNavigationGetUserCalls(), 1);
+  assert.equal(state.getFallbackGetUserCalls(), 0);
+  assert.deepEqual(
+    state.redirects,
+    [],
+    "storage cleanup failure must not redirect a valid user to login"
+  );
 });
 
 test("every HTML page using auth guard loads navigation first", () => {
