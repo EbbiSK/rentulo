@@ -34,6 +34,16 @@ function reservationHelperSource(navigationSource) {
   return navigationSource.slice(start, end);
 }
 
+function authRefreshPlanSource(navigationSource) {
+  const start = navigationSource.indexOf("function navGetAuthStateRefreshPlan(");
+  const end = navigationSource.indexOf("async function initializeSharedNavigation()", start);
+
+  assert.notEqual(start, -1, "auth refresh plan helper must exist");
+  assert.notEqual(end, -1, "auth refresh plan helper must end before navigation initialization");
+
+  return navigationSource.slice(start, end);
+}
+
 test("shared navigation owns the only direct get_my_reservations RPC", () => {
   const navigation = source(NAVIGATION_PATH);
 
@@ -177,7 +187,42 @@ test("shared reservation loader deduplicates concurrent reads and can be invalid
   await afterError;
 });
 
-test("auth state changes invalidate shared reservation data", () => {
+test("auth refresh plan skips same-user session noise and keeps intentional refreshes", () => {
+  const navigation = source(NAVIGATION_PATH);
+  const helperSource = authRefreshPlanSource(navigation);
+  const sandbox = {};
+
+  vm.createContext(sandbox);
+  vm.runInContext(
+    helperSource + "\nthis.getAuthRefreshPlan = navGetAuthStateRefreshPlan;",
+    sandbox
+  );
+
+  ["INITIAL_SESSION", "SIGNED_IN", "TOKEN_REFRESHED"].forEach((event) => {
+    const plan = sandbox.getAuthRefreshPlan(event, "user-1", "user-1");
+
+    assert.equal(plan.userChanged, false, `${event} must not look like a user change`);
+    assert.equal(plan.refreshProfile, false, `${event} must not reload profile data for the same user`);
+    assert.equal(plan.refreshNotifications, false, `${event} must not reload notification data for the same user`);
+  });
+
+  const profileUpdate = sandbox.getAuthRefreshPlan("USER_UPDATED", "user-1", "user-1");
+  assert.equal(profileUpdate.userChanged, false);
+  assert.equal(profileUpdate.refreshProfile, true, "USER_UPDATED must refresh profile data");
+  assert.equal(profileUpdate.refreshNotifications, false, "USER_UPDATED must not reload reservation notifications");
+
+  const userChange = sandbox.getAuthRefreshPlan("SIGNED_IN", "user-1", "user-2");
+  assert.equal(userChange.userChanged, true);
+  assert.equal(userChange.refreshProfile, true);
+  assert.equal(userChange.refreshNotifications, true);
+
+  const signOut = sandbox.getAuthRefreshPlan("SIGNED_OUT", "user-1", "");
+  assert.equal(signOut.userChanged, true);
+  assert.equal(signOut.refreshProfile, true);
+  assert.equal(signOut.refreshNotifications, true);
+});
+
+test("auth state listener invalidates and reloads account data only when the refresh plan requires it", () => {
   const navigation = source(NAVIGATION_PATH);
   const authStateStart = navigation.indexOf("supabaseClient.auth.onAuthStateChange");
   const authStateEnd = navigation.indexOf("    });", authStateStart);
@@ -189,12 +234,27 @@ test("auth state changes invalidate shared reservation data", () => {
 
   assert.match(
     callbackSource,
-    /previousUserId !== nextUserId/,
-    "auth listener must distinguish a real user change from same-user session refreshes"
+    /navGetAuthStateRefreshPlan\(event, previousUserId, nextUserId\)/,
+    "auth listener must classify same-user auth events before reloading account data"
   );
   assert.match(
     callbackSource,
-    /navInvalidateReservationsData\(\)/,
-    "a real auth user change must clear reservation data from the previous user"
+    /if \(refreshPlan\.userChanged\) \{[\s\S]*navInvalidateReservationsData\(\)/,
+    "only a real user change may clear shared reservation data"
+  );
+  assert.match(
+    callbackSource,
+    /if \(!refreshPlan\.refreshProfile && !refreshPlan\.refreshNotifications\) \{\s*return;/,
+    "same-user session noise must exit before profile or notification reloads"
+  );
+  assert.match(
+    callbackSource,
+    /if \(refreshPlan\.refreshProfile\) \{[\s\S]*navLoadProfileSummary\(navVerifiedUser\)/,
+    "profile loads must be gated by the refresh plan"
+  );
+  assert.match(
+    callbackSource,
+    /if \(refreshPlan\.refreshNotifications\) \{[\s\S]*navLoadNotificationCountFromSupabase\(page\)/,
+    "notification loads must be gated by the refresh plan"
   );
 });

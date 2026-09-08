@@ -1983,6 +1983,17 @@ function navShouldLoadAccountData(page) {
   ].includes(page);
 }
 
+function navGetAuthStateRefreshPlan(event, previousUserId, nextUserId) {
+  const userChanged = previousUserId !== nextUserId;
+  const profileUpdated = event === "USER_UPDATED";
+
+  return {
+    userChanged: userChanged,
+    refreshProfile: userChanged || profileUpdated,
+    refreshNotifications: userChanged
+  };
+}
+
 async function initializeSharedNavigation() {
   const page = document.body.dataset.navigationPage;
 
@@ -2014,30 +2025,44 @@ async function initializeSharedNavigation() {
     typeof supabaseClient.auth.onAuthStateChange === "function"
   ) {
     navAuthListenerRegistered = true;
-    supabaseClient.auth.onAuthStateChange(function (_event, session) {
+    supabaseClient.auth.onAuthStateChange(function (event, session) {
       const previousUserId = navVerifiedUser && navVerifiedUser.id
         ? String(navVerifiedUser.id)
         : "";
       const nextUser = session && session.user ? session.user : null;
       const nextUserId = nextUser && nextUser.id ? String(nextUser.id) : "";
+      const refreshPlan = navGetAuthStateRefreshPlan(event, previousUserId, nextUserId);
 
       navVerifiedUser = nextUser;
       navAuthPromise = Promise.resolve(navVerifiedUser);
 
-      if (previousUserId !== nextUserId) {
+      if (refreshPlan.userChanged) {
         navInvalidateReservationsData();
+        window.rentuloAccountNotificationCount = 0;
+        window.rentuloAccountNotificationCounts = {
+          reservations: 0,
+          offers: 0
+        };
       }
-      window.rentuloAccountNotificationCount = 0;
-      window.rentuloAccountNotificationCounts = {
-        reservations: 0,
-        offers: 0
-      };
-      navProfileSummary = null;
+
+      if (refreshPlan.refreshProfile) {
+        navProfileSummary = null;
+      }
+
+      if (!refreshPlan.refreshProfile && !refreshPlan.refreshNotifications) {
+        return;
+      }
+
       renderSharedNavigation(page);
 
       if (navVerifiedUser && shouldLoadAccountData) {
-        void navLoadProfileSummary(navVerifiedUser);
-        void navLoadNotificationCountFromSupabase(page);
+        if (refreshPlan.refreshProfile) {
+          void navLoadProfileSummary(navVerifiedUser);
+        }
+
+        if (refreshPlan.refreshNotifications) {
+          void navLoadNotificationCountFromSupabase(page);
+        }
       }
     });
   }
