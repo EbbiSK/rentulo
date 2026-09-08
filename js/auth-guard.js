@@ -38,6 +38,19 @@
     }
 
     try {
+      if (typeof navGetVerifiedUser === "function") {
+        const user = await navGetVerifiedUser();
+
+        if (!user) {
+          clearLegacyAuthState();
+          redirectToLogin();
+          return null;
+        }
+
+        clearLegacyAuthState();
+        return user;
+      }
+
       const { data, error } = await supabaseClient.auth.getUser();
       const user = data && data.user ? data.user : null;
 
