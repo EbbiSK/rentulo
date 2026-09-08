@@ -540,7 +540,9 @@ const data = Array.isArray(blockingReservations)
 
       currentOffer = offer;
 
-      const currentUser = await getCurrentSupabaseUser();
+      const currentUser = typeof navGetVerifiedUser === "function"
+        ? await navGetVerifiedUser()
+        : await getCurrentSupabaseUser();
 
       const offerName = getOfferName(offer);
       const offerCategory = detailCategoryLabel(getOfferCategory(offer));
