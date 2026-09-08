@@ -8,6 +8,7 @@ const vm = require("node:vm");
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 const NAVIGATION_PATH = path.join(PROJECT_ROOT, "js", "navigation.js");
+const API_PATH = path.join(PROJECT_ROOT, "js", "api.js");
 
 const PAGE_PATHS = [
   path.join(PROJECT_ROOT, "js", "reservations-page.js"),
@@ -43,6 +44,26 @@ test("shared navigation owns the only direct get_my_reservations RPC", () => {
     directReservationRpcCount(navigation),
     1,
     "navigation must contain exactly one direct get_my_reservations RPC"
+  );
+});
+
+test("API helper does not reintroduce a second reservation loader", () => {
+  const apiSource = source(API_PATH);
+
+  assert.equal(
+    directReservationRpcCount(apiSource),
+    0,
+    "api.js must not call get_my_reservations directly"
+  );
+  assert.doesNotMatch(
+    apiSource,
+    /apiGetReservations/,
+    "api.js must not expose the retired reservation loader"
+  );
+  assert.match(
+    apiSource,
+    /window\.apiSendReservationEmail = apiSendReservationEmail;/,
+    "reservation e-mail helper must remain available"
   );
 });
 
