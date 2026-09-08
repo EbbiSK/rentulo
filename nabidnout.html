@@ -142,21 +142,6 @@
       box-shadow: 0 16px 38px rgba(16, 32, 25, 0.055);
     }
 
-    .offer-card-header {
-      padding: 26px 28px 0;
-      background: transparent;
-      border: 0;
-    }
-
-    .offer-card-header h2 {
-      margin: 0;
-      color: var(--rentulo-ink, #102019);
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.025em;
-      line-height: 1.25;
-    }
-
     .offer-card-body {
       display: grid;
       gap: 22px;
@@ -229,12 +214,6 @@
       color: #8a4b16;
     }
 
-    .form-message.success {
-      background: #edf9f2;
-      border: 1px solid #c6e4d5;
-      color: var(--rentulo-ink, #102019);
-    }
-
     .photo-upload-box {
       overflow: visible;
       padding-bottom: 22px;
@@ -260,7 +239,6 @@
       border: 0;
     }
 
-    .photo-upload-header strong,
     .photo-upload-header .photo-upload-title,
     .pickup-options-header strong {
       display: block;
@@ -290,7 +268,6 @@
       font-weight: 600;
     }
 
-    .photo-upload-header p,
     .pickup-options-header p {
       margin: 5px 0 0;
       color: var(--rentulo-muted, #64706b);
@@ -357,8 +334,7 @@
     }
 
     .photo-file-button,
-    .photo-remove-button,
-    .pickup-location-button {
+    .photo-remove-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -376,14 +352,12 @@
     }
 
     .photo-file-button:hover,
-    .photo-remove-button:hover,
-    .pickup-location-button:hover {
+    .photo-remove-button:hover {
       background: var(--rentulo-green-soft, #e9f4ee);
     }
 
     .photo-file-input:focus-visible + .photo-file-button,
     .photo-remove-button:focus-visible,
-    .pickup-location-button:focus-visible,
     .btn-primary:focus-visible,
     .btn-secondary:focus-visible {
       outline: 1px solid rgba(64, 127, 101, 0.58);
@@ -401,21 +375,18 @@
       display: none !important;
     }
 
-    .photo-upload-status,
-    .pickup-location-status {
+    .photo-upload-status {
       color: var(--rentulo-muted, #64706b);
       font-size: 12px;
       font-weight: 600;
       line-height: 1.5;
     }
 
-    .photo-upload-status.success,
-    .pickup-location-status.success {
+    .photo-upload-status.success {
       color: var(--rentulo-green, #176747);
     }
 
-    .photo-upload-status.error,
-    .pickup-location-status.error {
+    .photo-upload-status.error {
       color: #a9551b;
     }
 
@@ -626,21 +597,6 @@
       display: block;
     }
 
-    .pickup-location-box {
-      background: transparent;
-      border: 0;
-      border-radius: 0;
-      overflow: visible;
-    }
-
-    .pickup-location-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      padding: 0;
-    }
-
     .offer-action-note {
       margin: 0;
       padding: 0 2px;
@@ -700,58 +656,6 @@
       cursor: not-allowed;
     }
 
-    .login-required-box {
-      max-width: 760px;
-      margin: 44px auto;
-      padding: 26px;
-      border: 1px solid var(--rentulo-line, #e5e9e5);
-      border-radius: 22px;
-      background: var(--rentulo-surface, #ffffff);
-      box-shadow: 0 16px 38px rgba(16, 32, 25, 0.055);
-    }
-
-    .login-required-box h1 {
-      margin: 0 0 8px;
-      color: var(--rentulo-ink, #102019);
-      font-size: 30px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.08;
-    }
-
-    .login-required-box p {
-      margin: 0 0 18px;
-      color: var(--rentulo-muted, #64706b);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .login-required-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .login-required-actions a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 46px;
-      padding: 0 18px;
-      border-radius: 13px;
-      background: var(--rentulo-orange, #ff6a00);
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: 800;
-      text-decoration: none;
-    }
-
-    .login-required-actions .secondary-action {
-      border: 1px solid #d9e1dd;
-      background: #ffffff;
-      color: var(--rentulo-ink, #102019);
-    }
-
     @media (max-width: 1100px) {
       .offer-page {
         width: min(100% - 48px, 980px);
@@ -790,14 +694,6 @@
 
       .offer-card {
         border-radius: 20px;
-      }
-
-      .offer-card-header {
-        padding: 22px 18px 0;
-      }
-
-      .offer-card-header h2 {
-        font-size: 20px;
       }
 
       .offer-card-body {
@@ -842,8 +738,7 @@
       }
 
       .btn-primary,
-      .btn-secondary,
-      .pickup-location-button {
+      .btn-secondary {
         width: 100%;
       }
     }
@@ -857,7 +752,6 @@
         font-size: 40px;
       }
 
-      .offer-card-header,
       .offer-card-body {
         padding-left: 16px;
         padding-right: 16px;
@@ -894,7 +788,7 @@
     <section class="offer-layout">
 
       <section class="offer-card">
-        <form class="offer-card-body tool-form" id="offerForm">
+        <form class="offer-card-body" id="offerForm">
 
           <div class="form-message" id="offerFormMessage" role="status" aria-live="polite"></div>
 
@@ -1036,7 +930,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/utils.js"></script>
-<script src="js/api.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/navigation.js"></script>
