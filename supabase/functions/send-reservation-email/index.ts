@@ -188,7 +188,8 @@ Deno.serve(async (req) => {
       ? profile.preferred_language
       : "cs";
     const [subject, intro] = templates[language][event];
-    const detailUrl = `${siteUrl}/moje-rezervace.html`;
+    const recipientIsOwner = profile.id === reservation.owner_id;
+    const detailUrl = `${siteUrl}/${recipientIsOwner ? "moje-nabidky.html" : "moje-rezervace.html"}`;
     const offerName = reservation.offer_name || "Rentulo";
     const dateText = `${reservation.start_date} – ${reservation.end_date}`;
 
