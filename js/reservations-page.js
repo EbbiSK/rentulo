@@ -276,8 +276,14 @@ pickupLongitude:
         return [];
       }
 
-      const { data: reservationsData, error } = await supabaseClient
-  .rpc("get_my_reservations");
+      if (typeof window.getRentuloReservationsData !== "function") {
+        reservationsLoadState = "error";
+        console.error("Shared reservation data loader is unavailable.");
+        return [];
+      }
+
+      const { data: reservationsData, error } =
+        await window.getRentuloReservationsData();
 
       if (error) {
         console.error(error);
@@ -473,6 +479,10 @@ return (
     async function retryLoadReservations() {
       reservationsLoadState = "loading";
       renderLoadingState();
+
+      if (typeof window.invalidateRentuloReservationsData === "function") {
+        window.invalidateRentuloReservationsData();
+      }
 
       const verifiedUser = await window.rentuloAuthGuard.requireUser();
 

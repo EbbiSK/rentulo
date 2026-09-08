@@ -378,16 +378,19 @@
         return false;
       }
 
-      const reservationsResult = await supabaseClient
-  .rpc("get_my_reservations");
+      const reservationsResult =
+        typeof window.getRentuloReservationsData === "function"
+          ? await window.getRentuloReservationsData()
+          : {
+              data: [],
+              error: new Error("Shared reservation data loader is unavailable.")
+            };
 
-if (!reservationsResult.error) {
-  reservationsResult.data = Array.isArray(reservationsResult.data)
-    ? reservationsResult.data.filter(function (reservation) {
-        return reservation.owner_id === supabaseUser.id;
-      })
-    : [];
-}
+      const ownerReservationRows = !reservationsResult.error && Array.isArray(reservationsResult.data)
+        ? reservationsResult.data.filter(function (reservation) {
+            return reservation.owner_id === supabaseUser.id;
+          })
+        : [];
 
       if (reservationsResult.error) {
         ownerOffersLoadState = "error";
@@ -400,9 +403,7 @@ if (!reservationsResult.error) {
         ? offersResult.data.map(normalizeOffer)
         : [];
 
-      ownerReservations = Array.isArray(reservationsResult.data)
-        ? reservationsResult.data.map(normalizeReservation)
-        : [];
+      ownerReservations = ownerReservationRows.map(normalizeReservation);
 
       ownerOffersLoadState = "ready";
       return true;
@@ -826,6 +827,10 @@ const data = Array.isArray(updatedReservations)
     }
 
     async function reloadAndReopen(reservationId, panelType) {
+      if (typeof window.invalidateRentuloReservationsData === "function") {
+        window.invalidateRentuloReservationsData();
+      }
+
       const loaded = await loadOwnerData();
 
       if (!loaded) {

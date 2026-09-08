@@ -519,7 +519,13 @@ async function historyLoadReservations() {
   }
 
   try {
-    const result = await client.rpc("get_my_reservations");
+    const result =
+      typeof window.getRentuloReservationsData === "function"
+        ? await window.getRentuloReservationsData()
+        : {
+            data: [],
+            error: new Error("Shared reservation data loader is unavailable.")
+          };
 
     if (result.error) {
       console.warn("Historii rezervací se nepodařilo načíst.", result.error);

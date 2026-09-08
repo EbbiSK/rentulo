@@ -24,6 +24,7 @@ let navPreferredLanguageSaveRunning = false;
 let navPendingPreferredLanguage = null;
 let navGlobalDropdownDismissalBound = false;
 let navProfileSummary = null;
+let navReservationsDataCache = null;
 
 function navIsLoggedIn() {
   return Boolean(navVerifiedUser);
@@ -1440,8 +1441,7 @@ async function navLoadNotificationCountFromSupabase(activePage) {
   }
 
   try {
-    const { data, error } = await supabaseClient
-      .rpc("get_my_reservations");
+    const { data, error } = await navGetReservationsData();
 
     if (error) {
       console.warn("Počet upozornění se nepodařilo načíst.", error);
@@ -1485,6 +1485,89 @@ async function navLoadNotificationCountFromSupabase(activePage) {
     console.warn("Počet upozornění se nepodařilo načíst.", error);
   }
 }
+
+function navInvalidateReservationsData() {
+  navReservationsDataCache = null;
+}
+
+function navCloneReservationsResult(result) {
+  const safeResult = result || {};
+  return {
+    data: Array.isArray(safeResult.data) ? safeResult.data.slice() : [],
+    error: safeResult.error || null
+  };
+}
+
+function navGetReservationsData() {
+  const currentUser = navGetCurrentUser();
+  const supabaseClient = navGetSupabaseClient();
+
+  if (!currentUser || !currentUser.id || !supabaseClient) {
+    return Promise.resolve({
+      data: [],
+      error: new Error("Reservation data is unavailable.")
+    });
+  }
+
+  const userId = String(currentUser.id);
+
+  if (
+    navReservationsDataCache &&
+    navReservationsDataCache.userId === userId
+  ) {
+    return navReservationsDataCache.promise.then(navCloneReservationsResult);
+  }
+
+  const cacheEntry = {
+    userId: userId,
+    promise: null
+  };
+
+  navReservationsDataCache = cacheEntry;
+
+  cacheEntry.promise = (async function () {
+    try {
+      const result = await supabaseClient.rpc("get_my_reservations");
+      const activeUser = navGetCurrentUser();
+      const activeUserId = activeUser && activeUser.id ? String(activeUser.id) : "";
+
+      if (activeUserId !== userId) {
+        return {
+          data: [],
+          error: new Error("Reservation user changed during loading.")
+        };
+      }
+
+      const safeResult = result || {
+        data: [],
+        error: null
+      };
+
+      if (safeResult.error && navReservationsDataCache === cacheEntry) {
+        navReservationsDataCache = null;
+      }
+
+      return {
+        data: Array.isArray(safeResult.data) ? safeResult.data : [],
+        error: safeResult.error || null
+      };
+    } catch (error) {
+      if (navReservationsDataCache === cacheEntry) {
+        navReservationsDataCache = null;
+      }
+
+      return {
+        data: [],
+        error: error
+      };
+    }
+  })();
+
+  return cacheEntry.promise.then(navCloneReservationsResult);
+}
+
+window.getRentuloReservationsData = navGetReservationsData;
+window.invalidateRentuloReservationsData = navInvalidateReservationsData;
 
 window.refreshRentuloNotificationBadge = async function () {
   const activePage = document.body.dataset.navigationPage || "";
@@ -1920,8 +2003,18 @@ async function initializeSharedNavigation() {
   ) {
     navAuthListenerRegistered = true;
     supabaseClient.auth.onAuthStateChange(function (_event, session) {
-      navVerifiedUser = session && session.user ? session.user : null;
+      const previousUserId = navVerifiedUser && navVerifiedUser.id
+        ? String(navVerifiedUser.id)
+        : "";
+      const nextUser = session && session.user ? session.user : null;
+      const nextUserId = nextUser && nextUser.id ? String(nextUser.id) : "";
+
+      navVerifiedUser = nextUser;
       navAuthPromise = Promise.resolve(navVerifiedUser);
+
+      if (previousUserId !== nextUserId) {
+        navInvalidateReservationsData();
+      }
       window.rentuloAccountNotificationCount = 0;
       window.rentuloAccountNotificationCounts = {
         reservations: 0,
