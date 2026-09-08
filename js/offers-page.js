@@ -145,6 +145,7 @@
 
     let ownerOffers = [];
     let ownerReservations = [];
+    let ownerCurrentUser = null;
     let ownerOffersLoadState = "idle";
     let accountMessageState = null;
 
@@ -345,7 +346,7 @@
       };
     }
 
-    async function loadOwnerData() {
+    async function loadOwnerData(supabaseUser) {
       ownerOffersLoadState = "loading";
       const supabaseClient = getSupabaseClient();
 
@@ -354,8 +355,6 @@
         setAccountErrorMessage("offers.error.supabaseConfig", "Služba je dočasně nedostupná. Obnovte stránku a zkuste to znovu.");
         return false;
       }
-
-      const supabaseUser = await getCurrentSupabaseUser();
 
       if (!supabaseUser) {
         window.location.href = "prihlaseni.html";
@@ -831,7 +830,7 @@ const data = Array.isArray(updatedReservations)
         window.invalidateRentuloReservationsData();
       }
 
-      const loaded = await loadOwnerData();
+      const loaded = await loadOwnerData(ownerCurrentUser);
 
       if (!loaded) {
         renderLoadErrorState();
@@ -1425,9 +1424,11 @@ return [
         return;
       }
 
+      ownerCurrentUser = verifiedUser;
+
       renderLoadingState();
 
-      const loaded = await loadOwnerData();
+      const loaded = await loadOwnerData(ownerCurrentUser);
 
 
       if (loaded) {
