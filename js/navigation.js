@@ -1975,6 +1975,14 @@ function navSetupContextBackLinks() {
   });
 }
 
+function navShouldLoadAccountData(page) {
+  return ![
+    "prihlaseni",
+    "registrace",
+    "ucet-vytvoren"
+  ].includes(page);
+}
+
 async function initializeSharedNavigation() {
   const page = document.body.dataset.navigationPage;
 
@@ -1987,11 +1995,15 @@ async function initializeSharedNavigation() {
   await navGetVerifiedUser();
   renderSharedNavigation(page);
 
-  if (navVerifiedUser) {
+  const shouldLoadAccountData = navShouldLoadAccountData(page);
+
+  if (navVerifiedUser && shouldLoadAccountData) {
     void navLoadProfileSummary(navVerifiedUser);
   }
 
-  void navLoadNotificationCountFromSupabase(page);
+  if (shouldLoadAccountData) {
+    void navLoadNotificationCountFromSupabase(page);
+  }
 
   const supabaseClient = navGetSupabaseClient();
 
@@ -2023,7 +2035,7 @@ async function initializeSharedNavigation() {
       navProfileSummary = null;
       renderSharedNavigation(page);
 
-      if (navVerifiedUser) {
+      if (navVerifiedUser && shouldLoadAccountData) {
         void navLoadProfileSummary(navVerifiedUser);
         void navLoadNotificationCountFromSupabase(page);
       }
