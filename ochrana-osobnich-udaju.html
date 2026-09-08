@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title data-i18n="privacy.documentTitle">Ochrana osobních údajů - Rentulo</title>
+  <title>Ochrana osobních údajů - Rentulo</title>
 
   <link rel="icon" type="image/png" href="assets/rentulo-logo-mark.png" />
   <link id="rentuloSharedTheme" rel="stylesheet" href="css/rentulo-theme.css" />
@@ -104,10 +104,12 @@
           jsou ukládány v cloudové databázi a autentizační službě Supabase.
         </p>
         <p data-i18n="privacy.s5p2">
-          Prohlížeč používá localStorage pro zvolený jazyk, volbu trvalého
-          přihlášení a naposledy zjištěnou polohu uživatele. Přihlašovací relace
-          se podle této volby ukládá do localStorage nebo sessionStorage. Tyto
-          technologie nenahrazují hlavní databázi platformy.
+          Prohlížeč používá localStorage pro zvolený jazyk a volbu trvalého
+          přihlášení. Přihlašovací relace se podle této volby ukládá do localStorage
+          nebo sessionStorage. Poloha zařízení se po souhlasu uživatele používá pro
+          vyhledávání v okolí, ale neukládá se do samostatného trvalého záznamu
+          polohy v localStorage. Tyto technologie nenahrazují hlavní databázi
+          platformy.
         </p>
       </section>
 
@@ -154,9 +156,10 @@
           vyzvednutí. Z výsledku se k nabídce uloží souřadnice místa vyzvednutí;
           veřejná mapa však zpřístupňuje pouze jejich zaokrouhlenou podobu a přesnou
           adresu nezobrazuje. Pokud návštěvník povolí polohu zařízení, jeho přesné
-          souřadnice se uloží do jeho prohlížeče a použijí se k vyhledání a řazení
-          nabídek v okolí; neukládají se do jeho profilu v Supabase. Při přechodu na
-          výsledky mohou být souřadnice také součástí adresy stránky.
+          souřadnice se použijí během aktuální práce stránky k vyhledání a řazení
+          nabídek v okolí; neukládají se do jeho profilu v Supabase ani do
+          samostatného záznamu polohy v localStorage. Při přechodu na výsledky mohou
+          být souřadnice také součástí adresy stránky (URL).
         </p>
       </section>
 
@@ -228,8 +231,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/api.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/navigation.js"></script>
 </body>
